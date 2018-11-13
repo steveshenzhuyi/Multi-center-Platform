@@ -1,16 +1,9 @@
 <template>
-<div style="margin-top:1000px">啊 </div>
+    <div>
+        <p>我的研究</p>
+    </div>
 </template>
-<script type="text/ecmascript-6">
-console.log("yes")
-export default {
-  data() {
-    return {
-      activeIndex: "1"
-    };
-  },
-  methods: {
-
-  }
-};
+<script>
 </script>
+<style>
+</style>

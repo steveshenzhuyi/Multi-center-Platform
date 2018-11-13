@@ -1,6 +1,6 @@
 <template>
 <div>
-  <header >
+  <header>
         <img src="../assets/logo.png">多中心协同的生物医学智能信息技术平台
           <el-dropdown style="float:right;padding-top:30px;padding-right:30px;" trigger="click">
       <span class="el-dropdown-link" style="color:white;font-style:bold">
@@ -43,9 +43,7 @@
       <el-menu-item index="">登出</el-menu-item>
     </el-submenu> -->
   </el-menu>
-  <div style="margin-top:5px">
-  
-  </div> 
+    <router-view></router-view>
 </div>
 </template>
 <script type="text/ecmascript-6">
