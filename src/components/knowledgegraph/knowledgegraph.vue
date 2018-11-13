@@ -1,0 +1,9 @@
+<template>
+    <div>
+        <p>知识图谱</p>
+    </div>
+</template>
+<script>
+</script>
+<style>
+</style>

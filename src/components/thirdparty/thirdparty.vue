@@ -1,0 +1,9 @@
+<template>
+    <div>
+        <p>第三方数据使用</p>
+    </div>
+</template>
+<script>
+</script>
+<style>
+</style>

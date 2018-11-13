@@ -1,0 +1,9 @@
+<template>
+    <div>
+        <p>协同研究</p>
+    </div>
+</template>
+<script>
+</script>
+<style>
+</style>
