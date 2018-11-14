@@ -1,9 +1,0 @@
-<template>
-    <div>
-        <p>资源状态</p>
-    </div>
-</template>
-<script>
-</script>
-<style>
-</style>
