@@ -1,5 +1,5 @@
 <template>
-    <div class="login-contain" style="height:100%">
+    <div class="login-contain">
        
     <div id="login-box" class="login-box visible widget-box no-border">   
          <h1 style="color:white">科研分析平台</h1>  
@@ -114,7 +114,6 @@ export default {
   position: fixed;
   height: 100%;
   width: 100%;
-  max-height: 758px;
   background-color: #141a48;
   text-align: center;
 }
