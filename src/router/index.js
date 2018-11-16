@@ -42,7 +42,33 @@ export default new Router({
         {
           path: '/coresearch',
           name: '协同研究',
-          component: coresearch
+          component: coresearch,
+          children: [
+            {
+              path: 'myteam',
+              name: '我的团队',
+              component: () => import('@/components/coresearch/myteam'),
+              meta: {title: '我的团队'}
+            },
+            {
+              path: 'newresearch',
+              name: '新建研究',
+              component: () => import('@/components/coresearch/newresearch'),
+              meta: {title: '新建研究'}
+            },
+            {
+              path: 'jointeam',
+              name: '加入团队',
+              component: () => import('@/components/coresearch/jointeam'),
+              meta: {title: '加入团队'}
+            },
+            {
+              path: 'newteam',
+              name: '构建团队',
+              component: () => import('@/components/coresearch/newteam'),
+              meta: {title: '构建团队'}
+            }
+          ]
         },
         {
           path: '/knowledgegraph',
