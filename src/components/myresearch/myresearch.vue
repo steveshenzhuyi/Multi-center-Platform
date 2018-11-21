@@ -26,24 +26,31 @@
 
         <!-- 概念集模块/RH -->
         <el-row>
-          <el-card class="box-card">
+          <el-card class="box-card"
+                   style="text-align:center;font-size:13px;">
             <div slot="header"
-                 style="height:12px;font-size:13px;"
+                 style="height:12px;"
                  class="clearfix">
               <span>概念集</span>
             </div>
+
             <el-tree :data="conceptsets"
                      :props="defaultProps"
                      @node-click="handleNodeClick"
-                     default-expand-all></el-tree>
+                     default-expand-all
+                     node-key="id"
+                     :render-content="renderContent"></el-tree>
+            <el-button style="margin-bottom:5px;margin-top:5px"
+                       type="primary">新建</el-button>
           </el-card>
         </el-row>
 
         <!-- 队列模块/RH -->
         <el-row>
-          <el-card class="box-card">
+          <el-card class="box-card"
+                   style="text-align:center;font-size:13px;">
             <div slot="header"
-                 style="height:12px;font-size:13px;"
+                 style="height:12px;"
                  class="clearfix">
               <span>队列</span>
             </div>
@@ -51,14 +58,18 @@
                      :props="defaultProps"
                      @node-click="handleNodeClick"
                      default-expand-all></el-tree>
+            <el-button style="margin-bottom:5px;margin-top:5px"
+                       type="primary">新建</el-button>
+
           </el-card>
         </el-row>
 
         <!-- 分析模块/RH -->
         <el-row>
-          <el-card class="box-card">
+          <el-card class="box-card"
+                   style="text-align:center;font-size:13px;">
             <div slot="header"
-                 style="height:12px;font-size:13px;"
+                 style="height:12px;"
                  class="clearfix">
               <span>分析方法</span>
             </div>
@@ -66,6 +77,9 @@
                      :props="defaultProps"
                      @node-click="handleNodeClick"
                      default-expand-all></el-tree>
+            <el-button style="margin-bottom:5px;margin-top:5px"
+                       type="primary">新建</el-button>
+
           </el-card>
         </el-row>
       </el-col>
@@ -113,26 +127,33 @@
   </div>
 </template>
 <script>
+  let id = 1000;
+
 export default {
   data() {
     return {
       // 概念集假数据/RH
       conceptsets: [
         {
+          id:1,
           label: "文件夹1",
           children: [
             {
+              id:3,
               label: "概念集A"
             },
             {
+              id:4,
               label: "概念集B"
             }
           ]
         },
         {
+          id:2,
           label: "文件夹2",
           children: [
             {
+              id:5,
               label: "概念集C"
             }
           ]
@@ -193,8 +214,29 @@ export default {
   },
   methods: {
     handleNodeClick(data) {
-      console.log(data);
-    }
+      // console.log(data);
+    },
+ append(store, data) {
+        store.append({ id: id++, label: 'testtest', children: [] }, data);
+      },
+
+      remove(store, data) {
+        store.remove(data);
+      },
+
+      renderContent(h, { node, data, store }) {
+        return (
+          <span>
+            <span>
+              <span>{node.label}</span>
+            </span>
+            <span style="float: right; margin-left: 50px">
+            <i class="el-icon-plus" on-click={ () => this.append(store, data) }></i>
+            <i class="el-icon-delete" on-click={ () => this.remove(store, data) }></i>
+            </span>
+          </span>);
+      }
+
   }
 };
 </script>

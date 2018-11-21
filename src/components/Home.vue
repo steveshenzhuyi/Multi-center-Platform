@@ -44,7 +44,7 @@
     </el-menu>
 
     <!-- 主题内容【不要删】/RH -->
-    <router-view></router-view>
+    <router-view style="margin-top:20px"></router-view>
   </div>
 </template>
 <script type="text/ecmascript-6">
