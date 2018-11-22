@@ -224,18 +224,18 @@ export default {
         store.remove(data);
       },
 
-      renderContent(h, { node, data, store }) {
-        return (
-          <span>
-            <span>
-              <span>{node.label}</span>
-            </span>
-            <span style="float: right; margin-left: 50px">
-            <i class="el-icon-plus" on-click={ () => this.append(store, data) }></i>
-            <i class="el-icon-delete" on-click={ () => this.remove(store, data) }></i>
-            </span>
-          </span>);
-      }
+      // renderContent(h, { node, data, store }) {
+      //   return (
+      //     <span>
+      //       <span>
+      //         <span>{node.label}</span>
+      //       </span>
+      //       <span style="float: right; margin-left: 50px">
+      //       <i class="el-icon-plus" on-click={ () => this.append(store, data) }></i>
+      //       <i class="el-icon-delete" on-click={ () => this.remove(store, data) }></i>
+      //       </span>
+      //     </span>);
+      // }
 
   }
 };

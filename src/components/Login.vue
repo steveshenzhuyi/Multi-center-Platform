@@ -1,29 +1,41 @@
 <template>
-    <div class="login-contain">
-       
-    <div id="login-box" class="login-box visible widget-box no-border">   
-         <h1 style="color:white">科研分析平台</h1>  
-         <div class='tips'>账号库为123/123456,456/456789</div> 
-     <div class="form-group">
-            <i class="iconfont  icon-yonghuicon"></i>
-            <input type="text" v-model="loginForm.phoneNumber" placeholder="用户名" >
-            </input>
-       </div>
-        <div class="form-group">
-            <i class="iconfont  icon-suo"></i>
-            <input type="password" id="ps" v-model="loginForm.password" placeholder="密码">
+  <div class="login-contain">
+
+    <div id="login-box"
+         class="login-box visible widget-box no-border">
+      <h1 style="color:white">科研分析平台</h1>
+      <div class='tips'>账号库为123/123456,456/456789</div>
+      <div class="form-group">
+        <i class="iconfont  icon-yonghuicon"></i>
+        <input type="text"
+               v-model="loginForm.phoneNumber"
+               placeholder="用户名">
+        </input>
+      </div>
+      <div class="form-group">
+        <i class="iconfont  icon-suo"></i>
+        <input type="password"
+               id="ps"
+               v-model="loginForm.password"
+               placeholder="密码" ">
 
             </input>
-            <i @click="psshow" style="position:fixed;padding-top:15.5px;padding-bottom:0;padding-left:5px" class="iconfont  icon-eye"></i>
+            <i @click="
+               psshow"
+               style="position:fixed;padding-top:15.5px;padding-bottom:0;padding-left:5px"
+               class="iconfont  icon-eye"></i>
 
-        </div>
-        <div class="form-group">
-            <button type="primary" @click="handleLogin()" >登 录</button>
-        </div>        
-        <div class='tips' style="color:red" v-show="loginresult">{{tips}}</div>
-        
-        </div>
+      </div>
+      <div class="form-group">
+        <button type="primary"
+                @click="handleLogin()">登 录</button>
+      </div>
+      <div class='tips'
+           style="color:red"
+           v-show="loginresult">{{tips}}</div>
+
     </div>
+  </div>
 </template>
 
 <script>
@@ -146,11 +158,11 @@ input {
 }
 
 i {
-    color:white;   
-    margin-right:5px;
-    font-size: 20px;
-    margin-top:0;
-    margin-bottom:0;
+  color: white;
+  margin-right: 5px;
+  font-size: 20px;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 label {
@@ -169,7 +181,7 @@ button {
   background-color: #2d8cf0;
   border-color: #2d8cf0;
   width: 100%;
-  font-size:15px;
+  font-size: 15px;
   height: 45px;
 }
 </style>
