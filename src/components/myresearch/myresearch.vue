@@ -8,10 +8,11 @@
           <el-button type="primary">我的研究</el-button>
         </el-col>
         <el-col :span="12">
-          <el-button type="primary">历史研究</el-button>
+          <el-button type="primary"
+                     @click="toHisresearch()">历史研究</el-button>
         </el-col>
       </el-col>
-      <el-col :span="20">
+      <el-col :span="18">
         <el-steps :active="2"
                   align-center>
           <el-step title="1 队列选择"></el-step>
@@ -19,6 +20,23 @@
           <el-step title="3 预测结果"></el-step>
           <el-step title=""></el-step>
         </el-steps>
+
+      </el-col>
+      <el-col :span="2">
+        <el-button type="primary"
+                   @click="NewVarVisible=true">新增变量</el-button>
+        <el-dialog title="新建变量"
+                   :visible.sync="NewVarVisible"
+                   width="30%"
+                   :before-close="handleClose">
+          <span>这是一段新建变量</span>
+          <span slot="footer"
+                class="dialog-footer">
+            <el-button @click="NewVarVisible = false">取 消</el-button>
+            <el-button type="primary"
+                       @click="NewVarVisible = false">确 定</el-button>
+          </span>
+        </el-dialog>
       </el-col>
     </el-row>
     <el-row :gutter="20">
@@ -131,7 +149,20 @@
                      @node-click="handleNodeClick"
                      default-expand-all></el-tree>
             <el-button style="margin-bottom:5px;margin-top:5px"
-                       type="primary">新建</el-button>
+                       type="primary"
+                       @click="NewQueneVisible=true">新建</el-button>
+            <el-dialog title="新建队列"
+                       :visible.sync="NewQueneVisible"
+                       width="30%"
+                       :before-close="handleClose">
+              <span>这是一段新建队列</span>
+              <span slot="footer"
+                    class="dialog-footer">
+                <el-button @click="NewQueneVisible = false">取 消</el-button>
+                <el-button type="primary"
+                           @click="NewQueneVisible = false">确 定</el-button>
+              </span>
+            </el-dialog>
 
           </el-card>
         </el-row>
@@ -150,8 +181,20 @@
                      @node-click="handleNodeClick"
                      default-expand-all></el-tree>
             <el-button style="margin-bottom:5px;margin-top:5px"
-                       type="primary">新建</el-button>
-
+                       type="primary"
+                       @click="NewMethodVisible=true">新建</el-button>
+            <el-dialog title="新建方法"
+                       :visible.sync="NewMethodVisible"
+                       width="30%"
+                       :before-close="handleClose">
+              <span>这是一段新建方法</span>
+              <span slot="footer"
+                    class="dialog-footer">
+                <el-button @click="NewMethodVisible = false">取 消</el-button>
+                <el-button type="primary"
+                           @click="NewMethodVisible = false">确 定</el-button>
+              </span>
+            </el-dialog>
           </el-card>
         </el-row>
       </el-col>
@@ -167,16 +210,16 @@
             </div>
             <el-table :data="tableData"
                       style="width: 100%">
-              <el-table-column prop="date"
+              <el-table-column prop="quene"
                                label="队列"
                                width="180">
               </el-table-column>
-              <el-table-column prop="name"
+              <el-table-column prop="method"
                                label="分析方法">
               </el-table-column>
             </el-table>
             <el-button style="float:right;margin-bottom:5px;margin-top:5px"
-                       type="primary">计算</el-button>
+                       type="primary">计算 </el-button>
 
           </el-card>
         </el-row>
@@ -205,28 +248,39 @@
 export default {
   data() {
     return {
+      NewVarVisible: false,
+      NewConceptVisible: false,
+      NewQueneVisible: false,
+      NewMethodVisible: false,
+      tableData: [{
+        quene: '队列A',
+        method: 'SVM',
+      }, {
+        quene: '队列B',
+        method: 'RF',
+      }],
       // 概念集假数据/RH
       conceptsets: [
         {
-          id:1,
+          id: 1,
           label: "文件夹1",
           children: [
             {
-              id:3,
+              id: 3,
               label: "概念集A"
             },
             {
-              id:4,
+              id: 4,
               label: "概念集B"
             }
           ]
         },
         {
-          id:2,
+          id: 2,
           label: "文件夹2",
           children: [
             {
-              id:5,
+              id: 5,
               label: "概念集C"
             }
           ]
@@ -327,16 +381,29 @@ export default {
     };
   },
   methods: {
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => { });
+    },
     handleNodeClick(data) {
       // console.log(data);
     },
- append(store, data) {
-        store.append({ id: id++, label: 'testtest', children: [] }, data);
-      },
+    append(store, data) {
+      store.append({ id: id++, label: 'testtest', children: [] }, data);
+    },
 
-      remove(store, data) {
-        store.remove(data);
-      },
+    remove(store, data) {
+      store.remove(data);
+    },
+    toHisresearch: function () {
+      console.log(1)
+      this.$router.push({ path: "/hisresearch" });
+    }
+
+
       
 
       // renderContent(h, { node, data, store }) {
