@@ -40,8 +40,80 @@
                      default-expand-all
                      node-key="id"
                      :render-content="renderContent"></el-tree>
+            <!--新增概念集—-->
             <el-button style="margin-bottom:5px;margin-top:5px"
-                       type="primary">新建</el-button>
+                       type="primary" @click="dialogVisible = true">新建</el-button>
+              <el-dialog
+              title="新增"
+              :visible.sync="dialogVisible"
+              width="60%"
+              :before-close="handleClose">
+              <el-form :model="ConceptSets" ref="ConceptSets" label-width="100px" class="demo-ruleForm concept-container">
+                <el-row :gutter="10" style="margin-top:10px;margin-bottom:10px" type="flex" justify="center">
+                  <el-col :span="16">
+                    <el-input prefix-icon="el-icon-search" v-model="InputConceptName" type="text"></el-input>
+                  </el-col>
+                </el-row>
+                <el-row style="margin-top:10px;margin-bottom:10px">
+                  <el-col :span="16" :offset="4">
+                    <el-form-item label="*集合名称" prop = "SetName" class = "form-inline">
+                        <el-input type="text" v-model ="ConceptSets.SetName" auto-complete = "off"  placeholder = "请输入集合名称" class = "form-control">
+                        </el-input>
+                    </el-form-item> 
+                  </el-col>
+                </el-row>
+                <el-row style="margin-top:10px;margin-bottom:10px">
+                  <el-col :span="14" :offset="4">
+                    <el-form-item label="集合描述" prop = "SetDescription" class = "form-inline">
+                        <el-input type="text" v-model="ConceptSets.SetDescription" auto-complete="off" placeholder = "请输入集合描述" class = "form-control">
+                        </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="2" :offset="1">
+                    <el-button type="primary">待选择</el-button>
+                  </el-col>
+                  <el-col :span="2">
+                    <el-button type="primary">已选择</el-button>
+                  </el-col>
+                </el-row>
+              </el-form>
+              <el-row style="margin-top:10px;margin-bottom:10px" type="flex" justify="center">
+                <el-col :span="20">
+                <el-table :data="SearchResult" :align="center" v-model="SearchResult" valign="center" height="300" border style="width: 100%" @selction-change="handleSelectionChange">
+                    <el-table-column type="selection" label="全选" width="60"></el-table-column>
+                    <el-table-column prop="ConceptCode" label="概念编码" width="120"></el-table-column>
+                    <el-table-column prop="ConceptName" label="概念名称" width="150"></el-table-column>
+                    <el-table-column prop="ConceptType" label="概念类别" width="120"></el-table-column>
+                    <el-table-column prop="ConceptField" label="概念领域" width="120"></el-table-column>
+                    <el-table-column prop="ConceptSource" label="概念来源（全部）" width="150"></el-table-column>
+                    <el-table-column width="100">
+                        <template slot="header" slot-scope="scope">
+                            <el-checkbox :indeterminate="isIndeterminate1" v-model="checkAll1" @change="handleCheckAllExcludeditemsChange">排除</el-checkbox>
+                        </template>
+                        <template slot-scope="scope">
+                            <el-checkbox-group v-model="checkedExcludeditems" @change="handleCheckedExcludeditemsChange">
+                                <el-checkbox :label="scope.row.Except"></el-checkbox>
+                            </el-checkbox-group>
+                        </template>
+                    </el-table-column>
+                    <el-table-column>
+                        <template slot="header" slot-scope="scope">
+                            <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChilerenConceptsChange">子概念</el-checkbox>
+                        </template>
+                        <template slot-scope="scope">
+                            <el-checkbox-group v-model="checkedChilerenConcepts" @change="handleCheckedChilerenConceptsChange">
+                                <el-checkbox :label="scope.row.ChilerenConcept"></el-checkbox>
+                            </el-checkbox-group>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                </el-col>
+              </el-row>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+              </span>
+              </el-dialog>
           </el-card>
         </el-row>
 
@@ -128,7 +200,8 @@
 </template>
 <script>
   let id = 1000;
-
+  const Excludeditemsoptions = [' ','  ','   '];
+  const ChilerenConceptsoptions = [' ','  ','   '];
 export default {
   data() {
     return {
@@ -209,7 +282,48 @@ export default {
       defaultProps: {
         children: "children",
         label: "label"
-      }
+      },
+      //新增概念集假数据
+      dialogVisible: false,
+        ConceptSets: {
+               SetName:'',
+               SetDescription:'',
+           }, 
+           table: [{
+               ConceptCode: 'E14.901',
+               ConceptName: '糖尿病',
+               ConceptType: 'ICD10 code',
+               ConceptField: 'Condition',
+               ConceptSource: 'SZ_ICD10',
+               Except: ' ',
+               ChilerenConcept: ' ',
+           }, {
+               ConceptCode: '80_000',
+               ConceptName: '糖尿病',
+               ConceptType: 'ICD10 code',
+               ConceptField: 'Condition',
+               ConceptSource: 'SZ_ICD10',
+               Except: '  ',
+               ChilerenConcept: '  ',
+           }, {
+               ConceptCode: 'E10.904',
+               ConceptName: '暴发性1型糖尿病',
+               ConceptType: 'ICD10 code',
+               ConceptField: 'Condition',
+               ConceptSource: 'SZ_ICD10',
+               Except: '   ',
+               ChilerenConcept: '   ',
+           }],
+           multipleSelection: [],
+           InputConceptName: '',
+           checkAll1: false,
+           isIndeterminate1: false,
+           checkAll2: false,
+           isIndeterminate2: false,
+           checkedExcludeditems: [],
+           checkedChilerenConcepts: [],
+           Excludeditems: Excludeditemsoptions,
+           ChilerenConcepts: ChilerenConceptsoptions
     };
   },
   methods: {
@@ -223,6 +337,7 @@ export default {
       remove(store, data) {
         store.remove(data);
       },
+      
 
       // renderContent(h, { node, data, store }) {
       //   return (
@@ -236,8 +351,50 @@ export default {
       //       </span>
       //     </span>);
       // }
-
-  }
+      //新增概念集所需
+      handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      },
+      handleSelectionChange(val) {
+            this.multipleSelection = val;
+        },
+      handleCheckAllExcludeditemsChange(val) {
+        this.checkedExcludeditems = val ? Excludeditemsoptions : [];
+        this.isIndeterminate1 = false;
+      },
+      handleCheckedExcludeditemsChange(value) {
+        let checkedCount = value.length;
+        this.checkAll1 = checkedCount === this.Excludeditems.length;
+        this.isIndeterminate1 = checkedCount > 0 && checkedCount < this.Excludeditems.length;
+      },
+      handleCheckAllChilerenConceptsChange(val) {
+        this.checkedChilerenConcepts = val ? ChilerenConceptsoptions : [];
+        this.isIndeterminate2 = false;
+      },
+      handleCheckedChilerenConceptsChange(value) {
+        let checkedCount = value.length;
+        this.checkAll2 = checkedCount === this.ChilerenConcepts.length;
+        this.isIndeterminate2 = checkedCount > 0 && checkedCount < this.ChilerenConcepts.length;
+      }
+  },
+  computed: {
+      // 新增概念集中实现搜索功能
+      SearchResult () {
+        const InputConceptName = this.InputConceptName
+        if (InputConceptName) {
+          return this.table.filter(data => {
+            return Object.keys(data).some(key => {
+              return String(data[key]).indexOf(InputConceptName) > -1
+            })
+          })
+        }
+        return this.table
+      }
+    }
 };
 </script>
 <style>
