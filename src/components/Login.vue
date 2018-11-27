@@ -4,11 +4,11 @@
     <div id="login-box"
          class="login-box visible widget-box no-border">
       <h1 style="color:white">科研分析平台</h1>
-      <div class='tips'>账号库为123/123456,456/456789</div>
+      <!-- <div class='tips'>账号库为123/123456,456/456789</div> -->
       <div class="form-group">
         <i class="iconfont  icon-yonghuicon"></i>
         <input type="text"
-               v-model="loginForm.phoneNumber"
+               v-model="loginForm.username"
                placeholder="用户名">
         </input>
       </div>
@@ -17,13 +17,13 @@
         <input type="password"
                id="ps"
                v-model="loginForm.password"
-               placeholder="密码" ">
+               placeholder="密码">
 
-            </input>
-            <i @click="
+        </input>
+        <i @click="
                psshow"
-               style="position:fixed;padding-top:15.5px;padding-bottom:0;padding-left:5px"
-               class="iconfont  icon-eye"></i>
+           style="position:fixed;padding-top:15.5px;padding-bottom:0;padding-left:5px"
+           class="iconfont  icon-eye"></i>
 
       </div>
       <div class="form-group">
@@ -35,12 +35,19 @@
            v-show="loginresult">{{tips}}</div>
 
     </div>
+    <remote-js src="http://pv.sohu.com/cityjson?ie=utf-8"></remote-js>
+
   </div>
 </template>
 
 <script>
 // import { isphoneNumber } from "utils/validate";
+import md5 from 'md5';
 
+// var hash=md5('123456');
+// console.log(hash)
+var ip = returnCitySN["cip"];
+// console.log(ip)
 export default {
   name: "Hi",
   data() {
@@ -63,20 +70,31 @@ export default {
       loginresult: false,
       tips: "",
       loginForm: {
-        phoneNumber: "",
+        username: "",
         password: ""
       },
       userpass: [
         {
-          phoneNumber: "123",
+          username: "123",
           password: "123456"
+
         },
         {
-          phoneNumber: "456",
-          password: "456789"
+          username: "18868180095",
+          password: "123456",
         }
       ]
     };
+  },
+  components: {
+    'remote-js': {
+      render(createElement) {
+        return createElement('script', { attrs: { type: 'text/javascript', src: this.src } });
+      },
+      props: {
+        src: { type: String, required: true },
+      },
+    },
   },
   methods: {
     psshow() {
@@ -89,9 +107,10 @@ export default {
         this.isShow = true;
       }
     },
-    handleLogin: function() {
+    handleLogin: function () {
+
       var ret = this.userpass.findIndex(v => {
-        return v.phoneNumber == this.loginForm.phoneNumber;
+        return v.username == this.loginForm.username;
       });
       //   console.log(ret,this.tips);
       if (ret >= 0) {
@@ -108,7 +127,7 @@ export default {
         this.tips = "用户名不存在";
       }
       //   console.log(this.userpass);
-      //   console.log(this.loginForm.phoneNumber, this.loginForm.password);
+      //   console.log(this.loginForm.username, this.loginForm.password);
     }
   }
 };
