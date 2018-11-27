@@ -150,11 +150,11 @@
             </div>
             <el-table :data="tableData"
                       style="width: 100%">
-              <el-table-column prop="date"
+              <el-table-column prop="quene"
                                label="队列"
                                width="180">
               </el-table-column>
-              <el-table-column prop="name"
+              <el-table-column prop="method"
                                label="分析方法">
               </el-table-column>
             </el-table>
@@ -191,7 +191,13 @@ export default {
       NewConceptVisible: false,
       NewQueneVisible: false,
       NewMethodVisible: false,
-
+      tableData: [{
+        quene: '队列A',
+        method: 'SVM',
+      }, {
+        quene: '队列B',
+        method: 'RF',
+      }],
       // 概念集假数据/RH
       conceptsets: [
         {
