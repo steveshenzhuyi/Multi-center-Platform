@@ -56,8 +56,7 @@
                      :props="defaultProps"
                      @node-click="handleNodeClick"
                      default-expand-all
-                     node-key="id"
-                     :render-content="renderContent"></el-tree>
+                     node-key="id"></el-tree>
             <!--新增概念集—-->
             <el-button style="margin-bottom:5px;margin-top:5px"
                        type="primary"
