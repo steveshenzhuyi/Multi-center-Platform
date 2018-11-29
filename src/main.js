@@ -6,13 +6,12 @@ import router from "./router";
 import store from "./store";
 import ElementUI from "element-ui";
 import axios from "axios";
-
+import "../settings.js";
 import "element-ui/lib/theme-chalk/index.css";
 // axios 配置
 axios.defaults.timeout = 5000;
 axios.defaults.headers.post["Content-Type"] =
   "application/x-www-form-urlencoded;charset=UTF-8";
-axios.defaults.baseURL = "";
 
 Vue.prototype.$axios = axios;
 
