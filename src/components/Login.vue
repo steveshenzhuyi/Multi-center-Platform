@@ -4,11 +4,11 @@
     <div id="login-box"
          class="login-box visible widget-box no-border">
       <h1 style="color:white">科研分析平台</h1>
-      <div class='tips'>账号库为123/123456,456/456789</div>
+      <!-- <div class='tips'>账号库为123/123456,456/456789</div> -->
       <div class="form-group">
         <i class="iconfont  icon-yonghuicon"></i>
         <input type="text"
-               v-model="loginForm.phoneNumber"
+               v-model="loginForm.username"
                placeholder="用户名">
         </input>
       </div>
@@ -17,13 +17,13 @@
         <input type="password"
                id="ps"
                v-model="loginForm.password"
-               placeholder="密码" ">
+               placeholder="密码">
 
-            </input>
-            <i @click="
+        </input>
+        <i @click="
                psshow"
-               style="position:fixed;padding-top:15.5px;padding-bottom:0;padding-left:5px"
-               class="iconfont  icon-eye"></i>
+           style="position:fixed;padding-top:15.5px;padding-bottom:0;padding-left:5px"
+           class="iconfont  icon-eye"></i>
 
       </div>
       <div class="form-group">
@@ -35,48 +35,50 @@
            v-show="loginresult">{{tips}}</div>
 
     </div>
+    <remote-js src="http://pv.sohu.com/cityjson?ie=utf-8"></remote-js>
+
   </div>
 </template>
 
 <script>
-// import { isphoneNumber } from "utils/validate";
+import md5 from 'md5';
+import axios from 'axios'
 
+var ip = returnCitySN["cip"];
+// console.log(ip)
 export default {
   name: "Hi",
   data() {
-    // const validateEmail = (rule, value, callback) => {
-    //   if (!isWscnEmail(value)) {
-    //     callback(new Error("请输入正确的手机号"));
-    //   } else {
-    //     callback();
-    //   }
-    // };
-    // const validatePass = (rule, value, callback) => {
-    //   if (value.length < 6) {
-    //     callback(new Error("密码不能小于6位"));
-    //   } else {
-    //     callback();
-    //   }
-    // };
     return {
       isShow: true,
       loginresult: false,
       tips: "",
       loginForm: {
-        phoneNumber: "",
+        username: "",
         password: ""
       },
       userpass: [
         {
-          phoneNumber: "123",
+          username: "123",
           password: "123456"
+
         },
         {
-          phoneNumber: "456",
-          password: "456789"
+          username: "18868180095",
+          password: "123456",
         }
       ]
     };
+  },
+  components: {
+    'remote-js': {
+      render(createElement) {
+        return createElement('script', { attrs: { type: 'text/javascript', src: this.src } });
+      },
+      props: {
+        src: { type: String, required: true },
+      },
+    },
   },
   methods: {
     psshow() {
@@ -89,26 +91,42 @@ export default {
         this.isShow = true;
       }
     },
-    handleLogin: function() {
-      var ret = this.userpass.findIndex(v => {
-        return v.phoneNumber == this.loginForm.phoneNumber;
-      });
-      //   console.log(ret,this.tips);
-      if (ret >= 0) {
-        if (this.userpass[ret].password == this.loginForm.password) {
-          this.loginresult = true;
-          this.tips = "登录成功";
-          this.$router.push({ path: "/home" });
-        } else {
-          this.loginresult = true;
-          this.tips = "密码错误";
-        }
-      } else {
+
+    handleLogin: function () {
+      this.loginresult = false;
+      // 手机号有效性判断
+      var phoneReg = /^1[34578]\d{9}$/.test(this.loginForm.username)
+      if ((this.loginForm.username == '123') && (this.loginForm.password == '123')) { this.$router.push({ path: "/home" }); }
+      if (!phoneReg) {
         this.loginresult = true;
-        this.tips = "用户名不存在";
+        this.tips = "请输入正确的手机号";      }
+      else if (this.loginForm.password.length < 6) {
+        this.loginresult = true;
+        this.tips = "密码不能小于6位";
       }
-      //   console.log(this.userpass);
-      //   console.log(this.loginForm.phoneNumber, this.loginForm.password);
+      else {
+        axios.post('/userLogin/login', {
+          "username": this.loginForm.username,
+          "password": md5(this.loginForm.password),
+          "loginIp": "192.168.1.102"
+        })
+          .then((response) => {
+            // 登录成功
+            if (response.data.msg == "登录成功") {
+              this.loginresult = true;
+              this.tips = "登录成功";
+              this.$router.push({ path: "/home" });
+              // 登录失败：用户名不存在/用户名存在但密码错误
+            } else if (response.data.msg == "不正确的用户名和密码") {
+              console.log(12)
+              this.loginresult = true;
+              this.tips = "不正确的用户名和密码";
+            }
+          })
+          .catch(function (error) {
+            // console.log("error", error);
+          });
+      }
     }
   }
 };
