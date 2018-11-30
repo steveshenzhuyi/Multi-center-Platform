@@ -52,11 +52,23 @@
               <span>概念集</span>
             </div>
 
-            <el-tree :data="conceptsets"
-                     :props="defaultProps"
-                     @node-click="handleNodeClick"
-                     default-expand-all
-                     node-key="id"></el-tree>
+            <div class="expand">
+              <div>
+                <el-button size="mini"
+                           @click="handleAddTop">添加新文件夹</el-button>
+                <el-tree ref="expandMenuList"
+                         class="expand-tree"
+                         v-if="isLoadingTree"
+                         :data="conceptsets"
+                         node-key="id"
+                         highlight-current
+                         :props="defaultProps"
+                         :expand-on-click-node="false"
+                         :render-content="renderContent"
+                         :default-expanded-keys="defaultExpandKeys"
+                         @node-click="handleNodeClick"></el-tree>
+              </div>
+            </div>
             <!--新增概念集—-->
             <el-button style="margin-bottom:5px;margin-top:5px"
                        type="primary"
@@ -295,7 +307,7 @@
   </div>
 </template>
 <script>
-let id = 1000;
+import TreeRender from './tree_render'
 const Excludeditemsoptions = [' ', '  ', '   '];
 const ChilerenConceptsoptions = [' ', '  ', '   '];
 export default {
@@ -313,32 +325,99 @@ export default {
         method: 'RF',
       }],
       // 概念集假数据/RH
+      maxexpandId: 5,//新增节点开始id
+      non_maxexpandId: 5,//新增节点开始id(不更改)
+      isLoadingTree: false,//是否加载节点树
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
+      defaultExpandKeys: [],//默认展开节点列表
       conceptsets: [
         {
           id: 1,
-          label: "文件夹1",
+          name: "文件夹1",
+          isEdit: false,
           children: [
             {
               id: 3,
-              label: "概念集A"
+              name: "概念集A",
+              isEdit: false,
+              children: []
             },
             {
               id: 4,
-              label: "概念集B"
+              name: "概念集B",
+              isEdit: false,
+              children: []
             }
           ]
         },
         {
           id: 2,
-          label: "文件夹2",
+          name: "文件夹2",
+          isEdit: false,
           children: [
             {
               id: 5,
-              label: "概念集C"
+              name: "概念集C",
+              isEdit: false,
+              children: []
             }
           ]
         }
       ],
+      // 队列集假数据/RH
+      queuesets: [
+        {
+          label: "文件夹1",
+          children: [
+            {
+              label: "队列A"
+            },
+            {
+              label: "队列B"
+            }
+          ]
+        },
+        {
+          label: "文件夹2",
+          children: [
+            {
+              label: "队列C"
+            }
+          ]
+        }
+      ],
+      // 分析数据假数据/RH
+      analysismethods: [
+        {
+          label: "回归",
+          children: [
+            {
+              label: "SVM"
+            },
+            {
+              label: "RF"
+            }
+          ]
+        },
+        {
+          label: "分类",
+          children: [
+            {
+              label: "模型A"
+            },
+            {
+              label: "模型B"
+            }
+          ]
+        }
+      ],
+      defaultProps: {
+        children: "children",
+        label: "label"
+      },
       // 队列集假数据/RH
       queuesets: [
         {
@@ -433,6 +512,10 @@ export default {
       ChilerenConcepts: ChilerenConceptsoptions
     };
   },
+  mounted() {
+    //console.log(api)
+    this.initExpand()
+  },
   methods: {
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -454,6 +537,104 @@ export default {
     toHisresearch: function () {
       console.log(1)
       this.$router.push({ path: "/hisresearch" });
+    },
+    //鼠标hover事件所需
+    initExpand() {
+      this.conceptsets.map((a) => {
+        this.defaultExpandKeys.push(a.id)
+      });
+      this.isLoadingTree = true;
+    },
+    handleNodeClick(d, n, s) {//点击节点
+      // console.log(d,n)
+      d.isEdit = false;//放弃编辑状态
+    },
+    renderContent(h, { node, data, store }) {//加载节点
+      let that = this;
+      return h(TreeRender, {
+        props: {
+          DATA: data,
+          NODE: node,
+          STORE: store,
+          maxexpandId: that.non_maxexpandId
+        },
+        on: {
+          nodeAdd: ((s, d, n) => that.handleAdd(s, d, n)),
+          nodeEdit: ((s, d, n) => that.handleEdit(s, d, n)),
+          nodeDel: ((s, d, n) => that.handleDelete(s, d, n))
+        }
+      });
+    },
+    handleAddTop() {
+      this.conceptsets.push({
+        id: ++this.maxexpandId,
+        name: '新增节点',
+        pid: '',
+        isEdit: false,
+        children: []
+      })
+    },
+    handleAdd(s, d, n) {//增加节点
+      console.log(s, d, n)
+      if (n.level >= 6) {
+        this.$message.error("最多只支持五级！")
+        return false;
+      }
+      //添加数据
+      d.children.push({
+        id: ++this.maxexpandId,
+        name: '新增节点',
+        pid: d.id,
+        isEdit: false,
+        children: []
+      });
+      //展开节点
+      if (!n.expanded) {
+        n.expanded = true;
+      }
+    },
+    handleEdit(s, d, n) {//编辑节点
+      console.log(s, d, n)
+    },
+    handleDelete(s, d, n) {//删除节点
+      console.log(s, d, n)
+      let that = this;
+      //有子级不删除
+      if (d.children && d.children.length !== 0) {
+        this.$message.error("此节点有子级，不可删除！")
+        return false;
+      } else {
+        //新增节点直接删除，否则要询问是否删除
+        let delNode = () => {
+          let list = n.parent.data.children || n.parent.data,//节点同级数据
+            _index = 99999;//要删除的index
+          /*if(!n.parent.data.children){//删除顶级节点，无children
+            list = n.parent.data
+          }*/
+          list.map((c, i) => {
+            if (d.id == c.id) {
+              _index = i;
+            }
+          })
+          let k = list.splice(_index, 1);
+          //console.log(_index,k)
+          this.$message.success("删除成功！")
+        }
+        let isDel = () => {
+          that.$confirm("是否删除此节点？", "提示", {
+            confirmButtonText: "确认",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            delNode()
+          }).catch(() => {
+            return false;
+          })
+        }
+        //判断是否新增
+        d.id > this.non_maxexpandId ? delNode() : isDel()
+
+      }
     },
 
 
@@ -518,4 +699,43 @@ export default {
 };
 </script>
 <style>
+.expand {
+  width: 100%;
+  height: 80%;
+  overflow: hidden;
+}
+.expand > div {
+  height: 85%;
+  padding-top: 20px;
+  width: 50%;
+  max-width: 400px;
+  overflow-y: auto;
+}
+.expand > div::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+}
+.expand > div::-webkit-scrollbar-thumb {
+  background-color: rgba(50, 65, 87, 0.5);
+  outline: 1px solid slategrey;
+  border-radius: 5px;
+}
+.expand > div::-webkit-scrollbar {
+  width: 10px;
+}
+.expand-tree {
+  border: none;
+}
+.expand-tree .el-tree-node.is-current,
+.expand-tree .el-tree-node:hover {
+  overflow: hidden;
+}
+.expand-tree .is-current > .el-tree-node__content .tree-btn,
+.expand-tree .el-tree-node__content:hover .tree-btn {
+  display: inline-block;
+}
+.expand-tree .is-current > .el-tree-node__content .tree-label {
+  font-weight: 600;
+  white-space: normal;
+}
 </style>
