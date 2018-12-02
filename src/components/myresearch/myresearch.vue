@@ -24,8 +24,8 @@
       </el-col>
       <el-col :span="2">
         <el-button type="primary"
-                   @click="NewVarVisible=true">新增变量</el-button>
-        <el-dialog title="新建变量"
+                   @click="toNewVariable()">新增变量</el-button>
+        <!-- <el-dialog title="新建变量"
                    :visible.sync="NewVarVisible"
                    width="30%"
                    :before-close="handleClose">
@@ -36,7 +36,7 @@
             <el-button type="primary"
                        @click="NewVarVisible = false">确 定</el-button>
           </span>
-        </el-dialog>
+        </el-dialog> -->
       </el-col>
     </el-row>
     <el-row :gutter="20">
@@ -537,6 +537,10 @@ export default {
     toHisresearch: function () {
       console.log(1)
       this.$router.push({ path: "/hisresearch" });
+    },
+    toNewVariable: function () {
+      console.log(1)
+      this.$router.push({ path: "/newvariable" });
     },
     //鼠标hover事件所需
     initExpand() {
