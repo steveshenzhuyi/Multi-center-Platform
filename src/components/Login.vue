@@ -42,7 +42,7 @@
 
 <script>
 import md5 from 'md5';
-import axios from 'axios'
+import axios from 'axios';
 
 var ip = returnCitySN["cip"];
 // console.log(ip)
@@ -108,7 +108,7 @@ export default {
         axios.post('/userLogin/login', {
           "username": this.loginForm.username,
           "password": md5(this.loginForm.password),
-          "loginIp": "192.168.1.102"
+          "loginIp": ip
         })
           .then((response) => {
             // 登录成功

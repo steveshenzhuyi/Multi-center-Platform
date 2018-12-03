@@ -53,15 +53,19 @@
             </div>
 
             <div class="expand">
+              <el-button size="mini"
+                         @click="handleAddTop">添加新文件夹</el-button>
+              <el-button style="margin-bottom:5px;margin-top:5px"
+                         type="primary"
+                         size="mini"
+                         @click="dialogVisible = true">新建概念集</el-button>
               <div>
-                <el-button size="mini"
-                           @click="handleAddTop">添加新文件夹</el-button>
+
                 <el-tree ref="expandMenuList"
                          class="expand-tree"
                          v-if="isLoadingTree"
                          :data="conceptsets"
                          node-key="id"
-                         highlight-current
                          :props="defaultProps"
                          :expand-on-click-node="false"
                          :render-content="renderContent"
@@ -70,10 +74,8 @@
               </div>
             </div>
             <!--新增概念集—-->
-            <el-button style="margin-bottom:5px;margin-top:5px"
-                       type="primary"
-                       @click="dialogVisible = true">新建</el-button>
-            <el-dialog title="新增"
+
+            <el-dialog title="新增概念集"
                        :visible.sync="dialogVisible"
                        width="60%"
                        :before-close="handleClose">
@@ -306,9 +308,14 @@
   </div>
 </template>
 <script>
-import TreeRender from './tree_render.vue'
+import TreeRender from './tree_render.vue';
+import axios from 'axios';
+var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOlsiMTAwICAgICAgICAgICAgICAgICAiXSwiZXhwIjoxNTc1MDExMjUyNzEwLCJpYXQiOjE1NDM0NzUyNTJ9.e_xN9PiXynxlzwv9Q7-zJDrMo9tmQN098qZZznEU5yA"
+
 const Excludeditemsoptions = [' ', '  ', '   '];
 const ChilerenConceptsoptions = [' ', '  ', '   '];
+var tempconceptsets = []
+
 export default {
   data() {
     return {
@@ -332,40 +339,7 @@ export default {
         label: 'name'
       },
       defaultExpandKeys: [],//默认展开节点列表
-      conceptsets: [
-        {
-          id: 1,
-          name: "文件夹1",
-          isEdit: false,
-          children: [
-            {
-              id: 3,
-              name: "概念集A",
-              isEdit: false,
-              children: []
-            },
-            {
-              id: 4,
-              name: "概念集B",
-              isEdit: false,
-              children: []
-            }
-          ]
-        },
-        {
-          id: 2,
-          name: "文件夹2",
-          isEdit: false,
-          children: [
-            {
-              id: 5,
-              name: "概念集C",
-              isEdit: false,
-              children: []
-            }
-          ]
-        }
-      ],
+      conceptsets: tempconceptsets,
       // 队列集假数据/RH
       queuesets: [
         {
@@ -510,6 +484,22 @@ export default {
       Excludeditems: Excludeditemsoptions,
       ChilerenConcepts: ChilerenConceptsoptions
     };
+  },
+  created() {
+    axios.get('/structure/getStructure', {
+      params: {
+        "token": token
+      }
+    })
+      .then((response) => {
+        // 登录成功
+        tempconceptsets = JSON.parse(response.data.data.conceptSetStructure);
+        console.log(tempconceptsets);
+        console.log(this.conceptsets);
+      })
+      .catch(function (error) {
+        // console.log("error", error);
+      });
   },
   mounted() {
     //console.log(api)

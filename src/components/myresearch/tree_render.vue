@@ -17,7 +17,8 @@
     </span>
     <span class="tree-btn"
           v-show="!DATA.isEdit">
-      <i class="el-icon-plus"
+      <i style="padding-left:50px;"
+         class="el-icon-plus"
          @click.stop="nodeAdd(STORE,DATA,NODE)"></i>
       <i class="el-icon-edit"
          @click.stop="nodeEdit(STORE,DATA,NODE)"></i>
@@ -59,9 +60,9 @@ export default {
 .tree-expand {
   overflow: hidden;
 }
-.tree-expand .tree-label.tree-new {
+/* .tree-expand .tree-label.tree-new {
   font-weight: 600;
-}
+} */
 .tree-expand .tree-label {
   font-size: 0.9em;
 }
