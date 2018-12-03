@@ -134,7 +134,6 @@
                       justify="center">
                 <el-col :span="20">
                   <el-table :data="SearchResult"
-                            :align="center"
                             v-model="SearchResult"
                             valign="center"
                             height="300"
@@ -307,7 +306,7 @@
   </div>
 </template>
 <script>
-import TreeRender from './tree_render'
+import TreeRender from './tree_render.vue'
 const Excludeditemsoptions = [' ', '  ', '   '];
 const ChilerenConceptsoptions = [' ', '  ', '   '];
 export default {
@@ -707,7 +706,7 @@ export default {
 .expand > div {
   height: 85%;
   padding-top: 20px;
-  width: 50%;
+  width: 100%;
   max-width: 400px;
   overflow-y: auto;
 }

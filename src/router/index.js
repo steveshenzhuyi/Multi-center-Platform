@@ -15,8 +15,7 @@ import thirdparty from "@/components/thirdparty/thirdparty";
 Vue.use(Router);
 
 export default new Router({
-  routes: [
-    {
+  routes: [{
       path: "/",
       name: "Login",
       component: Login
@@ -25,8 +24,7 @@ export default new Router({
       path: "/home",
       name: "Home",
       component: Home,
-      children: [
-        {
+      children: [{
           path: "/data",
           name: "数据总览",
           component: data
@@ -40,30 +38,37 @@ export default new Router({
           path: "/coresearch",
           name: "协同研究",
           component: coresearch,
-          children: [
-            {
+          children: [{
               path: "myteam",
               name: "我的团队",
               component: () => import("@/components/coresearch/myteam"),
-              meta: { title: "我的团队" }
+              meta: {
+                title: "我的团队"
+              }
             },
             {
               path: "newresearch",
               name: "新建研究",
               component: () => import("@/components/coresearch/newresearch"),
-              meta: { title: "新建研究" }
+              meta: {
+                title: "新建研究"
+              }
             },
             {
               path: "jointeam",
               name: "加入团队",
               component: () => import("@/components/coresearch/jointeam"),
-              meta: { title: "加入团队" }
+              meta: {
+                title: "加入团队"
+              }
             },
             {
               path: "newteam",
               name: "构建团队",
               component: () => import("@/components/coresearch/newteam"),
-              meta: { title: "构建团队" }
+              meta: {
+                title: "构建团队"
+              }
             }
           ]
         },
