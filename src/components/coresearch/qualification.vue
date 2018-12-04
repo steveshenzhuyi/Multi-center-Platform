@@ -2,7 +2,7 @@
   <div>
     <el-row style="margin-top:30px;margin-bottom:10px">
       <el-col :span="24">
-        <el-steps :active="1"
+        <el-steps :active="2"
                   align-center>
           <el-step title="1 研究开始"></el-step>
           <el-step title="2 团队建立"></el-step>
@@ -14,67 +14,58 @@
     <el-row :gutter="20"
             type="flex"
             justify="center">
-      <el-col :span="5">
+      <el-col :span="8">
         <el-row>
           <el-card class="box-card">
-            <div>邀请码</div>
+            <div slot="header"
+                 class="clearfix">
+              <span>资格审核</span>
+            </div>
           </el-card>
         </el-row>
         <el-row type="flex"
                 justify="center"
-                style="margin-top:30px;margin-bottom:10px">
-          <el-col :span="16">
-            <div>生产邀请码个数：</div>
-          </el-col>
-          <el-col :span="8">
-            <div>
-              <el-input size="small"
-                        v-model="input1">
-              </el-input>
-            </div>
-          </el-col>
+                style="margin-top:10px;margin-bottom:10px">
+          <el-button type="info">材料上传</el-button>
         </el-row>
-
       </el-col>
       <el-col :span="12">
         <el-row>
           <el-card class="box-card">
             <div slot="header"
                  class="clearfix">
-              <span>团队信息</span>
+              <span>审核状态</span>
+            </div>
+            <div>
+              <el-row>
+                <el-col :span="12">
+                  项目发起人：张XX
+                </el-col>
+                <el-col :span="12">
+                  通过
+                </el-col>
+              </el-row>
             </div>
           </el-card>
         </el-row>
+        <el-row type="flex"
+                justify="center"
+                style="margin-top:10px;margin-bottom:10px">
+          <el-button type="info">催一下</el-button>
+        </el-row>
       </el-col>
     </el-row>
-    <el-row type="flex"
-            justify="center"
-            style="margin-top:10px;margin-bottom:10px">
-      <el-col :span="5"
-              offset="7">
-        <el-button type="info">生成</el-button>
-      </el-col>
-      <el-col :span="12"
-              offset="7">
-        <el-button type="info">构建团队</el-button>
-      </el-col>
-    </el-row>
-
   </div>
 </template>
+
 <script>
 export default {
-  data() {
-    return {
 
-    }
-  },
-  methods: {
-  }
-};
+}
 </script>
+
 <style>
-  .box-card {
+.box-card {
     height: 400px;
-  }
+}
 </style>

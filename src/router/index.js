@@ -64,6 +64,18 @@ export default new Router({
               name: "构建团队",
               component: () => import("@/components/coresearch/newteam"),
               meta: { title: "构建团队" }
+            },
+            {
+              path: 'qualification',
+              name: '资质审核',
+              component: () => import('@/components/coresearch/qualification'),
+              meta: {title: '资质审核'}
+            },
+            {
+              path: 'result',
+              name: '成果讨论',
+              component: () => import('@/components/coresearch/result'),
+              meta: {title: '成果讨论'}
             }
           ]
         },
