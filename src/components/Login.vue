@@ -57,17 +57,6 @@ export default {
         username: "",
         password: ""
       },
-      userpass: [
-        {
-          username: "123",
-          password: "123456"
-
-        },
-        {
-          username: "18868180095",
-          password: "123456",
-        }
-      ]
     };
   },
   components: {

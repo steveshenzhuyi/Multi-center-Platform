@@ -5,12 +5,13 @@
               style="text-align:center">
         <el-col :span="12"
                 style="">
-          <el-button type="primary">我的研究</el-button>
+          <el-button type="primary"
+                     @click="toMyresearch">我的研究</el-button>
         </el-col>
-        <el-col :span="12">
+        <!-- <el-col :span="12">
           <el-button type="primary"
                      @click="toHisresearch">历史研究</el-button>
-        </el-col>
+        </el-col> -->
       </el-col>
     </el-row>
 
@@ -114,17 +115,11 @@ export default {
     handleNodeClick(data) {
       // console.log(data);
     },
-    append(store, data) {
-      store.append({ id: id++, label: 'testtest', children: [] }, data);
-    },
 
-    remove(store, data) {
-      store.remove(data);
+    toMyresearch: function () {
+      this.$router.replace({ path: "/myresearch" });
     },
   },
-  toHisresearch() {
-
-  }
 };
 </script>
 <style>

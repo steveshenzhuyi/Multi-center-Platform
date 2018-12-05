@@ -60,9 +60,6 @@ export default {
 .tree-expand {
   overflow: hidden;
 }
-.tree-expand .tree-label.tree-new {
-  font-weight: 600;
-}
 .tree-expand .tree-label {
   font-size: 0.9em;
 }

@@ -6,7 +6,7 @@ import router from "./router";
 import store from "./store";
 import ElementUI from "element-ui";
 import axios from "axios";
-import global_ from "./components/Global.vue";
+import global_ from "./components/Global";
 import "../settings.js";
 import "element-ui/lib/theme-chalk/index.css";
 
