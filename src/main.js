@@ -6,14 +6,18 @@ import router from "./router";
 import store from "./store";
 import ElementUI from "element-ui";
 import axios from "axios";
+import global_ from "./components/Global.vue";
 import "../settings.js";
 import "element-ui/lib/theme-chalk/index.css";
+
 // axios 配置
 axios.defaults.timeout = 5000;
 axios.defaults.headers.post["Content-Type"] =
   "application/x-www-form-urlencoded;charset=UTF-8";
-
 Vue.prototype.$axios = axios;
+
+// 全局变量 配置
+Vue.prototype.GLOBAL = global_;
 
 window.Event = new Vue();
 Vue.use(ElementUI);

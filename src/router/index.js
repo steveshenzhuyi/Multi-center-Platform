@@ -3,6 +3,7 @@ import Router from "vue-router";
 import Login from "@/components/Login";
 import Home from "@/components/Home";
 import myresearch from "@/components/myresearch/myresearch";
+import hisresearch from "@/components/myresearch/hisresearch";
 import data from "@/components/data/data";
 import coresearch from "@/components/coresearch/coresearch";
 import knowledgegraph from "@/components/knowledgegraph/knowledgegraph";
@@ -15,7 +16,8 @@ import thirdparty from "@/components/thirdparty/thirdparty";
 Vue.use(Router);
 
 export default new Router({
-  routes: [{
+  routes: [
+    {
       path: "/",
       name: "Login",
       component: Login
@@ -24,7 +26,8 @@ export default new Router({
       path: "/home",
       name: "Home",
       component: Home,
-      children: [{
+      children: [
+        {
           path: "/data",
           name: "数据总览",
           component: data
@@ -35,10 +38,16 @@ export default new Router({
           component: myresearch
         },
         {
+          path: "/hisresearch",
+          name: "历史研究",
+          component: hisresearch
+        },
+        {
           path: "/coresearch",
           name: "协同研究",
           component: coresearch,
-          children: [{
+          children: [
+            {
               path: "myteam",
               name: "我的团队",
               component: () => import("@/components/coresearch/myteam"),

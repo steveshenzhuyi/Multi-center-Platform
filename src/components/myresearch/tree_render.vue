@@ -5,7 +5,7 @@
       <el-input class="edit"
                 size="mini"
                 autofocus
-                v-model="DATA.name"
+                v-model="DATA.label"
                 :ref="'treeInput'+DATA.id"
                 @click.stop.native="nodeEditFocus"
                 @blur.stop="nodeEditPass(STORE,DATA,NODE)"
@@ -13,7 +13,7 @@
     </span>
     <span v-show="!DATA.isEdit"
           :class="[DATA.id > maxexpandId ? 'tree-new tree-label' : 'tree-label']">
-      <span>{{DATA.name}}</span>
+      <span>{{DATA.label}}</span>
     </span>
     <span class="tree-btn"
           v-show="!DATA.isEdit">
@@ -30,7 +30,7 @@
 
 <script>
 export default {
-  name: 'treeExpand',
+  label: 'treeExpand',
   props: ['NODE', 'DATA', 'STORE', 'maxexpandId'],
   methods: {
     nodeAdd(s, d, n) {//新增

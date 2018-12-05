@@ -210,7 +210,7 @@
                  class="clearfix">
               <span>队列</span>
             </div>
-            <el-tree :data="queuesets"
+            <el-tree :data="defaultqueuesets"
                      :props="defaultProps"
                      @node-click="handleNodeClick"
                      default-expand-all></el-tree>
@@ -242,7 +242,7 @@
                  class="clearfix">
               <span>分析方法</span>
             </div>
-            <el-tree :data="analysismethods"
+            <el-tree :data="defaultanalysismethods"
                      :props="defaultProps"
                      @node-click="handleNodeClick"
                      default-expand-all></el-tree>
@@ -310,11 +310,10 @@
 <script>
 import TreeRender from './tree_render.vue';
 import axios from 'axios';
-var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOlsiMTAwICAgICAgICAgICAgICAgICAiXSwiZXhwIjoxNTc1MDExMjUyNzEwLCJpYXQiOjE1NDM0NzUyNTJ9.e_xN9PiXynxlzwv9Q7-zJDrMo9tmQN098qZZznEU5yA"
+var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOlsiMTg4NjgxOCAgICAgICAgICAgICAiXSwiZXhwIjoxNTc1NTI0NTQ2ODQzLCJpYXQiOjE1NDM5ODg1NDZ9.EphIeTnuc_3w__0PTBf30ZnUOLIUv4NiE9vV0_zAVqA"
 
 const Excludeditemsoptions = [' ', '  ', '   '];
 const ChilerenConceptsoptions = [' ', '  ', '   '];
-var tempconceptsets = []
 
 export default {
   data() {
@@ -336,12 +335,12 @@ export default {
       isLoadingTree: false,//是否加载节点树
       defaultProps: {
         children: 'children',
-        label: 'name'
+        label: 'label'
       },
       defaultExpandKeys: [],//默认展开节点列表
-      conceptsets: tempconceptsets,
+      conceptsets: [],
       // 队列集假数据/RH
-      queuesets: [
+      defaultqueuesets: [
         {
           label: "文件夹1",
           children: [
@@ -363,58 +362,7 @@ export default {
         }
       ],
       // 分析数据假数据/RH
-      analysismethods: [
-        {
-          label: "回归",
-          children: [
-            {
-              label: "SVM"
-            },
-            {
-              label: "RF"
-            }
-          ]
-        },
-        {
-          label: "分类",
-          children: [
-            {
-              label: "模型A"
-            },
-            {
-              label: "模型B"
-            }
-          ]
-        }
-      ],
-      defaultProps: {
-        children: "children",
-        label: "label"
-      },
-      // 队列集假数据/RH
-      queuesets: [
-        {
-          label: "文件夹1",
-          children: [
-            {
-              label: "队列A"
-            },
-            {
-              label: "队列B"
-            }
-          ]
-        },
-        {
-          label: "文件夹2",
-          children: [
-            {
-              label: "队列C"
-            }
-          ]
-        }
-      ],
-      // 分析数据假数据/RH
-      analysismethods: [
+      defaultanalysismethods: [
         {
           label: "回归",
           children: [
@@ -486,26 +434,28 @@ export default {
     };
   },
   created() {
-    axios.get('/structure/getStructure', {
-      params: {
-        "token": token
-      }
-    })
-      .then((response) => {
-        // 登录成功
-        tempconceptsets = JSON.parse(response.data.data.conceptSetStructure);
-        console.log(tempconceptsets);
-        console.log(this.conceptsets);
-      })
-      .catch(function (error) {
-        // console.log("error", error);
-      });
+
   },
   mounted() {
     //console.log(api)
-    this.initExpand()
+    this.initExpand();
+    this.getConceptsetsData();
   },
   methods: {
+    getConceptsetsData() {
+      axios.get('/structure/getStructure', {
+        params: {
+          "token": token
+        }
+      })
+        .then((response) => {
+          //console.log(response)
+          this.conceptsets = JSON.parse(response.data.data.conceptSetStructure)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
     handleClose(done) {
       this.$confirm('确认关闭？')
         .then(_ => {
@@ -515,13 +465,6 @@ export default {
     },
     handleNodeClick(data) {
       // console.log(data);
-    },
-    append(store, data) {
-      store.append({ id: id++, label: 'testtest', children: [] }, data);
-    },
-
-    remove(store, data) {
-      store.remove(data);
     },
     toHisresearch: function () {
       console.log(1)
@@ -557,7 +500,7 @@ export default {
     handleAddTop() {
       this.conceptsets.push({
         id: ++this.maxexpandId,
-        name: '新增节点',
+        label: '新增节点',
         pid: '',
         isEdit: false,
         children: []
@@ -572,7 +515,7 @@ export default {
       //添加数据
       d.children.push({
         id: ++this.maxexpandId,
-        name: '新增节点',
+        label: '新增节点',
         pid: d.id,
         isEdit: false,
         children: []
@@ -627,20 +570,6 @@ export default {
     },
 
 
-
-
-    // renderContent(h, { node, data, store }) {
-    //   return (
-    //     <span>
-    //       <span>
-    //         <span>{node.label}</span>
-    //       </span>
-    //       <span style="float: right; margin-left: 50px">
-    //       <i class="el-icon-plus" on-click={ () => this.append(store, data) }></i>
-    //       <i class="el-icon-delete" on-click={ () => this.remove(store, data) }></i>
-    //       </span>
-    //     </span>);
-    // }
     //新增概念集所需
     handleClose(done) {
       this.$confirm('确认关闭？')

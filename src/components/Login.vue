@@ -81,6 +81,7 @@ export default {
     },
   },
   methods: {
+
     psshow() {
       var v = document.getElementById("ps");
       if (this.isShow) {
@@ -115,6 +116,7 @@ export default {
             if (response.data.msg == "登录成功") {
               this.loginresult = true;
               this.tips = "登录成功";
+              this.GLOBAL.token = response.data.token;
               this.$router.push({ path: "/home" });
               // 登录失败：用户名不存在/用户名存在但密码错误
             } else if (response.data.msg == "不正确的用户名和密码") {
@@ -154,6 +156,7 @@ export default {
   margin: 0 auto;
   height: 100%;
   width: 35%;
+  min-width: 322px;
   background-color: #141a48;
 }
 
@@ -181,12 +184,6 @@ i {
   font-size: 20px;
   margin-top: 0;
   margin-bottom: 0;
-}
-
-label {
-  display: inline-block;
-  width: 10rem;
-  text-align: right;
 }
 
 button {
