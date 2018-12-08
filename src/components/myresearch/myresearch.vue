@@ -209,7 +209,7 @@
             </div>
             <el-tree :data="queuesets"
                      :props="defaultProps"
-                     @node-click="handleNodeClick"
+                     @node-click="toCreateQueue"
                      default-expand-all></el-tree>
             <el-button style="margin-bottom:5px;margin-top:5px"
                        type="primary"
@@ -1142,6 +1142,16 @@ export default {
     },
     handleNodeClick(data) {
       // console.log(data);
+    },
+    toCreateQueue(data) {
+      this.$router.push({ path: "/myresearch/createqueue" });
+    },
+    append(store, data) {
+      store.append({ id: id++, label: 'testtest', children: [] }, data);
+    },
+
+    remove(store, data) {
+      store.remove(data);
     },
     toHisresearch: function () {
       this.$router.push({ path: "/hisresearch" });
