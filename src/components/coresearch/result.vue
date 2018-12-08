@@ -91,10 +91,10 @@ export default {
 };
 </script>
 <style>
-  .box-card {
-    height: 500px;
-  }
-  .inside-card {
-    height: 400px;
-  }
+.box-card {
+  height: 500px;
+}
+.inside-card {
+  height: 400px;
+}
 </style>

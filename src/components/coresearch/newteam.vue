@@ -4,11 +4,14 @@
       <el-col :span="24">
         <el-steps :active="1"
                   align-center>
-          <el-step title="1 研究开始"></el-step>
-          <el-step title="2 团队建立"></el-step>
-          <el-step title="3 资格审核"></el-step>
-          <el-step title="4 多功能运算"></el-step>
-        </el-steps>
+          <el-step title="1 研究开始"
+                   @click.native="to1()"></el-step>
+          <el-step title="2 团队建立"
+                   @click.native="to2()"></el-step>
+          <el-step title="3 多中心运算"></el-step>
+          <el-step title="4 成果讨论"></el-step>
+          <el-step title="5 资格审核"></el-step>
+        </el-steps>>
       </el-col>
     </el-row>
     <el-row :gutter="20"
@@ -28,8 +31,7 @@
           </el-col>
           <el-col :span="8">
             <div>
-              <el-input size="small"
-                        v-model="input1">
+              <el-input size="small">
               </el-input>
             </div>
           </el-col>
@@ -74,7 +76,7 @@ export default {
 };
 </script>
 <style>
-  .box-card {
-    height: 400px;
-  }
+.box-card {
+  height: 400px;
+}
 </style>

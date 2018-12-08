@@ -6,8 +6,9 @@
                   align-center>
           <el-step title="1 研究开始"></el-step>
           <el-step title="2 团队建立"></el-step>
-          <el-step title="3 资格审核"></el-step>
-          <el-step title="4 多功能运算"></el-step>
+          <el-step title="3 多中心运算"></el-step>
+          <el-step title="4 成果讨论"></el-step>
+          <el-step title="5 资格审核"></el-step>
         </el-steps>
       </el-col>
     </el-row>
@@ -66,6 +67,6 @@ export default {
 
 <style>
 .box-card {
-    height: 400px;
+  height: 400px;
 }
 </style>
