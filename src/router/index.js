@@ -81,7 +81,7 @@ export default new Router({
             {
               path: "newteam",
               name: "构建团队",
-              component: () => import("@/components/coresearch/newteam"),
+              component: () => import("@/components/coresearch/newteam"),           
               meta: {
                 title: "构建团队"
               }

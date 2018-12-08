@@ -32,7 +32,7 @@
       </el-menu-item>
       <el-menu-item index="data">数据总览</el-menu-item>
       <el-menu-item index="myresearch">我的研究</el-menu-item>
-      <el-menu-item index="coresearch">协同研究</el-menu-item>
+      <el-menu-item index="coresearch/myteam">协同研究</el-menu-item>
       <el-menu-item index="knowledgegraph">知识图谱</el-menu-item>
       <el-menu-item index="dataimport">数据导入</el-menu-item>
       <el-submenu index="6">
