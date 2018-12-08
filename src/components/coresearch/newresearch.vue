@@ -10,7 +10,7 @@
         <div>
           <el-input size="small"
                     placeholder="空白等待输入"
-                    v-model="input1">
+                    v-model="researchDetail.name">
           </el-input>
         </div>
       </el-col>
@@ -19,15 +19,43 @@
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="2">
-        <div>研究介绍</div>
+        <div>研究目标</div>
       </el-col>
       <el-col :span="10">
         <div>
-          <el-input type="textarea"
-                    rows="5"
-                    size="small"
+          <el-input size="small"
                     placeholder="空白等待输入"
-                    v-model="input2">
+                    v-model="researchDetail.target">
+          </el-input>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
+        <div>研究方法</div>
+      </el-col>
+      <el-col :span="10">
+        <div>
+          <el-input size="small"
+                    placeholder="空白等待输入"
+                    v-model="researchDetail.proposal">
+          </el-input>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
+        <div>数据范围</div>
+      </el-col>
+      <el-col :span="10">
+        <div>
+          <el-input size="small"
+                    placeholder="空白等待输入"
+                    v-model="researchDetail.dataRange">
           </el-input>
         </div>
       </el-col>
@@ -43,7 +71,7 @@
           <el-input class="input-with-cascader"
                     size="small"
                     placeholder="姓名"
-                    v-model="input3">
+                    v-model="researchDetail.partiName">
             <el-cascader size="small"
                          expand-trigger="hover"
                          :options="options"
@@ -60,13 +88,43 @@
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="2">
+        <div>预期成果</div>
+      </el-col>
+      <el-col :span="10">
+        <div>
+          <el-input size="small"
+                    placeholder="空白等待输入"
+                    v-model="researchDetail.expectedOutcomes">
+          </el-input>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
         <div>成果分配</div>
       </el-col>
       <el-col :span="10">
         <div>
           <el-input size="small"
                     placeholder="空白等待输入"
-                    v-model="input4">
+                    v-model="researchDetail.outcomeDistribution">
+          </el-input>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
+        <div>项目支持</div>
+      </el-col>
+      <el-col :span="10">
+        <div>
+          <el-input size="small"
+                    placeholder="空白等待输入"
+                    v-model="researchDetail.projectSupport">
           </el-input>
         </div>
       </el-col>
@@ -101,37 +159,49 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
       checked: false,
       options: [{
-        value: '1',
+        value: '浙一',
         label: '浙一',
         children: [{
-          value: '1-1',
+          value: '内科',
           label: '内科',
         }, {
-          value: '1-2',
+          value: '外科',
           label: '外科',
         }]
       }, {
-        value: '2',
+        value: '浙二',
         label: '浙二',
         children: [{
-          value: '2-1',
+          value: '内科',
           label: '内科',
         }]
       }],
-      input1: '',
-      input2: '',
-      input3: '',
-      input4: '',
-      select1: null
+      researchDetail: {
+        name: '',
+        target: '',
+        proposal: '',
+        expectedOutcomes: '',
+        outcomeDistribution: '',
+        dataRange: '',
+        projectSupport: '',
+        organizationCode: '',
+        departmentCode: '',
+        partiName: ''
+      },
+
+      select1: []
     }
   },
   methods: {
     messagebox() {
+      console.log(this.select1)
       this.$alert('协议内容', '协议', {
         confirmButtonText: '确定',
         callback: action => {
@@ -143,7 +213,32 @@ export default {
       });
     },
     tonewteam() {
-      this.$router.push({ path: 'newteam' })
+      console.log(this.researchDetail)
+      axios.post('/collaboration/createResearch', {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOlsiMTg4NjgxOCAgICAgICAgICAgICAiXSwiZXhwIjoxNTc1NDUyMjg3ODM0LCJpYXQiOjE1NDM5MTYyODd9.PJPezRTd-Tp2MpfgOjGEcpA9hf44b93rgJDSr4xYNps",
+        "name": this.researchDetail.name,
+        "target": this.researchDetail.target,
+        "proposal": this.researchDetail.proposal,
+        "expectedOutcomes": this.researchDetail.expectedOutcomes,
+        "outcomeDistribution": this.researchDetail.outcomeDistribution,
+        "dataRange": this.researchDetail.dataRange,
+        "projectSupport": this.researchDetail.projectSupport,
+        "redundancy": "qwerty",
+        "organizationCode": this.select1[0],
+        "departmentCode": this.select1[1],
+        "partiName": this.researchDetail.partiName
+      })
+        .then((response) => {
+
+          if (response.data.msg == "成功插入协同状态数据!") {
+            this.$router.push({ path: 'newteam' });
+
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+
     }
   }
 }
@@ -151,8 +246,7 @@ export default {
 
 
 <style>
-  .el-cascader .el-input {
-    width: 300px;
-  }
-  
+.el-cascader .el-input {
+  width: 300px;
+}
 </style>
