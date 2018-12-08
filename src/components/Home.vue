@@ -26,7 +26,8 @@
              @select="handleSelect"
              background-color="#545c64"
              text-color="#fff"
-             active-text-color="#2d8cf0">
+             active-text-color="#2d8cf0"
+             style="  width: 100%;  min-width: 823px;">
       <el-menu-item index="data">
       </el-menu-item>
       <el-menu-item index="data">数据总览</el-menu-item>
@@ -44,7 +45,7 @@
     </el-menu>
 
     <!-- 主题内容【不要删】/RH -->
-    <router-view style="margin-top:20px"></router-view>
+    <router-view style="margin-top:20px;width: 100%;  min-width: 823px;"></router-view>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -71,6 +72,7 @@ export default {
 header {
   background-color: #545c64;
   width: 100%;
+  min-width: 823px;
   font-size: 28px;
   color: white;
 }

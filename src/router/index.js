@@ -3,6 +3,7 @@ import Router from "vue-router";
 import Login from "@/components/Login";
 import Home from "@/components/Home";
 import myresearch from "@/components/myresearch/myresearch";
+import hisresearch from "@/components/myresearch/hisresearch";
 import data from "@/components/data/data";
 import coresearch from "@/components/coresearch/coresearch";
 import knowledgegraph from "@/components/knowledgegraph/knowledgegraph";
@@ -38,9 +39,15 @@ export default new Router({
           component: myresearch
         },
         {
+
           path: "/myresearch/createqueue",
           name: "创建队列",
           component: createqueue
+          },
+        {
+          path: "/hisresearch",
+          name: "历史研究",
+          component: hisresearch
         },
         {
           path: "/coresearch",
@@ -51,25 +58,33 @@ export default new Router({
               path: "myteam",
               name: "我的团队",
               component: () => import("@/components/coresearch/myteam"),
-              meta: { title: "我的团队" }
+              meta: {
+                title: "我的团队"
+              }
             },
             {
               path: "newresearch",
               name: "新建研究",
               component: () => import("@/components/coresearch/newresearch"),
-              meta: { title: "新建研究" }
+              meta: {
+                title: "新建研究"
+              }
             },
             {
               path: "jointeam",
               name: "加入团队",
               component: () => import("@/components/coresearch/jointeam"),
-              meta: { title: "加入团队" }
+              meta: {
+                title: "加入团队"
+              }
             },
             {
               path: "newteam",
               name: "构建团队",
               component: () => import("@/components/coresearch/newteam"),
-              meta: { title: "构建团队" }
+              meta: {
+                title: "构建团队"
+              }
             }
           ]
         },

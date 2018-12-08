@@ -1,0 +1,14 @@
+.SubTitle {
+    font-size: 20px; 
+    color: #409EFF; 
+    font-weight: 550;
+}
+
+li {
+    list-style-type: none;
+    padding-bottom: 5px;
+}
+
+ul {
+    padding-left: 10px;
+}
