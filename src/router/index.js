@@ -12,6 +12,7 @@ import personalpage from "@/components/admincenter/personalpage";
 import resourcestatus from "@/components/admincenter/resourcestatus";
 import authoritycontrol from "@/components/admincenter/authoritycontrol";
 import thirdparty from "@/components/thirdparty/thirdparty";
+import createqueue from "@/components/myresearch/createqueue";
 
 Vue.use(Router);
 
@@ -36,6 +37,11 @@ export default new Router({
           path: "/myresearch",
           name: "我的研究",
           component: myresearch
+        },
+        {
+          path: "/myresearch/createqueue",
+          name: "创建队列",
+          component: createqueue
         },
         {
           path: "/hisresearch",
