@@ -39,11 +39,10 @@ export default new Router({
           component: myresearch
         },
         {
-
           path: "/myresearch/createqueue",
           name: "创建队列",
           component: createqueue
-          },
+        },
         {
           path: "/hisresearch",
           name: "历史研究",
