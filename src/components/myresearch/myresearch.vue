@@ -1,19 +1,10 @@
 <template>
   <div>
     <el-row style="margin-top:10px;margin-bottom:10px;">
-      <el-col :span="4"
-              style="text-align:center">
-        <el-col :span="12"
-                style>
-          <el-button type="primary">我的研究</el-button>
-        </el-col>
-        <el-col :span="12">
-          <el-button type="primary"
-                     @click="toHisresearch()">历史研究</el-button>
-        </el-col>
-      </el-col>
-      <el-col :span="18">
-        <el-steps :active="2"
+
+      <!-- 进度条/RH -->
+      <el-col :span="20">
+        <el-steps :active="researchstatus"
                   align-center>
           <el-step title="1 队列选择"></el-step>
           <el-step title="2 数据模型"></el-step>
@@ -21,7 +12,7 @@
           <el-step title></el-step>
         </el-steps>
       </el-col>
-      <el-col :span="2">
+      <el-col :span="4">
         <el-button type="primary"
                    @click="NewVarVisible=true">新增变量</el-button>
         <el-dialog title="新建变量"
@@ -848,6 +839,7 @@ const ChilerenConceptsoptions = [' ', '  ', '   '];
 export default {
   data() {
     return {
+      researchstatus: 3,
       NewVarVisible: false,
       NewConceptVisible: false,
       NewQueneVisible: false,
