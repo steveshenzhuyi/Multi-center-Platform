@@ -3,7 +3,6 @@ import Router from "vue-router";
 import Login from "@/components/Login";
 import Home from "@/components/Home";
 import myresearch from "@/components/myresearch/myresearch";
-import newvariable from "@/components/myresearch/newvariable";
 import hisresearch from "@/components/myresearch/hisresearch";
 import data from "@/components/data/data";
 import coresearch from "@/components/coresearch/coresearch";
@@ -38,11 +37,6 @@ export default new Router({
           path: "/myresearch",
           name: "我的研究",
           component: myresearch
-        },
-        {
-          path: "/newvariable",
-          name: "新增变量",
-          component: newvariable
         },
         {
           path: "/myresearch/createqueue",
