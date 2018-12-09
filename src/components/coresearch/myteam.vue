@@ -51,26 +51,55 @@
               <div>项目名称：{{this.detail[0][0].NAME}}</div>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col>
-                <div>项目发起人：{{this.detail[2][0].DOCTORNAME}}</div>
+              <el-col span="8">
+                <div>项目发起人：{{this.detail[2][1].DOCTORNAME}}</div>
               </el-col>
-              <el-col>
-                <div>发起人单位：{{this.detail[2][0].ORGANIZATIONNAME}}</div>
+              <el-col span="16">
+                <div>发起人单位：{{this.detail[2][1].ORGANIZATIONNAME}}</div>
               </el-col>
-
             </el-row>
-            <el-row type="flex"
-                    justify="center"
-                    style="margin-top:10px;margin-bottom:10px">
-              <el-button type="info">提交反馈</el-button>
+            <el-row style="margin-top:10px;margin-bottom:10px">
+              <el-col span="8">
+                <div>项目参与人：{{this.detail[2][0].DOCTORNAME}}</div>
+              </el-col>
+              <el-col span="16">
+                <div>参与人单位：{{this.detail[2][0].ORGANIZATIONNAME}}</div>
+              </el-col>
             </el-row>
-            <el-row>
-              <div style="height: 100px">预设成果分配方案</div>
+            <el-row style="margin-top:10px;margin-bottom:10px">
+              <el-col span="24">
+                <div>项目发起日期：{{this.detail[0][0].CREATEDATE}}</div>
+              </el-col>
             </el-row>
+            <el-row style="margin-top:10px;margin-bottom:10px">
+              <el-col span="24">
+                <div>项目简介：{{this.detail[0][0].TARGET}}</div>
+              </el-col>
+            </el-row>
+            <el-row style="margin-top:10px;margin-bottom:10px">
+              <el-col span="24">
+                <div>成果分配方案：{{this.detail[0][0].OUTCOMEDISTRIBUTION}}</div>
+              </el-col>
+            </el-row>
+            <el-row style="margin-top:10px;margin-bottom:10px">
+              <el-col span="24">
+                <div>项目进度：{{this.detail[3][0].NAME}}</div>
+              </el-col>
+            </el-row>
+            <!-- <el-row style="margin-top:10px;margin-bottom:10px">
+              <el-col span="24">
+                <div>研究有效期：{{this.detail[3][0].NAME}}</div>
+              </el-col>
+            </el-row> -->
             <el-row type="flex"
                     justify="center"
                     style="margin-top:30px;margin-bottom:10px">
-              <el-button type="info">同意结题</el-button>
+              <el-col span="12">
+                <el-button type="info">继续研究</el-button>
+              </el-col>
+              <el-col span="12">
+                <el-button type="info">退出团队</el-button>
+              </el-col>
             </el-row>
           </el-card>
         </el-row>
@@ -125,7 +154,7 @@ export default {
                 })
               }
             }
-            axios.get('collaboration/CollaborInfo?collaborationId=' + this.list[0].COLLABORATIONID + '&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxODg2ODE4ICAgICAgICAgICAgICIsImV4cCI6MTU3NTYzODAyNTIyMSwiaWF0IjoxNTQ0MTAyMDI1fQ.5C92SLa_yqyOKKz9yTjDZtApz10FSlcHntfn8zPWGwc', )
+            axios.get('collaboration/CollaborInfo?collaborationId=' + 12 + '&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxODg2ODE4ICAgICAgICAgICAgICIsImV4cCI6MTU3NTYzODAyNTIyMSwiaWF0IjoxNTQ0MTAyMDI1fQ.5C92SLa_yqyOKKz9yTjDZtApz10FSlcHntfn8zPWGwc', )
               .then((response) => {
                 if (response.data.msg == "success!") {
                   //console.log("success")
