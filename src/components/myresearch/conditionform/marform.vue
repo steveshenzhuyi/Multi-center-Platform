@@ -1,80 +1,86 @@
 <template>
   <el-form ref="marform"
-           :model="diagnoseform"
+           :model="marform"
            label-width="100px"
            size="mini"
            :inline="true"
            class="mar">
-    <el-checkbox v-model="marform.debut">首次出现</el-checkbox>
-    <el-form-item label="性别">
-      <el-input v-model="marform.sex"></el-input>
-    </el-form-item>
-    <el-form-item label="记录来源">
-      <el-input v-model="marform.source"></el-input>
-    </el-form-item>
-    <el-form-item label="用药方式">
-      <el-input v-model="marform.martype"></el-input>
-    </el-form-item>
-    <el-form-item label="用药单位">
-      <el-input v-model="marform.unit"></el-input>
-    </el-form-item>
-    <el-form-item label="取药路径">
-      <el-input v-model="marform.route"></el-input>
-    </el-form-item>
-    <el-form-item label="用药记录合集">
-      <el-input v-model="marform.collection"></el-input>
-      <el-checkbox v-model="marform.collectionchecked"
-                   class="except">不在其之间</el-checkbox>
-    </el-form-item>
-    <el-form-item label="用药年龄">
-      <el-input-number v-model="marform.age1"
-                       controls-position="right"
-                       @change="ageChange"
-                       :min="0"
-                       :max="120"></el-input-number><span class="line"> - </span>
-      <el-input-number v-model="marform.age2"
-                       controls-position="right"
-                       @change="ageChange"
-                       :min="0"
-                       :max="120"></el-input-number>
-      <el-checkbox v-model="marform.agechecked"
-                   class="except">不在其之间</el-checkbox>
-    </el-form-item>
-    <el-form-item label="用药日期">
-      <el-date-picker v-model="marform.date"
-                      type="daterange"
-                      unlink-panels
-                      range-separator="至"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期">
-      </el-date-picker>
-      <el-checkbox v-model="marform.datechecked"
-                   class="except">不在其之间</el-checkbox>
-    </el-form-item>
-    <el-form-item label="用药天数">
-      <el-input-number v-model="marform.day1"
-                       controls-position="right"
-                       @change="ageChange"></el-input-number><span class="line"> - </span>
-      <el-input-number v-model="marform.day2"
-                       controls-position="right"
-                       @change="ageChange"></el-input-number>
-      <el-checkbox v-model="marform.dayschecked"
-                   class="except">不在其之间</el-checkbox>
-    </el-form-item>
-    <el-form-item label="用药剂量">
-      <el-input v-model="marform.dose1"></el-input>
-    </el-form-item>
-    <el-form-item><span class="line">-</span></el-form-item>
-    <el-form-item>
-      <el-input v-model="marform.dose2"></el-input>
-      <el-checkbox v-model="marform.dosechecked"
-                   class="except">不在其之间</el-checkbox>
-    </el-form-item>
+    <draggable :options="{group:'mar'}">
+      <el-checkbox v-model="marform.debut">首次出现</el-checkbox>
+      <el-form-item label="性别">
+        <el-input v-model="marform.sex"></el-input>
+      </el-form-item>
+      <el-form-item label="记录来源">
+        <el-input v-model="marform.source"></el-input>
+      </el-form-item>
+      <el-form-item label="用药方式">
+        <el-input v-model="marform.martype"></el-input>
+      </el-form-item>
+      <el-form-item label="用药单位">
+        <el-input v-model="marform.unit"></el-input>
+      </el-form-item>
+      <el-form-item label="取药路径">
+        <el-input v-model="marform.route"></el-input>
+      </el-form-item>
+      <el-form-item label="用药记录合集">
+        <el-input v-model="marform.collection"></el-input>
+        <el-checkbox v-model="marform.collectionchecked"
+                     class="except">不在其之间</el-checkbox>
+      </el-form-item>
+      <el-form-item label="用药年龄">
+        <el-input-number v-model="marform.age1"
+                         controls-position="right"
+                         @change="ageChange"
+                         :min="0"
+                         :max="120"></el-input-number><span class="line"> - </span>
+        <el-input-number v-model="marform.age2"
+                         controls-position="right"
+                         @change="ageChange"
+                         :min="0"
+                         :max="120"></el-input-number>
+        <el-checkbox v-model="marform.agechecked"
+                     class="except">不在其之间</el-checkbox>
+      </el-form-item>
+      <el-form-item label="用药日期">
+        <el-date-picker v-model="marform.date"
+                        type="daterange"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期">
+        </el-date-picker>
+        <el-checkbox v-model="marform.datechecked"
+                     class="except">不在其之间</el-checkbox>
+      </el-form-item>
+      <el-form-item label="用药天数">
+        <el-input-number v-model="marform.day1"
+                         controls-position="right"
+                         @change="ageChange"></el-input-number><span class="line"> - </span>
+        <el-input-number v-model="marform.day2"
+                         controls-position="right"
+                         @change="ageChange"></el-input-number>
+        <el-checkbox v-model="marform.dayschecked"
+                     class="except">不在其之间</el-checkbox>
+      </el-form-item>
+      <el-form-item label="用药剂量">
+        <el-input v-model="marform.dose1"></el-input>
+      </el-form-item>
+      <el-form-item><span class="line">-</span></el-form-item>
+      <el-form-item>
+        <el-input v-model="marform.dose2"></el-input>
+        <el-checkbox v-model="marform.dosechecked"
+                     class="except">不在其之间</el-checkbox>
+      </el-form-item>
+    </draggable>
   </el-form>
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 export default {
+  components: {
+    draggable,
+  },
   data() {
     return {
       marform: {
