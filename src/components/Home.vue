@@ -8,7 +8,7 @@
       <el-dropdown style="float:right;padding-top:30px;padding-right:30px;"
                    trigger="click">
         <span class="el-dropdown-link"
-              style="color:white;font-style:bold">
+              style="color:white;">
           <i class="iconfont icon-yonghuicon"></i> Admin<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
