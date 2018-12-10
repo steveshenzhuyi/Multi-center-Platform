@@ -97,12 +97,10 @@
             <div class="expand">
               <el-button size="mini"
                          @click="handleAddTop">添加新文件夹</el-button>
-              <el-button style="margin-bottom:5px;margin-top:5px"
-                         type="primary"
+              <el-button type="primary"
                          size="mini"
                          @click="dialogVisible = true">新建概念集</el-button>
               <div>
-
                 <el-tree ref="expandMenuList"
                          class="expand-tree"
                          v-if="isLoadingTree"
@@ -112,6 +110,15 @@
                          :props="defaultProps"
                          :expand-on-click-node="true"
                          :render-content="renderContent"
+                         @node-drag-start="handleDragStart"
+                         @node-drag-enter="handleDragEnter"
+                         @node-drag-leave="handleDragLeave"
+                         @node-drag-over="handleDragOver"
+                         @node-drag-end="handleDragEnd"
+                         @node-drop="handleDrop"
+                         draggable
+                         :allow-drop="allowDrop"
+                         :allow-drag="allowDrag"
                          :default-expanded-keys="defaultExpandKeys"
                          @node-click="handleNodeClick"></el-tree>
               </div>
@@ -122,8 +129,8 @@
                        :visible.sync="dialogVisible"
                        width="60%"
                        :before-close="handleClose">
-              <el-form :model="ConceptSets"
-                       ref="ConceptSets"
+              <el-form :model="NewConceptSets"
+                       ref="NewConceptSets"
                        label-width="100px"
                        class="demo-ruleForm concept-container">
                 <el-row :gutter="10"
@@ -144,7 +151,7 @@
                                   prop="SetName"
                                   class="form-inline">
                       <el-input type="text"
-                                v-model="ConceptSets.SetName"
+                                v-model="NewConceptSets.SetName"
                                 auto-complete="off"
                                 placeholder="请输入集合名称"
                                 class="form-control"></el-input>
@@ -158,7 +165,7 @@
                                   prop="SetDescription"
                                   class="form-inline">
                       <el-input type="text"
-                                v-model="ConceptSets.SetDescription"
+                                v-model="NewConceptSets.SetDescription"
                                 auto-complete="off"
                                 placeholder="请输入集合描述"
                                 class="form-control"></el-input>
@@ -252,7 +259,39 @@
                  class="clearfix">
               <span>队列</span>
             </div>
-            <el-tree :data="queuesets"
+
+            <div class="expand">
+              <el-button size="mini"
+                         @click="handleAddTop">添加新文件夹</el-button>
+              <el-button type="primary"
+                         size="mini"
+                         @click="toCreateQueue">新建队列</el-button>
+              <div>
+                <el-tree ref="expandMenuList"
+                         class="expand-tree"
+                         v-if="isLoadingTree"
+                         :data="queuesets"
+                         node-key="id"
+                         :props="defaultProps"
+                         :expand-on-click-node="true"
+                         :render-content="renderContent"
+                         :default-expanded-keys="defaultExpandKeys"
+                         @node-click="handleNodeClick"
+                         @node-drag-start="handleDragStart"
+                         @node-drag-enter="handleDragEnter"
+                         @node-drag-leave="handleDragLeave"
+                         @node-drag-over="handleDragOver"
+                         @node-drag-end="handleDragEnd"
+                         @node-drop="handleDrop"
+                         draggable
+                         :allow-drop="allowDrop"
+                         :allow-drag="allowDrag"
+                         default-expand-all></el-tree>
+              </div>
+
+            </div>
+
+            <!-- <el-tree :data="queuesets"
                      node-key="id"
                      default-expand-all
                      @node-drag-start="handleDragStart"
@@ -263,43 +302,52 @@
                      @node-drop="handleDrop"
                      draggable
                      :allow-drop="allowDrop"
-                     :allow-drag="allowDrag"></el-tree>
-            <el-button style="margin-bottom:5px;margin-top:5px"
-                       type="primary"
-                       @click="NewQueneVisible=true">新建</el-button>
-            <el-dialog title="新建队列"
-                       :visible.sync="NewQueneVisible"
-                       width="30%"
-                       :before-close="handleClose">
-              <span>这是一段新建队列</span>
-              <span slot="footer"
-                    class="dialog-footer">
-                <el-button @click="NewQueneVisible = false">取 消</el-button>
-                <el-button type="primary"
-                           @click="NewQueneVisible = false">确 定</el-button>
-              </span>
-            </el-dialog>
+                     :allow-drag="allowDrag"></el-tree>-->
           </el-card>
         </el-row>
 
         <!-- 分析模块/RH -->
         <el-row>
           <el-card class="box-card"
-                   style="font-size:13px;">
+                   style="text-align:center;font-size:13px;">
             <div slot="header"
                  style="height:12px;"
                  class="clearfix">
               <span>分析方法</span>
             </div>
-            <el-tree :data="analysismethods"
-                     :props="defaultProps"
-                     @node-click="handleNodeClick"
-                     default-expand-all></el-tree>
+            <div class="expand">
+              <el-button size="mini"
+                         @click="handleAddTop">添加新文件夹</el-button>
+              <el-button type="primary"
+                         size="mini"
+                         @click="NewMethodVisible=true">新建方法</el-button>
+              <div>
 
-            <el-button style="display:block;margin:0 auto;margin-bottom:5px;margin-top:5px;"
-                       type="primary"
-                       @click="NewMethodVisible=true">新建</el-button>
-            <!--顾忆芯 2018/12/2 -->
+                <el-tree ref="expandMenuList"
+                         class="expand-tree"
+                         v-if="isLoadingTree"
+                         :data="analysismethods"
+                         node-key="id"
+                         :props="defaultProps"
+                         :expand-on-click-node="true"
+                         :render-content="renderContent"
+                         :default-expanded-keys="defaultExpandKeys"
+                         @node-click="handleNodeClick"
+                         @node-drag-start="handleDragStart"
+                         @node-drag-enter="handleDragEnter"
+                         @node-drag-leave="handleDragLeave"
+                         @node-drag-over="handleDragOver"
+                         @node-drag-end="handleDragEnd"
+                         @node-drop="handleDrop"
+                         draggable
+                         :allow-drop="allowDrop"
+                         :allow-drag="allowDrag"
+                         default-expand-all></el-tree>
+              </div>
+            </div>
+            <!--顾忆芯
+                 2018/12/2
+                 -->
             <el-dialog :visible.sync="NewMethodVisible"
                        width="50%"
                        height="80%"
@@ -906,8 +954,6 @@ export default {
     return {
       researchstatus: 3,
       NewVarVisible: false,
-      NewConceptVisible: false,
-      NewQueneVisible: false,
       NewMethodVisible: false,
       tableData: [{
         quene: '队列A',
@@ -923,60 +969,15 @@ export default {
       },
       defaultExpandKeys: [],//默认展开节点列表
       conceptsets: [],
-      // 队列集假数据/RH
-      queuesets: [
-        {
-          label: "文件夹1",
-          children: [
-            {
-              label: "队列A"
-            },
-            {
-              label: "队列B"
-            }
-          ]
-        },
-        {
-          label: "文件夹2",
-          children: [
-            {
-              label: "队列C"
-            }
-          ]
-        }
-      ],
-      // 分析数据假数据/RH
-      analysismethods: [
-        {
-          label: "回归",
-          children: [
-            {
-              label: "SVM"
-            },
-            {
-              label: "RF"
-            }
-          ]
-        },
-        {
-          label: "分类",
-          children: [
-            {
-              label: "模型A"
-            },
-            {
-              label: "模型B"
-            }
-          ]
-        }
-      ],
+      queuesets: [],
+      analysismethods: [],
       defaultProps: {
         children: "children",
         label: "label"
       },
       //新增概念集假数据
       dialogVisible: false,
-      ConceptSets: {
+      NewConceptSets: {
         SetName: "",
         SetDescription: ""
       },
@@ -1186,6 +1187,8 @@ export default {
     // console.log(this.GLOBAL.token)
     this.initExpand();
     this.getConceptsetsData();
+    this.getQueuesetsData();
+    this.getAnalysismethodsData();
   },
   methods: {
     getConceptsetsData() {
@@ -1197,6 +1200,32 @@ export default {
         .then((response) => {
           //console.log(response)
           this.conceptsets = JSON.parse(response.data.data.conceptSetStructure)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+    getQueuesetsData() {
+      axios.get('/structure/getStructure', {
+        params: {
+          "token": this.GLOBAL.token
+        }
+      })
+        .then((response) => {
+          this.queuesets = JSON.parse(response.data.data.collaborationCohortStructure)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+    getAnalysismethodsData() {
+      axios.get('/structure/getStructure', {
+        params: {
+          "token": this.GLOBAL.token
+        }
+      })
+        .then((response) => {
+          this.analysismethods = JSON.parse(response.data.data.modelStructure)
         })
         .catch(function (error) {
           console.log("error", error);
@@ -1219,7 +1248,6 @@ export default {
       this.$router.push({ path: "/hisresearch" });
     },
     toNewVariable: function () {
-      // console.log(1)
       // this.$router.push({ path: "/newvariable" });
       this.NewVarVisible = true
     },

@@ -115,28 +115,14 @@ export default {
     }
   },
   methods: {
-    handleClose(done) {
-      this.$confirm('确认关闭？')
-        .then(_ => {
-          done();
-        })
-        .catch(_ => { });
-    },
-    handleNodeClick(data) {
-      // console.log(data);
-    },
-
     toMyresearch: function () {
       this.$router.replace({ path: "/myresearch", params: { researchstatus: 0 } });
     },
 
     toNewresearch: function () {
-      console.log(1)
       this.$router.replace({ path: "/myresearch", params: { researchstatus: 0 } });
     },
-    hi: function () {
-      console.log(121111)
-    }
+
   },
 };
 </script>

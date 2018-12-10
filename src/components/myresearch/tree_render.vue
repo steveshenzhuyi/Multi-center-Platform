@@ -17,9 +17,9 @@
     </span>
     <span class="tree-btn"
           v-show="!DATA.isEdit">
-      <i style="padding-left:50px;"
+      <!-- <i style="padding-left:50px;"
          class="el-icon-plus"
-         @click.stop="nodeAdd(STORE,DATA,NODE)"></i>
+         @click.stop="nodeAdd(STORE,DATA,NODE)"></i> -->
       <i class="el-icon-edit"
          @click.stop="nodeEdit(STORE,DATA,NODE)"></i>
       <i class="el-icon-delete"
