@@ -106,10 +106,11 @@
                 <el-tree ref="expandMenuList"
                          class="expand-tree"
                          v-if="isLoadingTree"
+                         default-expand-all
                          :data="conceptsets"
                          node-key="id"
                          :props="defaultProps"
-                         :expand-on-click-node="false"
+                         :expand-on-click-node="true"
                          :render-content="renderContent"
                          :default-expanded-keys="defaultExpandKeys"
                          @node-click="handleNodeClick"></el-tree>
@@ -252,9 +253,17 @@
               <span>队列</span>
             </div>
             <el-tree :data="queuesets"
-                     :props="defaultProps"
-                     @node-click="toCreateQueue"
-                     default-expand-all></el-tree>
+                     node-key="id"
+                     default-expand-all
+                     @node-drag-start="handleDragStart"
+                     @node-drag-enter="handleDragEnter"
+                     @node-drag-leave="handleDragLeave"
+                     @node-drag-over="handleDragOver"
+                     @node-drag-end="handleDragEnd"
+                     @node-drop="handleDrop"
+                     draggable
+                     :allow-drop="allowDrop"
+                     :allow-drag="allowDrag"></el-tree>
             <el-button style="margin-bottom:5px;margin-top:5px"
                        type="primary"
                        @click="NewQueneVisible=true">新建</el-button>
@@ -1369,6 +1378,35 @@ export default {
     // 新增变量弹框
     CancelVar(index) {
       this.VariableTable.splice(index, 1)
+    },
+    //队列拖拽所需
+    handleDragStart(node, ev) {
+      console.log('drag start', node);
+    },
+    handleDragEnter(draggingNode, dropNode, ev) {
+      console.log('tree drag enter: ', dropNode.label);
+    },
+    handleDragLeave(draggingNode, dropNode, ev) {
+      console.log('tree drag leave: ', dropNode.label);
+    },
+    handleDragOver(draggingNode, dropNode, ev) {
+      console.log('tree drag over: ', dropNode.label);
+    },
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
+      console.log('tree drag end: ', dropNode && dropNode.label, dropType);
+    },
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      console.log('tree drop: ', dropNode.label, dropType);
+    },
+    allowDrop(draggingNode, dropNode, type) {
+      if (dropNode.data.label.indexOf('队列') != -1) {
+        return type !== 'inner';
+      } else {
+        return true;
+      }
+    },
+    allowDrag(draggingNode) {
+      return draggingNode.data.label.indexOf('文件夹') === -1;
     }
   },
   computed: {
