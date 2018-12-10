@@ -8,8 +8,8 @@
       <el-dropdown style="float:right;padding-top:30px;padding-right:30px;"
                    trigger="click">
         <span class="el-dropdown-link"
-              style="color:white;font-style:bold">
-          <i class="iconfont icon-yonghu"></i> Admin<i class="el-icon-arrow-down el-icon--right"></i>
+              style="color:white;">
+          <i class="iconfont icon-yonghuicon"></i> Admin<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>个人信息</el-dropdown-item>
@@ -26,11 +26,12 @@
              @select="handleSelect"
              background-color="#545c64"
              text-color="#fff"
-             active-text-color="#2d8cf0">
+             active-text-color="#2d8cf0"
+             style="  width: 100%;  min-width: 823px;">
       <el-menu-item index="data">
       </el-menu-item>
       <el-menu-item index="data">数据总览</el-menu-item>
-      <el-menu-item index="myresearch">我的研究</el-menu-item>
+      <el-menu-item index="hisresearch">历史研究</el-menu-item>
       <el-menu-item index="coresearch">协同研究</el-menu-item>
       <el-menu-item index="knowledgegraph">知识图谱</el-menu-item>
       <el-menu-item index="dataimport">数据导入</el-menu-item>
@@ -44,12 +45,12 @@
     </el-menu>
 
     <!-- 主题内容【不要删】/RH -->
-    <router-view style="margin-top:20px"></router-view>
+    <router-view style="margin-top:20px;width: 100%;  min-width: 823px;"></router-view>
   </div>
 </template>
 <script type="text/ecmascript-6">
 export default {
-    data() {
+  data() {
     return {};
   },
   computed: {
@@ -71,6 +72,7 @@ export default {
 header {
   background-color: #545c64;
   width: 100%;
+  min-width: 823px;
   font-size: 28px;
   color: white;
 }

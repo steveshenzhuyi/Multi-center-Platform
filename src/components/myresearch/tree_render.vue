@@ -5,7 +5,7 @@
       <el-input class="edit"
                 size="mini"
                 autofocus
-                v-model="DATA.name"
+                v-model="DATA.label"
                 :ref="'treeInput'+DATA.id"
                 @click.stop.native="nodeEditFocus"
                 @blur.stop="nodeEditPass(STORE,DATA,NODE)"
@@ -13,12 +13,13 @@
     </span>
     <span v-show="!DATA.isEdit"
           :class="[DATA.id > maxexpandId ? 'tree-new tree-label' : 'tree-label']">
-      <span>{{DATA.name}}</span>
+      <span>{{DATA.label}}</span>
     </span>
     <span class="tree-btn"
           v-show="!DATA.isEdit">
-      <i class="el-icon-plus"
-         @click.stop="nodeAdd(STORE,DATA,NODE)"></i>
+      <!-- <i style="padding-left:50px;"
+         class="el-icon-plus"
+         @click.stop="nodeAdd(STORE,DATA,NODE)"></i> -->
       <i class="el-icon-edit"
          @click.stop="nodeEdit(STORE,DATA,NODE)"></i>
       <i class="el-icon-delete"
@@ -29,7 +30,7 @@
 
 <script>
 export default {
-  name: 'treeExpand',
+  label: 'treeExpand',
   props: ['NODE', 'DATA', 'STORE', 'maxexpandId'],
   methods: {
     nodeAdd(s, d, n) {//新增
@@ -63,7 +64,7 @@ export default {
   font-weight: 600;
 }
 .tree-expand .tree-label {
-  font-size: 0.9em;
+  font-size: 14px;
 }
 .tree-expand .tree-label .edit {
   width: 80%;
@@ -71,11 +72,13 @@ export default {
 .tree-expand .tree-btn {
   display: none;
   float: right;
-  margin-right: 20px;
+  margin-right: 30px;
+  position: absolute;
+  left: 70%;
 }
 .tree-expand .tree-btn i {
   color: #8492a6;
-  font-size: 0.9em;
+  font-size: 14px;
   margin-right: 3px;
   justify-content: space-between;
 }
