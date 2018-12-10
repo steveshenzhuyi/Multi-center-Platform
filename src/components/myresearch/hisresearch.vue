@@ -36,8 +36,14 @@
           <div class="cardBox">
             <div class="headerBox">
               <span style="font-size:20px; font-weight:bold">项目1</span>
-              <span style="float: right; padding: 3px 0"
-                    class="el-icon-more"></span>
+              <el-dropdown style="float: right; padding: 3px 0"
+                           trigger="click">
+                <span class="el-icon-more">
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item> <i class="el-icon-view"></i> 预览</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
             </div>
             <div class="bodyBox"
                  @click="toMyresearch">
@@ -63,8 +69,16 @@
           <div class="cardBox">
             <div class="headerBox">
               <span style="font-size:20px; font-weight:bold">项目2</span>
-              <span style="float: right; padding: 3px 0"
-                    class="el-icon-more"></span>
+              <el-dropdown style="float: right; padding: 3px 0"
+                           trigger="click">
+                <span class="el-icon-more">
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item> <i class="el-icon-edit-outline"></i> 编辑</el-dropdown-item>
+                  <el-dropdown-item> <i class="el-icon-document"></i> 申请</el-dropdown-item>
+                  <el-dropdown-item> <i class="el-icon-view"></i> 预览</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
             </div>
             <div class="bodyBox"
                  @click="toMyresearch">
@@ -119,6 +133,9 @@ export default {
     toNewresearch: function () {
       console.log(1)
       this.$router.replace({ path: "/myresearch", params: { researchstatus: 0 } });
+    },
+    hi: function () {
+      console.log(121111)
     }
   },
 };
@@ -129,14 +146,12 @@ export default {
   text-align: center;
   font-size: 117px;
   color: dimgrey;
-  width: 380px;
   height: 175px;
   cursor: pointer;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   border-radius: 5px;
 }
 .cardBox {
-  width: 380px;
   height: 175px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   margin-right: 10px;
