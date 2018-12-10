@@ -14,15 +14,68 @@
       </el-col>
       <el-col :span="4">
         <el-button type="primary"
-                   @click="NewVarVisible=true">新增变量</el-button>
+                   @click="toNewVariable()">新增变量</el-button>
         <el-dialog title="新建变量"
                    :visible.sync="NewVarVisible"
-                   width="30%"
+                   width="80%"
                    :before-close="handleClose">
-          <span>这是一段新建变量</span>
+          <el-tabs :value="NewVarTabs">
+            <el-tab-pane label="新增变量"
+                         name="NewVariable">
+              <el-row :gutter=30>
+                <el-col :span=10
+                        :offset=1>
+                  <div class="main-border">
+                    <div class="one-of-main-border">
+                      <span>拖拽右侧变量至此</span>
+                    </div>
+                    <draggable :options="{group:'condition'}">
+                      <div class="drag-cover"></div>
+                    </draggable>
+                  </div>
+                </el-col>
+                <el-col :span=10
+                        :offset=1>
+                  <div id="sifting-condition-item"
+                       class="sifting-queue-content">
+                    <component :is="VarForm"></component>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-tab-pane>
+            <el-tab-pane label="变量列表"
+                         name="VarList">
+              <el-table :data="VariableTable"
+                        stripe
+                        border>
+                <el-table-column prop="VarCName"
+                                 label="变量名称（中文）"
+                                 width="150"></el-table-column>
+                <el-table-column prop="VarEName"
+                                 label="变量名称（英文）"
+                                 width="150"></el-table-column>
+                <el-table-column prop="VarDiscription"
+                                 label="变量描述"
+                                 width="200"></el-table-column>
+                <el-table-column prop="VarDetail"
+                                 label="变量详情"
+                                 width="300"
+                                 show-overflow-tooltip></el-table-column>
+                <el-table-column label="编辑">
+                  <template slot-scope="scope">
+                    <el-button size="mini"
+                               type="primary"
+                               @click="EditVar(scope.$index)">编辑</el-button>
+                    <el-button size="mini"
+                               type="primary"
+                               @click="CancelVar(scope.$index)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-tab-pane>
+          </el-tabs>
           <span slot="footer"
                 class="dialog-footer">
-            <el-button @click="NewVarVisible = false">取 消</el-button>
             <el-button type="primary"
                        @click="NewVarVisible = false">确 定</el-button>
           </span>
@@ -52,10 +105,11 @@
                 <el-tree ref="expandMenuList"
                          class="expand-tree"
                          v-if="isLoadingTree"
+                         default-expand-all
                          :data="conceptsets"
                          node-key="id"
                          :props="defaultProps"
-                         :expand-on-click-node="false"
+                         :expand-on-click-node="true"
                          :render-content="renderContent"
                          :default-expanded-keys="defaultExpandKeys"
                          @node-click="handleNodeClick"></el-tree>
@@ -197,6 +251,7 @@
                  class="clearfix">
               <span>队列</span>
             </div>
+
             <div class="expand">
               <el-button size="mini"
                          @click="handleAddTop">添加新文件夹</el-button>
@@ -218,6 +273,33 @@
               </div>
             </div>
 
+            <!-- <el-tree :data="queuesets"
+                     node-key="id"
+                     default-expand-all
+                     @node-drag-start="handleDragStart"
+                     @node-drag-enter="handleDragEnter"
+                     @node-drag-leave="handleDragLeave"
+                     @node-drag-over="handleDragOver"
+                     @node-drag-end="handleDragEnd"
+                     @node-drop="handleDrop"
+                     draggable
+                     :allow-drop="allowDrop"
+                     :allow-drag="allowDrag"></el-tree>
+            <el-button style="margin-bottom:5px;margin-top:5px"
+                       type="primary"
+                       @click="NewQueneVisible=true">新建</el-button>
+            <el-dialog title="新建队列"
+                       :visible.sync="NewQueneVisible"
+                       width="30%"
+                       :before-close="handleClose">
+              <span>这是一段新建队列</span>
+              <span slot="footer"
+                    class="dialog-footer">
+                <el-button @click="NewQueneVisible = false">取 消</el-button>
+                <el-button type="primary"
+                           @click="NewQueneVisible = false">确 定</el-button>
+              </span>
+            </el-dialog> -->
           </el-card>
         </el-row>
 
@@ -848,6 +930,9 @@
 import TreeRender from './tree_render.vue';
 import axios from 'axios';
 
+import draggable from 'vuedraggable';
+import VarForm from './conditionform/Variableform.vue'
+
 const Excludeditemsoptions = [' ', '  ', '   '];
 const ChilerenConceptsoptions = [' ', '  ', '   '];
 
@@ -1113,7 +1198,22 @@ export default {
       num2_3: 95,
       num3_1: 95,
       num3_2: 95,
-      checked: true
+      checked: true,
+      // 新增变量弹框
+      NewVarTabs: "NewVariable",
+      VariableTable: [{
+        VarCName: '性别',
+        VarEName: 'GENDER',
+        VarDiscription: '样本的性别',
+        VarDetail: 'SELECT PERSON_ID, CASE WHEN WHATWAHTWAHT'
+      },
+      {
+        VarCName: '年龄',
+        VarEName: 'AGE',
+        VarDiscription: '样本的年龄',
+        VarDetail: 'SELECT PERSON_ID, TO_NUMBER(WHATWAHTWAHT)'
+      }],
+      VarForm
     };
   },
   mounted() {
@@ -1151,6 +1251,11 @@ export default {
     },
     toHisresearch: function () {
       this.$router.push({ path: "/hisresearch" });
+    },
+    toNewVariable: function () {
+      // console.log(1)
+      // this.$router.push({ path: "/newvariable" });
+      this.NewVarVisible = true
     },
     //鼠标hover事件所需
     initExpand() {
@@ -1303,6 +1408,39 @@ export default {
     },
     handleChange3_2(value) {
       console.log(value);
+    },
+    // 新增变量弹框
+    CancelVar(index) {
+      this.VariableTable.splice(index, 1)
+    },
+    //队列拖拽所需
+    handleDragStart(node, ev) {
+      console.log('drag start', node);
+    },
+    handleDragEnter(draggingNode, dropNode, ev) {
+      console.log('tree drag enter: ', dropNode.label);
+    },
+    handleDragLeave(draggingNode, dropNode, ev) {
+      console.log('tree drag leave: ', dropNode.label);
+    },
+    handleDragOver(draggingNode, dropNode, ev) {
+      console.log('tree drag over: ', dropNode.label);
+    },
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
+      console.log('tree drag end: ', dropNode && dropNode.label, dropType);
+    },
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      console.log('tree drop: ', dropNode.label, dropType);
+    },
+    allowDrop(draggingNode, dropNode, type) {
+      if (dropNode.data.label.indexOf('队列') != -1) {
+        return type !== 'inner';
+      } else {
+        return true;
+      }
+    },
+    allowDrag(draggingNode) {
+      return draggingNode.data.label.indexOf('文件夹') === -1;
     }
   },
   computed: {
@@ -1318,7 +1456,11 @@ export default {
       }
       return this.table;
     }
-  }
+  },
+  components: {
+    draggable,
+    VarForm
+  },
 };
 </script>
 <style>
@@ -1360,5 +1502,26 @@ export default {
 .expand-tree .is-current > .el-tree-node__content .tree-label {
   font-weight: 600;
   white-space: normal;
+}
+.drag-cover {
+  width: 100%;
+  height: 10px;
+}
+.sifting-queue-content {
+  background: linear-gradient(to bottom, #eaeaea, #f9f9f9);
+  border-radius: 5px;
+  padding: 10px 0 0 10px;
+  display: block;
+}
+.main-border {
+  border: 1px solid #ccc;
+  display: block;
+  margin-top: 40px;
+}
+.one-of-main-border {
+  transform: translate(10px, -12px);
+  background: #ffffff;
+  padding: 0 10px;
+  width: 150px;
 }
 </style>
