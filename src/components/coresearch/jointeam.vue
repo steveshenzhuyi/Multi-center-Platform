@@ -31,7 +31,8 @@
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="6">
         <el-button type="info"
-                   :disabled="!this.checked">加入研究</el-button>
+                   :disabled="!this.checked"
+                   @click="joinTeam()">加入研究</el-button>
       </el-col>
       <el-col :span="6">
         <el-button type="info">取消加入</el-button>
@@ -58,6 +59,9 @@ export default {
           });
         }
       });
+    },
+    joinTeam() {
+
     }
   }
 }
