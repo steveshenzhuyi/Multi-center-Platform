@@ -9,7 +9,7 @@
                    trigger="click">
         <span class="el-dropdown-link"
               style="color:white;font-style:bold">
-          <i class="iconfont icon-yonghu"></i> Admin<i class="el-icon-arrow-down el-icon--right"></i>
+          <i class="iconfont icon-yonghuicon"></i> Admin<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>个人信息</el-dropdown-item>

@@ -903,9 +903,6 @@ export default {
       tableData: [{
         quene: '队列A',
         method: 'SVM',
-      }, {
-        quene: '队列B',
-        method: 'RF',
       }],
       // 概念集假数据/RH
       maxexpandId: 5,//新增节点开始id
@@ -1208,13 +1205,6 @@ export default {
     },
     toCreateQueue(data) {
       this.$router.push({ path: "/myresearch/createqueue" });
-    },
-    append(store, data) {
-      store.append({ id: id++, label: 'testtest', children: [] }, data);
-    },
-
-    remove(store, data) {
-      store.remove(data);
     },
     toHisresearch: function () {
       this.$router.push({ path: "/hisresearch" });
