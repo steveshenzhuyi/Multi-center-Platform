@@ -85,7 +85,8 @@
                 <!-- <component :is="comName"></component> -->
               </el-form>
               <div class="droparea">
-                <draggable :options="{group:'condition'}">
+                <draggable :options="{group:condition}"
+                           v-model="condition">
                   <div class="drag-cover"></div>
                 </draggable>
               </div>
@@ -167,6 +168,8 @@ import Vue from 'vue';
 import diagnoseform from './conditionform/diagnoseform.vue'
 import marform from './conditionform/marform.vue'
 import operatingform from './conditionform/operatingform.vue'
+import medicalform from './conditionform/medicalform.vue'
+import deathRecordsform from './conditionform/deathRecordsform.vue'
 
 const items = []
 
@@ -175,6 +178,8 @@ export default {
     'diagnoseform': diagnoseform,
     'marform': marform,
     'operatingform': operatingform,
+    'medicalform': medicalform,
+    'deathRecordsform': deathRecordsform,
     draggable,
   },
 
@@ -182,6 +187,7 @@ export default {
     return {
       limitvalue: '',
       comName: 'diagnoseform',
+      condition: 'diagnose',
       queueInfo: {
         type: '',
         name: '',
@@ -232,10 +238,21 @@ export default {
       console.log(condtype)
       switch (condtype) {
         case '1': this.comName = 'diagnoseform';
+          this.condition = 'diagnose';
           break;
         case '2': this.comName = 'marform';
+          this.condition = 'mar';
           break;
         case '3': this.comName = 'operatingform';
+          this.condition = 'operating';
+          break;
+        case '4': this.comName = 'medicalform';
+          this.condition = 'medical';
+          break;
+        case '5': this.comName = 'deathRecordsform';
+          this.condition = 'deathRecords';
+          break;
+        default:
           break;
       }
     },

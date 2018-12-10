@@ -5,7 +5,7 @@
            size="mini"
            :inline="true"
            class="diagnose">
-    <draggable :options="{group:'condition'}">
+    <draggable :options="{group:'diagnose'}">
       <el-checkbox v-model="diagnoseform.debut">首次出现</el-checkbox>
       <el-form-item label="性别">
         <el-input v-model="diagnoseform.sex"></el-input>
@@ -47,7 +47,6 @@
                      class="except">不在其之间</el-checkbox>
       </el-form-item>
     </draggable>
-
   </el-form>
 </template>
 
