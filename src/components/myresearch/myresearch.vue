@@ -44,8 +44,7 @@
             <div class="expand">
               <el-button size="mini"
                          @click="handleAddTop">添加新文件夹</el-button>
-              <el-button style="margin-bottom:5px;margin-top:5px"
-                         type="primary"
+              <el-button type="primary"
                          size="mini"
                          @click="dialogVisible = true">新建概念集</el-button>
               <div>
@@ -68,8 +67,8 @@
                        :visible.sync="dialogVisible"
                        width="60%"
                        :before-close="handleClose">
-              <el-form :model="ConceptSets"
-                       ref="ConceptSets"
+              <el-form :model="NewConceptSets"
+                       ref="NewConceptSets"
                        label-width="100px"
                        class="demo-ruleForm concept-container">
                 <el-row :gutter="10"
@@ -90,7 +89,7 @@
                                   prop="SetName"
                                   class="form-inline">
                       <el-input type="text"
-                                v-model="ConceptSets.SetName"
+                                v-model="NewConceptSets.SetName"
                                 auto-complete="off"
                                 placeholder="请输入集合名称"
                                 class="form-control"></el-input>
@@ -104,7 +103,7 @@
                                   prop="SetDescription"
                                   class="form-inline">
                       <el-input type="text"
-                                v-model="ConceptSets.SetDescription"
+                                v-model="NewConceptSets.SetDescription"
                                 auto-complete="off"
                                 placeholder="请输入集合描述"
                                 class="form-control"></el-input>
@@ -198,46 +197,62 @@
                  class="clearfix">
               <span>队列</span>
             </div>
-            <el-tree :data="queuesets"
-                     :props="defaultProps"
-                     @node-click="toCreateQueue"
-                     default-expand-all></el-tree>
-            <el-button style="margin-bottom:5px;margin-top:5px"
-                       type="primary"
-                       @click="NewQueneVisible=true">新建</el-button>
-            <el-dialog title="新建队列"
-                       :visible.sync="NewQueneVisible"
-                       width="30%"
-                       :before-close="handleClose">
-              <span>这是一段新建队列</span>
-              <span slot="footer"
-                    class="dialog-footer">
-                <el-button @click="NewQueneVisible = false">取 消</el-button>
-                <el-button type="primary"
-                           @click="NewQueneVisible = false">确 定</el-button>
-              </span>
-            </el-dialog>
+            <div class="expand">
+              <el-button size="mini"
+                         @click="handleAddTop">添加新文件夹</el-button>
+              <el-button type="primary"
+                         size="mini"
+                         @click="toCreateQueue">新建队列</el-button>
+              <div>
+                <el-tree ref="expandMenuList"
+                         class="expand-tree"
+                         v-if="isLoadingTree"
+                         :data="queuesets"
+                         node-key="id"
+                         :props="defaultProps"
+                         :expand-on-click-node="false"
+                         :render-content="renderContent"
+                         :default-expanded-keys="defaultExpandKeys"
+                         @node-click="handleNodeClick"
+                         default-expand-all></el-tree>
+              </div>
+            </div>
+
           </el-card>
         </el-row>
 
         <!-- 分析模块/RH -->
         <el-row>
           <el-card class="box-card"
-                   style="font-size:13px;">
+                   style="text-align:center;font-size:13px;">
             <div slot="header"
                  style="height:12px;"
                  class="clearfix">
               <span>分析方法</span>
             </div>
-            <el-tree :data="analysismethods"
-                     :props="defaultProps"
-                     @node-click="handleNodeClick"
-                     default-expand-all></el-tree>
-
-            <el-button style="display:block;margin:0 auto;margin-bottom:5px;margin-top:5px;"
-                       type="primary"
-                       @click="NewMethodVisible=true">新建</el-button>
-            <!--顾忆芯 2018/12/2 -->
+            <div class="expand">
+              <el-button size="mini"
+                         @click="handleAddTop">添加新文件夹</el-button>
+              <el-button type="primary"
+                         size="mini"
+                         @click="NewMethodVisible=true">新建方法</el-button>
+              <div>
+                <el-tree ref="expandMenuList"
+                         class="expand-tree"
+                         v-if="isLoadingTree"
+                         :data="analysismethods"
+                         node-key="id"
+                         :props="defaultProps"
+                         :expand-on-click-node="false"
+                         :render-content="renderContent"
+                         :default-expanded-keys="defaultExpandKeys"
+                         @node-click="handleNodeClick"
+                         default-expand-all></el-tree>
+              </div>
+            </div>
+            <!--顾忆芯
+                 2018/12/2
+                 -->
             <el-dialog :visible.sync="NewMethodVisible"
                        width="50%"
                        height="80%"
@@ -842,7 +857,6 @@ export default {
       researchstatus: 3,
       NewVarVisible: false,
       NewConceptVisible: false,
-      NewQueneVisible: false,
       NewMethodVisible: false,
       tableData: [{
         quene: '队列A',
@@ -911,7 +925,7 @@ export default {
       },
       //新增概念集假数据
       dialogVisible: false,
-      ConceptSets: {
+      NewConceptSets: {
         SetName: "",
         SetDescription: ""
       },
