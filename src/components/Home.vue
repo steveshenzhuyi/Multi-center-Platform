@@ -8,8 +8,8 @@
       <el-dropdown style="float:right;padding-top:30px;padding-right:30px;"
                    trigger="click">
         <span class="el-dropdown-link"
-              style="color:white;font-style:bold">
-          <i class="iconfont icon-yonghu"></i> Admin<i class="el-icon-arrow-down el-icon--right"></i>
+              style="color:white;">
+          <i class="iconfont icon-yonghuicon"></i> Admin<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>个人信息</el-dropdown-item>
@@ -31,8 +31,8 @@
       <el-menu-item index="data">
       </el-menu-item>
       <el-menu-item index="data">数据总览</el-menu-item>
-      <el-menu-item index="myresearch">我的研究</el-menu-item>
-      <el-menu-item index="coresearch/myteam">协同研究</el-menu-item>
+      <el-menu-item index="hisresearch">历史研究</el-menu-item>
+      <el-menu-item index="coresearch">协同研究</el-menu-item>
       <el-menu-item index="knowledgegraph">知识图谱</el-menu-item>
       <el-menu-item index="dataimport">数据导入</el-menu-item>
       <el-submenu index="6">

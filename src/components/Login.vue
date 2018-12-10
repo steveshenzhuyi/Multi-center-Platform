@@ -18,12 +18,9 @@
                id="ps"
                v-model="loginForm.password"
                placeholder="密码">
-
-        </input>
-        <i @click="
-               psshow"
+        <i @click="psshow"
            style="position:fixed;padding-top:15.5px;padding-bottom:0;padding-left:5px"
-           class="iconfont  icon-eye"></i>
+           class="el-icon-view"></i>
 
       </div>
       <div class="form-group">
