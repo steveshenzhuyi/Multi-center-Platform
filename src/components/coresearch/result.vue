@@ -26,7 +26,8 @@
                   <el-button type="info">提出讨论</el-button>
                 </el-col>
                 <el-col :span="6">
-                  <el-button type="info">作为成果</el-button>
+                  <el-button type="info"
+                             @click="goQualification()">作为成果</el-button>
                 </el-col>
               </el-row>
             </div>
@@ -87,6 +88,22 @@ export default {
     }
   },
   methods: {
+    goQualification() {
+      this.$router.push({
+        path: 'qualification',
+        query:
+          {
+            collaborationId: 12
+          }
+      });
+    },
+    handleNodeClick(data) {
+      // if (data.id > 0) {
+      //   this.getCollaborInfo(data.id)
+      //   //this.detail[3][0].NAME = "agags"
+      // }
+
+    },
   }
 };
 </script>
