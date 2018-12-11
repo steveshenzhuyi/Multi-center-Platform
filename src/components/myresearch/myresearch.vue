@@ -93,7 +93,6 @@
                  class="clearfix">
               <span>概念集</span>
             </div>
-
             <div class="expand">
               <el-button size="mini"
                          @click="handleAddTop">添加新文件夹</el-button>
@@ -909,14 +908,19 @@
                  class="clearfix">
               <span>构建</span>
             </div>
-            <el-table :data="tableData"
+
+            <draggable :options="{group:'condition'}">
+              <div class="drag-cover"></div>
+            </draggable>
+            <!-- <el-table :data="tableData"
                       style="width: 100%">
+
               <el-table-column prop="quene"
                                label="队列"
                                width="180"></el-table-column>
               <el-table-column prop="method"
                                label="分析方法"></el-table-column>
-            </el-table>
+            </el-table> -->
             <el-button style="float:right;margin-bottom:5px;margin-top:5px"
                        type="primary">计算</el-button>
           </el-card>
