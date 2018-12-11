@@ -1,5 +1,17 @@
 <template>
   <div>
+    <!-- <div class="custom-analysis page-wrap-tabs">
+      <p class="page-title">我的研究</p>
+      <el-tabs type="card"
+               v-model="$route.name"
+               class="tabs-nopadding"
+               @tab-click="onTabClick">
+        <el-tab-pane v-for="option in options"
+                     label="options.name"
+                     :name="options.route"></el-tab-pane>
+      </el-tabs>
+      <router-view></router-view>
+    </div> -->
     <el-row style="margin-top:10px;margin-bottom:10px;">
       <el-col :span="4"
               style="text-align:center">
@@ -116,11 +128,22 @@ export default {
   },
   methods: {
     toMyresearch: function () {
-      this.$router.replace({ path: "/myresearch", params: { researchstatus: 0 } });
+      this.$router.replace({
+        path: "myresearch",
+        query:
+          {
+            researchstatus: 2
+          }
+      });
     },
-
     toNewresearch: function () {
-      this.$router.replace({ path: "/myresearch", params: { researchstatus: 0 } });
+      this.$router.push({
+        path: 'myresearch',
+        query:
+          {
+            researchstatus: 1
+          }
+      });
     },
 
   },
