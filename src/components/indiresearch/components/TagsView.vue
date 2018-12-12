@@ -16,18 +16,11 @@
               @click.prevent.stop="closeSelectedTag(tag)" />
       </router-link>
     </scroll-pane>
-    <!-- <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
-      <li @click="refreshSelectedTag(selectedTag)">{{ $t('tagsView.refresh') }}</li>
-      <li @click="closeSelectedTag(selectedTag)">{{ $t('tagsView.close') }}</li>
-      <li @click="closeOthersTags">{{ $t('tagsView.closeOthers') }}</li>
-      <li @click="closeAllTags">{{ $t('tagsView.closeAll') }}</li>
-    </ul> -->
   </div>
 </template>
 
 <script>
 import ScrollPane from '@/components/ScrollPane'
-// import { generateTitle } from '@/utils/i18n'
 
 export default {
   components: { ScrollPane },
@@ -163,7 +156,7 @@ export default {
       padding: 0 8px;
       font-size: 12px;
       margin-left: 5px;
-      margin-top: 4px;
+      margin-top: 1px;
       &:first-of-type {
         margin-left: 15px;
       }
