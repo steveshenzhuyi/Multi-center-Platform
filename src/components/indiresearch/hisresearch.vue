@@ -1,36 +1,13 @@
 <template>
-  <div>
-    <!-- <div class="custom-analysis page-wrap-tabs">
-      <p class="page-title">我的研究</p>
-      <el-tabs type="card"
-               v-model="$route.name"
-               class="tabs-nopadding"
-               @tab-click="onTabClick">
-        <el-tab-pane v-for="option in options"
-                     label="options.name"
-                     :name="options.route"></el-tab-pane>
-      </el-tabs>
-      <router-view></router-view>
-    </div> -->
+  <div style="margin-left:10px;margin-right:10px">
     <el-row style="margin-top:10px;margin-bottom:10px;">
       <el-col :span="4"
               style="text-align:center">
-        <!-- <el-col :span="12"
-                style="">
-          <el-button type="primary"
-                     @click="toMyresearch">我的研究</el-button>
-        </el-col> -->
-        <!-- <el-col :span="12">
-          <el-button type="primary"
-                     @click="toHisresearch">历史研究</el-button>
-        </el-col> -->
       </el-col>
     </el-row>
 
     <el-row :gutter="20">
       <el-col :span="6">
-
-        <!-- 概念集模块/RH -->
         <el-row>
           <div id="newresearch"
                class="cardBox"
@@ -38,12 +15,10 @@
                @click="toNewresearch">
             <span class="el-icon-plus"></span>
           </div>
-
         </el-row>
       </el-col>
 
       <el-col :span="6">
-        <!-- 构建模块/RH -->
         <el-row>
           <div class="cardBox">
             <div class="headerBox">
@@ -76,7 +51,6 @@
       </el-col>
 
       <el-col :span="6">
-        <!-- 构建模块/RH -->
         <el-row>
           <div class="cardBox">
             <div class="headerBox">
@@ -108,7 +82,35 @@
         </el-row>
       </el-col>
       <el-col :span="6">
-
+        <el-row>
+          <div class="cardBox">
+            <div class="headerBox">
+              <span style="font-size:20px; font-weight:bold">项目3</span>
+              <el-dropdown style="float: right; padding: 3px 0"
+                           trigger="click">
+                <span class="el-icon-more">
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item> <i class="el-icon-edit-outline"></i> 编辑</el-dropdown-item>
+                  <el-dropdown-item> <i class="el-icon-document"></i> 申请</el-dropdown-item>
+                  <el-dropdown-item> <i class="el-icon-view"></i> 预览</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
+            <div class="bodyBox"
+                 @click="toMyresearch">
+              <div class="flex-container">
+                {{'项目创建时间 ' }}<span style="float: right; ">{{'2018-12-08' }}</span>
+              </div>
+              <div class="flex-container">
+                {{'研究者 ' }}<span style="float: right; ">{{'Admin' }}</span>
+              </div>
+              <div class="flex-container">
+                {{'研究状态 ' }}<span style="float: right; ">{{'已完成' }}</span>
+              </div>
+            </div>
+          </div>
+        </el-row>
       </el-col>
 
     </el-row>
