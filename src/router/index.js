@@ -114,6 +114,14 @@ export default new Router({
               meta: {
                 title: "成果讨论"
               }
+            },
+            {
+              path: "newcoresearch",
+              name: "新建团队研究",
+              component: () => import("@/components/coresearch/newcoresearch"),
+              meta: {
+                title: "新建团队研究"
+              }
             }
           ]
         },

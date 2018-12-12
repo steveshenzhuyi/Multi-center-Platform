@@ -23,10 +23,10 @@
               <el-row type="flex"
                       justify="space-between">
                 <el-col :span="6">
-                  <el-button type="info">提出讨论</el-button>
+                  <el-button type="primary">提出讨论</el-button>
                 </el-col>
                 <el-col :span="6">
-                  <el-button type="info"
+                  <el-button type="primary"
                              @click="goQualification()">作为成果</el-button>
                 </el-col>
               </el-row>
@@ -57,7 +57,7 @@
             <el-row type="flex"
                     justify="center"
                     style="margin-top:10px;margin-bottom:10px">
-              <el-button type="info">提交反馈</el-button>
+              <el-button type="primary">提交反馈</el-button>
             </el-row>
             <el-row>
               <div style="height: 100px">预设成果分配方案</div>
@@ -65,7 +65,7 @@
             <el-row type="flex"
                     justify="center"
                     style="margin-top:30px;margin-bottom:10px">
-              <el-button type="info">同意结题</el-button>
+              <el-button type="primary">同意结题</el-button>
             </el-row>
           </el-card>
         </el-row>

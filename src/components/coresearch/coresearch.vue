@@ -23,6 +23,7 @@ export default {
   },
   methods: {
     clear() {
+      console.log("clear")
       this.$store.dispatch('delAllViews')
       this.$store.dispatch('addView', this.$route)
     }

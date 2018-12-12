@@ -14,6 +14,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -29,6 +30,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -44,6 +46,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -59,6 +62,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -66,23 +70,68 @@
       <el-col :span="2">
         <div>团队成员</div>
       </el-col>
-      <el-col :span="10">
+      <el-col :span="6">
+        <el-cascader size="small"
+                     expand-trigger="hover"
+                     :options="orgdep"
+                     v-model="select1"
+                     placeholder="医院/科室">
+        </el-cascader>
+      </el-col>
+      <el-col :span="4">
+
+        <el-input size="small"
+                  placeholder="姓名"
+                  v-model="researchDetail.partiName">
+
+        </el-input>
+
+      </el-col>
+      <el-col :span="1"></el-col>
+    </el-row>
+    <el-row v-for="n in number"
+            type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
+        <div>团队成员</div>
+      </el-col>
+      <el-col :span="3">
+        <el-select size="small"
+                   v-model="select2"
+                   placeholder="请选择">
+          <el-option v-for="item in orgdep"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="3">
+        <el-select size="small"
+                   v-model="select3"
+                   placeholder="请选择">
+          <el-option v-for="item in orgdep[0].children"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="4">
         <div>
-          <el-input class="input-with-cascader"
-                    size="small"
+          <el-input size="small"
                     placeholder="姓名"
                     v-model="researchDetail.partiName">
-            <el-cascader size="small"
-                         expand-trigger="hover"
-                         :options="orgdep"
-                         v-model="select1"
-                         slot="prepend"
-                         placeholder="医院/科室">
-            </el-cascader>
 
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"><i v-if="n == number"
+           class="el-icon-plus"
+           @click="number++"></i><i v-if="n == number"
+           class="el-icon-delete"
+           @click="number--"></i></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -98,6 +147,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -113,6 +163,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -128,6 +179,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -142,17 +194,18 @@
                      @click="showProtocol()">阅读协议</el-button>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="6">
-        <el-button type="info"
-                   :disabled="!this.checked"
+        <el-button type="primary"
+                   :disabled="!checked"
                    @click="goNewTeam()">创建研究</el-button>
       </el-col>
       <el-col :span="6">
-        <el-button type="info">取消创建</el-button>
+        <el-button type="primary">取消创建</el-button>
       </el-col>
     </el-row>
   </div>
@@ -165,7 +218,10 @@ export default {
   data() {
     return {
       checked: false,
+      number: 1,
       select1: [],
+      select2: [],
+      select3: [],
       orgdep: [{
         value: '0',
         label: '浙一',
