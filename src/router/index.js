@@ -2,17 +2,15 @@ import Vue from "vue";
 import Router from "vue-router";
 import Login from "@/components/Login";
 import Home from "@/components/Home";
-import myresearch from "@/components/myresearch/myresearch";
-import hisresearch from "@/components/myresearch/hisresearch";
 import data from "@/components/data/data";
 import coresearch from "@/components/coresearch/coresearch";
+import indiresearch from "@/components/indiresearch/indiresearch";
 import knowledgegraph from "@/components/knowledgegraph/knowledgegraph";
 import dataimport from "@/components/dataimport/dataimport";
 import personalpage from "@/components/admincenter/personalpage";
 import resourcestatus from "@/components/admincenter/resourcestatus";
 import authoritycontrol from "@/components/admincenter/authoritycontrol";
 import thirdparty from "@/components/thirdparty/thirdparty";
-import createqueue from "@/components/myresearch/createqueue";
 
 Vue.use(Router);
 
@@ -34,19 +32,35 @@ export default new Router({
           component: data
         },
         {
-          path: "/myresearch",
-          name: "我的研究",
-          component: myresearch
-        },
-        {
-          path: "/myresearch/createqueue",
-          name: "创建队列",
-          component: createqueue
-        },
-        {
-          path: "/hisresearch",
-          name: "历史研究",
-          component: hisresearch
+          path: "/indiresearch",
+          name: "个人研究",
+          component: indiresearch,
+          children: [
+            {
+              path: "hisresearch",
+              name: "历史研究",
+              component: () => import("@/components/indiresearch/hisresearch"),
+              meta: {
+                title: "历史研究"
+              }
+            },
+            {
+              path: "myresearch",
+              name: "我的研究",
+              component: () => import("@/components/indiresearch/myresearch"),
+              meta: {
+                title: "我的研究"
+              }
+            },
+            {
+              path: "createqueue",
+              name: "新建队列",
+              component: () => import("@/components/indiresearch/createqueue"),
+              meta: {
+                title: "新建队列"
+              }
+            }
+          ]
         },
         {
           path: "/coresearch",
