@@ -1240,7 +1240,8 @@ export default {
     toCreateQueue() {
       this.$router.push({
         path: 'createqueue',
-      });    },
+      });
+    },
     toNewVariable: function () {
       // this.$router.push({ path: "/newvariable" });
       this.NewVarVisible = true
