@@ -74,7 +74,7 @@
                     v-model="researchDetail.partiName">
             <el-cascader size="small"
                          expand-trigger="hover"
-                         :options="options"
+                         :options="orgdep"
                          v-model="select1"
                          slot="prepend"
                          placeholder="医院/科室">
@@ -139,7 +139,7 @@
         <div>
           <el-checkbox v-model="checked">我同意接收研究发起人相关协议</el-checkbox>
           <el-button type="text"
-                     @click="messagebox()">阅读协议</el-button>
+                     @click="showProtocol()">阅读协议</el-button>
         </div>
       </el-col>
     </el-row>
@@ -149,7 +149,7 @@
       <el-col :span="6">
         <el-button type="info"
                    :disabled="!this.checked"
-                   @click="tonewteam()">创建研究</el-button>
+                   @click="goNewTeam()">创建研究</el-button>
       </el-col>
       <el-col :span="6">
         <el-button type="info">取消创建</el-button>
@@ -165,21 +165,22 @@ export default {
   data() {
     return {
       checked: false,
-      options: [{
-        value: '浙一',
+      select1: [],
+      orgdep: [{
+        value: '0',
         label: '浙一',
         children: [{
-          value: '内科',
+          value: '0',
           label: '内科',
         }, {
-          value: '外科',
+          value: '1',
           label: '外科',
         }]
       }, {
-        value: '浙二',
+        value: '1',
         label: '浙二',
         children: [{
-          value: '内科',
+          value: '0',
           label: '内科',
         }]
       }],
@@ -194,13 +195,14 @@ export default {
         organizationCode: '',
         departmentCode: '',
         partiName: ''
-      },
-
-      select1: []
+      }
     }
   },
+  mounted() {
+    this.getOrgAndDep()
+  },
   methods: {
-    messagebox() {
+    showProtocol() {
       console.log(this.select1)
       this.$alert('协议内容', '协议', {
         confirmButtonText: '确定',
@@ -212,10 +214,35 @@ export default {
         }
       });
     },
-    tonewteam() {
+    getOrgAndDep() {
+      axios.get('/collaboration/organization', {
+        params: {
+          token: this.GLOBAL.token
+        }
+      })
+        .then((response) => {
+
+          if (response.data.msg == "success!") {
+            console.log("org", response.data.data)
+
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+
+    },
+    goNewTeam() {
       console.log(this.researchDetail)
+      this.$router.push({
+        path: 'newteam',
+        query:
+          {
+            collaborationId: 12
+          }
+      });
       axios.post('/collaboration/createResearch', {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOlsiMTg4NjgxOCAgICAgICAgICAgICAiXSwiZXhwIjoxNTc1NDUyMjg3ODM0LCJpYXQiOjE1NDM5MTYyODd9.PJPezRTd-Tp2MpfgOjGEcpA9hf44b93rgJDSr4xYNps",
+        "token": this.GLOBAL.token,
         "name": this.researchDetail.name,
         "target": this.researchDetail.target,
         "proposal": this.researchDetail.proposal,
@@ -231,8 +258,13 @@ export default {
         .then((response) => {
 
           if (response.data.msg == "成功插入协同状态数据!") {
-            this.$router.push({ path: 'newteam' });
-
+            // this.$router.push({
+            //   path: 'newteam',
+            //   params:
+            //     {
+            //       collaborationId: response.data.data
+            //     }
+            // });
           }
         })
         .catch(function (error) {
