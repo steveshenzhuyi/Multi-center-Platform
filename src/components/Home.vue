@@ -6,15 +6,17 @@
 
       <!-- 个人信息下拉条/RH -->
       <el-dropdown style="float:right;padding-top:30px;padding-right:30px;"
-                   trigger="click">
+                   trigger="click"
+                   @command="handleCommand">
         <span class="el-dropdown-link"
-              style="color:white;">
+              style="color:white;  cursor: pointer;
+">
           <i class="iconfont icon-yonghuicon"></i> Admin<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>个人信息</el-dropdown-item>
-          <el-dropdown-item>消息中心</el-dropdown-item>
-          <el-dropdown-item>登出</el-dropdown-item>
+          <el-dropdown-item command="toInfo">个人信息</el-dropdown-item>
+          <el-dropdown-item command="toMsg">消息中心</el-dropdown-item>
+          <el-dropdown-item command="toLogout">登出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </header>
@@ -44,6 +46,17 @@
       <el-menu-item index="thirdparty">第三方数据使用</el-menu-item>
     </el-menu>
 
+    <el-dialog title="登出"
+               :visible.sync="dialogVisible"
+               width="30%">
+      <span>确定退出当前账号并回到登录页面吗？</span>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="toLogout()">确 定</el-button>
+      </span>
+    </el-dialog>
     <!-- 主题内容【不要删】/RH -->
     <router-view style="margin-top:20px;width: 100%;  min-width: 823px;"></router-view>
   </div>
@@ -51,7 +64,7 @@
 <script type="text/ecmascript-6">
 export default {
   data() {
-    return {};
+    return { dialogVisible: false };
   },
   computed: {
     activeIndex() {
@@ -64,6 +77,16 @@ export default {
       // console.log(this);
       // console.log(key, keyPath);
       this.$router.push({ path: "/" + key });
+    },
+    handleCommand(command) {
+      if (command == 'toLogout') { this.dialogVisible = true }
+    },
+    toLogout() {
+      this.GLOBAL.token = "";
+      this.dialogVisible = false;
+      this.$router.push({
+        path: '/',
+      });
     }
   }
 };
