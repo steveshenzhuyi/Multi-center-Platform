@@ -412,125 +412,118 @@
           <el-row :gutter="20"
                   style="margin-top:10px;margin-bottom:10px">
             <el-col :span="16">
-              <el-row :gutter="10">
-                <el-col :span="12">
-                  <el-card :body-style="{ padding: '10px', height:'120px'}"
-                           shadow="never">
-                    <span>分位数</span>
+              <el-row>
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">百分位数</legend>
                     <el-checkbox-group v-model="checkList1_1">
                       <el-row>
-                        <el-checkbox :label="1">四分位点</el-checkbox>
+                        <el-checkbox :label="1">中位数</el-checkbox>
                       </el-row>
                       <el-row>
-                        <el-checkbox :label="2">多分位点
-                          <el-input v-model="input1"
-                                    size="mini"
-                                    style="width:60px;"></el-input>
-                        </el-checkbox>
+                        <el-checkbox :label="2">百分位数：
+                          <el-input-number v-model="num1"
+                                           size="mini"
+                                           controls-position="right"
+                                           @change="handleChange1"
+                                           :min="0"
+                                           :max="100"></el-input-number>% </el-checkbox>
+
                       </el-row>
-                      <el-row>
-                        <el-button size="mini"
-                                   round>增加</el-button>
-                      </el-row>
-                      <el-row>
-                        <el-button size="mini"
-                                   round>删除</el-button>
-                      </el-row>
+
                     </el-checkbox-group>
-                  </el-card>
-                </el-col>
-                <el-col :span="12">
-                  <el-card shadow="never"
-                           :body-style="{ padding: '10px', height:'120px'}">
-                    <span>集中趋势</span>
+                  </fieldset>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">集中趋势</legend>
                     <el-checkbox-group v-model="checkList1_2">
                       <el-row>
                         <el-checkbox :label="5">均值</el-checkbox>
                       </el-row>
                       <el-row>
-                        <el-checkbox :label="6">中位数</el-checkbox>
+                        <el-checkbox :label="6">几何平均数</el-checkbox>
                       </el-row>
                       <el-row>
                         <el-checkbox :label="7">众数</el-checkbox>
                       </el-row>
-                      <el-row>
-                        <el-checkbox :label="8">总和</el-checkbox>
-                      </el-row>
                     </el-checkbox-group>
-                  </el-card>
-                </el-col>
+                  </fieldset>
+
+                </form>
               </el-row>
               <el-row style="margin-top:10px;margin-bottom:10px">
-                <el-card shadow="never"
-                         :body-style="{ padding: '10px'}">
-                  <span>离散趋势</span>
-                  <el-checkbox-group v-model="checkList1_3">
-                    <el-col :span="8">
-                      <el-row>
-                        <el-checkbox :label="11">极大值</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="13">极小值</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="15">全距</el-checkbox>
-                      </el-row>
-                    </el-col>
-                    <el-col :span="16">
-                      <el-row>
-                        <el-checkbox :label="12">方差</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="14">标准差</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="16">均值标准误差</el-checkbox>
-                      </el-row>
-                    </el-col>
-                  </el-checkbox-group>
-                </el-card>
+
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder"> 离散趋势</legend>
+                    <el-checkbox-group v-model="checkList1_3">
+                      <el-col :span="8">
+                        <el-row>
+                          <el-checkbox :label="11">极大值</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="13">极小值</el-checkbox>
+                        </el-row>
+
+                      </el-col>
+                      <el-col :span="16">
+                        <el-row>
+                          <el-checkbox :label="12">方差</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="14">标准差</el-checkbox>
+                        </el-row>
+
+                      </el-col>
+                    </el-checkbox-group>
+                  </fieldset>
+                </form>
               </el-row>
             </el-col>
             <el-col :span="8">
               <el-row>
-                <el-card shadow="never"
-                         :body-style="{ padding: '10px'}">
-                  <span>分布状态</span>
-                  <el-checkbox-group v-model="checkList1_4">
-                    <el-row>
-                      <el-checkbox :label="1">偏度（Skewness）</el-checkbox>
-                    </el-row>
-                    <el-row>
-                      <el-checkbox :label="2">峰度（Kurtosis）</el-checkbox>
-                    </el-row>
-                  </el-checkbox-group>
-                </el-card>
+
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">分布状态</legend>
+                    <el-checkbox-group v-model="checkList1_4">
+                      <el-row>
+                        <el-checkbox :label="1">偏度（Skewness）</el-checkbox>
+                      </el-row>
+                      <el-row>
+                        <el-checkbox :label="2">峰度（Kurtosis）</el-checkbox>
+                      </el-row>
+                    </el-checkbox-group>
+                  </fieldset>
+                </form>
+
               </el-row>
               <el-row style="margin-top:10px;margin-bottom:10px">
-                <el-card shadow="never"
-                         :body-style="{ padding: '10px'}">
-                  <span>图表</span>
-                  <el-checkbox-group v-model="checkList1_5">
-                    <el-row>
-                      <el-checkbox :label="5">条形图</el-checkbox>
-                    </el-row>
-                    <el-row>
-                      <el-checkbox :label="6">饼图</el-checkbox>
-                    </el-row>
-                    <el-row>
-                      <el-checkbox :label="7">折线图</el-checkbox>
-                    </el-row>
-                    <el-row>
-                      <el-checkbox :label="8">箱线图</el-checkbox>
-                    </el-row>
-                    <el-row>
-                      <el-checkbox :label="9">直方图</el-checkbox>
-                    </el-row>
-                    <el-row>
-                      <el-checkbox :label="10">散点图</el-checkbox>
-                    </el-row>
-                  </el-checkbox-group>
-                </el-card>
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">图表</legend>
+                    <el-checkbox-group v-model="checkList1_5">
+                      <el-row>
+                        <el-checkbox :label="5">条形图</el-checkbox>
+                      </el-row>
+                      <el-row>
+                        <el-checkbox :label="6">饼图</el-checkbox>
+                      </el-row>
+                      <el-row>
+                        <el-checkbox :label="7">折线图</el-checkbox>
+                      </el-row>
+                      <el-row>
+                        <el-checkbox :label="8">箱线图</el-checkbox>
+                      </el-row>
+                      <el-row>
+                        <el-checkbox :label="9">直方图</el-checkbox>
+                      </el-row>
+                      <el-row>
+                        <el-checkbox :label="10">散点图</el-checkbox>
+                      </el-row>
+                    </el-checkbox-group>
+                  </fieldset>
+                </form>
+
               </el-row>
             </el-col>
           </el-row>
@@ -564,6 +557,11 @@
                                  @change="handleChange2_1"
                                  :min="0"
                                  :max="100"></el-input-number>%
+
+              </el-row>
+              <el-row style="margin-top:10px;margin-bottom:10px">零假设的期望值：
+                <el-input style="width:180px;"></el-input>
+
               </el-row>
             </el-tab-pane>
             <el-tab-pane name="second-2"
@@ -591,13 +589,40 @@
                              :data="data2_2_2"
                              :titles="['变量', '分组变量']"></el-transfer>
               </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
-                <el-input-number v-model="num2_2"
-                                 controls-position="right"
-                                 @change="handleChange2_2"
-                                 :min="0"
-                                 :max="100"></el-input-number>%
+
+              <el-row :gutter="20">
+
+                <el-col :span="12">
+                  <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
+                    <el-input-number size="mini"
+                                     v-model="num2_2"
+                                     controls-position="right"
+                                     @change="handleChange2_2"
+                                     :min="0"
+                                     :max="100"></el-input-number>%
+                  </el-row>
+                  <el-row>
+                    <el-checkbox>
+                      进行方差齐性预检验
+                    </el-checkbox>
+                  </el-row>
+                </el-col>
+                <el-col :span="12">
+                  <form>
+                    <fieldset class="groupbox-boarder">
+                      <legend class="one-of-groupbox-boarder">t检验的方式</legend>
+                      <el-radio-group v-model="radio2_2">
+                        <el-radio :label="3">标准t检验</el-radio></br>
+                        <el-radio :label="6">Welch t 检验</el-radio></br>
+                        <el-radio :label="9">根据方差齐性检验结果自动选择</el-radio>
+                      </el-radio-group>
+                    </fieldset>
+                  </form>
+
+                </el-col>
+
               </el-row>
+
             </el-tab-pane>
             <el-tab-pane name="second-3"
                          label="配对样本t检验">
@@ -623,16 +648,37 @@
                 <el-transfer v-model="value2_3_2"
                              :data="data2_3_2"
                              :titles="['变量', '分组变量']"></el-transfer>
+
               </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
-                <el-input-number v-model="num2_3"
-                                 controls-position="right"
-                                 @change="handleChange2_3"
-                                 :min="0"
-                                 :max="100"></el-input-number>%
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <el-checkbox v-model="checked">组别相关性检验</el-checkbox>
+              <el-row :gutter="20"
+                      style="margin-top:10px;margin-bottom:10px">
+
+                <el-col :span="12">
+                  <el-row>置信区间百分比：
+                    <el-input-number v-model="num2_3"
+                                     controls-position="right"
+                                     @change="handleChange2_3"
+                                     :min="0"
+                                     :max="100"></el-input-number>%
+                  </el-row>
+                </el-col>
+                <el-col :span="12">
+
+                  <form>
+                    <fieldset class="groupbox-boarder">
+                      <legend class="one-of-groupbox-boarder">预检验</legend>
+                      <el-checkbox-group v-model="checkList2_3">
+                        <el-row>
+                          <el-checkbox :label="1">方差齐性预检验</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="2">组别相关性检验</el-checkbox>
+                        </el-row>
+                      </el-checkbox-group>
+                    </fieldset>
+                  </form>
+
+                </el-col>
               </el-row>
             </el-tab-pane>
           </el-tabs>
@@ -645,7 +691,8 @@
                 <el-col :span="18">
                   <el-transfer v-model="value3_1_1"
                                :data="data3_1_1"
-                               :titles="['变量', '检测变量']"></el-transfer>
+                               :titles="['变量', '因变量']"></el-transfer>
+
                 </el-col>
                 <el-col :span="6">
                   <el-row>
@@ -662,7 +709,8 @@
               <el-row>
                 <el-transfer v-model="value3_1_2"
                              :data="data3_1_2"
-                             :titles="['变量', '分组变量']"></el-transfer>
+                             :titles="['变量', '自变量']"></el-transfer>
+
               </el-row>
               <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
                 <el-input-number v-model="num3_1"
@@ -673,35 +721,67 @@
               </el-row>
               <el-row :gutter="20">
                 <el-col :span="12">
-                  <el-card shadow="never"
-                           :body-style="{ padding: '10px'}">
-                    <span>分析选项</span>
-                    <el-checkbox-group v-model="checkList3_1_1">
+                  <form>
+                    <fieldset class="groupbox-boarder">
+                      <legend class="one-of-groupbox-boarder">分析选项</legend>
                       <el-row>
-                        <el-checkbox :label="1">levene方差齐性检验</el-checkbox>
+                        方差分析类型：
+                        <el-select v-model="value3_1"
+                                   size="mini">
+                          <el-option v-for="item in options3_1"
+                                     :key="item.value"
+                                     :label="item.label"
+                                     :value="item.value">
+                          </el-option>
+                        </el-select>
+
                       </el-row>
-                      <el-row>
-                        <el-checkbox :label="2">LSD-两两t检验</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="3">bonferroni-两两检验</el-checkbox>
-                      </el-row>
-                    </el-checkbox-group>
-                  </el-card>
+                      <el-checkbox-group v-model="checkList3_1_1">
+
+                        <el-row>
+                          <el-checkbox :label="1">levene方差齐性检验</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="2">正态性检验</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="3">因素间交互作用检验</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="4">tukey检验</el-checkbox>
+                        </el-row>
+                      </el-checkbox-group>
+                    </fieldset>
+                  </form>
+                  <!-- <form>
+                          <fieldset class="groupbox-boarder">
+                            <legend class="one-of-groupbox-boarder"></legend>
+                          </fieldset>
+                        </form> -->
+
                 </el-col>
                 <el-col :span="12">
-                  <el-card shadow="never"
-                           :body-style="{ padding: '10px'}">
-                    <span>输出选项</span>
-                    <el-checkbox-group v-model="checkList3_1_2">
-                      <el-row>
-                        <el-checkbox :label="1">输出残差图</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="2">输出描述性结果</el-checkbox>
-                      </el-row>
-                    </el-checkbox-group>
-                  </el-card>
+                  <form>
+                    <fieldset class="groupbox-boarder">
+                      <legend class="one-of-groupbox-boarder">输出选项</legend>
+                      <el-checkbox-group v-model="checkList3_1_2">
+
+                        <el-row>
+                          <el-checkbox :label="1">方差分析结果</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="2">回归结果</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="3">eta平方</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="4">omega平方</el-checkbox>
+                        </el-row>
+                      </el-checkbox-group>
+                    </fieldset>
+                  </form>
+
                 </el-col>
               </el-row>
             </el-tab-pane>
@@ -711,19 +791,13 @@
                   <el-row>
                     <el-transfer v-model="value3_2_1"
                                  :data="data3_2_1"
-                                 :titles="['变量', '控制变量']"></el-transfer>
+                                 :titles="['变量', '检测变量']"></el-transfer>
                     <el-transfer v-model="value3_2_2"
                                  :data="data3_2_2"
-                                 :titles="['变量', '随机因子']"></el-transfer>
-                  </el-row>
-                  <el-row>
-                    <el-transfer v-model="value3_2_3"
-                                 :data="data3_2_3"
                                  :titles="['变量', '分组变量']"></el-transfer>
-                    <el-transfer v-model="value3_2_4"
-                                 :data="data3_2_4"
-                                 :titles="['变量', '协变量']"></el-transfer>
+
                   </el-row>
+
                 </el-col>
                 <el-col :span="6">
                   <el-row>
@@ -744,25 +818,66 @@
                                  :min="0"
                                  :max="100"></el-input-number>%
               </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <el-card shadow="never"
-                         :body-style="{ padding: '10px'}">
-                  <span>分析选项</span>
-                  <el-checkbox-group v-model="checkList3_2">
-                    <el-row>
-                      <el-checkbox :label="1">levene方差齐性检验</el-checkbox>
-                    </el-row>
-                    <el-row>
-                      <el-checkbox :label="2">主体间效应检验</el-checkbox>
-                    </el-row>
-                    <el-row>
-                      <el-checkbox :label="3">LSD-两两t检验</el-checkbox>
-                    </el-row>
-                    <el-row>
-                      <el-checkbox :label="4">bonferroni-两两检验</el-checkbox>
-                    </el-row>
-                  </el-checkbox-group>
-                </el-card>
+
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <form>
+                    <fieldset class="groupbox-boarder">
+                      <legend class="one-of-groupbox-boarder">分析选项</legend>
+                      <el-row>
+                        方差分析类型：
+                        <el-select v-model="value3_2"
+                                   size="mini">
+                          <el-option v-for="item in options3_2"
+                                     :key="item.value"
+                                     :label="item.label"
+                                     :value="item.value">
+                          </el-option>
+                        </el-select>
+
+                      </el-row>
+                      <el-checkbox-group v-model="checkList3_2_1">
+
+                        <el-row>
+                          <el-checkbox :label="1">levene方差齐性检验</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="2">正态性检验</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="3">因素间交互作用检验</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="4">tukey检验</el-checkbox>
+                        </el-row>
+                      </el-checkbox-group>
+                    </fieldset>
+                  </form>
+
+                </el-col>
+                <el-col :span="12">
+                  <form>
+                    <fieldset class="groupbox-boarder">
+                      <legend class="one-of-groupbox-boarder">输出选项</legend>
+                      <el-checkbox-group v-model="checkList3_2_2">
+
+                        <el-row>
+                          <el-checkbox :label="1">方差分析结果</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="2">回归结果</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="3">eta平方</el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox :label="4">omega平方</el-checkbox>
+                        </el-row>
+                      </el-checkbox-group>
+                    </fieldset>
+                  </form>
+
+                </el-col>
               </el-row>
             </el-tab-pane>
           </el-tabs>
@@ -780,6 +895,24 @@
                 <el-transfer v-model="value4_2"
                              :data="data4_2"
                              :titles="['变量', '自变量']"></el-transfer>
+
+              </el-row>
+              <el-row style="margin-top:10px;margin-bottom:10px">
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">参数设置</legend>
+                    <el-checkbox-group v-model="checkList4">
+
+                      <el-row>
+                        <el-checkbox :label="1">interception</el-checkbox>
+                      </el-row>
+                      <el-row>
+                        <el-checkbox :label="2">normalization</el-checkbox>
+                      </el-row>
+
+                    </el-checkbox-group>
+                  </fieldset>
+                </form>
               </el-row>
             </el-col>
             <el-col :span="6">
@@ -808,6 +941,79 @@
                 <el-transfer v-model="value5_2"
                              :data="data5_2"
                              :titles="['变量', '自变量']"></el-transfer>
+
+              </el-row>
+              <el-row style="margin-top:10px;margin-bottom:10px">
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">参数设置</legend>
+                    <el-checkbox-group v-model="checkList5">
+
+                      <el-row>
+                        <el-checkbox :label="1">intercept</el-checkbox>
+                        基准精度<el-input v-model="input5_1"
+                                  type="number"
+                                  size="mini"
+                                  style="width:100px;"></el-input>
+                      </el-row>
+                      <el-row>
+                        <el-checkbox :label="2">class weight</el-checkbox>
+                      </el-row>
+
+                    </el-checkbox-group>
+                  </fieldset>
+                </form>
+                <!-- <form>
+                          <fieldset class="groupbox-boarder">
+                            <legend class="one-of-groupbox-boarder"></legend>
+                          </fieldset>
+                        </form> -->
+                <!-- <el-card shadow="never"
+                                 :body-style="{ padding: '10px'}">
+                          <span>参数设置</span>
+                          <el-checkbox-group v-model="checkList5">
+
+                            <el-row>
+                              <el-checkbox :label="1">intercept</el-checkbox>
+                              基准精度<el-input v-model="input5_1"
+                                        type="number"
+                                        size="mini"
+                                        style="width:100px;"></el-input>
+                            </el-row>
+                            <el-row>
+                              <el-checkbox :label="2">class weight</el-checkbox>
+                            </el-row>
+
+                          </el-checkbox-group>
+                        </el-card> -->
+              </el-row>
+              <el-row style="margin-top:10px;margin-bottom:10px">
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">高级参数</legend>
+                    <el-row>正规化
+                      <el-select v-model="value5"
+                                 size="mini">
+                        <el-option v-for="item in options5"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value">
+                        </el-option>
+                      </el-select>
+                      精度基准<el-input v-model="input5_1"
+                                type="number"
+                                size="mini"
+                                style="width:100px;"></el-input>
+                    </el-row>
+                    <el-row style="margin-top:10px;margin-bottom:10px">
+                      惩罚因子C <el-input type="number"
+                                v-model="input5_2"
+                                size="mini"
+                                style="width:100px;"></el-input>
+                    </el-row>
+                  </fieldset>
+                </form>
+
               </el-row>
             </el-col>
             <el-col :span="6">
@@ -837,11 +1043,74 @@
                              :data="data6_2"
                              :titles="['变量', '自变量']"></el-transfer>
               </el-row>
-              <el-row>
-                <el-transfer v-model="value6_3"
-                             :data="data6_3"
-                             :titles="['类型', 'Kernal类型']"></el-transfer>
+
+              <el-row style="margin-top:10px;margin-bottom:10px">
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">参数设置</legend>
+                    <el-row>
+                      kernal<el-select v-model="value6"
+                                 size="mini">
+                        <el-option v-for="item in options6"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value">
+                        </el-option>
+                      </el-select>
+                      基准精度<el-input v-model="input6_1"
+                                type="number"
+                                size="mini"
+                                style="width:100px;"></el-input>
+                    </el-row>
+                    <el-row>
+                      max iter<el-input v-model="input6_2"
+                                type="number"
+                                size="mini"
+                                style="width:100px;"></el-input>
+                    </el-row>
+
+                  </fieldset>
+                </form>
+
               </el-row>
+              <el-row style="margin-top:10px;margin-bottom:10px">
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">高级参数</legend>
+
+                    <el-row tyle="margin-top:20px;margin-bottom:10px">
+                      惩罚因子C <el-input-number v-model="input6_3"
+                                       :precision="1"
+                                       :step="0.1"
+                                       controls-position="right"
+                                       size="mini"
+                                       style="width:100px;"></el-input-number>
+                      degree <el-input-number v-model="input6_4"
+                                       :precision="1"
+                                       :step="0.1"
+                                       controls-position="right"
+                                       size="mini"
+                                       style="width:100px;"></el-input-number>
+                    </el-row>
+                    <el-row tyle="margin-top:10px;margin-bottom:10px">
+                      核函数常数 <el-input-number v-model="input6_5"
+                                       :precision="1"
+                                       :step="0.1"
+                                       controls-position="right"
+                                       size="mini"
+                                       style="width:100px;"></el-input-number>
+                      gamma <el-input-number :precision="1"
+                                       :step="0.1"
+                                       controls-position="right"
+                                       v-model="input6_6"
+                                       size="mini"
+                                       style="width:100px;"></el-input-number>
+                    </el-row>
+                  </fieldset>
+                </form>
+
+              </el-row>
+
             </el-col>
             <el-col :span="6">
               <el-row>
@@ -869,6 +1138,55 @@
                 <el-transfer v-model="value7_2"
                              :data="data7_2"
                              :titles="['变量', '自变量']"></el-transfer>
+
+              </el-row>
+
+              <el-row style="margin-top:10px;margin-bottom:10px">
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">参数设置</legend>
+                    <el-row>
+                      模型<el-select v-model="value7"
+                                 size="mini">
+                        <el-option v-for="item in options7"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value">
+                        </el-option>
+                      </el-select>
+                      <el-checkbox v-model="check7">fit prior</el-checkbox>
+
+                    </el-row>
+                  </fieldset>
+                </form>
+
+              </el-row>
+              <el-row style="margin-top:10px;margin-bottom:10px">
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">高级参数</legend>
+                    <el-row tyle="margin-top:20px;margin-bottom:10px">
+                      smoothing<el-input type="number"
+                                v-model="input7_1"
+                                size="mini"
+                                style="width:100px;"></el-input>
+
+                    </el-row>
+                    <el-row tyle="margin-top:10px;margin-bottom:10px">
+                      alpha <el-input type="number"
+                                v-model="input7_2"
+                                size="mini"
+                                style="width:100px;"></el-input>
+                    </el-row>
+                    <el-row>
+                      gamma <el-input type="number"
+                                v-model="input7_3"
+                                size="mini"
+                                style="width:100px;"></el-input>
+                    </el-row>
+                  </fieldset>
+                </form>
+
               </el-row>
             </el-col>
             <el-col :span="6">
@@ -898,23 +1216,63 @@
                              :data="data7_2"
                              :titles="['变量', '自变量']"></el-transfer>
               </el-row>
-              <el-row>
-                <el-row style="margin-top:20px">
-                  <span>Trees</span>
-                </el-row>
-                <el-row>
-                  <el-input v-model="input8_1"
-                            size="mini"
-                            style="width:120px;"></el-input>
-                </el-row>
-                <el-row style="margin-top:20px">
-                  <span>variables</span>
-                </el-row>
-                <el-row>
-                  <el-input v-model="input8_2"
-                            size="mini"
-                            style="width:120px;"></el-input>
-                </el-row>
+
+              <el-row style="margin-top:10px;margin-bottom:10px">
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">参数设置</legend>
+                    <el-row>
+                      criterion<el-select v-model="value8"
+                                 size="mini">
+                        <el-option v-for="item in options8"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value">
+                        </el-option>
+                      </el-select>
+                      <el-checkbox v-model="check8">class weight</el-checkbox>
+
+                    </el-row>
+                    <el-row tyle="margin-top:20px;margin-bottom:10px">
+                      max deepth<el-input type="number"
+                                v-model="input8_1"
+                                size="mini"
+                                style="width:100px;"></el-input>
+
+                    </el-row>
+                    <el-row tyle="margin-top:20px;margin-bottom:10px">
+                      max features<el-input type="number"
+                                v-model="input8_2"
+                                size="mini"
+                                style="width:100px;"></el-input>
+
+                    </el-row>
+
+                  </fieldset>
+                </form>
+
+              </el-row>
+              <el-row style="margin-top:10px;margin-bottom:10px">
+                <form>
+                  <fieldset class="groupbox-boarder">
+                    <legend class="one-of-groupbox-boarder">高级参数</legend>
+                    <el-row tyle="margin-top:20px;margin-bottom:10px">
+                      min samples split<el-input type="number"
+                                v-model="input8_3"
+                                size="mini"
+                                style="width:100px;"></el-input>
+
+                    </el-row>
+                    <el-row tyle="margin-top:10px;margin-bottom:10px">
+                      min samples leaf <el-input type="number"
+                                v-model="input8_4"
+                                size="mini"
+                                style="width:100px;"></el-input>
+                    </el-row>
+
+                  </fieldset>
+                </form>
+
               </el-row>
             </el-col>
             <el-col :span="6">
@@ -1018,6 +1376,7 @@ export default {
       ChilerenConcepts: ChilerenConceptsoptions,
       NewMethodVisible: false,
       tabPosition: "left",
+      radio2_2: 3,
       data1: [
         { key: "1", label: "变量1" },
         { key: "2", label: "变量2" },
@@ -1134,8 +1493,14 @@ export default {
       value3_1_2: [],
       value3_2_1: [],
       value3_2_2: [],
-      value3_2_3: [],
-      value3_2_4: [],
+      //select 的model
+      value3_1: [],
+      value3_2: [],
+      value5: [],
+      value6: [],
+      value7: [],
+      value8: [],
+      //
       value4_1: [],
       value4_2: [],
       value5_1: [],
@@ -1150,17 +1515,103 @@ export default {
       checkList1_3: [],
       checkList1_4: [],
       checkList1_5: [],
-      checkList3_1_1: [],
-      checkList3_1_2: [],
-      checkList3_2: [],
+      checkList2_3: [2],
+      checkList3_1_1: [1, 2, 3, 4],
+      checkList3_1_2: [1, 2, 3],
+      checkList3_2_1: [1, 2, 3, 4],
+      checkList3_2_2: [1, 2, 3],
+      checkList4: [2],
+      checkList5: [1, 2],
+      check7: true,
+      check8: true,
+      input5_1: 0.0001,
+      input5_2: 1.0,
+      input6_1: 0.0001,
+      input6_2: 10000,
+      input6_3: 1.0,
+      input6_4: 1.0,
+      input6_5: 1.0,
+      input6_6: 1.0,
+      input7_1: 0.0001,
+      input7_2: 1.0,
+      input7_3: 1.0,
       input1: "",
-      input8_1: 200,
-      input8_2: 300,
+      input8_1: 8,
+      input8_2: 5,
+      input8_3: 5,
+      input8_4: 2,
+      num1: 3,
       num2_1: 95,
       num2_2: 95,
       num2_3: 95,
       num3_1: 95,
       num3_2: 95,
+      options3_1: [{
+        value: '选项1',
+        label: 'typeⅠ'
+      }, {
+        value: '选项2',
+        label: 'typeⅡ'
+      }, {
+        value: '选项3',
+        label: 'typeⅢ'
+      }],
+      options3_2: [{
+        value: '选项1',
+        label: 'typeⅠ'
+      }, {
+        value: '选项2',
+        label: 'typeⅡ'
+      }, {
+        value: '选项3',
+        label: 'typeⅢ'
+      }],
+      options5: [{
+        value: '选项1',
+        label: 'L1'
+      }, {
+        value: '选项2',
+        label: 'L2'
+      },],
+      options6: [
+        {
+          value: '选项1',
+          label: '多项式'
+        }, {
+          value: '选项2',
+          label: 'Radial basis'
+        },
+        {
+          value: '选项3',
+          label: '线性'
+        },
+        {
+          value: '选项4',
+          label: 'Sigmoid'
+        },
+      ],
+      options7: [
+        {
+          value: '选项1',
+          label: '高斯'
+        }, {
+          value: '选项2',
+          label: '多项分布'
+        },
+        {
+          value: '选项3',
+          label: '伯努利'
+        }
+      ],
+      options8: [
+        {
+          value: '选项1',
+          label: '信息增益'
+        }, {
+          value: '选项2',
+          label: 'gini impurity'
+        }
+      ],
       checked: true,
       // 新增变量弹框
       NewVarTabs: "NewVariable",
@@ -1516,5 +1967,14 @@ export default {
   background: #ffffff;
   padding: 0 10px;
   width: 150px;
+}
+.groupbox-boarder {
+  border: 1px solid #ccc;
+  box-shadow: 0px 0px 0px 0px #000;
+}
+.one-of-groupbox-boarder {
+  padding: 0 10px;
+  background-color: #428bca;
+  color: #fffffb;
 }
 </style>
