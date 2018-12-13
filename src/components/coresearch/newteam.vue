@@ -48,31 +48,31 @@
             <el-row style="margin-top:20px;margin-bottom:10px">
               <el-col :span="23"
                       :offset="1">
-                <div>项目名称：{{this.detail[0][0].NAME}}</div>
+                <div>项目名称：{{detail[0][0].NAME}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="23"
                       :offset="1">
-                <div>项目发起日期：{{this.detail[0][0].CREATEDATE}}</div>
+                <div>项目发起日期：{{detail[0][0].CREATEDATE}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="7"
                       :offset="1">
-                <div>项目发起人：{{this.detail[2][1].DOCTORNAME}}</div>
+                <div>项目发起人：{{Initiator[0].DOCTORNAME}}</div>
               </el-col>
               <el-col :span="16">
-                <div>发起人单位：{{this.detail[2][1].ORGANIZATIONNAME}}</div>
+                <div>发起人单位：{{Initiator[0].ORGANIZATIONNAME}}</div>
               </el-col>
             </el-row>
-            <div v-if="this.detail[2].length > 1">
-              <el-row v-for="people in detail[2].slice(0,1)"
+            <div v-if="detail[2].length > 0">
+              <el-row v-for="people in detail[2]"
                       :key="people.USERID"
                       style="margin-top:10px;margin-bottom:10px">
                 <el-col :span="1">
                   <i class="el-icon-delete"
-                     @click="deleteParticipation(people.USERID, index)"></i>
+                     @click="deleteParticipation(people.USERID)"></i>
                 </el-col>
                 <el-col :span="7">
                   <div>项目参与人：{{people.DOCTORNAME}}</div>
@@ -95,11 +95,11 @@
             style="margin-top:10px;margin-bottom:10px">
       <el-col :span="5"
               :offset="7">
-        <el-button type="info">生成</el-button>
+        <el-button type="primary">生成</el-button>
       </el-col>
       <el-col :span="12"
               :offset="7">
-        <el-button type="info"
+        <el-button type="primary"
                    @click="goResult()">构建团队</el-button>
       </el-col>
     </el-row>
@@ -113,13 +113,31 @@ export default {
   data() {
     return {
       detail: []
+      //Initiator: null
+    }
+  },
+  computed: {
+    Initiator: function () {
+      //console.log("datail", this.detail[1].length)
+      for (var i = 0; i < this.detail[1].length; i++) {
+        //console.log(this.detail[1][i].INITIATORTAG)
+        if (this.detail[1][i].INITIATORTAG == "1   ") {
+          console.log(this.detail[1][i].INITIATORTAG)
+          return this.detail[2].splice(i, 1)
+        }
+      }
+      console.log("mistake")
+
+
     }
   },
   mounted() {
     console.log("collaborationId", this.$route.query.collaborationId)
     this.getCollaborInfo(this.$route.query.collaborationId)
+
   },
   methods: {
+
     getCollaborInfo(COLLABORATIONID) {
       axios.get('collaboration/CollaborInfo', {
         params: {
@@ -134,6 +152,7 @@ export default {
             console.log("data", response.data.data)
             this.detail = response.data.data
             //this.detail[3][0].NAME = response.data.data[3][0].NAME
+
           }
         })
         .catch(function (error) {
@@ -148,17 +167,12 @@ export default {
 
       })
         .then((response) => {
-          this.$message.success("删除成功！");
-          if (response.data.msg == "成功修改协同状态数据!") {
+          if (response.data.msg == "成功删除成员") {
+            this.$message.success("删除成功！");
             console.log("deletesuccess")
-
-            // this.$router.push({
-            //   path: 'result',
-            //   params:
-            //     {
-            //       collaborationId: this.$route.query.collaborationId
-            //     }
-            // });
+            this.getCollaborInfo(this.$route.query.collaborationId)
+          } else {
+            this.$message.error("删除失败！");
           }
         })
         .catch(function (error) {

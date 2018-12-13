@@ -22,11 +22,11 @@
                 justify="space-between"
                 style="margin-top:10px;margin-bottom:10px">
           <el-col :span="12">
-            <el-button type="info"
+            <el-button type="primary"
                        @click="goNewResearch()">新建团队</el-button>
           </el-col>
           <el-col :span="12">
-            <el-button type="info"
+            <el-button type="primary"
                        @click="goJoinTeam()">加入团队</el-button>
           </el-col>
         </el-row>
@@ -36,10 +36,14 @@
           <el-steps :active="2"
                     align-center>
             <el-step title="1 研究开始"
+                     style="cursor:pointer"
                      @click.native="to1()"></el-step>
             <el-step title="2 团队建立"
+                     style="cursor:pointer"
                      @click.native="to2()"></el-step>
-            <el-step title="3 多中心运算"></el-step>
+            <el-step title="3 多中心运算"
+                     style="cursor:pointer"
+                     @click.native="to3()"></el-step>
             <el-step title="4 成果讨论"></el-step>
             <el-step title="5 资格审核"></el-step>
           </el-steps>
@@ -48,18 +52,18 @@
           <el-card>
 
             <el-row style="margin-top:20px;margin-bottom:10px">
-              <div>项目名称：{{this.detail[0][0].NAME}}</div>
+              <div>项目名称：{{detail[0][0].NAME}}</div>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="8">
-                <div>项目发起人：{{this.detail[2][1].DOCTORNAME}}</div>
+                <div>项目发起人：{{Initiator[0].DOCTORNAME}}</div>
               </el-col>
               <el-col :span="16">
-                <div>发起人单位：{{this.detail[2][1].ORGANIZATIONNAME}}</div>
+                <div>发起人单位：{{Initiator[0].ORGANIZATIONNAME}}</div>
               </el-col>
             </el-row>
-            <div v-if="this.detail[2].length > 1">
-              <el-row v-for="people in detail[2].slice(0,1)"
+            <div v-if=" detail[2].length > 0">
+              <el-row v-for="people in detail[2]"
                       :key="people.USERID"
                       style="margin-top:10px;margin-bottom:10px">
                 <el-col :span="8">
@@ -73,38 +77,38 @@
 
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="24">
-                <div>项目发起日期：{{this.detail[0][0].CREATEDATE}}</div>
+                <div>项目发起日期：{{detail[0][0].CREATEDATE}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="24">
-                <div>项目简介：{{this.detail[0][0].TARGET}}</div>
+                <div>项目简介：{{detail[0][0].TARGET}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="24">
-                <div>成果分配方案：{{this.detail[0][0].OUTCOMEDISTRIBUTION}}</div>
+                <div>成果分配方案：{{detail[0][0].OUTCOMEDISTRIBUTION}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="24">
-                <div>项目进度：{{this.detail[3][0].NAME}}</div>
+                <div>项目进度：{{detail[3][0].NAME}}</div>
               </el-col>
             </el-row>
             <!-- <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="24">
-                <div>研究有效期：{{this.detail[3][0].NAME}}</div>
+                <div>研究有效期：{{detail[3][0].NAME}}</div>
               </el-col>
             </el-row> -->
             <el-row type="flex"
                     justify="center"
                     style="margin-top:30px;margin-bottom:10px">
               <el-col :span="12">
-                <el-button type="info"
+                <el-button type="primary"
                            @click="goNewTeam()">继续研究</el-button>
               </el-col>
               <el-col :span="12">
-                <el-button type="info">退出团队</el-button>
+                <el-button type="primary">退出团队</el-button>
               </el-col>
             </el-row>
           </el-card>
@@ -120,6 +124,7 @@ export default {
     return {
       list: [],
       detail: [],
+      participant: [],
       team: [{
         id: -1,
         label: '研究中',
@@ -135,8 +140,24 @@ export default {
       }
     };
   },
+  computed: {
+    Initiator: function () {
+      //console.log("datail", this.detail[1].length)
+      for (var i = 0; i < this.detail[1].length; i++) {
+        //console.log(this.detail[1][i].INITIATORTAG)
+        if (this.detail[1][i].INITIATORTAG == "1   ") {
+          console.log(this.detail[1][i].INITIATORTAG)
+          return this.detail[2].splice(i, 1)
+        }
+      }
+      console.log("mistake")
+
+
+    }
+  },
   mounted() {
     this.getMyCollaborList()
+    console.log("token", this.GLOBAL.token)
 
   },
   methods: {
@@ -158,6 +179,7 @@ export default {
                   label: this.list[i].NAME,
                   id: this.list[i].COLLABORATIONID
                 })
+                console.log(this.list[i].COLLABORATIONID)
               } else {
                 this.team[1].children.push({
                   label: this.list[i].NAME,
@@ -213,6 +235,7 @@ export default {
       if (data.id > 0) {
         this.getCollaborInfo(data.id)
         //this.detail[3][0].NAME = "agags"
+        console.log("length", this.detail[2].length)
       }
 
     },
@@ -238,6 +261,9 @@ export default {
     },
     to2() {
       this.$router.push({ path: 'qualification' })
+    },
+    to3() {
+      this.$router.push({ path: 'newcoresearch' })
     }
   }
 };
