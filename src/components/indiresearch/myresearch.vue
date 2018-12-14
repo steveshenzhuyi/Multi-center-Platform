@@ -223,7 +223,7 @@
       </el-col>
     </el-row>
 
-    <!-- 新建变量 dwx 2018.12.14 -->
+    <!-- 新建变量 dwx -->
     <el-dialog title="新建变量"
                :visible.sync="NewVarVisible"
                width="50%"
@@ -1623,7 +1623,7 @@ export default {
         }
       ],
       checked: true,
-      // 新增变量弹框
+      // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
       VariableTable: []
     };
@@ -1899,7 +1899,7 @@ export default {
     handleChange3_2(value) {
       console.log(value);
     },
-    // 新增变量弹框 dwx 2018.12.14
+    // 新增变量弹框 dwx
     getVariableTable() {
       axios.get('/feature/getList', {
         params: {
