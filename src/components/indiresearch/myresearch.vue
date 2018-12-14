@@ -226,61 +226,45 @@
     <!-- 新建变量 -->
     <el-dialog title="新建变量"
                :visible.sync="NewVarVisible"
-               width="80%"
+               width="50%"
                :before-close="handleClose">
       <el-tabs :value="NewVarTabs">
         <el-tab-pane label="新增变量"
                      name="NewVariable">
-          <el-row :gutter=30>
-            <el-col :span=10
-                    :offset=1>
-              <div class="main-border">
-                <div class="one-of-main-border">
-                  <span>拖拽右侧变量至此</span>
-                </div>
-                <draggable :options="{group:'condition'}">
-                  <div class="drag-cover"></div>
-                </draggable>
-              </div>
-            </el-col>
-            <el-col :span=10
-                    :offset=1>
-              <div id="sifting-condition-item"
-                   class="sifting-queue-content">
-                <component :is="VarForm"></component>
-              </div>
-            </el-col>
-          </el-row>
         </el-tab-pane>
         <el-tab-pane label="变量列表"
                      name="VarList">
-          <el-table :data="VariableTable"
-                    stripe
-                    border>
-            <el-table-column prop="VarCName"
-                             label="变量名称（中文）"
-                             width="150"></el-table-column>
-            <el-table-column prop="VarEName"
-                             label="变量名称（英文）"
-                             width="150"></el-table-column>
-            <el-table-column prop="VarDiscription"
-                             label="变量描述"
-                             width="200"></el-table-column>
-            <el-table-column prop="VarDetail"
-                             label="变量详情"
-                             width="300"
-                             show-overflow-tooltip></el-table-column>
-            <el-table-column label="编辑">
-              <template slot-scope="scope">
-                <el-button size="mini"
-                           type="primary"
-                           @click="EditVar(scope.$index)">编辑</el-button>
-                <el-button size="mini"
-                           type="primary"
-                           @click="CancelVar(scope.$index)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <el-row>
+            <el-col :span=24
+                    :offset=1>
+              <el-table :data="VariableTable"
+                        style="width:90%"
+                        stripe
+                        border>
+                <el-table-column prop="VarCName"
+                                 label="变量名称"
+                                 min-width="60%"></el-table-column>
+                <el-table-column prop="VarType"
+                                 label="变量类型"
+                                 min-width="60%"></el-table-column>
+                <el-table-column prop="VarDiscription"
+                                 label="变量描述"
+                                 min-width="150%"
+                                 show-overflow-tooltip></el-table-column>
+                <el-table-column label="编辑"
+                                 min-width="120%">
+                  <template slot-scope="scope">
+                    <el-button size="mini"
+                               type="primary"
+                               @click="EditVar(scope.$index)">编辑</el-button>
+                    <el-button size="mini"
+                               type="primary"
+                               @click="CancelVar(scope.$index)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-col>
+          </el-row>
         </el-tab-pane>
       </el-tabs>
       <span slot="footer"
@@ -1328,7 +1312,6 @@
 import axios from 'axios';
 
 import draggable from 'vuedraggable';
-import VarForm from './conditionform/Variableform.vue'
 
 const Excludeditemsoptions = [' ', '  ', '   '];
 const ChilerenConceptsoptions = [' ', '  ', '   '];
@@ -1645,17 +1628,14 @@ export default {
       NewVarTabs: "NewVariable",
       VariableTable: [{
         VarCName: '性别',
-        VarEName: 'GENDER',
+        VarType: '定性',
         VarDiscription: '样本的性别',
-        VarDetail: 'SELECT PERSON_ID, CASE WHEN WHATWAHTWAHT'
       },
       {
         VarCName: '年龄',
-        VarEName: 'AGE',
-        VarDiscription: '样本的年龄',
-        VarDetail: 'SELECT PERSON_ID, TO_NUMBER(WHATWAHTWAHT)'
-      }],
-      VarForm
+        VarType: '定量',
+        VarDiscription: '样本的年龄。这是一段很长的变量描述我也不知道我要说什么就是很长。变量描述就是要长长长长长',
+      }]
     };
   },
   mounted() {
@@ -1982,8 +1962,7 @@ export default {
 
   },
   components: {
-    draggable,
-    VarForm
+    draggable
   },
 };
 </script>
@@ -2030,17 +2009,6 @@ export default {
   border-radius: 5px;
   padding: 10px 0 0 10px;
   display: block;
-}
-.main-border {
-  border: 1px solid #ccc;
-  display: block;
-  margin-top: 40px;
-}
-.one-of-main-border {
-  transform: translate(10px, -12px);
-  background: #ffffff;
-  padding: 0 10px;
-  width: 150px;
 }
 .groupbox-boarder {
   border: 1px solid #ccc;
