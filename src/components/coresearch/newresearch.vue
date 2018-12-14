@@ -14,6 +14,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -29,6 +30,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -44,6 +46,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -59,6 +62,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -66,23 +70,68 @@
       <el-col :span="2">
         <div>团队成员</div>
       </el-col>
-      <el-col :span="10">
+      <el-col :span="6">
+        <el-cascader size="small"
+                     expand-trigger="hover"
+                     :options="orgdep"
+                     v-model="select1"
+                     placeholder="医院/科室">
+        </el-cascader>
+      </el-col>
+      <el-col :span="4">
+
+        <el-input size="small"
+                  placeholder="姓名"
+                  v-model="researchDetail.partiName">
+
+        </el-input>
+
+      </el-col>
+      <el-col :span="1"></el-col>
+    </el-row>
+    <el-row v-for="n in number"
+            type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
+        <div>团队成员</div>
+      </el-col>
+      <el-col :span="3">
+        <el-select size="small"
+                   v-model="select2"
+                   placeholder="请选择">
+          <el-option v-for="item in orgdep"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="3">
+        <el-select size="small"
+                   v-model="select3"
+                   placeholder="请选择">
+          <el-option v-for="item in orgdep[0].children"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="4">
         <div>
-          <el-input class="input-with-cascader"
-                    size="small"
+          <el-input size="small"
                     placeholder="姓名"
                     v-model="researchDetail.partiName">
-            <el-cascader size="small"
-                         expand-trigger="hover"
-                         :options="options"
-                         v-model="select1"
-                         slot="prepend"
-                         placeholder="医院/科室">
-            </el-cascader>
 
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"><i v-if="n == number"
+           class="el-icon-plus"
+           @click="number++"></i><i v-if="n == number"
+           class="el-icon-delete"
+           @click="number--"></i></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -98,6 +147,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -113,6 +163,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -128,6 +179,7 @@
           </el-input>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
@@ -139,20 +191,21 @@
         <div>
           <el-checkbox v-model="checked">我同意接收研究发起人相关协议</el-checkbox>
           <el-button type="text"
-                     @click="messagebox()">阅读协议</el-button>
+                     @click="showProtocol()">阅读协议</el-button>
         </div>
       </el-col>
+      <el-col :span="1"></el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="6">
-        <el-button type="info"
-                   :disabled="!this.checked"
-                   @click="tonewteam()">创建研究</el-button>
+        <el-button type="primary"
+                   :disabled="!checked"
+                   @click="goNewTeam()">创建研究</el-button>
       </el-col>
       <el-col :span="6">
-        <el-button type="info">取消创建</el-button>
+        <el-button type="primary">取消创建</el-button>
       </el-col>
     </el-row>
   </div>
@@ -165,21 +218,25 @@ export default {
   data() {
     return {
       checked: false,
-      options: [{
-        value: '浙一',
+      number: 1,
+      select1: [],
+      select2: [],
+      select3: [],
+      orgdep: [{
+        value: '0',
         label: '浙一',
         children: [{
-          value: '内科',
+          value: '0',
           label: '内科',
         }, {
-          value: '外科',
+          value: '1',
           label: '外科',
         }]
       }, {
-        value: '浙二',
+        value: '1',
         label: '浙二',
         children: [{
-          value: '内科',
+          value: '0',
           label: '内科',
         }]
       }],
@@ -194,13 +251,14 @@ export default {
         organizationCode: '',
         departmentCode: '',
         partiName: ''
-      },
-
-      select1: []
+      }
     }
   },
+  mounted() {
+    this.getOrgAndDep()
+  },
   methods: {
-    messagebox() {
+    showProtocol() {
       console.log(this.select1)
       this.$alert('协议内容', '协议', {
         confirmButtonText: '确定',
@@ -212,10 +270,35 @@ export default {
         }
       });
     },
-    tonewteam() {
+    getOrgAndDep() {
+      axios.get('/collaboration/organization', {
+        params: {
+          token: this.GLOBAL.token
+        }
+      })
+        .then((response) => {
+
+          if (response.data.msg == "success!") {
+            console.log("org", response.data.data)
+
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+
+    },
+    goNewTeam() {
       console.log(this.researchDetail)
+      this.$router.push({
+        path: 'newteam',
+        query:
+          {
+            collaborationId: 12
+          }
+      });
       axios.post('/collaboration/createResearch', {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOlsiMTg4NjgxOCAgICAgICAgICAgICAiXSwiZXhwIjoxNTc1NDUyMjg3ODM0LCJpYXQiOjE1NDM5MTYyODd9.PJPezRTd-Tp2MpfgOjGEcpA9hf44b93rgJDSr4xYNps",
+        "token": this.GLOBAL.token,
         "name": this.researchDetail.name,
         "target": this.researchDetail.target,
         "proposal": this.researchDetail.proposal,
@@ -231,8 +314,13 @@ export default {
         .then((response) => {
 
           if (response.data.msg == "成功插入协同状态数据!") {
-            this.$router.push({ path: 'newteam' });
-
+            // this.$router.push({
+            //   path: 'newteam',
+            //   params:
+            //     {
+            //       collaborationId: response.data.data
+            //     }
+            // });
           }
         })
         .catch(function (error) {

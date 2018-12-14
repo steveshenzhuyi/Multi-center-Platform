@@ -14,7 +14,7 @@
 import { TagsView } from './components'
 
 export default {
-  name: 'coresearch',
+  name: 'indiresearch',
   components: {
     TagsView
   },
@@ -23,7 +23,6 @@ export default {
   },
   methods: {
     clear() {
-      console.log("clear")
       this.$store.dispatch('delAllViews')
       this.$store.dispatch('addView', this.$route)
     }
