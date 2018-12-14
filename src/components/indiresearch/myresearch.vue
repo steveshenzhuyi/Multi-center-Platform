@@ -21,7 +21,7 @@
     </el-row>
     <el-row :gutter="20">
       <el-col :span="6">
-        <!-- 概念集模块/RH -->
+        <!-- 概念集模块/RH by lqh-->
         <el-row>
           <el-card class="box-card"
                    style="text-align:center;font-size:13px;height:100%">
@@ -32,32 +32,58 @@
             </div>
             <div class="expand">
               <el-button size="mini"
-                         @click="handleAddTop">添加新文件夹</el-button>
+                         @click="handleAddTop_concept">添加新文件夹</el-button>
               <el-button type="primary"
                          size="mini"
                          @click="dialogVisible = true">新建概念集</el-button>
-              <div>
-                <el-tree ref="expandMenuList"
-                         class="expand-tree"
-                         v-if="isLoadingTree"
-                         default-expand-all
-                         :data="conceptsets"
-                         node-key="id"
-                         :props="defaultProps"
-                         :expand-on-click-node="true"
-                         :render-content="renderContent"
-                         @node-drag-start="handleDragStart"
-                         @node-drag-enter="handleDragEnter"
-                         @node-drag-leave="handleDragLeave"
-                         @node-drag-over="handleDragOver"
-                         @node-drag-end="handleDragEnd"
-                         @node-drop="handleDrop"
-                         draggable
-                         :allow-drop="allowDrop"
-                         :allow-drag="allowDrag"
-                         :default-expanded-keys="defaultExpandKeys"
-                         @node-click="handleNodeClick"></el-tree>
-              </div>
+              <div class="slot-tree">
+              <el-tree ref="SlotMenuList"
+                       class="expand-tree"
+                       v-if="isLoadingTree"
+                       default-expand-all
+                       node-key="id"
+                       @node-drag-start="handleDragStart"
+                       @node-drag-enter="handleDragEnter"
+                       @node-drag-leave="handleDragLeave"
+                       @node-drag-over="handleDragOver"
+                       @node-drag-end="handleDragEnd"
+                       @node-drop="handleDrop"
+                       draggable
+                       :allow-drop="allowDrop"
+                       :allow-drag="allowDrag"
+                       :data="conceptsets"
+                       :props="defaultProps"
+                       :expand-on-click-node="false">
+                <span class="slot-t-node"
+                      slot-scope="{ node, data }">
+                  <!-- 未编辑状态 -->
+                  <span v-show="!node.isEdit">
+                    <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                    <span class="slot-t-icons">
+                      <!-- 新增按钮 -->
+                      <!--i class="el-icon-plus"
+                         @click="NodeAdd(node, data)"></i-->
+                      <!-- 编辑按钮 -->
+                      <i class="el-icon-edit"
+                         @click="NodeEdit_concept(node, data)"></i>
+                      <!-- 删除按钮 -->
+                      <i class="el-icon-delete"
+                         @click="NodeDel_concept(node, data)"></i>
+                    </span>
+                  </span>
+                  <!-- 编辑输入框 -->
+                  <span v-show="node.isEdit">
+                    <el-input class="slot-t-input"
+                              size="mini"
+                              autofocus
+                              v-model="data.label"
+                              :ref="'slotTreeInput'+data.id"
+                              @blur.stop="NodeBlur_concept(node, data)"
+                              @keyup.enter.native="NodeBlur_concept(node, data)"></el-input>
+                  </span>
+                </span>
+              </el-tree>
+            </div>
             </div>
           </el-card>
         </el-row>
@@ -71,35 +97,58 @@
                  class="clearfix">
               <span>队列</span>
             </div>
-
-            <div class="expand">
               <el-button size="mini"
-                         @click="handleAddTop">添加新文件夹</el-button>
+                         @click="handleAddTop_queue">添加新文件夹</el-button>
               <el-button type="primary"
                          size="mini"
                          @click="toCreateQueue">新建队列</el-button>
-              <div>
-                <el-tree ref="expandMenuList"
-                         class="expand-tree"
-                         v-if="isLoadingTree"
-                         :data="queuesets"
-                         node-key="id"
-                         :props="defaultProps"
-                         :expand-on-click-node="true"
-                         :render-content="renderContent"
-                         :default-expanded-keys="defaultExpandKeys"
-                         @node-click="handleNodeClick"
-                         @node-drag-start="handleDragStart"
-                         @node-drag-enter="handleDragEnter"
-                         @node-drag-leave="handleDragLeave"
-                         @node-drag-over="handleDragOver"
-                         @node-drag-end="handleDragEnd"
-                         @node-drop="handleDrop"
-                         draggable
-                         :allow-drop="allowDrop"
-                         :allow-drag="allowDrag"
-                         default-expand-all></el-tree>
-              </div>
+              <div class="slot-tree">
+              <el-tree ref="SlotMenuList"
+                       class="expand-tree"
+                       v-if="isLoadingTree"
+                       default-expand-all
+                       node-key="id"
+                       @node-drag-start="handleDragStart"
+                       @node-drag-enter="handleDragEnter"
+                       @node-drag-leave="handleDragLeave"
+                       @node-drag-over="handleDragOver"
+                       @node-drag-end="handleDragEnd"
+                       @node-drop="handleDrop"
+                       draggable
+                       :allow-drop="allowDrop"
+                       :allow-drag="allowDrag"
+                       :data="queuesets"
+                       :props="defaultProps"
+                       :expand-on-click-node="false">
+                <span class="slot-t-node"
+                      slot-scope="{ node, data }">
+                  <!-- 未编辑状态 -->
+                  <span v-show="!node.isEdit">
+                    <span :class="[data.id > queue_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                    <span class="slot-t-icons">
+                      <!-- 新增按钮 -->
+                      <!--i class="el-icon-plus"
+                         @click="NodeAdd(node, data)"></i-->
+                      <!-- 编辑按钮 -->
+                      <i class="el-icon-edit"
+                         @click="NodeEdit_queue(node, data)"></i>
+                      <!-- 删除按钮 -->
+                      <i class="el-icon-delete"
+                         @click="NodeDel_queue(node, data)"></i>
+                    </span>
+                  </span>
+                  <!-- 编辑输入框 -->
+                  <span v-show="node.isEdit">
+                    <el-input class="slot-t-input"
+                              size="mini"
+                              autofocus
+                              v-model="data.label"
+                              :ref="'slotTreeInput'+data.id"
+                              @blur.stop="NodeBlur_queue(node, data)"
+                              @keyup.enter.native="NodeBlur_queue(node, data)"></el-input>
+                  </span>
+                </span>
+              </el-tree>
             </div>
           </el-card>
         </el-row>
@@ -120,28 +169,11 @@
                          size="mini"
                          @click="NewMethodVisible=true">新建方法</el-button>
               <div>
-
-                <el-tree ref="expandMenuList"
-                         class="expand-tree"
-                         v-if="isLoadingTree"
-                         :data="analysismethods"
-                         node-key="id"
-                         :props="defaultProps"
-                         :expand-on-click-node="true"
-                         :render-content="renderContent"
-                         :default-expanded-keys="defaultExpandKeys"
-                         @node-click="handleNodeClick"
-                         @node-drag-start="handleDragStart"
-                         @node-drag-enter="handleDragEnter"
-                         @node-drag-leave="handleDragLeave"
-                         @node-drag-over="handleDragOver"
-                         @node-drag-end="handleDragEnd"
-                         @node-drop="handleDrop"
-                         draggable
-                         :allow-drop="allowDrop"
-                         :allow-drag="allowDrag"
-                         default-expand-all></el-tree>
-              </div>
+              <el-tree :data="analysismethods"
+                     :props="defaultProps"
+                     @node-click="handleNodeClick"
+                     default-expand-all></el-tree>
+            </div>
             </div>
 
           </el-card>
@@ -194,61 +226,45 @@
     <!-- 新建变量 -->
     <el-dialog title="新建变量"
                :visible.sync="NewVarVisible"
-               width="80%"
+               width="50%"
                :before-close="handleClose">
       <el-tabs :value="NewVarTabs">
         <el-tab-pane label="新增变量"
                      name="NewVariable">
-          <el-row :gutter=30>
-            <el-col :span=10
-                    :offset=1>
-              <div class="main-border">
-                <div class="one-of-main-border">
-                  <span>拖拽右侧变量至此</span>
-                </div>
-                <draggable :options="{group:'condition'}">
-                  <div class="drag-cover"></div>
-                </draggable>
-              </div>
-            </el-col>
-            <el-col :span=10
-                    :offset=1>
-              <div id="sifting-condition-item"
-                   class="sifting-queue-content">
-                <component :is="VarForm"></component>
-              </div>
-            </el-col>
-          </el-row>
         </el-tab-pane>
         <el-tab-pane label="变量列表"
                      name="VarList">
-          <el-table :data="VariableTable"
-                    stripe
-                    border>
-            <el-table-column prop="VarCName"
-                             label="变量名称（中文）"
-                             width="150"></el-table-column>
-            <el-table-column prop="VarEName"
-                             label="变量名称（英文）"
-                             width="150"></el-table-column>
-            <el-table-column prop="VarDiscription"
-                             label="变量描述"
-                             width="200"></el-table-column>
-            <el-table-column prop="VarDetail"
-                             label="变量详情"
-                             width="300"
-                             show-overflow-tooltip></el-table-column>
-            <el-table-column label="编辑">
-              <template slot-scope="scope">
-                <el-button size="mini"
-                           type="primary"
-                           @click="EditVar(scope.$index)">编辑</el-button>
-                <el-button size="mini"
-                           type="primary"
-                           @click="CancelVar(scope.$index)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <el-row>
+            <el-col :span=24
+                    :offset=1>
+              <el-table :data="VariableTable"
+                        style="width:90%"
+                        stripe
+                        border>
+                <el-table-column prop="VarCName"
+                                 label="变量名称"
+                                 min-width="60%"></el-table-column>
+                <el-table-column prop="VarType"
+                                 label="变量类型"
+                                 min-width="60%"></el-table-column>
+                <el-table-column prop="VarDiscription"
+                                 label="变量描述"
+                                 min-width="150%"
+                                 show-overflow-tooltip></el-table-column>
+                <el-table-column label="编辑"
+                                 min-width="120%">
+                  <template slot-scope="scope">
+                    <el-button size="mini"
+                               type="primary"
+                               @click="EditVar(scope.$index)">编辑</el-button>
+                    <el-button size="mini"
+                               type="primary"
+                               @click="CancelVar(scope.$index)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-col>
+          </el-row>
         </el-tab-pane>
       </el-tabs>
       <span slot="footer"
@@ -258,7 +274,7 @@
       </span>
     </el-dialog>
 
-    <!--新增概念集—-->
+    <!--新增概念集 by lqh—-->
     <el-dialog title="新增概念集"
                :visible.sync="dialogVisible"
                width="60%"
@@ -1294,11 +1310,9 @@
   </div>
 </template>
 <script>
-import TreeRender from './tree_render.vue';
 import axios from 'axios';
 
 import draggable from 'vuedraggable';
-import VarForm from './conditionform/Variableform.vue'
 
 const Excludeditemsoptions = [' ', '  ', '   '];
 const ChilerenConceptsoptions = [' ', '  ', '   '];
@@ -1315,14 +1329,11 @@ export default {
         method: 'SVM',
       }],
       // 概念集假数据/RH
-      maxexpandId: 5,//新增节点开始id
-      non_maxexpandId: 5,//新增节点开始id(不更改)
-      isLoadingTree: false,//是否加载节点树
-      defaultProps: {
-        children: 'children',
-        label: 'label'
-      },
-      defaultExpandKeys: [],//默认展开节点列表
+      concept_maxexpandId: 3,//新增节点开始id
+      non_concept_maxexpandId: 3,//新增节点开始id(不更改)
+      queue_maxexpandId: 3,//新增节点开始id
+      non_queue_maxexpandId: 3,//新增节点开始id(不更改)
+      isLoadingTree: true,//是否加载节点树
       conceptsets: [],
       queuesets: [],
       analysismethods: [],
@@ -1624,22 +1635,18 @@ export default {
       NewVarTabs: "NewVariable",
       VariableTable: [{
         VarCName: '性别',
-        VarEName: 'GENDER',
+        VarType: '定性',
         VarDiscription: '样本的性别',
-        VarDetail: 'SELECT PERSON_ID, CASE WHEN WHATWAHTWAHT'
       },
       {
         VarCName: '年龄',
-        VarEName: 'AGE',
-        VarDiscription: '样本的年龄',
-        VarDetail: 'SELECT PERSON_ID, TO_NUMBER(WHATWAHTWAHT)'
-      }],
-      VarForm
+        VarType: '定量',
+        VarDiscription: '样本的年龄。这是一段很长的变量描述我也不知道我要说什么就是很长。变量描述就是要长长长长长',
+      }]
     };
   },
   mounted() {
     // console.log(this.GLOBAL.token)
-    this.initExpand();
     this.getConceptsetsData();
     this.getQueuesetsData();
     this.getAnalysismethodsData();
@@ -1653,7 +1660,14 @@ export default {
       })
         .then((response) => {
           //console.log(response)
-          this.conceptsets = JSON.parse(response.data.data.conceptSetStructure)
+          this.conceptsets = JSON.parse(response.data.data.conceptSetStructur)
+          for (var i = 0; i < this.conceptsets.length; i++) {
+            this.conceptsets[i].isEdit = false;
+            this.conceptsets[i].id = 3;
+            for (var j = 0; j < this.conceptsets[i].children[j].length; j++) {
+            this.conceptsets[i].children[j].isEdit = false;
+            }
+          }
         })
         .catch(function (error) {
           console.log("error", error);
@@ -1667,6 +1681,17 @@ export default {
       })
         .then((response) => {
           this.queuesets = JSON.parse(response.data.data.collaborationCohortStructure)
+          for (var i = 0; i < this.queuesets.length; i++) {
+            this.queuesets[i].isEdit = false;
+            this.queuesets[i].id = 1;
+            this.queuesets[i].children[0].id = 2;
+            this.queuesets[i].children[1].id = 3;
+            this.queuesets[i].children[0].isEdit = false;
+            this.queuesets[i].children[1].isEdit = false;
+            //for (var j = 0; j < this.queuesets[i].children[j].length; j++) {
+            //this.queuesets[i].children[j].isEdit = false;
+            //}
+          }
         })
         .catch(function (error) {
           console.log("error", error);
@@ -1704,110 +1729,145 @@ export default {
       // this.$router.push({ path: "/newvariable" });
       this.NewVarVisible = true
     },
-    //鼠标hover事件所需
-    initExpand() {
-      this.conceptsets.map(a => {
-        this.defaultExpandKeys.push(a.id);
-      });
-      this.isLoadingTree = true;
-    },
-    handleNodeClick(d, n, s) {
-      //点击节点
-      // console.log(d,n)
-      d.isEdit = false; //放弃编辑状态
-    },
-    renderContent(h, { node, data, store }) {
-      //加载节点
-      let that = this;
-      return h(TreeRender, {
-        props: {
-          DATA: data,
-          NODE: node,
-          STORE: store,
-          maxexpandId: that.non_maxexpandId
-        },
-        on: {
-          nodeAdd: (s, d, n) => that.handleAdd(s, d, n),
-          nodeEdit: (s, d, n) => that.handleEdit(s, d, n),
-          nodeDel: (s, d, n) => that.handleDelete(s, d, n)
-        }
-      });
-    },
-    handleAddTop() {
+    //概念集鼠标hover事件所需
+    handleAddTop_concept() {
       this.conceptsets.push({
-        id: ++this.maxexpandId,
+        id: ++this.concept_maxexpandId,
         label: '新增节点',
-        pid: '',
         isEdit: false,
         children: []
       });
     },
-    handleAdd(s, d, n) {
-      //增加节点
-      console.log(s, d, n);
-      if (n.level >= 6) {
-        this.$message.error("最多只支持五级！");
-        return false;
+    NodeBlur_concept(n, d) {//输入框失焦
+      console.log(n, d)
+      if (n.isEdit) {
+        this.$set(n, 'isEdit', false)
       }
-      //添加数据
-      d.children.push({
-        id: ++this.maxexpandId,
-        label: '新增节点',
-        pid: d.id,
-        isEdit: false,
-        children: []
-      });
-      //展开节点
-      if (!n.expanded) {
-        n.expanded = true;
+      axios.post('/structure/updateStructure?token='+this.GLOBAL.token, ({
+
+        "conceptSetStructure": JSON.stringify(this.conceptsets),
+        "privateCohortStructure": "[]",
+        "collaborationCohortStructure":JSON.stringify(this.queuesets),
+        "modelStructure": "[]",
+        "featureStructure": "[]",
+        "resultStructure": "[]"
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("编辑成功！")
+          }
+        })
+    },
+    NodeEdit_concept(n, d) {//编辑节点
+      console.log(n, d)
+      if (!n.isEdit) {//检测isEdit是否存在or是否为false
+        this.$set(n, 'isEdit', true)
       }
+      this.$nextTick(() => {
+        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
+      })
     },
-    handleEdit(s, d, n) {
-      //编辑节点
-      console.log(s, d, n);
-    },
-    handleDelete(s, d, n) {
-      //删除节点
-      console.log(s, d, n);
+    NodeDel_concept(n, d) {//删除节点
+      console.log(n, d)
       let that = this;
-      //有子级不删除
       if (d.children && d.children.length !== 0) {
-        this.$message.error("此节点有子级，不可删除！");
+        this.$message.error("此节点有子级，不可删除！")
         return false;
       } else {
-        //新增节点直接删除，否则要询问是否删除
-        let delNode = () => {
-          let list = n.parent.data.children || n.parent.data,//节点同级数据
-            _index = 99999;//要删除的index
-
-          /*if(!n.parent.data.children){//删除顶级节点，无children
-            list = n.parent.data
-          }*/
-          list.map((c, i) => {
-            if (d.id == c.id) {
-              _index = i;
-            }
-          });
-          let k = list.splice(_index, 1);
-          //console.log(_index,k)
-          this.$message.success("删除成功！");
-        };
-        let isDel = () => {
-          that
-            .$confirm("是否删除此节点？", "提示", {
-              confirmButtonText: "确认",
-              cancelButtonText: "取消",
-              type: "warning"
-            })
-            .then(() => {
-              delNode();
-            })
-            .catch(() => {
-              return false;
-            });
-        };
-        //判断是否新增
-        d.id > this.non_maxexpandId ? delNode() : isDel();
+        //新增节点可直接删除，已存在的节点要二次确认
+        //删除操作
+        let DelFun = () => {
+          let _list = n.parent.data.children || n.parent.data;//节点同级数据
+          let _index = _list.map((c) => c.id).indexOf(d.id);
+          console.log(_index)
+          _list.splice(_index, 1);
+          this.$message.success("删除成功！")
+        }
+        //二次确认
+        let ConfirmFun = () => {
+          this.$confirm("是否删除此节点？", "提示", {
+            confirmButtonText: "确认",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            DelFun()
+          }).catch(() => { })
+        }
+        //判断是否是新增节点
+        d.id > this.non_concept_maxexpandId ? DelFun() : ConfirmFun()
+      }
+    },
+    // NodeAdd(n, d) {//新增节点
+    //   console.log(n, d)
+    //   //判断层级
+    //   if (n.level >= 3) {
+    //     this.$message.error("最多只支持三级！")
+    //     return false;
+    //   }
+    //   //新增数据
+    //   d.children.push({
+    //     id: ++this.concept_maxexpandId,
+    //     label: '新增节点',
+    //     pid: d.id,
+    //     children: []
+    //   })
+    //   //同时展开节点
+    //   if (!n.expanded) {
+    //     n.expanded = true
+    //   }
+    // },
+    //队列鼠标hover事件所需
+    handleAddTop_queue() {
+      this.queuesets.push({
+        id: ++this.queue_maxexpandId,
+        label: '新增节点',
+        isEdit: false,
+        children: []
+      });
+    },
+    NodeBlur_queue(n, d) {//输入框失焦
+      console.log(n, d)
+      if (n.isEdit) {
+        this.$set(n, 'isEdit', false)
+      }
+    },
+    NodeEdit_queue(n, d) {//编辑节点
+      console.log(n, d)
+      if (!n.isEdit) {//检测isEdit是否存在or是否为false
+        this.$set(n, 'isEdit', true)
+      }
+      this.$nextTick(() => {
+        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
+      })
+    },
+    NodeDel_queue(n, d) {//删除节点
+      console.log(n, d)
+      let that = this;
+      if (d.children && d.children.length !== 0) {
+        this.$message.error("此节点有子级，不可删除！")
+        return false;
+      } else {
+        //新增节点可直接删除，已存在的节点要二次确认
+        //删除操作
+        let DelFun = () => {
+          let _list = n.parent.data.children || n.parent.data;//节点同级数据
+          let _index = _list.map((c) => c.id).indexOf(d.id);
+          console.log(_index)
+          _list.splice(_index, 1);
+          this.$message.success("删除成功！")
+        }
+        //二次确认
+        let ConfirmFun = () => {
+          this.$confirm("是否删除此节点？", "提示", {
+            confirmButtonText: "确认",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            DelFun()
+          }).catch(() => { })
+        }
+        //判断是否是新增节点
+        d.id > this.non_queue_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
     //新增概念集所需
@@ -1909,50 +1969,43 @@ export default {
 
   },
   components: {
-    draggable,
-    VarForm
+    draggable
   },
 };
 </script>
 <style>
-.expand {
+.slot-tree {
   width: 100%;
   height: 80%;
-  overflow: hidden;
-}
-.expand > div {
-  height: 85%;
-  padding-top: 20px;
-  width: 100%;
-  max-width: 400px;
+  padding: 1em;
+  max-width: 600px;
   overflow-y: auto;
 }
-.expand > div::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  border-radius: 5px;
+/*顶部按钮*/
+.slot-tree .slot-t-top {
+  margin-bottom: 15px;
 }
-.expand > div::-webkit-scrollbar-thumb {
-  background-color: rgba(50, 65, 87, 0.5);
-  outline: 1px solid slategrey;
-  border-radius: 5px;
-}
-.expand > div::-webkit-scrollbar {
-  width: 10px;
-}
-.expand-tree {
-  border: none;
-}
-.expand-tree .el-tree-node.is-current,
-.expand-tree .el-tree-node:hover {
-  overflow: hidden;
-}
-.expand-tree .is-current > .el-tree-node__content .tree-btn,
-.expand-tree .el-tree-node__content:hover .tree-btn {
+.slot-tree .slot-t-node span {
+  font-size: 14px;
   display: inline-block;
 }
-.expand-tree .is-current > .el-tree-node__content .tree-label {
+/*节点*/
+.slot-tree .slot-t-node--label {
   font-weight: 600;
-  white-space: normal;
+}
+/*输入框*/
+.slot-tree .slot-t-input .el-input__inner {
+  height: 26px;
+  line-height: 26px;
+}
+/*按钮列表*/
+.slot-tree .slot-t-node .slot-t-icons {
+  display: none;
+  position: absolute;
+  left: 85%;
+}
+.slot-tree .el-tree-node__content:hover .slot-t-icons {
+  display: inline-block;
 }
 .drag-cover {
   width: 100%;
@@ -1963,17 +2016,6 @@ export default {
   border-radius: 5px;
   padding: 10px 0 0 10px;
   display: block;
-}
-.main-border {
-  border: 1px solid #ccc;
-  display: block;
-  margin-top: 40px;
-}
-.one-of-main-border {
-  transform: translate(10px, -12px);
-  background: #ffffff;
-  padding: 0 10px;
-  width: 150px;
 }
 .groupbox-boarder {
   border: 1px solid #ccc;
