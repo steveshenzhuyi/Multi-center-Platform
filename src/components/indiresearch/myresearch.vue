@@ -382,14 +382,15 @@
       </span>
     </el-dialog>
 
-    <!--顾忆芯  2018/12/2 -->
+    <!--顾忆芯  2018/12/13 构建方法，统一了组合框 -->
     <el-dialog :visible.sync="NewMethodVisible"
                width="50%"
                height="80%"
                :before-close="handleClose">
       <el-tabs :tab-position="tabPosition"
                type="border-card">
-        <el-tab-pane name="first "
+            
+        <el-tab-pane name="DescriptiveStatistics "
                      label="描述性分析">
           <el-row :gutter="20">
             <el-col :span="18">
@@ -1377,7 +1378,13 @@ export default {
       NewMethodVisible: false,
       tabPosition: "left",
       radio2_2: 3,
-      data1: [
+      VarDataSet: [
+        { key: "1", label: "变量1" },
+        { key: "2", label: "变量2" },
+        { key: "3", label: "变量3" },
+        { key: "4", label: "变量4" }
+      ],
+      data1:[
         { key: "1", label: "变量1" },
         { key: "2", label: "变量2" },
         { key: "3", label: "变量3" },
