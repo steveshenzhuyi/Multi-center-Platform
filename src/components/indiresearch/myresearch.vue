@@ -258,7 +258,6 @@
                                type="primary"
                                @click="EditVar(scope.$index)">编辑</el-button>
                     <el-button size="mini"
-                               type="primary"
                                @click="CancelVar(scope.$index)">删除</el-button>
                   </template>
                 </el-table-column>
