@@ -89,7 +89,8 @@
       </el-col>
       <el-col :span="1"></el-col>
     </el-row>
-    <el-row v-for="n in number"
+    <el-row v-for="(n,index) in number"
+            :key="index"
             type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
