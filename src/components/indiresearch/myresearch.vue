@@ -37,53 +37,53 @@
                          size="mini"
                          @click="dialogVisible = true">新建概念集</el-button>
               <div class="slot-tree">
-              <el-tree ref="SlotMenuList"
-                       class="expand-tree"
-                       v-if="isLoadingTree"
-                       default-expand-all
-                       node-key="id"
-                       @node-drag-start="handleDragStart"
-                       @node-drag-enter="handleDragEnter"
-                       @node-drag-leave="handleDragLeave"
-                       @node-drag-over="handleDragOver"
-                       @node-drag-end="handleDragEnd"
-                       @node-drop="handleDrop"
-                       draggable
-                       :allow-drop="allowDrop"
-                       :allow-drag="allowDrag"
-                       :data="conceptsets"
-                       :props="defaultProps"
-                       :expand-on-click-node="false">
-                <span class="slot-t-node"
-                      slot-scope="{ node, data }">
-                  <!-- 未编辑状态 -->
-                  <span v-show="!node.isEdit">
-                    <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
-                    <span class="slot-t-icons">
-                      <!-- 新增按钮 -->
-                      <!--i class="el-icon-plus"
+                <el-tree ref="SlotMenuList"
+                         class="expand-tree"
+                         v-if="isLoadingTree"
+                         default-expand-all
+                         node-key="id"
+                         @node-drag-start="handleDragStart"
+                         @node-drag-enter="handleDragEnter"
+                         @node-drag-leave="handleDragLeave"
+                         @node-drag-over="handleDragOver"
+                         @node-drag-end="handleDragEnd"
+                         @node-drop="handleDrop"
+                         draggable
+                         :allow-drop="allowDrop"
+                         :allow-drag="allowDrag"
+                         :data="conceptsets"
+                         :props="defaultProps"
+                         :expand-on-click-node="false">
+                  <span class="slot-t-node"
+                        slot-scope="{ node, data }">
+                    <!-- 未编辑状态 -->
+                    <span v-show="!node.isEdit">
+                      <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                      <span class="slot-t-icons">
+                        <!-- 新增按钮 -->
+                        <!--i class="el-icon-plus"
                          @click="NodeAdd(node, data)"></i-->
-                      <!-- 编辑按钮 -->
-                      <i class="el-icon-edit"
-                         @click="NodeEdit_concept(node, data)"></i>
-                      <!-- 删除按钮 -->
-                      <i class="el-icon-delete"
-                         @click="NodeDel_concept(node, data)"></i>
+                        <!-- 编辑按钮 -->
+                        <i class="el-icon-edit"
+                           @click="NodeEdit_concept(node, data)"></i>
+                        <!-- 删除按钮 -->
+                        <i class="el-icon-delete"
+                           @click="NodeDel_concept(node, data)"></i>
+                      </span>
+                    </span>
+                    <!-- 编辑输入框 -->
+                    <span v-show="node.isEdit">
+                      <el-input class="slot-t-input"
+                                size="mini"
+                                autofocus
+                                v-model="data.label"
+                                :ref="'slotTreeInput'+data.id"
+                                @blur.stop="NodeBlur_concept(node, data)"
+                                @keyup.enter.native="NodeBlur_concept(node, data)"></el-input>
                     </span>
                   </span>
-                  <!-- 编辑输入框 -->
-                  <span v-show="node.isEdit">
-                    <el-input class="slot-t-input"
-                              size="mini"
-                              autofocus
-                              v-model="data.label"
-                              :ref="'slotTreeInput'+data.id"
-                              @blur.stop="NodeBlur_concept(node, data)"
-                              @keyup.enter.native="NodeBlur_concept(node, data)"></el-input>
-                  </span>
-                </span>
-              </el-tree>
-            </div>
+                </el-tree>
+              </div>
             </div>
           </el-card>
         </el-row>
@@ -97,12 +97,12 @@
                  class="clearfix">
               <span>队列</span>
             </div>
-              <el-button size="mini"
-                         @click="handleAddTop_queue">添加新文件夹</el-button>
-              <el-button type="primary"
-                         size="mini"
-                         @click="toCreateQueue">新建队列</el-button>
-              <div class="slot-tree">
+            <el-button size="mini"
+                       @click="handleAddTop_queue">添加新文件夹</el-button>
+            <el-button type="primary"
+                       size="mini"
+                       @click="toCreateQueue">新建队列</el-button>
+            <div class="slot-tree">
               <el-tree ref="SlotMenuList"
                        class="expand-tree"
                        v-if="isLoadingTree"
@@ -169,11 +169,11 @@
                          size="mini"
                          @click="NewMethodVisible=true">新建方法</el-button>
               <div>
-              <el-tree :data="analysismethods"
-                     :props="defaultProps"
-                     @node-click="handleNodeClick"
-                     default-expand-all></el-tree>
-            </div>
+                <el-tree :data="analysismethods"
+                         :props="defaultProps"
+                         @node-click="handleNodeClick"
+                         default-expand-all></el-tree>
+              </div>
             </div>
 
           </el-card>
@@ -1649,7 +1649,7 @@ export default {
             this.conceptsets[i].isEdit = false;
             this.conceptsets[i].id = 3;
             for (var j = 0; j < this.conceptsets[i].children[j].length; j++) {
-            this.conceptsets[i].children[j].isEdit = false;
+              this.conceptsets[i].children[j].isEdit = false;
             }
           }
         })
@@ -1727,11 +1727,11 @@ export default {
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
       }
-      axios.post('/structure/updateStructure?token='+this.GLOBAL.token, ({
+      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
 
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": "[]",
-        "collaborationCohortStructure":JSON.stringify(this.queuesets),
+        "collaborationCohortStructure": JSON.stringify(this.queuesets),
         "modelStructure": "[]",
         "featureStructure": "[]",
         "resultStructure": "[]"
@@ -1916,13 +1916,12 @@ export default {
     },
     CancelVar(index) {
       axios.post('/feature/deleteFeature', {
-        params: {
-          "token": this.GLOBAL.token,
-          "featureId": this.VariableTable[index].featureId
-        }
+        "token": this.GLOBAL.token,
+        "featureId": this.VariableTable[index].featureId
       })
-        .then((response) => {
-          if (response.code == 1) {
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('删除成功！', '提示', { confirmButtonText: '确定' });
             this.getVariableTable()
           }
         })
