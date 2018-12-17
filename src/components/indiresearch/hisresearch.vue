@@ -1,123 +1,65 @@
 <template>
   <div style="margin-left:10px;margin-right:10px">
-    <el-row style="margin-top:10px;margin-bottom:10px;">
-      <el-col :span="4"
-              style="text-align:center">
-      </el-col>
-    </el-row>
+    <ul id="researchlist">
+      <li>
+        <el-tooltip class="item"
+                    effect="dark"
+                    content="Right Top 新建研究"
+                    placement="right-start">
 
-    <el-row :gutter="20">
-      <el-col :span="6">
-        <el-row>
           <div id="newresearch"
                class="cardBox"
                shadow="hover"
                @click="toNewresearch">
+
             <span class="el-icon-plus"></span>
           </div>
-        </el-row>
-      </el-col>
+        </el-tooltip>
+      </li>
 
-      <el-col :span="6">
-        <el-row>
-          <div class="cardBox">
-            <div class="headerBox">
-              <span style="font-size:20px; font-weight:bold">项目1</span>
-              <el-dropdown style="float: right; padding: 3px 0"
-                           trigger="click">
-                <span class="el-icon-more">
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item> <i class="el-icon-view"></i> 预览</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
+      <li v-for="research in researchlist">
+        <div class="cardBox">
+          <div class="headerBox">
+            <span style="font-size:20px; font-weight:bold">{{research.researchname}}</span>
+            <el-dropdown style="float: right; padding: 3px 0"
+                         trigger="click">
+              <span class="el-icon-more">
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item> <i class="el-icon-view"></i> 预览</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <div class="div-relative">
+            <img class="img"
+                 style="position:absolute;"
+                 :src="imgUrl">
             <div class="bodyBox"
-                 @click="toMyresearch">
+                 @click="toMyresearch"
+                 style="position:absolute;">
               <div class="flex-container">
-                {{'项目创建时间 ' }}<span style="float: right; ">{{'2018-12-06' }}</span>
+                {{'项目创建时间 ' }}<span style="float: right; ">{{research.researchname}}</span>
               </div>
               <div class="flex-container">
                 {{'研究者 ' }}
-                <span style="float: right; ">{{'Admin' }}</span>
+                <span style="float: right; ">{{research.researchadmin }}</span>
               </div>
               <div class="flex-container">
                 {{'研究状态 ' }}
-                <span style="float: right; ">{{'等待审核' }}</span>
+                <span style="float: right; ">{{research.researchstatus |researchstatusfilter }}</span>
               </div>
             </div>
           </div>
-        </el-row>
-      </el-col>
-
-      <el-col :span="6">
-        <el-row>
-          <div class="cardBox">
-            <div class="headerBox">
-              <span style="font-size:20px; font-weight:bold">项目2</span>
-              <el-dropdown style="float: right; padding: 3px 0"
-                           trigger="click">
-                <span class="el-icon-more">
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item> <i class="el-icon-edit-outline"></i> 编辑</el-dropdown-item>
-                  <el-dropdown-item> <i class="el-icon-document"></i> 申请</el-dropdown-item>
-                  <el-dropdown-item> <i class="el-icon-view"></i> 预览</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-            <div class="bodyBox"
-                 @click="toMyresearch">
-              <div class="flex-container">
-                {{'项目创建时间 ' }}<span style="float: right; ">{{'2018-12-08' }}</span>
-              </div>
-              <div class="flex-container">
-                {{'研究者 ' }}<span style="float: right; ">{{'Admin' }}</span>
-              </div>
-              <div class="flex-container">
-                {{'研究状态 ' }}<span style="float: right; ">{{'已完成' }}</span>
-              </div>
-            </div>
-          </div>
-        </el-row>
-      </el-col>
-      <el-col :span="6">
-        <el-row>
-          <div class="cardBox">
-            <div class="headerBox">
-              <span style="font-size:20px; font-weight:bold">项目3</span>
-              <el-dropdown style="float: right; padding: 3px 0"
-                           trigger="click">
-                <span class="el-icon-more">
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item> <i class="el-icon-edit-outline"></i> 编辑</el-dropdown-item>
-                  <el-dropdown-item> <i class="el-icon-document"></i> 申请</el-dropdown-item>
-                  <el-dropdown-item> <i class="el-icon-view"></i> 预览</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-            <div class="bodyBox"
-                 @click="toMyresearch">
-              <div class="flex-container">
-                {{'项目创建时间 ' }}<span style="float: right; ">{{'2018-12-08' }}</span>
-              </div>
-              <div class="flex-container">
-                {{'研究者 ' }}<span style="float: right; ">{{'Admin' }}</span>
-              </div>
-              <div class="flex-container">
-                {{'研究状态 ' }}<span style="float: right; ">{{'已完成' }}</span>
-              </div>
-            </div>
-          </div>
-        </el-row>
-      </el-col>
-
-    </el-row>
+        </div>
+      </li>
+    </ul>
   </div>
 </template>
 <script>
 let id = 1000;
+import wait from '../../assets/等待审核.png'
+import end from '../../assets/已结束.png'
+
 
 export default {
   data() {
@@ -126,9 +68,59 @@ export default {
       NewConceptVisible: false,
       NewQueneVisible: false,
       NewMethodVisible: false,
+      imgUrl: wait,
+      researchlist: [
+        {
+          researchname: "项目1",
+          researchadmin: "Admin",
+          createtime: "2018-12-06",
+          researchstatus: 1,
+
+        }, {          researchname: "项目2",
+          researchadmin: "Admin",
+          createtime: "2018-12-08",
+          researchstatus: 1
+
+        }, {
+          researchname: "项目3",
+          researchadmin: "Admin",
+          createtime: "2018-12-08",
+          researchstatus: 2
+        }
+      ]
+    }
+  },
+  mounted() {
+    this.setimgurl();
+  },
+  filters: {
+    researchstatusfilter: function (input) {
+      switch (input) {
+        case 1:
+          return '等待审核';
+          break;
+        case 2:
+          return '已结束';
+          break;
+        default:
+          return '未知';
+      }
     }
   },
   methods: {
+    setimgurl: function () {
+      console.log(this)
+      switch (this.researchstatus) {
+        case 1:
+          imgUrl = wait;
+          break;
+        case 2:
+          imgUrl = end;
+          break;
+        default:
+          return '未知';
+      }
+    },
     toMyresearch: function () {
       this.$router.replace({
         path: "myresearch",
@@ -152,6 +144,14 @@ export default {
 };
 </script>
 <style>
+#researchlist {
+}
+#researchlist li {
+  display: block;
+  float: left;
+  margin: 5px;
+}
+
 #newresearch {
   vertical-align: middle;
   text-align: center;
@@ -169,20 +169,35 @@ export default {
   padding: 5px;
   padding-top: 15px;
   border-radius: 5px;
+  width: 300px;
 }
 
 .headerBox {
   padding: 15px;
+}
+.el-icon-more {
+  cursor: pointer;
 }
 
 .bodyBox {
   padding: 15px;
   cursor: pointer;
   font-size: 15px;
+  width: 90%;
 }
+.img {
+  height: 98px;
+  width: 98px;
+  padding-left: 101px;
+}
+
 .flex-container {
   padding-top: 5px;
   padding-bottom: 5px;
   border-bottom: 1px #000000 dotted;
+}
+
+.div-relative {
+  position: relative;
 }
 </style>
