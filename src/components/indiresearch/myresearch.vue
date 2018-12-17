@@ -223,7 +223,7 @@
       </el-col>
     </el-row>
 
-    <!-- 新建变量 -->
+    <!-- 新建变量 dwx -->
     <el-dialog title="新建变量"
                :visible.sync="NewVarVisible"
                width="50%"
@@ -241,13 +241,13 @@
                         style="width:90%"
                         stripe
                         border>
-                <el-table-column prop="VarCName"
+                <el-table-column prop="name"
                                  label="变量名称"
                                  min-width="60%"></el-table-column>
-                <el-table-column prop="VarType"
+                <el-table-column prop="type"
                                  label="变量类型"
                                  min-width="60%"></el-table-column>
-                <el-table-column prop="VarDiscription"
+                <el-table-column prop="description"
                                  label="变量描述"
                                  min-width="150%"
                                  show-overflow-tooltip></el-table-column>
@@ -258,7 +258,6 @@
                                type="primary"
                                @click="EditVar(scope.$index)">编辑</el-button>
                     <el-button size="mini"
-                               type="primary"
                                @click="CancelVar(scope.$index)">删除</el-button>
                   </template>
                 </el-table-column>
@@ -628,18 +627,9 @@ export default {
 
 
       checked: true,
-      // 新增变量弹框
+      // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
-      VariableTable: [{
-        VarCName: '性别',
-        VarType: '定性',
-        VarDiscription: '样本的性别',
-      },
-      {
-        VarCName: '年龄',
-        VarType: '定量',
-        VarDiscription: '样本的年龄。这是一段很长的变量描述我也不知道我要说什么就是很长。变量描述就是要长长长长长',
-      }]
+      VariableTable: []
     };
   },
   mounted() {
@@ -723,8 +713,8 @@ export default {
       });
     },
     toNewVariable: function () {
-      // this.$router.push({ path: "/newvariable" });
       this.NewVarVisible = true
+      this.getVariableTable()
     },
     //概念集鼠标hover事件所需
     handleAddTop_concept() {
@@ -919,8 +909,40 @@ export default {
     //   console.log(value);
     // },
     // 新增变量弹框
+
+
+    // 新增变量弹框 dwx
+    getVariableTable() {
+      axios.get('/feature/getList', {
+        params: {
+          "token": this.GLOBAL.token
+        }
+      })
+        .then((response) => {
+          this.VariableTable = response.data.data
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+
     CancelVar(index) {
-      this.VariableTable.splice(index, 1)
+      axios.post('/feature/deleteFeature', {
+        "token": this.GLOBAL.token,
+        "featureId": this.VariableTable[index].featureId
+      })
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('删除成功！', '提示', { confirmButtonText: '确定' });
+            this.getVariableTable()
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+    EditVar(index) {
+
     },
     //队列拖拽所需
     handleDragStart(node, ev) {
