@@ -27,7 +27,7 @@
         <el-row type="flex"
                 justify="center"
                 style="margin-top:10px;margin-bottom:10px">
-          <el-button type="info">材料上传</el-button>
+          <el-button type="primary">材料上传</el-button>
         </el-row>
       </el-col>
       <el-col :span="12">
@@ -52,7 +52,7 @@
         <el-row type="flex"
                 justify="center"
                 style="margin-top:10px;margin-bottom:10px">
-          <el-button type="info">催一下</el-button>
+          <el-button type="primary">催一下</el-button>
         </el-row>
       </el-col>
     </el-row>

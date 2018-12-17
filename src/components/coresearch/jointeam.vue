@@ -30,12 +30,12 @@
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="6">
-        <el-button type="info"
+        <el-button type="primary"
                    :disabled="!this.checked"
                    @click="joinTeam()">加入研究</el-button>
       </el-col>
       <el-col :span="6">
-        <el-button type="info">取消加入</el-button>
+        <el-button type="primary">取消加入</el-button>
       </el-col>
     </el-row>
   </div>
