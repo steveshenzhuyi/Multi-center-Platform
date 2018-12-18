@@ -1746,7 +1746,7 @@ export default {
     handleAddTop_concept() {
       this.conceptsets.push({
         id: ++this.concept_maxexpandId,
-        label: '新增节点',
+        label: '新增文件夹',
         isEdit: false,
         children: []
       });
@@ -1833,7 +1833,7 @@ export default {
     handleAddTop_queue() {
       this.queuesets.push({
         id: ++this.queue_maxexpandId,
-        label: '新增节点',
+        label: '新增文件夹',
         isEdit: false,
         children: []
       });
