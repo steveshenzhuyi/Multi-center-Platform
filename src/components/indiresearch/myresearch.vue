@@ -431,7 +431,7 @@
               <div id="2-2">
                 <component :is="methodName"></component>
               </div>
-              独立样本t检验
+
             </el-tab-pane>
             <el-tab-pane name="c"
                          label="配对样本t检验">
@@ -821,6 +821,9 @@ export default {
         isEdit: false,
         children: []
       });
+    },
+    handleAddTop() {
+
     },
     NodeBlur_queue(n, d) {//输入框失焦
       console.log(n, d)

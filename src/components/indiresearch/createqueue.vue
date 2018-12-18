@@ -152,6 +152,7 @@
           </div>
         </div>
       </el-col>
+      <!-- 这里开始加入组件 -->
       <el-col :span="6">
         <div id="sifting-condition-item"
              class="sifting-queue-content">
@@ -180,6 +181,7 @@ export default {
     'operatingform': operatingform,
     'medicalform': medicalform,
     'deathRecordsform': deathRecordsform,
+
     draggable,
   },
 
