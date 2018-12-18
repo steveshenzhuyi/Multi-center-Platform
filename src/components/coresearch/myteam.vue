@@ -21,12 +21,12 @@
         <el-row type="flex"
                 justify="space-between"
                 style="margin-top:10px;margin-bottom:10px">
-          <el-col :span="14">
-            <el-button type="info"
+          <el-col :span="12">
+            <el-button type="primary"
                        @click="goNewResearch()">新建团队</el-button>
           </el-col>
           <el-col :span="12">
-            <el-button type="info"
+            <el-button type="primary"
                        @click="goJoinTeam()">加入团队</el-button>
           </el-col>
         </el-row>
@@ -36,10 +36,14 @@
           <el-steps :active="2"
                     align-center>
             <el-step title="1 研究开始"
+                     style="cursor:pointer"
                      @click.native="to1()"></el-step>
             <el-step title="2 团队建立"
+                     style="cursor:pointer"
                      @click.native="to2()"></el-step>
-            <el-step title="3 多中心运算"></el-step>
+            <el-step title="3 多中心运算"
+                     style="cursor:pointer"
+                     @click.native="to3()"></el-step>
             <el-step title="4 成果讨论"></el-step>
             <el-step title="5 资格审核"></el-step>
           </el-steps>
@@ -48,57 +52,63 @@
           <el-card>
 
             <el-row style="margin-top:20px;margin-bottom:10px">
-              <div>项目名称：{{this.detail[0][0].NAME}}</div>
+              <div>项目名称：{{detail[0][0].NAME}}</div>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col span="8">
-                <div>项目发起人：{{this.detail[2][1].DOCTORNAME}}</div>
+              <el-col :span="8">
+                <div>项目发起人：{{Initiator[0].DOCTORNAME}}</div>
               </el-col>
-              <el-col span="16">
-                <div>发起人单位：{{this.detail[2][1].ORGANIZATIONNAME}}</div>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col span="8">
-                <div>项目参与人：{{this.detail[2][0].DOCTORNAME}}</div>
-              </el-col>
-              <el-col span="16">
-                <div>参与人单位：{{this.detail[2][0].ORGANIZATIONNAME}}</div>
+              <el-col :span="16">
+                <div>发起人单位：{{Initiator[0].ORGANIZATIONNAME}}</div>
               </el-col>
             </el-row>
+            <div v-if=" detail[2].length > 0">
+              <el-row v-for="people in detail[2]"
+                      :key="people.USERID"
+                      style="margin-top:10px;margin-bottom:10px">
+                <el-col :span="8">
+                  <div>项目参与人：{{people.DOCTORNAME}}</div>
+                </el-col>
+                <el-col :span="16">
+                  <div>参与人单位：{{people.ORGANIZATIONNAME}}</div>
+                </el-col>
+              </el-row>
+            </div>
+
             <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col span="24">
-                <div>项目发起日期：{{this.detail[0][0].CREATEDATE}}</div>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col span="24">
-                <div>项目简介：{{this.detail[0][0].TARGET}}</div>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col span="24">
-                <div>成果分配方案：{{this.detail[0][0].OUTCOMEDISTRIBUTION}}</div>
+              <el-col :span="24">
+                <div>项目发起日期：{{detail[0][0].CREATEDATE}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col span="24">
-                <div>项目进度：{{this.detail[3][0].NAME}}</div>
+              <el-col :span="24">
+                <div>项目简介：{{detail[0][0].TARGET}}</div>
+              </el-col>
+            </el-row>
+            <el-row style="margin-top:10px;margin-bottom:10px">
+              <el-col :span="24">
+                <div>成果分配方案：{{detail[0][0].OUTCOMEDISTRIBUTION}}</div>
+              </el-col>
+            </el-row>
+            <el-row style="margin-top:10px;margin-bottom:10px">
+              <el-col :span="24">
+                <div>项目进度：{{detail[3][0].NAME}}</div>
               </el-col>
             </el-row>
             <!-- <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col span="24">
-                <div>研究有效期：{{this.detail[3][0].NAME}}</div>
+              <el-col :span="24">
+                <div>研究有效期：{{detail[3][0].NAME}}</div>
               </el-col>
             </el-row> -->
             <el-row type="flex"
                     justify="center"
                     style="margin-top:30px;margin-bottom:10px">
-              <el-col span="12">
-                <el-button type="info">继续研究</el-button>
+              <el-col :span="12">
+                <el-button type="primary"
+                           @click="goNewTeam()">继续研究</el-button>
               </el-col>
-              <el-col span="12">
-                <el-button type="info">退出团队</el-button>
+              <el-col :span="12">
+                <el-button type="primary">退出团队</el-button>
               </el-col>
             </el-row>
           </el-card>
@@ -114,12 +124,13 @@ export default {
     return {
       list: [],
       detail: [],
+      participant: [],
       team: [{
-        id: 0,
+        id: -1,
         label: '研究中',
         children: []
       }, {
-        id: 1,
+        id: -2,
         label: '已完成',
         children: []
       }],
@@ -129,13 +140,34 @@ export default {
       }
     };
   },
+  computed: {
+    Initiator: function () {
+      //console.log("datail", this.detail[1].length)
+      for (var i = 0; i < this.detail[1].length; i++) {
+        //console.log(this.detail[1][i].INITIATORTAG)
+        if (this.detail[1][i].INITIATORTAG == "1   ") {
+          console.log(this.detail[1][i].INITIATORTAG)
+          return this.detail[2].splice(i, 1)
+        }
+      }
+      console.log("mistake")
+
+
+    }
+  },
   mounted() {
     this.getMyCollaborList()
+    console.log("token", this.GLOBAL.token)
 
   },
   methods: {
     getMyCollaborList() {
-      axios.get('collaboration/getMyCollaborList?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxODg2ODE4ICAgICAgICAgICAgICIsImV4cCI6MTU3NTYzODAyNTIyMSwiaWF0IjoxNTQ0MTAyMDI1fQ.5C92SLa_yqyOKKz9yTjDZtApz10FSlcHntfn8zPWGwc&collaborationStateCode=0,1,2,3,4,5,6', )
+      axios.get('collaboration/getMyCollaborList', {
+        params: {
+          token: this.GLOBAL.token,
+          collaborationStateCode: "0,1,2,3,4,5,6"
+        }
+      })
         .then((response) => {
           if (response.data.msg == "success!") {
             //console.log("success")
@@ -147,6 +179,7 @@ export default {
                   label: this.list[i].NAME,
                   id: this.list[i].COLLABORATIONID
                 })
+                console.log(this.list[i].COLLABORATIONID)
               } else {
                 this.team[1].children.push({
                   label: this.list[i].NAME,
@@ -154,13 +187,19 @@ export default {
                 })
               }
             }
-            axios.get('collaboration/CollaborInfo?collaborationId=' + 12 + '&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxODg2ODE4ICAgICAgICAgICAgICIsImV4cCI6MTU3NTYzODAyNTIyMSwiaWF0IjoxNTQ0MTAyMDI1fQ.5C92SLa_yqyOKKz9yTjDZtApz10FSlcHntfn8zPWGwc', )
+            axios.get('collaboration/CollaborInfo', {
+              params: {
+                token: this.GLOBAL.token,
+                collaborationId: 12
+              }
+            })
               .then((response) => {
                 if (response.data.msg == "success!") {
                   //console.log("success")
 
-                  console.log("data", response.data.data)
+
                   this.detail = response.data.data
+                  console.log("detail", this.detail)
                 }
               })
               .catch(function (error) {
@@ -173,13 +212,19 @@ export default {
         });
     },
     getCollaborInfo(COLLABORATIONID) {
-      axios.get('collaboration/CollaborInfo?collaborationId=' + COLLABORATIONID + '&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxODg2ODE4ICAgICAgICAgICAgICIsImV4cCI6MTU3NTYzODAyNTIyMSwiaWF0IjoxNTQ0MTAyMDI1fQ.5C92SLa_yqyOKKz9yTjDZtApz10FSlcHntfn8zPWGwc', )
+      axios.get('collaboration/CollaborInfo', {
+        params: {
+          token: this.GLOBAL.token,
+          collaborationId: COLLABORATIONID
+        }
+      })
         .then((response) => {
           if (response.data.msg == "success!") {
             //console.log("success")
 
             console.log("data", response.data.data)
             this.detail = response.data.data
+            //this.detail[2][1].DOCTORNAME = response.data.data[2][1].DOCTORNAME
           }
         })
         .catch(function (error) {
@@ -187,11 +232,27 @@ export default {
         });
     },
     handleNodeClick(data) {
-      this.getCollaborInfo(data.id)
+      if (data.id > 0) {
+        this.getCollaborInfo(data.id)
+        //this.detail[3][0].NAME = "agags"
+        console.log("length", this.detail[2].length)
+      }
+
     },
     goNewResearch() {
       this.$router.push({ path: 'newresearch' })
     },
+    goNewTeam() {
+      console.log(this.researchDetail)
+      this.$router.push({
+        path: 'newteam',
+        query:
+          {
+            collaborationId: 47
+          }
+      });
+    },
+
     goJoinTeam() {
       this.$router.push({ path: 'jointeam' })
     },
@@ -200,6 +261,9 @@ export default {
     },
     to2() {
       this.$router.push({ path: 'qualification' })
+    },
+    to3() {
+      this.$router.push({ path: 'newcoresearch' })
     }
   }
 };
