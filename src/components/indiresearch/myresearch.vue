@@ -37,53 +37,53 @@
                          size="mini"
                          @click="dialogVisible = true">新建概念集</el-button>
               <div class="slot-tree">
-              <el-tree ref="SlotMenuList"
-                       class="expand-tree"
-                       v-if="isLoadingTree"
-                       default-expand-all
-                       node-key="id"
-                       @node-drag-start="handleDragStart"
-                       @node-drag-enter="handleDragEnter"
-                       @node-drag-leave="handleDragLeave"
-                       @node-drag-over="handleDragOver"
-                       @node-drag-end="handleDragEnd"
-                       @node-drop="handleDrop"
-                       draggable
-                       :allow-drop="allowDrop"
-                       :allow-drag="allowDrag"
-                       :data="conceptsets"
-                       :props="defaultProps"
-                       :expand-on-click-node="false">
-                <span class="slot-t-node"
-                      slot-scope="{ node, data }">
-                  <!-- 未编辑状态 -->
-                  <span v-show="!node.isEdit">
-                    <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
-                    <span class="slot-t-icons">
-                      <!-- 新增按钮 -->
-                      <!--i class="el-icon-plus"
+                <el-tree ref="SlotMenuList"
+                         class="expand-tree"
+                         v-if="isLoadingTree"
+                         default-expand-all
+                         node-key="id"
+                         @node-drag-start="handleDragStart"
+                         @node-drag-enter="handleDragEnter"
+                         @node-drag-leave="handleDragLeave"
+                         @node-drag-over="handleDragOver"
+                         @node-drag-end="handleDragEnd"
+                         @node-drop="handleDrop"
+                         draggable
+                         :allow-drop="allowDrop"
+                         :allow-drag="allowDrag"
+                         :data="conceptsets"
+                         :props="defaultProps"
+                         :expand-on-click-node="false">
+                  <span class="slot-t-node"
+                        slot-scope="{ node, data }">
+                    <!-- 未编辑状态 -->
+                    <span v-show="!node.isEdit">
+                      <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                      <span class="slot-t-icons">
+                        <!-- 新增按钮 -->
+                        <!--i class="el-icon-plus"
                          @click="NodeAdd(node, data)"></i-->
-                      <!-- 编辑按钮 -->
-                      <i class="el-icon-edit"
-                         @click="NodeEdit_concept(node, data)"></i>
-                      <!-- 删除按钮 -->
-                      <i class="el-icon-delete"
-                         @click="NodeDel_concept(node, data)"></i>
+                        <!-- 编辑按钮 -->
+                        <i class="el-icon-edit"
+                           @click="NodeEdit_concept(node, data)"></i>
+                        <!-- 删除按钮 -->
+                        <i class="el-icon-delete"
+                           @click="NodeDel_concept(node, data)"></i>
+                      </span>
+                    </span>
+                    <!-- 编辑输入框 -->
+                    <span v-show="node.isEdit">
+                      <el-input class="slot-t-input"
+                                size="mini"
+                                autofocus
+                                v-model="data.label"
+                                :ref="'slotTreeInput'+data.id"
+                                @blur.stop="NodeBlur_concept(node, data)"
+                                @keyup.enter.native="NodeBlur_concept(node, data)"></el-input>
                     </span>
                   </span>
-                  <!-- 编辑输入框 -->
-                  <span v-show="node.isEdit">
-                    <el-input class="slot-t-input"
-                              size="mini"
-                              autofocus
-                              v-model="data.label"
-                              :ref="'slotTreeInput'+data.id"
-                              @blur.stop="NodeBlur_concept(node, data)"
-                              @keyup.enter.native="NodeBlur_concept(node, data)"></el-input>
-                  </span>
-                </span>
-              </el-tree>
-            </div>
+                </el-tree>
+              </div>
             </div>
           </el-card>
         </el-row>
@@ -97,12 +97,12 @@
                  class="clearfix">
               <span>队列</span>
             </div>
-              <el-button size="mini"
-                         @click="handleAddTop_queue">添加新文件夹</el-button>
-              <el-button type="primary"
-                         size="mini"
-                         @click="toCreateQueue">新建队列</el-button>
-              <div class="slot-tree">
+            <el-button size="mini"
+                       @click="handleAddTop_queue">添加新文件夹</el-button>
+            <el-button type="primary"
+                       size="mini"
+                       @click="toCreateQueue">新建队列</el-button>
+            <div class="slot-tree">
               <el-tree ref="SlotMenuList"
                        class="expand-tree"
                        v-if="isLoadingTree"
@@ -169,11 +169,11 @@
                          size="mini"
                          @click="NewMethodVisible=true">新建方法</el-button>
               <div>
-              <el-tree :data="analysismethods"
-                     :props="defaultProps"
-                     @node-click="handleNodeClick"
-                     default-expand-all></el-tree>
-            </div>
+                <el-tree :data="analysismethods"
+                         :props="defaultProps"
+                         @node-click="handleNodeClick"
+                         default-expand-all></el-tree>
+              </div>
             </div>
 
           </el-card>
@@ -223,64 +223,47 @@
       </el-col>
     </el-row>
 
-    <!-- 新建变量 -->
+    <!-- 新建变量 dwx -->
     <el-dialog title="新建变量"
                :visible.sync="NewVarVisible"
-               width="80%"
+               width="50%"
                :before-close="handleClose">
       <el-tabs :value="NewVarTabs">
         <el-tab-pane label="新增变量"
                      name="NewVariable">
-          <el-row :gutter=30>
-            <el-col :span=10
-                    :offset=1>
-              <div class="main-border">
-                <div class="one-of-main-border">
-                  <span>拖拽右侧变量至此</span>
-                </div>
-                <draggable :options="{group:'condition'}">
-                  <div class="drag-cover"></div>
-                </draggable>
-              </div>
-            </el-col>
-            <el-col :span=10
-                    :offset=1>
-              <div id="sifting-condition-item"
-                   class="sifting-queue-content">
-                <component :is="VarForm"></component>
-              </div>
-            </el-col>
-          </el-row>
         </el-tab-pane>
         <el-tab-pane label="变量列表"
                      name="VarList">
-          <el-table :data="VariableTable"
-                    stripe
-                    border>
-            <el-table-column prop="VarCName"
-                             label="变量名称（中文）"
-                             width="150"></el-table-column>
-            <el-table-column prop="VarEName"
-                             label="变量名称（英文）"
-                             width="150"></el-table-column>
-            <el-table-column prop="VarDiscription"
-                             label="变量描述"
-                             width="200"></el-table-column>
-            <el-table-column prop="VarDetail"
-                             label="变量详情"
-                             width="300"
-                             show-overflow-tooltip></el-table-column>
-            <el-table-column label="编辑">
-              <template slot-scope="scope">
-                <el-button size="mini"
-                           type="primary"
-                           @click="EditVar(scope.$index)">编辑</el-button>
-                <el-button size="mini"
-                           type="primary"
-                           @click="CancelVar(scope.$index)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <el-row>
+            <el-col :span=24
+                    :offset=1>
+              <el-table :data="VariableTable"
+                        style="width:90%"
+                        stripe
+                        border>
+                <el-table-column prop="name"
+                                 label="变量名称"
+                                 min-width="60%"></el-table-column>
+                <el-table-column prop="type"
+                                 label="变量类型"
+                                 min-width="60%"></el-table-column>
+                <el-table-column prop="description"
+                                 label="变量描述"
+                                 min-width="150%"
+                                 show-overflow-tooltip></el-table-column>
+                <el-table-column label="编辑"
+                                 min-width="120%">
+                  <template slot-scope="scope">
+                    <el-button size="mini"
+                               type="primary"
+                               @click="EditVar(scope.$index)">编辑</el-button>
+                    <el-button size="mini"
+                               @click="CancelVar(scope.$index)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-col>
+          </el-row>
         </el-tab-pane>
       </el-tabs>
       <span slot="footer"
@@ -1328,7 +1311,6 @@
 import axios from 'axios';
 
 import draggable from 'vuedraggable';
-import VarForm from './conditionform/Variableform.vue'
 
 const Excludeditemsoptions = [' ', '  ', '   '];
 const ChilerenConceptsoptions = [' ', '  ', '   '];
@@ -1641,21 +1623,9 @@ export default {
         }
       ],
       checked: true,
-      // 新增变量弹框
+      // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
-      VariableTable: [{
-        VarCName: '性别',
-        VarEName: 'GENDER',
-        VarDiscription: '样本的性别',
-        VarDetail: 'SELECT PERSON_ID, CASE WHEN WHATWAHTWAHT'
-      },
-      {
-        VarCName: '年龄',
-        VarEName: 'AGE',
-        VarDiscription: '样本的年龄',
-        VarDetail: 'SELECT PERSON_ID, TO_NUMBER(WHATWAHTWAHT)'
-      }],
-      VarForm
+      VariableTable: []
     };
   },
   mounted() {
@@ -1678,7 +1648,7 @@ export default {
             this.conceptsets[i].isEdit = false;
             this.conceptsets[i].id = 3;
             for (var j = 0; j < this.conceptsets[i].children[j].length; j++) {
-            this.conceptsets[i].children[j].isEdit = false;
+              this.conceptsets[i].children[j].isEdit = false;
             }
           }
         })
@@ -1739,8 +1709,8 @@ export default {
       });
     },
     toNewVariable: function () {
-      // this.$router.push({ path: "/newvariable" });
       this.NewVarVisible = true
+      this.getVariableTable()
     },
     //概念集鼠标hover事件所需
     handleAddTop_concept() {
@@ -1756,11 +1726,11 @@ export default {
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
       }
-      axios.post('/structure/updateStructure?token='+this.GLOBAL.token, ({
+      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
 
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": "[]",
-        "collaborationCohortStructure":JSON.stringify(this.queuesets),
+        "collaborationCohortStructure": JSON.stringify(this.queuesets),
         "modelStructure": "[]",
         "featureStructure": "[]",
         "resultStructure": "[]"
@@ -1929,9 +1899,37 @@ export default {
     handleChange3_2(value) {
       console.log(value);
     },
-    // 新增变量弹框
+    // 新增变量弹框 dwx
+    getVariableTable() {
+      axios.get('/feature/getList', {
+        params: {
+          "token": this.GLOBAL.token
+        }
+      })
+        .then((response) => {
+          this.VariableTable = response.data.data
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
     CancelVar(index) {
-      this.VariableTable.splice(index, 1)
+      axios.post('/feature/deleteFeature', {
+        "token": this.GLOBAL.token,
+        "featureId": this.VariableTable[index].featureId
+      })
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('删除成功！', '提示', { confirmButtonText: '确定' });
+            this.getVariableTable()
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+    EditVar(index) {
+
     },
     //队列拖拽所需
     handleDragStart(node, ev) {
@@ -1982,8 +1980,7 @@ export default {
 
   },
   components: {
-    draggable,
-    VarForm
+    draggable
   },
 };
 </script>
@@ -2030,17 +2027,6 @@ export default {
   border-radius: 5px;
   padding: 10px 0 0 10px;
   display: block;
-}
-.main-border {
-  border: 1px solid #ccc;
-  display: block;
-  margin-top: 40px;
-}
-.one-of-main-border {
-  transform: translate(10px, -12px);
-  background: #ffffff;
-  padding: 0 10px;
-  width: 150px;
 }
 .groupbox-boarder {
   border: 1px solid #ccc;
