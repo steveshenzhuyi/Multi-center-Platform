@@ -30,9 +30,7 @@
       <div class='tips'
            style="color:red"
            v-show="loginresult">{{tips}}</div>
-
     </div>
-    <remote-js src="http://pv.sohu.com/cityjson?ie=utf-8"></remote-js>
 
   </div>
 </template>
@@ -41,8 +39,6 @@
 import md5 from 'md5';
 import axios from 'axios';
 
-var ip = returnCitySN["cip"];
-// console.log(ip)
 export default {
   name: "Hi",
   data() {
@@ -95,7 +91,6 @@ export default {
         axios.post('/userLogin/login', {
           "username": this.loginForm.username,
           "password": md5(this.loginForm.password),
-          "loginIp": ip
         })
           .then((response) => {
             // 登录成功

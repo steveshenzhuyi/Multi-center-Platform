@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div onselectstart="return false">
 
     <el-row style="margin-top:15px;margin-bottom:10px;">
 
