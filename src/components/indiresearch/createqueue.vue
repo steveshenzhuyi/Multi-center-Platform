@@ -1,7 +1,8 @@
 <template>
   <div class="creat-queue-vue">
     <!-- 队列基本信息表单 -->
-    <div class="user-fill-info">
+    <div class="user-fill-info"
+         style="margin-top:20px">
       <el-form :model="queueInfo"
                :rules="rules"
                ref="queueInfo"
@@ -23,7 +24,7 @@
                       placeholder="请输入队列名称"></el-input>
           </el-col>
         </el-form-item>
-        <el-form-item label="队列创建时间"
+        <!-- <el-form-item label="队列创建时间"
                       required>
           <el-col :span="11">
             <el-form-item prop="date">
@@ -33,20 +34,20 @@
                               style="width: 100%;"></el-date-picker>
             </el-form-item>
           </el-col>
-        </el-form-item>
-        <el-form-item label="队列创建者"
+        </el-form-item> -->
+        <!-- <el-form-item label="队列创建者"
                       prop="creator">
           <el-col :span="11">
             <el-input v-model="queueInfo.creator"
                       placeholder="请输入队列创建者"></el-input>
           </el-col>
-        </el-form-item>
-        <el-form-item label="关键字">
+        </el-form-item> -->
+        <!-- <el-form-item label="关键字">
           <el-col :span="11">
             <el-input v-model="queueInfo.keyword"
                       placeholder="请输入关键字"></el-input>
           </el-col>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="队列描述">
           <el-col :span="11">
             <el-input type="textarea"
@@ -87,7 +88,9 @@
                 <!-- <component :is="comName"></component> -->
               </el-form>
               <div class="droparea">
-                <draggable :options="{group:condition}">
+                <draggable :options="{group:condition}"
+                           @add="getsort"
+                           @update="getsortupdate">
                   <div class="drag-cover"></div>
                 </draggable>
                 <div class="limit-condition">
@@ -190,7 +193,8 @@
              class="sifting-queue-content">
           <!-- 下拉选择显示右侧二级条件 -->
           <component :is="comName"
-                     ref="comName"></component>
+                     ref="comName"
+                     :queuedict="queuedict"></component>
         </div>
       </el-col>
     </el-row>
@@ -225,12 +229,13 @@ export default {
       limitvalue: '',
       comName: 'diagnoseForm',
       condition: 'diagnose',
+      queuedict: '',
       queueInfo: {
         // type: '',
+        // date: '',
+        // creator: '',
+        // keyword: '',
         name: '',
-        date: '',
-        creator: '',
-        keyword: '',
         desc: ''
       },
       // 表单验证
@@ -241,9 +246,9 @@ export default {
         name: [
           { required: true, message: '请输入队列名称', trigger: 'blur' },
         ],
-        date: [
-          { type: 'date', required: true, message: '请选择创建时间', trigger: 'change' }
-        ],
+        // date: [
+        //   { type: 'date', required: true, message: '请选择创建时间', trigger: 'change' }
+        // ],
       },
       condtypes: [{
         value: '1',
@@ -262,8 +267,10 @@ export default {
         label: '死亡记录'
       }],
       siftingform: {
-        condtype: '1',
+        condtype: '',
       },
+      creatInfo: '',
+      sortNo: ''
     }
   },
   methods: {
@@ -272,13 +279,19 @@ export default {
       this.items.push(items)
     },
     choosetype(condtype) {
-      axios.get('cohort/dict?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxODg2ODE4ICAgICAgICAgICAgICIsImV4cCI6MTU3NTYzODAyNTIyMSwiaWF0IjoxNTQ0MTAyMDI1fQ.5C92SLa_yqyOKKz9yTjDZtApz10FSlcHntfn8zPWGwc&&criteriaLayer1Code=' + condtype)
-        .then((response) => {
-          console.log(response)
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+      // axios.get('cohort/dict', {
+      //   params: {
+      //     token: this.GLOBAL.token,
+      //     criteriaLayer1Code: condtype
+      //   }
+      // })
+      //   .then((response) => {
+      //     this.queuedict = response.data.data
+      //     console.log(this.queuedict)
+      //   })
+      //   .catch(function (error) {
+      //     console.log("error", error);
+      //   });
 
       console.log(condtype)
       switch (condtype) {
@@ -301,20 +314,44 @@ export default {
           break;
       }
     },
-    submitForm(formName) {
-      console.log(this.$refs.comName.diagnoseform)
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          alert('submit!');
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+    submitForm(queueInfo) {
+      // console.log(this.$refs.comName.diagnoseform)
+      //表单验证--rzx
+      // this.$refs[queueInfo].validate((valid) => {
+      //   if (valid) {
+      //     console.log('valid success!!');
+      //   } else {
+      //     console.log('valid error!!');
+      //     return false;
+      //   }
+      // });
+      this.creatInfo = {
+        collaborationTag: "1",
+        token: this.GLOBAL.token,
+      }
+      this.creatInfo = Object.assign(this.creatInfo, this.queueInfo)
+      console.log(this.creatInfo)
+      axios.get('cohort/create', {
+        params: this.creatInfo
+      })
+        .then((response) => {
+          console.log(response)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
+    resetForm(queueInfo) {
+      this.$refs[queueInfo].resetFields();
     },
+    getsort(evt) {
+      console.log(evt.newIndex)
+      // console.log(evt.newIndex)
+    },
+    getsortupdate(evt) {
+      console.log(evt.newIndex)
+      // console.log(evt.newIndex)
+    }
   }
 }
 
@@ -380,6 +417,9 @@ input.num-input {
   border-radius: 5px;
   padding: 10px 0 0 10px;
   display: block;
+}
+.line {
+  color: #606266;
 }
 </style>
 <style>

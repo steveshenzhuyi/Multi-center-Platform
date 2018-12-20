@@ -1,7 +1,6 @@
 <template>
   <el-form ref="medicalform"
            :model="medicalform"
-           label-width="100px"
            size="mini"
            :inline="true"
            class="medical">

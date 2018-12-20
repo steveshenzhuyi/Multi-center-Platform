@@ -1,7 +1,6 @@
 <template>
   <el-form ref="deathRecordsform"
            :model="deathRecordsform"
-           label-width="100px"
            size="mini"
            :inline="true"
            class="deathRecords">
