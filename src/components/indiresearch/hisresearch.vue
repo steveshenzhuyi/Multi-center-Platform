@@ -123,10 +123,10 @@ export default {
     },
     toMyresearch: function () {
       this.$router.replace({
-        path: "myresearch",
+        path: "queuelist",
         query:
           {
-            researchstatus: 2
+            researchid: ""
           }
       });
     },

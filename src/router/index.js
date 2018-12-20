@@ -59,6 +59,14 @@ export default new Router({
               meta: {
                 title: "新建队列"
               }
+            },
+            {
+              path: "queuelist",
+              name: "队列列表",
+              component: () => import("@/components/indiresearch/queuelist"),
+              meta: {
+                title: "队列列表"
+              }
             }
           ]
         },

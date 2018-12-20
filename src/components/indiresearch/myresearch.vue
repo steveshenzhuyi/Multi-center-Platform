@@ -1,25 +1,7 @@
 <template>
   <div onselectstart="return false">
-
-    <el-row style="margin-top:15px;margin-bottom:10px;">
-
-      <!-- 进度条/RH -->
-      <el-col :span="20">
-        <el-steps :active="researchstatus"
-                  align-center>
-          <el-step title="1 队列选择"></el-step>
-          <el-step title="2 数据模型"></el-step>
-          <el-step title="3 预测结果"></el-step>
-          <el-step title></el-step>
-        </el-steps>
-      </el-col>
-      <el-col :span="4">
-        <el-button type="primary"
-                   @click="toNewVariable()">新增变量</el-button>
-
-      </el-col>
-    </el-row>
-    <el-row :gutter="20">
+    <el-row :gutter="20"
+            style="margin-top:15px;margin-bottom:10px;">
       <el-col :span="6">
         <!-- 概念集模块/RH by lqh-->
         <el-row>
@@ -184,27 +166,43 @@
         <el-row>
           <el-card class="box-card"
                    style="height:100%">
+            <el-tabs v-model="activeName"
+                     style="margin-top:-10px">
+              <el-tab-pane label="队列生成"
+                           name="summarygenerate">
+                <el-select v-model="value"
+                           placeholder="请选择">
+                  <el-option-group v-for="queue in queuesets"
+                                   :key="queue.label"
+                                   :label="queue.label">
+                    <el-option v-for="item in queue.options"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value">
+                    </el-option>
+                  </el-option-group>
+                </el-select>
+              </el-tab-pane>
+              <el-tab-pane label="队列分析"
+                           name="queneanalysis">队列分析</el-tab-pane>
+            </el-tabs>
+          </el-card>
+          <!-- <el-card class="box-card"
+                   style="height:100%">
             <div slot="header"
                  style="height:12px;font-size:13px;"
                  class="clearfix">
               <span>构建</span>
+              <el-button style="float:right;margin-top:-7px"
+                         type="primary"
+                         size="mini"
+                         @click="toNewVariable()">新增变量</el-button>
+
             </div>
-
-            <draggable :options="{group:'condition'}">
-              <div class="drag-cover"></div>
-            </draggable>
-            <!-- <el-table :data="tableData"
-                      style="width: 100%">
-
-              <el-table-column prop="quene"
-                               label="队列"
-                               width="180"></el-table-column>
-              <el-table-column prop="method"
-                               label="分析方法"></el-table-column>
-            </el-table> -->
+            内容
             <el-button style="float:right;margin-bottom:5px;margin-top:5px"
                        type="primary">计算</el-button>
-          </el-card>
+          </el-card> -->
         </el-row>
 
         <!-- 分析结果模块/RH -->
@@ -1345,6 +1343,8 @@ export default {
         SetName: "",
         SetDescription: ""
       },
+      activeName: 'summarygenerate',
+      value: '',
       table: [
         {
           ConceptCode: "E14.901",
@@ -1703,6 +1703,7 @@ export default {
     handleNodeClick(data) {
       // console.log(data);
     },
+    handleAddTop() { },
     toCreateQueue() {
       this.$router.push({
         path: 'createqueue',
