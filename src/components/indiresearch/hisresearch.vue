@@ -10,7 +10,7 @@
           <div id="newresearch"
                class="cardBox"
                shadow="hover"
-               @click="toNewresearch">
+               @click="ifNewresearch">
 
             <span class="el-icon-plus"></span>
           </div>
@@ -53,6 +53,27 @@
         </div>
       </li>
     </ul>
+    <el-dialog title="新建研究"
+               :visible.sync="dialogVisible"
+               width="30%"
+               :before-close="handleClose">
+      <el-form>
+        <el-form-item label="研究名称："
+                      :label-width="formLabelWidth">
+          <el-input placeholder="请输入研究名称"
+                    v-model="newresearchname"
+                    clearable>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="dialogVisible = false;toNewresearch()">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -69,6 +90,10 @@ export default {
       NewQueneVisible: false,
       NewMethodVisible: false,
       imgUrl: wait,
+      dialogVisible: false,
+      newresearchname: "",
+      formLabelWidth: '90px',
+      createtime: "",
       researchlist: [
         {
           researchname: "项目1",
@@ -90,9 +115,6 @@ export default {
       ]
     }
   },
-  mounted() {
-    this.setimgurl();
-  },
   filters: {
     researchstatusfilter: function (input) {
       switch (input) {
@@ -108,19 +130,15 @@ export default {
     }
   },
   methods: {
-    setimgurl: function () {
-      console.log(this)
-      switch (this.researchstatus) {
-        case 1:
-          imgUrl = wait;
-          break;
-        case 2:
-          imgUrl = end;
-          break;
-        default:
-          return '未知';
-      }
+    // 关闭对话框
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then(_ => {
+          done();
+        })
+        .catch(_ => { });
     },
+    // 跳转至对应研究页面
     toMyresearch: function () {
       this.$router.replace({
         path: "queuelist",
@@ -130,7 +148,14 @@ export default {
           }
       });
     },
+    // 新建研究对话框
+    ifNewresearch: function () {
+      this.dialogVisible = true;
+    },
+
+    // 跳转至新建研究
     toNewresearch: function () {
+      this.createtime = new Date();
       this.$router.push({
         path: 'myresearch',
         query:
@@ -144,8 +169,6 @@ export default {
 };
 </script>
 <style>
-#researchlist {
-}
 #researchlist li {
   display: block;
   float: left;

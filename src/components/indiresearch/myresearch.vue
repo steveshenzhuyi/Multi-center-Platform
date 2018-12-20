@@ -24,12 +24,6 @@
                          v-if="isLoadingTree"
                          default-expand-all
                          node-key="id"
-                         @node-drag-start="handleDragStart"
-                         @node-drag-enter="handleDragEnter"
-                         @node-drag-leave="handleDragLeave"
-                         @node-drag-over="handleDragOver"
-                         @node-drag-end="handleDragEnd"
-                         @node-drop="handleDrop"
                          draggable
                          :allow-drop="allowDrop"
                          :allow-drag="allowDrag"
@@ -90,12 +84,6 @@
                        v-if="isLoadingTree"
                        default-expand-all
                        node-key="id"
-                       @node-drag-start="handleDragStart"
-                       @node-drag-enter="handleDragEnter"
-                       @node-drag-leave="handleDragLeave"
-                       @node-drag-over="handleDragOver"
-                       @node-drag-end="handleDragEnd"
-                       @node-drop="handleDrop"
                        draggable
                        :allow-drop="allowDrop"
                        :allow-drag="allowDrag"
@@ -170,39 +158,51 @@
                      style="margin-top:-10px">
               <el-tab-pane label="队列生成"
                            name="summarygenerate">
-                <el-select v-model="value"
+                <el-select v-model="summarygeneratevalue"
                            placeholder="请选择">
                   <el-option-group v-for="queue in queuesets"
                                    :key="queue.label"
                                    :label="queue.label">
-                    <el-option v-for="item in queue.options"
-                               :key="item.value"
+                    <el-option v-for="item in queue.children"
+                               :key="item.label"
                                :label="item.label"
-                               :value="item.value">
+                               :value="item.label">
+                    </el-option>
+                  </el-option-group>
+                </el-select>
+                <el-button type="primary"
+                           @click="toNewVariable()">新增变量</el-button>
+              </el-tab-pane>
+              <el-tab-pane label="队列分析"
+                           name="queueanalysis">
+                <el-select v-model="queueanalysisvalue"
+                           placeholder="请选择">
+                  <el-option-group v-for="queue in queuesets"
+                                   :key="queue.label"
+                                   :label="queue.label">
+                    <el-option v-for="item in queue.children"
+                               :key="item.label"
+                               :label="item.label"
+                               :value="item.label">
+                    </el-option>
+                  </el-option-group>
+                </el-select>
+                <el-select v-model="analysismethodvalue"
+                           placeholder="请选择">
+                  <el-option-group v-for="method in analysismethods"
+                                   :key="method.label"
+                                   :label="method.label">
+                    <el-option v-for="item in method.children"
+                               :key="item.label"
+                               :label="item.label"
+                               :value="item.label">
                     </el-option>
                   </el-option-group>
                 </el-select>
               </el-tab-pane>
-              <el-tab-pane label="队列分析"
-                           name="queneanalysis">队列分析</el-tab-pane>
             </el-tabs>
           </el-card>
-          <!-- <el-card class="box-card"
-                   style="height:100%">
-            <div slot="header"
-                 style="height:12px;font-size:13px;"
-                 class="clearfix">
-              <span>构建</span>
-              <el-button style="float:right;margin-top:-7px"
-                         type="primary"
-                         size="mini"
-                         @click="toNewVariable()">新增变量</el-button>
 
-            </div>
-            内容
-            <el-button style="float:right;margin-bottom:5px;margin-top:5px"
-                       type="primary">计算</el-button>
-          </el-card> -->
         </el-row>
 
         <!-- 分析结果模块/RH -->
@@ -528,11 +528,7 @@ const ChilerenConceptsoptions = [' ', '  ', '   '];
 // import svm from './methodform/svm.vue'
 
 
-
-
 export default {
-
-
   components: {
     'firstanalysis': firstanalysis,
     'bayesiannetworks': bayesiannetworks,
@@ -545,12 +541,9 @@ export default {
     'oneway_anova': oneway_anova,
     'pairedsample_ttest': pairedsample_ttest,
     'svmanalysis': svmanalysis,
-
   },
-
   data() {
     return {
-
       methodName: '',
 
       researchstatus: this.$route.query.researchstatus,
@@ -580,7 +573,9 @@ export default {
         SetDescription: ""
       },
       activeName: 'summarygenerate',
-      value: '',
+      summarygeneratevalue: '',
+      queueanalysisvalue: '',
+      analysismethodvalue: '',
       table: [
         {
           ConceptCode: "E14.901",
@@ -623,9 +618,6 @@ export default {
       NewMethodVisible: false,
       tabPosition: "left",
 
-
-
-
       checked: true,
       // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
@@ -647,7 +639,7 @@ export default {
       })
         .then((response) => {
           //console.log(response)
-          this.conceptsets = JSON.parse(response.data.data.conceptSetStructur)
+          this.conceptsets = JSON.parse(response.data.data.conceptSetStructure)
           for (var i = 0; i < this.conceptsets.length; i++) {
             this.conceptsets[i].isEdit = false;
             this.conceptsets[i].id = 3;
@@ -667,7 +659,7 @@ export default {
         }
       })
         .then((response) => {
-          this.queuesets = JSON.parse(response.data.data.collaborationCohortStructure)
+          this.queuesets = JSON.parse(response.data.data.privateCohortStructure)
           for (var i = 0; i < this.queuesets.length; i++) {
             this.queuesets[i].isEdit = false;
             this.queuesets[i].id = 1;
@@ -727,12 +719,11 @@ export default {
       });
     },
     NodeBlur_concept(n, d) {//输入框失焦
-      console.log(n, d)
+      // console.log(n, d)
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
       }
       axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": "[]",
         "collaborationCohortStructure": JSON.stringify(this.queuesets),
@@ -785,25 +776,7 @@ export default {
         d.id > this.non_concept_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-    // NodeAdd(n, d) {//新增节点
-    //   console.log(n, d)
-    //   //判断层级
-    //   if (n.level >= 3) {
-    //     this.$message.error("最多只支持三级！")
-    //     return false;
-    //   }
-    //   //新增数据
-    //   d.children.push({
-    //     id: ++this.concept_maxexpandId,
-    //     label: '新增节点',
-    //     pid: d.id,
-    //     children: []
-    //   })
-    //   //同时展开节点
-    //   if (!n.expanded) {
-    //     n.expanded = true
-    //   }
-    // },
+
     //队列鼠标hover事件所需
     handleAddTop_queue() {
       this.queuesets.push({
@@ -890,28 +863,6 @@ export default {
         checkedCount > 0 && checkedCount < this.ChilerenConcepts.length;
     },
 
-
-
-
-
-
-
-
-    // handleChange2_2(value) {
-    //   console.log(value);
-    // },
-    // handleChange2_3(value) {
-    //   console.log(value);
-    // },
-    // handleChange3_1(value) {
-    //   console.log(value);
-    // },
-    // handleChange3_2(value) {
-    //   console.log(value);
-    // },
-    // 新增变量弹框
-
-
     // 新增变量弹框 dwx
     getVariableTable() {
       axios.get('/feature/getList', {
@@ -945,25 +896,7 @@ export default {
     EditVar(index) {
 
     },
-    //队列拖拽所需
-    handleDragStart(node, ev) {
-      console.log('drag start', node);
-    },
-    handleDragEnter(draggingNode, dropNode, ev) {
-      console.log('tree drag enter: ', dropNode.label);
-    },
-    handleDragLeave(draggingNode, dropNode, ev) {
-      console.log('tree drag leave: ', dropNode.label);
-    },
-    handleDragOver(draggingNode, dropNode, ev) {
-      console.log('tree drag over: ', dropNode.label);
-    },
-    handleDragEnd(draggingNode, dropNode, dropType, ev) {
-      console.log('tree drag end: ', dropNode && dropNode.label, dropType);
-    },
-    handleDrop(draggingNode, dropNode, dropType, ev) {
-      console.log('tree drop: ', dropNode.label, dropType);
-    },
+
     allowDrop(draggingNode, dropNode, type) {
       if (dropNode.data.label.indexOf('队列') != -1) {
         return type !== 'inner';
@@ -974,21 +907,16 @@ export default {
     allowDrag(draggingNode) {
       return draggingNode.data.label.indexOf('文件夹') === -1;
     },
+
     //以下为切换tab
     handleClick(tab, event) {
-
       this.checkVue(tab.name);
-
     },
     handleClick2(tab, event) {
-
       this.checkVue(tab.name);
-
     },
     handleClick3(tab, event) {
-
       this.checkVue(tab.name);
-
     },
     checkVue(name) {
 
@@ -1066,7 +994,6 @@ export default {
     options() {
       return this.$store.state.options;
     }
-
   },
   components: {
     draggable
