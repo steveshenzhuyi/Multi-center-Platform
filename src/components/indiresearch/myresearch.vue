@@ -17,7 +17,7 @@
                          @click="handleAddTop_concept">添加新文件夹</el-button>
               <el-button type="primary"
                          size="mini"
-                         @click="dialogVisible = true">新建概念集</el-button>
+                         @click="createConceptVisible = true">新建概念集</el-button>
               <div class="slot-tree">
                 <el-tree ref="SlotMenuList"
                          class="expand-tree"
@@ -34,7 +34,20 @@
                         slot-scope="{ node, data }">
                     <!-- 未编辑状态 -->
                     <span v-show="!node.isEdit">
-                      <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                      <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']"
+                            @click="dialogVisible = true">{{ node.label }}</span>
+                      <el-dialog title="提示"
+                                 :visible.sync="dialogVisible"
+                                 width="30%"
+                                 :before-close="handleClose">
+                        <span>这是一段信息</span>
+                        <span slot="footer"
+                              class="dialog-footer">
+                          <el-button @click="dialogVisible = false">取 消</el-button>
+                          <el-button type="primary"
+                                     @click="dialogVisible = false">确 定</el-button>
+                        </span>
+                      </el-dialog>
                       <span class="slot-t-icons">
                         <!-- 新增按钮 -->
                         <!--i class="el-icon-plus"
@@ -273,125 +286,15 @@
 
     <!--新增概念集 by lqh—-->
     <el-dialog title="新增概念集"
-               :visible.sync="dialogVisible"
+               :visible.sync="createConceptVisible"
                width="60%"
                :before-close="handleClose">
-      <el-form :model="NewConceptSets"
-               ref="NewConceptSets"
-               label-width="100px"
-               class="demo-ruleForm concept-container">
-        <el-row :gutter="10"
-                style="margin-top:10px;margin-bottom:10px"
-                type="flex"
-                justify="center">
-
-          <el-col :span="16">
-            <el-input prefix-icon="el-icon-search"
-                      v-model="InputConceptName"
-                      type="text"></el-input>
-          </el-col>
-        </el-row>
-        <el-row style="margin-top:10px;margin-bottom:10px">
-          <el-col :span="16"
-                  :offset="4">
-            <el-form-item label="*集合名称"
-                          prop="SetName"
-                          class="form-inline">
-              <el-input type="text"
-                        v-model="NewConceptSets.SetName"
-                        auto-complete="off"
-                        placeholder="请输入集合名称"
-                        class="form-control"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row style="margin-top:10px;margin-bottom:10px">
-          <el-col :span="14"
-                  :offset="4">
-            <el-form-item label="集合描述"
-                          prop="SetDescription"
-                          class="form-inline">
-              <el-input type="text"
-                        v-model="NewConceptSets.SetDescription"
-                        auto-complete="off"
-                        placeholder="请输入集合描述"
-                        class="form-control"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="2"
-                  :offset="1">
-            <el-button type="primary">待选择</el-button>
-          </el-col>
-          <el-col :span="2">
-            <el-button type="primary">已选择</el-button>
-          </el-col>
-        </el-row>
-      </el-form>
-      <el-row style="margin-top:10px;margin-bottom:10px"
-              type="flex"
-              justify="center">
-        <el-col :span="20">
-          <el-table :data="SearchResult"
-                    v-model="SearchResult"
-                    valign="center"
-                    height="300"
-                    border
-                    style="width: 100%"
-                    @selction-change="handleSelectionChange">
-            <el-table-column type="selection"
-                             label="全选"
-                             width="60"></el-table-column>
-            <el-table-column prop="ConceptCode"
-                             label="概念编码"
-                             width="120"></el-table-column>
-            <el-table-column prop="ConceptName"
-                             label="概念名称"
-                             width="150"></el-table-column>
-            <el-table-column prop="ConceptType"
-                             label="概念类别"
-                             width="120"></el-table-column>
-            <el-table-column prop="ConceptField"
-                             label="概念领域"
-                             width="120"></el-table-column>
-            <el-table-column prop="ConceptSource"
-                             label="概念来源（全部）"
-                             width="150"></el-table-column>
-            <el-table-column width="100">
-              <template slot="header"
-                        slot-scope="scope">
-                <el-checkbox :indeterminate="isIndeterminate1"
-                             v-model="checkAll1"
-                             @change="handleCheckAllExcludeditemsChange">排除</el-checkbox>
-              </template>
-              <template slot-scope="scope">
-                <el-checkbox-group v-model="checkedExcludeditems"
-                                   @change="handleCheckedExcludeditemsChange">
-                  <el-checkbox :label="scope.row.Except"></el-checkbox>
-                </el-checkbox-group>
-              </template>
-            </el-table-column>
-            <el-table-column>
-              <template slot="header"
-                        slot-scope="scope">
-                <el-checkbox :indeterminate="isIndeterminate2"
-                             v-model="checkAll2"
-                             @change="handleCheckAllChilerenConceptsChange">子概念</el-checkbox>
-              </template>
-              <template slot-scope="scope">
-                <el-checkbox-group v-model="checkedChilerenConcepts"
-                                   @change="handleCheckedChilerenConceptsChange">
-                  <el-checkbox :label="scope.row.ChilerenConcept"></el-checkbox>
-                </el-checkbox-group>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-col>
-      </el-row>
+      <component :is="mycreateconceptset"></component>
       <span slot="footer"
             class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="createConceptVisible = false">取 消</el-button>
         <el-button type="primary"
-                   @click="dialogVisible = false">确 定</el-button>
+                   @click="createConceptVisible = false">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -495,6 +398,7 @@
 
 import axios from 'axios';
 
+import createconceptset from './createconceptset/createconceptset.vue';
 import draggable from 'vuedraggable';
 import Vue from 'vue';
 import firstanalysis from './methodform/firstanalysis.vue'
@@ -509,12 +413,6 @@ import oneway_anova from './methodform/oneway_anova.vue'
 import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
 import svmanalysis from './methodform/svmanalysis.vue'
 // import firstanalysisVue from './methodform/firstanalysis.vue';
-
-const Excludeditemsoptions = [' ', '  ', '   '];
-const ChilerenConceptsoptions = [' ', '  ', '   '];
-
-
-
 // import firstanalysis from './methodform/firstanalysis.vue'
 // import bayesiannetworks from './methodform/bayesiannetworks.vue'
 // import decisiontree from './methodform/decisiontree.vue'
@@ -545,8 +443,9 @@ export default {
   data() {
     return {
       methodName: '',
-
+      mycreateconceptset: createconceptset,
       researchstatus: this.$route.query.researchstatus,
+      createConceptVisible: false,
       NewVarVisible: false,
       NewMethodVisible: false,
       tableData: [{
@@ -713,7 +612,7 @@ export default {
     handleAddTop_concept() {
       this.conceptsets.push({
         id: ++this.concept_maxexpandId,
-        label: '新增节点',
+        label: '新增文件夹',
         isEdit: false,
         children: []
       });
@@ -781,7 +680,7 @@ export default {
     handleAddTop_queue() {
       this.queuesets.push({
         id: ++this.queue_maxexpandId,
-        label: '新增节点',
+        label: '新增文件夹',
         isEdit: false,
         children: []
       });
@@ -977,23 +876,6 @@ export default {
       };
 
     },
-  },
-  computed: {
-    // 新增概念集中实现搜索功能
-    SearchResult() {
-      const InputConceptName = this.InputConceptName;
-      if (InputConceptName) {
-        return this.table.filter(data => {
-          return Object.keys(data).some(key => {
-            return String(data[key]).indexOf(InputConceptName) > -1;
-          });
-        });
-      }
-      return this.table;
-    },
-    options() {
-      return this.$store.state.options;
-    }
   },
   components: {
     draggable
