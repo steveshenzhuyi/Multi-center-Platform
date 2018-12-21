@@ -90,7 +90,8 @@
               <div class="droparea">
                 <draggable :options="{group:condition}"
                            @add="getsort"
-                           @update="getsortupdate">
+                           @update="getsortupdate"
+                           class="drag-main-condition">
                   <div class="drag-cover"></div>
                 </draggable>
                 <div class="limit-condition">
@@ -193,8 +194,7 @@
              class="sifting-queue-content">
           <!-- 下拉选择显示右侧二级条件 -->
           <component :is="comName"
-                     ref="comName"
-                     :queuedict="queuedict"></component>
+                     ref="comName"></component>
         </div>
       </el-col>
     </el-row>
@@ -210,9 +210,9 @@ import marForm from './conditionform/marform.vue'
 import operatingForm from './conditionform/operatingform.vue'
 import medicalForm from './conditionform/medicalform.vue'
 import deathRecordsForm from './conditionform/deathRecordsform.vue'
-import { error } from 'util';
 
 const items = []
+// let mainitems = this.$el(".drag-main-conditon")
 
 export default {
   components: {
@@ -229,7 +229,7 @@ export default {
       limitvalue: '',
       comName: 'diagnoseForm',
       condition: 'diagnose',
-      queuedict: '',
+      // queuedict: '',
       queueInfo: {
         // type: '',
         // date: '',
@@ -240,9 +240,6 @@ export default {
       },
       // 表单验证
       rules: {
-        // type: [
-        //   { required: true, message: '请选择队列类型', trigger: 'blur' },
-        // ],
         name: [
           { required: true, message: '请输入队列名称', trigger: 'blur' },
         ],
@@ -269,7 +266,7 @@ export default {
       siftingform: {
         condtype: '',
       },
-      creatInfo: '',
+      creatInfo: {},
       sortNo: ''
     }
   },
@@ -279,20 +276,6 @@ export default {
       this.items.push(items)
     },
     choosetype(condtype) {
-      // axios.get('cohort/dict', {
-      //   params: {
-      //     token: this.GLOBAL.token,
-      //     criteriaLayer1Code: condtype
-      //   }
-      // })
-      //   .then((response) => {
-      //     this.queuedict = response.data.data
-      //     console.log(this.queuedict)
-      //   })
-      //   .catch(function (error) {
-      //     console.log("error", error);
-      //   });
-
       console.log(condtype)
       switch (condtype) {
         case '1': this.comName = 'diagnoseForm';
@@ -315,7 +298,6 @@ export default {
       }
     },
     submitForm(queueInfo) {
-      // console.log(this.$refs.comName.diagnoseform)
       //表单验证--rzx
       // this.$refs[queueInfo].validate((valid) => {
       //   if (valid) {
@@ -325,32 +307,50 @@ export default {
       //     return false;
       //   }
       // });
-      this.creatInfo = {
-        collaborationTag: "1",
-        token: this.GLOBAL.token,
-      }
-      this.creatInfo = Object.assign(this.creatInfo, this.queueInfo)
-      console.log(this.creatInfo)
-      axios.get('cohort/create', {
-        params: this.creatInfo
-      })
-        .then((response) => {
-          console.log(response)
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+      this.fulfilCreatInfo(queueInfo)
+      // console.log(this.creatInfo)
+      // axios.get('cohort/create', {
+      //   params: this.creatInfo
+      // })
+      //   .then((response) => {
+      //     console.log(response)
+      //   })
+      //   .catch(function (error) {
+      //     console.log("error", error);
+      //   });
     },
+    //重置表单
     resetForm(queueInfo) {
       this.$refs[queueInfo].resetFields();
     },
+    //得到初始序号--rzx
     getsort(evt) {
+      console.log(evt)
       console.log(evt.newIndex)
+      evt.target.data(evt.newIndex)
+      console.log(evt.target.sortno)
+      console.log(evt.target.innerText)
+    },
+    //更新拖拽后序号--rzx
+    getsortupdate(evt) {
+      console.log(evt)
       // console.log(evt.newIndex)
     },
-    getsortupdate(evt) {
-      console.log(evt.newIndex)
-      // console.log(evt.newIndex)
+    //拼接队列创建条件--rzx
+    fulfilCreatInfo(queueInfo) {
+      this.creatInfo = {
+        collaborationTag: "1",
+        token: this.GLOBAL.token,
+        detail: []
+      }
+      this.creatInfo = Object.assign(this.creatInfo, this.queueInfo)
+      console.log(this.$refs.comName.form.age)
+      this.creatInfo['detail'].push(this.$refs.comName.form.code)
+      this.creatInfo['detail'].push(this.$refs.comName.form.date)
+      this.creatInfo['detail'].push(this.$refs.comName.form.source)
+      this.creatInfo['detail'].push(this.$refs.comName.form.sex)
+      this.creatInfo['detail'].push(this.$refs.comName.form.debut)
+      console.log(this.creatInfo)
     }
   }
 }

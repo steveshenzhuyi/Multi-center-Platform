@@ -1,61 +1,61 @@
 <template>
-  <el-form ref="diagnoseform"
-           :model="diagnoseform"
+  <el-form ref="form"
+           :model="form"
            size="mini"
            :inline="true"
            class="diagnose">
     <draggable :options="{group:'diagnose'}">
-      <el-checkbox v-model="diagnoseform.debut.data1">首次出现</el-checkbox>
+      <el-checkbox v-model="form.debut.data1">首次出现</el-checkbox>
       <el-form-item label="性别">
-        <el-input v-model="diagnoseform.sex.data1"></el-input>
+        <el-input v-model="form.sex.data1"></el-input>
       </el-form-item>
       <el-form-item label="记录来源">
-        <el-input v-model="diagnoseform.source.data1"></el-input>
+        <el-input v-model="form.source.data1"></el-input>
       </el-form-item>
       <el-form-item label="诊断类型">
-        <el-input v-model="diagnoseform.type"></el-input>
+        <el-input v-model="form.type"></el-input>
       </el-form-item>
       <el-form-item label="诊断编码集合">
-        <el-input v-model="diagnoseform.code.data1"></el-input>
-        <el-checkbox v-model="diagnoseform.codechecked"
+        <el-input v-model="form.code.data1"></el-input>
+        <el-checkbox v-model="form.codechecked"
                      class="except">不在其之间</el-checkbox>
       </el-form-item>
       <el-form-item label="诊断年龄">
-        <el-input-number v-model="diagnoseform.age.data1"
+        <el-input-number v-model="form.age.data1"
                          controls-position="right"
                          @change="ageChange"
                          :min="0"
                          :max="120"></el-input-number><span class="line"> - </span>
-        <el-input-number v-model="diagnoseform.age.data2"
+        <el-input-number v-model="form.age.data2"
                          controls-position="right"
                          @change="ageChange"
                          :min="0"
                          :max="120"></el-input-number>
-        <el-checkbox v-model="diagnoseform.agechecked"
+        <el-checkbox v-model="form.agechecked"
                      class="except">不在其之间</el-checkbox>
       </el-form-item>
       <el-form-item label="诊断日期">
-        <el-date-picker v-model="diagnoseform.date.data1"
+        <el-date-picker v-model="form.date.data1"
                         type="date"
                         placeholder="选择日期">
         </el-date-picker>
         <span class="line"> — </span>
-        <el-date-picker v-model="diagnoseform.date.data2"
+        <el-date-picker v-model="form.date.data2"
                         type="date"
                         placeholder="选择日期">
         </el-date-picker>
-        <!-- <el-date-picker v-model="diagnoseform.datearray"
+        <!-- <el-date-picker v-model="form.datearray"
                         type="daterange"
                         unlink-panels
                         range-separator="至"
                         start-placeholder="开始日期"
                         end-placeholder="结束日期">
         </el-date-picker> -->
-        <el-checkbox v-model="diagnoseform.datechecked"
+        <el-checkbox v-model="form.datechecked"
                      class="except">不在其之间</el-checkbox>
       </el-form-item>
       <el-button type="primary"
-                 @click="submitForm(diagnoseform)">保存</el-button>
+                 @click="submitForm(form)">保存</el-button>
     </draggable>
   </el-form>
 </template>
@@ -70,7 +70,7 @@ export default {
   // props: ['queuedict'],
   data() {
     return {
-      diagnoseform: {
+      form: {
         debut: { data1: false },
         sex: {
           data1: '',
@@ -112,13 +112,13 @@ export default {
           this.queuedict = response.data.data
           this.renameKeys()
           console.log(this.queuedict)
-          this.diagnoseform.code = Object.assign(this.diagnoseform.code, this.queuedict[0])
-          this.diagnoseform.date = Object.assign(this.diagnoseform.date, this.queuedict[1])
-          this.diagnoseform.age = Object.assign(this.diagnoseform.age, this.queuedict[2])
-          this.diagnoseform.source = Object.assign(this.diagnoseform.source, this.queuedict[3])
-          this.diagnoseform.sex = Object.assign(this.diagnoseform.sex, this.queuedict[4])
-          this.diagnoseform.debut = Object.assign(this.diagnoseform.debut, this.queuedict[5])
-          console.log(this.diagnoseform)
+          this.form.code = Object.assign(this.form.code, this.queuedict[0])
+          this.form.date = Object.assign(this.form.date, this.queuedict[1])
+          this.form.age = Object.assign(this.form.age, this.queuedict[2])
+          this.form.source = Object.assign(this.form.source, this.queuedict[3])
+          this.form.sex = Object.assign(this.form.sex, this.queuedict[4])
+          this.form.debut = Object.assign(this.form.debut, this.queuedict[5])
+          console.log(this.form)
         })
         .catch(function (error) {
           console.log("error", error);
@@ -134,8 +134,9 @@ export default {
     ageChange(value) {
       console.log(value);
     },
-    submitForm(diagnoseform) {
-      console.log(diagnoseform)
+    submitForm(form) {
+      console.log(form)
+      console.log(this.queuedict[3].name)
     }
   }
 }
