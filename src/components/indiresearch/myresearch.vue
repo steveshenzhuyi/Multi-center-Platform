@@ -58,7 +58,20 @@
                         slot-scope="{ node, data }">
                     <!-- 未编辑状态 -->
                     <span v-show="!node.isEdit">
-                      <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                      <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']"
+                            @click="dialogVisible = true">{{ node.label }}</span>
+                      <el-dialog title="提示"
+                                 :visible.sync="dialogVisible"
+                                 width="30%"
+                                 :before-close="handleClose">
+                        <span>这是一段信息</span>
+                        <span slot="footer"
+                              class="dialog-footer">
+                          <el-button @click="dialogVisible = false">取 消</el-button>
+                          <el-button type="primary"
+                                     @click="dialogVisible = false">确 定</el-button>
+                        </span>
+                      </el-dialog>
                       <span class="slot-t-icons">
                         <!-- 新增按钮 -->
                         <!--i class="el-icon-plus"
@@ -438,6 +451,7 @@ export default {
 
   data() {
     return {
+      dialogVisible: false,
 
       methodName: '',
       mycreateconceptset: createconceptset,
@@ -485,7 +499,7 @@ export default {
       })
         .then((response) => {
           //console.log(response)
-          this.conceptsets = JSON.parse(response.data.data.conceptSetStructur)
+          this.conceptsets = JSON.parse(response.data.data.conceptSetStructure)
           for (var i = 0; i < this.conceptsets.length; i++) {
             this.conceptsets[i].isEdit = false;
             this.conceptsets[i].id = 3;

@@ -2,6 +2,7 @@
   <div>
     <!--新增概念集 by lqh—-->
     <el-form :model="NewConceptSets"
+             :rules="rules"
              ref="NewConceptSets"
              label-width="100px"
              class="demo-ruleForm concept-container">
@@ -19,7 +20,7 @@
       <el-row style="margin-top:10px;margin-bottom:10px">
         <el-col :span="16"
                 :offset="4">
-          <el-form-item label="*集合名称"
+          <el-form-item label="集合名称"
                         prop="SetName"
                         class="form-inline">
             <el-input type="text"
@@ -117,8 +118,6 @@
 </template>
 
 <script>
-const Excludeditemsoptions = [' ', '  ', '   '];
-const ChilerenConceptsoptions = [' ', '  ', '   '];
 export default {
   data() {
     return {
@@ -132,11 +131,17 @@ export default {
       isIndeterminate2: false,
       checkedExcludeditems: [],
       checkedChilerenConcepts: [],
-      Excludeditems: Excludeditemsoptions,
-      ChilerenConcepts: ChilerenConceptsoptions,
+      //Excludeditems: [' ', '  ', '   '],
+      Excludeditems: [],
+      ChilerenConcepts: [],
       NewConceptSets: {
         SetName: "",
         SetDescription: ""
+      },
+      rules: {
+        SetName: [
+          { required: true, message: '请输入概念名称', trigger: 'blur' }
+        ]
       },
       table: [
         {
@@ -169,8 +174,18 @@ export default {
       ],
     }
   },
+  mounted() {
+    for (let i = 0; i < this.table.length; i++) {
+      this.Excludeditems[i] = this.table[i].Except
+      this.ChilerenConcepts[i] = this.table[i].ChilerenConcept
+    }
+  },
   methods: {
     //新增概念集所需
+    getdata() {
+      this.Excludeditems = this.table.Except
+      //console.log(this.Excludeditems)
+    },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(_ => {
@@ -182,7 +197,7 @@ export default {
       this.multipleSelection = val;
     },
     handleCheckAllExcludeditemsChange(val) {
-      this.checkedExcludeditems = val ? Excludeditemsoptions : [];
+      this.checkedExcludeditems = val ? this.Excludeditems : [];
       this.isIndeterminate1 = false;
     },
     handleCheckedExcludeditemsChange(value) {
@@ -192,7 +207,7 @@ export default {
         checkedCount > 0 && checkedCount < this.Excludeditems.length;
     },
     handleCheckAllChilerenConceptsChange(val) {
-      this.checkedChilerenConcepts = val ? ChilerenConceptsoptions : [];
+      this.checkedChilerenConcepts = val ? this.ChilerenConcepts : [];
       this.isIndeterminate2 = false;
     },
     handleCheckedChilerenConceptsChange(value) {
