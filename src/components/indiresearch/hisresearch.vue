@@ -4,7 +4,7 @@
       <li>
         <el-tooltip class="item"
                     effect="dark"
-                    content="Right Top 新建研究"
+                    content="新建研究"
                     placement="right-start">
 
           <div id="newresearch"
@@ -31,23 +31,23 @@
             </el-dropdown>
           </div>
           <div class="div-relative">
-            <img class="img"
+            <!-- <img class="img"
                  style="position:absolute;"
-                 :src="imgUrl">
+                 :src="imgUrl"> -->
             <div class="bodyBox"
                  @click="toMyresearch"
                  style="position:absolute;">
               <div class="flex-container">
-                {{'项目创建时间 ' }}<span style="float: right; ">{{research.researchname}}</span>
+                {{'项目创建时间 ' }}<span style="float: right; ">{{research.createtime}}</span>
               </div>
               <div class="flex-container">
                 {{'研究者 ' }}
                 <span style="float: right; ">{{research.researchadmin }}</span>
               </div>
-              <div class="flex-container">
+              <!-- <div class="flex-container">
                 {{'研究状态 ' }}
                 <span style="float: right; ">{{research.researchstatus |researchstatusfilter }}</span>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -77,10 +77,8 @@
   </div>
 </template>
 <script>
-let id = 1000;
-import wait from '../../assets/等待审核.png'
-import end from '../../assets/已结束.png'
-
+// import wait from '../../assets/等待审核.png'
+// import end from '../../assets/已结束.png'
 
 export default {
   data() {
@@ -89,7 +87,7 @@ export default {
       NewConceptVisible: false,
       NewQueneVisible: false,
       NewMethodVisible: false,
-      imgUrl: wait,
+      // imgUrl: wait,
       dialogVisible: false,
       newresearchname: "",
       formLabelWidth: '90px',
@@ -178,15 +176,15 @@ export default {
 #newresearch {
   vertical-align: middle;
   text-align: center;
-  font-size: 117px;
+  font-size: 105px;
   color: dimgrey;
-  height: 175px;
+  height: 150px;
   cursor: pointer;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   border-radius: 5px;
 }
 .cardBox {
-  height: 175px;
+  height: 150px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   margin-right: 10px;
   padding: 5px;

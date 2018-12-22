@@ -170,7 +170,7 @@
             <el-tabs v-model="activeName"
                      style="margin-top:-10px">
               <el-tab-pane label="队列生成"
-                           name="summarygenerate">
+                           name="summarygenerate1">
                 <el-select v-model="summarygeneratevalue"
                            placeholder="请选择">
                   <el-option-group v-for="queue in queuesets"
@@ -471,7 +471,7 @@ export default {
         SetName: "",
         SetDescription: ""
       },
-      activeName: 'summarygenerate',
+      activeName: 'summarygenerate1',
       summarygeneratevalue: '',
       queueanalysisvalue: '',
       analysismethodvalue: '',
