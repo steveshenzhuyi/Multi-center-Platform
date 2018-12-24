@@ -6,15 +6,19 @@
           <el-col :span="10">
             <fieldset style=" min-width: inherit; height:220px;border-width:0.5px;border-style: double">
               <el-table :data="Varlist"
-                        ref="multipleTable"
+                        ref="singleTable"
                         max-height="200"
                         tooltip-effect="dark"
-                        @selection-change="handleSelectionChange1">
-                <el-table-column type="selection"
+                        @current-change="handleCurrentChange1">
+                <!-- <el-table-column type="selection"
                                  width="55">
-                </el-table-column>
+                </el-table-column> -->
 
-                <el-table-column prop="variable">
+                <el-table-column prop="name">
+                </el-table-column>
+                <el-table-column prop="featureId"
+                                 v-if="idshow">
+
                 </el-table-column>
 
               </el-table>
@@ -40,14 +44,18 @@
             <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
               <el-table :data="Chosenlist"
                         max-height="200"
-                        ref="multipleTable"
+                        ref="singleTable"
                         tooltip-effect="dark"
-                        @selection-change="handleSelectionChange2">
-                <el-table-column type="selection"
+                        @current-change="handleCurrentChange2">
+                <!-- <el-table-column type="selection"
                                  width="55">
-                </el-table-column>
-                <el-table-column prop="variable"
+                </el-table-column> -->
+                <el-table-column prop="name"
                                  label="结局变量">
+                </el-table-column>
+                <el-table-column prop="featureId"
+                                 v-if="idshow2">
+
                 </el-table-column>
 
               </el-table>
@@ -85,13 +93,16 @@
                   <el-checkbox :label="1">中位数</el-checkbox>
                 </el-row>
                 <el-row>
-                  <el-checkbox :label="2">百分位数：
-                    <el-input-number v-model="num1"
-                                     size="mini"
-                                     controls-position="right"
-                                     @change="handleChange1"
-                                     :min="0"
-                                     :max="100"></el-input-number>% </el-checkbox>
+
+                  <el-checkbox :label="2">百分位数：</el-checkbox>
+
+                  <el-input-number v-model="mstjForm.num1"
+                                   :disabled="!mstjForm.quantile.includes(2)"
+                                   size="mini"
+                                   controls-position="right"
+                                   @change="handleChange1"
+                                   :min="0"
+                                   :max="100"></el-input-number>
 
                 </el-row>
 
@@ -192,76 +203,160 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
 
-      Varlist: [
-        { variable: "变量1" }, { variable: "变量2" }, { variable: "变量3" }, { variable: "变量4" }, { variable: "变量5" }]
-      ,
+      // Varlist: [
+      //   { variable: "变量1" }, { variable: "变量2" }, { variable: "变量3" }, { variable: "变量4" }, { variable: "变量5" }]
+      // ,
+      idshow: false,
+      idshow2: false,
+      Varlist: [],
       Chosenlist: [],
-      multipleSelection1: [],
-      multipleSelection2: [],
+      // multipleSelection1: [],
+      // multipleSelection2: [],
+      // handleCurrentChange2:[],
+      // handleCurrentChange1:[],
+      currentRow2: [],
+      currentRow1: [],
       mstjForm: {
         quantile: [],
         centraltendency: [],
-        discretetrend: [1],
-        distribution: [2],
-        chart: [2],
+        discretetrend: [],
+        distribution: [],
+        chart: [],
+        num1: '',
 
       },
-
+      // 
+      fl: {
+        sortNo: '',
+        featureId: '',
+        featureType: '',
+      },
+      List1: [],
       // checkList1_1: [],
       // checkList1_2: [],
       // checkList1_3: [],
       //checkList1_4: [],
       //checkList1_5: [],
       //value1: [],
-      num1: 3,
+      //num1: 3,
       //input1: "",
     }
   },
+  mounted() {
+    // console.log(this.GLOBAL.token)
+    this.getVariableTable();
+
+  },
   methods: {
+    getVariableTable() {
+      axios.get('/feature/getList', {
+        params: {
+          "token": this.GLOBAL.token
+        }
+      })
+        .then((response) => {
+          this.Varlist = response.data.data;
+          // this.Varlist.featureId = response.data.data.featureId
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
     rightshift: function () {
+      this.Chosenlist.push(this.currentRow1);
+      // console.log(this.Chosenlist[0].featureId)
+      this.Varlist.splice(this.currentRow1, 1);
 
-      this.Chosenlist.push.apply(this.Chosenlist, this.multipleSelection1);
-      this.Varlist = this.Varlist.filter(v => !this.multipleSelection1.includes(v))
-
-      //console.log(this.multipleSelection);
-      //this.Varlist.overlap(this.Varlist, this.Chosenlist);
-      // this.Varlist.splice(index, 1);
-      // console.log(this.Varlist);
-      // const a = this.Varlist;
-      // const b = this.Chosenlist;
-
-      // const c = a.filter(v => !b.includes(v));
-
-      // this.Varlist = c;
-      // console.log(this.Varlist);
 
     },
     leftshift: function () {
-      this.Varlist.push.apply(this.Varlist, this.multipleSelection2);
-      this.Chosenlist = this.Chosenlist.filter(v => !this.multipleSelection2.includes(v))
+      this.Varlist.push(this.currentRow2);
+      this.Chosenlist.splice(this.currentRow2, 1);
+
 
     },
-    handleSelectionChange1(val) {
-      this.multipleSelection1 = val;
-      //console.log(this.$refs.multipleTable.store.states.selection);
+    handleCurrentChange1(val) {
 
+      this.currentRow1 = val;
+      //console.log(this.currentRow1.featureId);
     },
-    handleSelectionChange2(val) {
-      this.multipleSelection2 = val;
-      //console.log(this.$refs.multipleTable.store.states.selection);
+    handleCurrentChange2(val) {
+      this.currentRow2 = val;
+    },
 
-    },
+    // handleSelectionChange1(val) {
+    //   this.multipleSelection1 = val;
+
+
+    // },
+    // handleSelectionChange2(val) {
+    //   this.multipleSelection2 = val;
+
+
+    // },
     handleChange1(value) {
-      console.log(value);
+      // console.log(value);
 
     },
     //确定就是保存 然后关闭窗口
     save: function () {
-      console.log(this.mstjForm.quantile);
+
+
+      console.log(this.Chosenlist.length);
+      for (var i = 0; i < this.Chosenlist.length; i++) {
+
+        // var a = i + 1;
+        // var b = this.Chosenlist[i].featureId
+        // var c = 1;
+        //var f = { "sortNo": a, "featureId": b, "featureType": c };
+        var ff = { "sortNo": i + 1, "featureId": this.Chosenlist[i].featureId, "featureType": 1 }
+        this.List1.push(f);
+
+
+
+
+      }
+      console.log(this.List1)
+
+      axios.post('/model/create', {
+        "token": this.GLOBAL.token,
+        // "name":JSON.stringify(this.mstjForm.name),
+        "modelTypeLayer1Code": 1,
+        "modelTypeLayer2Code": 1,
+        "data": {
+          "data1": JSON.stringify(this.mstjForm.quantile),
+          "data2": JSON.stringify(this.mstjForm.centraltendency),
+          "data3": JSON.stringify(this.mstjForm.discretetrend),
+          "data4": JSON.stringify(this.mstjForm.distribution),
+          "data5": JSON.stringify(this.mstjForm.chart),
+          "data6": JSON.stringify(this.mstjForm.num1),
+        },
+
+        "feature": this.List1,
+
+
+
+
+
+      })
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('创建成功');
+            console.log(response.data.data.modelId)
+            // this.getVariableTable()
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+
+
+
 
     },
     //取消，关闭窗口
