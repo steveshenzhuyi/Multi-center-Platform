@@ -299,13 +299,15 @@
                                :label="val.name"
                                :value="val.criteriaLayer2Code"></el-option>
                   </el-select>&nbsp;&nbsp;&nbsp;
-                  <el-input-number v-model="VarForm.data5"
+                  <el-input-number v-if="VariableData56Visible"
+                                   :v-model='sampleCode==2?VarForm.data5:VarForm.data6'
                                    size="mini"
                                    controls-position="right"
                                    :min="0"
                                    :max='100'></el-input-number>
                 </el-form-item>
-                <el-form-item label="( 出现时间">
+                <div>
+                  <span style="font-size: 8px">（&nbsp;&nbsp;出现时间&nbsp;</span>
                   <el-input-number v-model="VarForm.data2"
                                    size="mini"
                                    controls-position="right"
@@ -315,9 +317,9 @@
                                    size="mini"
                                    controls-position="right"
                                    :min='VarForm.data2==""?0:VarForm.data2'
-                                   :max="36500"></el-input-number>&nbsp;&nbsp;天&nbsp;&nbsp;&nbsp;
-                  <el-checkbox v-model="VarForm.data4">不在其之间</el-checkbox>&nbsp;&nbsp;）
-                </el-form-item>
+                                   :max="36500"></el-input-number><span style="font-size: 8px">&nbsp;&nbsp;天&nbsp;&nbsp;&nbsp;</span>
+                  <el-checkbox v-model="VarForm.data4"><span style="font-size: 8px">不在其之间</span></el-checkbox>&nbsp;&nbsp;）
+                </div>
               </el-form>
             </el-col>
           </el-row>
@@ -778,7 +780,8 @@ export default {
       VariableLayer2Visible: false,
       VariableLayer2: [],
       ConceptSetsVisible: false,
-      VarConceptSets: ""
+      VarConceptSets: "",
+      VariableData56Visible: false
     };
   },
   mounted() {
@@ -1128,6 +1131,7 @@ export default {
         this.VarForm.layer2Code = ""
         this.GetVariableLayer2()
         this.VariableLayer2Visible = true
+        this.VarCheckData56()
         console.log("check success")
       }
     },
@@ -1149,6 +1153,17 @@ export default {
     ComfirmVarConceptSets() {
       this.VarForm.data1 = this.VarConceptSets
       this.ConceptSetsVisible = false
+    },
+    VarCheckData56() {
+      console.log("start check")
+      if (this.VarForm.layer1Code == 4 && this.VarForm.Layer2Code == 2 && (this.VarForm.sampleCode == 2 || this.VarForm.sampleCode == 3)) {
+        this.VarForm.data5 == ""
+        this.VarForm.data6 == ""
+        this.VariableData56Visible = true
+      }
+      else {
+        this.VariableData56Visible = false
+      }
     },
     aaaaa() {
       console.log(this.VarForm.data3)
