@@ -6,14 +6,16 @@
       <h1 style="color:white">科研分析平台</h1>
       <!-- <div class='tips'>账号库为123/123456,456/456789</div> -->
       <div class="form-group">
-        <i class="iconfont  icon-yonghuicon"></i>
+        <i style="padding-top:17px"
+           class="iconfont  icon-yonghuicon"></i>
         <input type="text"
                v-model="loginForm.username"
                placeholder="用户名">
         </input>
       </div>
       <div class="form-group">
-        <i class="iconfont  icon-suo"></i>
+        <i style="top:50px;"
+           class="iconfont  icon-suo"></i>
         <input type="password"
                id="ps"
                v-model="loginForm.password"
@@ -25,14 +27,13 @@
       </div>
       <div class="form-group">
         <button type="primary"
-                @click="handleLogin()">登 录</button>
+                @click="handleLogin()"
+                @keyup.enter="handleLogin()">登 录</button>
       </div>
       <div class='tips'
            style="color:red"
            v-show="loginresult">{{tips}}</div>
-
     </div>
-    <remote-js src="http://pv.sohu.com/cityjson?ie=utf-8"></remote-js>
 
   </div>
 </template>
@@ -41,8 +42,6 @@
 import md5 from 'md5';
 import axios from 'axios';
 
-var ip = returnCitySN["cip"];
-// console.log(ip)
 export default {
   name: "Hi",
   data() {
@@ -56,18 +55,17 @@ export default {
       },
     };
   },
-  components: {
-    'remote-js': {
-      render(createElement) {
-        return createElement('script', { attrs: { type: 'text/javascript', src: this.src } });
-      },
-      props: {
-        src: { type: String, required: true },
-      },
-    },
+  created() {
+    this.keyupEnter()
   },
   methods: {
-
+    keyupEnter() {
+      document.onkeydown = e => {
+        if (e.keyCode === 13) {
+          this.handleLogin()
+        }
+      }
+    },
     psshow() {
       var v = document.getElementById("ps");
       if (this.isShow) {
@@ -95,7 +93,6 @@ export default {
         axios.post('/userLogin/login', {
           "username": this.loginForm.username,
           "password": md5(this.loginForm.password),
-          "loginIp": ip
         })
           .then((response) => {
             // 登录成功

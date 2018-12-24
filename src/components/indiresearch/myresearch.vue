@@ -1,25 +1,7 @@
 <template>
-  <div>
-
-    <el-row style="margin-top:15px;margin-bottom:10px;">
-
-      <!-- 进度条/RH -->
-      <el-col :span="20">
-        <el-steps :active="researchstatus"
-                  align-center>
-          <el-step title="1 队列选择"></el-step>
-          <el-step title="2 数据模型"></el-step>
-          <el-step title="3 预测结果"></el-step>
-          <el-step title></el-step>
-        </el-steps>
-      </el-col>
-      <el-col :span="4">
-        <el-button type="primary"
-                   @click="toNewVariable()">新增变量</el-button>
-
-      </el-col>
-    </el-row>
-    <el-row :gutter="20">
+  <div onselectstart="return false">
+    <el-row :gutter="20"
+            style="margin-top:15px;margin-bottom:10px;">
       <el-col :span="6">
         <!-- 概念集模块/RH by lqh-->
         <el-row>
@@ -42,12 +24,6 @@
                          v-if="isLoadingTree"
                          default-expand-all
                          node-key="id"
-                         @node-drag-start="handleDragStart"
-                         @node-drag-enter="handleDragEnter"
-                         @node-drag-leave="handleDragLeave"
-                         @node-drag-over="handleDragOver"
-                         @node-drag-end="handleDragEnd"
-                         @node-drop="handleDrop"
                          draggable
                          :allow-drop="allowDrop"
                          :allow-drag="allowDrag"
@@ -121,12 +97,6 @@
                        v-if="isLoadingTree"
                        default-expand-all
                        node-key="id"
-                       @node-drag-start="handleDragStart"
-                       @node-drag-enter="handleDragEnter"
-                       @node-drag-leave="handleDragLeave"
-                       @node-drag-over="handleDragOver"
-                       @node-drag-end="handleDragEnd"
-                       @node-drop="handleDrop"
                        draggable
                        :allow-drop="allowDrop"
                        :allow-drag="allowDrag"
@@ -197,27 +167,55 @@
         <el-row>
           <el-card class="box-card"
                    style="height:100%">
-            <div slot="header"
-                 style="height:12px;font-size:13px;"
-                 class="clearfix">
-              <span>构建</span>
-            </div>
-
-            <draggable :options="{group:'condition'}">
-              <div class="drag-cover"></div>
-            </draggable>
-            <!-- <el-table :data="tableData"
-                      style="width: 100%">
-
-              <el-table-column prop="quene"
-                               label="队列"
-                               width="180"></el-table-column>
-              <el-table-column prop="method"
-                               label="分析方法"></el-table-column>
-            </el-table> -->
-            <el-button style="float:right;margin-bottom:5px;margin-top:5px"
-                       type="primary">计算</el-button>
+            <el-tabs v-model="activeName"
+                     style="margin-top:-10px">
+              <el-tab-pane label="队列生成"
+                           name="summarygenerate1">
+                <el-select v-model="summarygeneratevalue"
+                           placeholder="请选择">
+                  <el-option-group v-for="queue in queuesets"
+                                   :key="queue.label"
+                                   :label="queue.label">
+                    <el-option v-for="item in queue.children"
+                               :key="item.label"
+                               :label="item.label"
+                               :value="item.label">
+                    </el-option>
+                  </el-option-group>
+                </el-select>
+                <el-button type="primary"
+                           @click="toNewVariable()">新增变量</el-button>
+              </el-tab-pane>
+              <el-tab-pane label="队列分析"
+                           name="queueanalysis">
+                <el-select v-model="queueanalysisvalue"
+                           placeholder="请选择">
+                  <el-option-group v-for="queue in queuesets"
+                                   :key="queue.label"
+                                   :label="queue.label">
+                    <el-option v-for="item in queue.children"
+                               :key="item.label"
+                               :label="item.label"
+                               :value="item.label">
+                    </el-option>
+                  </el-option-group>
+                </el-select>
+                <el-select v-model="analysismethodvalue"
+                           placeholder="请选择">
+                  <el-option-group v-for="method in analysismethods"
+                                   :key="method.label"
+                                   :label="method.label">
+                    <el-option v-for="item in method.children"
+                               :key="item.label"
+                               :label="item.label"
+                               :value="item.label">
+                    </el-option>
+                  </el-option-group>
+                </el-select>
+              </el-tab-pane>
+            </el-tabs>
           </el-card>
+
         </el-row>
 
         <!-- 分析结果模块/RH -->
@@ -428,11 +426,7 @@ import svmanalysis from './methodform/svmanalysis.vue'
 // import svm from './methodform/svm.vue'
 
 
-
-
 export default {
-
-
   components: {
     'firstanalysis': firstanalysis,
     'bayesiannetworks': bayesiannetworks,
@@ -445,14 +439,9 @@ export default {
     'oneway_anova': oneway_anova,
     'pairedsample_ttest': pairedsample_ttest,
     'svmanalysis': svmanalysis,
-    'createconceptset': createconceptset,
-
   },
-
   data() {
     return {
-      dialogVisible: false,
-
       methodName: '',
       mycreateconceptset: createconceptset,
       researchstatus: this.$route.query.researchstatus,
@@ -476,8 +465,58 @@ export default {
         children: "children",
         label: "label"
       },
+      //新增概念集假数据
+      dialogVisible: false,
+      NewConceptSets: {
+        SetName: "",
+        SetDescription: ""
+      },
+      activeName: 'summarygenerate1',
+      summarygeneratevalue: '',
+      queueanalysisvalue: '',
+      analysismethodvalue: '',
+      table: [
+        {
+          ConceptCode: "E14.901",
+          ConceptName: "糖尿病",
+          ConceptType: "ICD10 code",
+          ConceptField: "Condition",
+          ConceptSource: "SZ_ICD10",
+          Except: " ",
+          ChilerenConcept: " "
+        },
+        {
+          ConceptCode: "80_000",
+          ConceptName: "糖尿病",
+          ConceptType: "ICD10 code",
+          ConceptField: "Condition",
+          ConceptSource: "SZ_ICD10",
+          Except: "  ",
+          ChilerenConcept: "  "
+        },
+        {
+          ConceptCode: "E10.904",
+          ConceptName: "暴发性1型糖尿病",
+          ConceptType: "ICD10 code",
+          ConceptField: "Condition",
+          ConceptSource: "SZ_ICD10",
+          Except: "   ",
+          ChilerenConcept: "   "
+        }
+      ],
+      multipleSelection: [],
+      InputConceptName: "",
+      checkAll1: false,
+      isIndeterminate1: false,
+      checkAll2: false,
+      isIndeterminate2: false,
+      checkedExcludeditems: [],
+      checkedChilerenConcepts: [],
+      Excludeditems: Excludeditemsoptions,
+      ChilerenConcepts: ChilerenConceptsoptions,
       NewMethodVisible: false,
       tabPosition: "left",
+
       checked: true,
       // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
@@ -519,7 +558,7 @@ export default {
         }
       })
         .then((response) => {
-          this.queuesets = JSON.parse(response.data.data.collaborationCohortStructure)
+          this.queuesets = JSON.parse(response.data.data.privateCohortStructure)
           for (var i = 0; i < this.queuesets.length; i++) {
             this.queuesets[i].isEdit = false;
             this.queuesets[i].id = 1;
@@ -559,6 +598,7 @@ export default {
     handleNodeClick(data) {
       // console.log(data);
     },
+    handleAddTop() { },
     toCreateQueue() {
       this.$router.push({
         path: 'createqueue',
@@ -578,12 +618,11 @@ export default {
       });
     },
     NodeBlur_concept(n, d) {//输入框失焦
-      console.log(n, d)
+      // console.log(n, d)
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
       }
       axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": "[]",
         "collaborationCohortStructure": JSON.stringify(this.queuesets),
@@ -636,25 +675,7 @@ export default {
         d.id > this.non_concept_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-    // NodeAdd(n, d) {//新增节点
-    //   console.log(n, d)
-    //   //判断层级
-    //   if (n.level >= 3) {
-    //     this.$message.error("最多只支持三级！")
-    //     return false;
-    //   }
-    //   //新增数据
-    //   d.children.push({
-    //     id: ++this.concept_maxexpandId,
-    //     label: '新增节点',
-    //     pid: d.id,
-    //     children: []
-    //   })
-    //   //同时展开节点
-    //   if (!n.expanded) {
-    //     n.expanded = true
-    //   }
-    // },
+
     //队列鼠标hover事件所需
     handleAddTop_queue() {
       this.queuesets.push({
@@ -709,21 +730,37 @@ export default {
         d.id > this.non_queue_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-
-    // handleChange2_2(value) {
-    //   console.log(value);
-    // },
-    // handleChange2_3(value) {
-    //   console.log(value);
-    // },
-    // handleChange3_1(value) {
-    //   console.log(value);
-    // },
-    // handleChange3_2(value) {
-    //   console.log(value);
-    // },
-    // 新增变量弹框
-
+    //新增概念集所需
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then(_ => {
+          done();
+        })
+        .catch(_ => { });
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    handleCheckAllExcludeditemsChange(val) {
+      this.checkedExcludeditems = val ? Excludeditemsoptions : [];
+      this.isIndeterminate1 = false;
+    },
+    handleCheckedExcludeditemsChange(value) {
+      let checkedCount = value.length;
+      this.checkAll1 = checkedCount === this.Excludeditems.length;
+      this.isIndeterminate1 =
+        checkedCount > 0 && checkedCount < this.Excludeditems.length;
+    },
+    handleCheckAllChilerenConceptsChange(val) {
+      this.checkedChilerenConcepts = val ? ChilerenConceptsoptions : [];
+      this.isIndeterminate2 = false;
+    },
+    handleCheckedChilerenConceptsChange(value) {
+      let checkedCount = value.length;
+      this.checkAll2 = checkedCount === this.ChilerenConcepts.length;
+      this.isIndeterminate2 =
+        checkedCount > 0 && checkedCount < this.ChilerenConcepts.length;
+    },
 
     // 新增变量弹框 dwx
     getVariableTable() {
@@ -758,25 +795,7 @@ export default {
     EditVar(index) {
 
     },
-    //队列拖拽所需
-    handleDragStart(node, ev) {
-      console.log('drag start', node);
-    },
-    handleDragEnter(draggingNode, dropNode, ev) {
-      console.log('tree drag enter: ', dropNode.label);
-    },
-    handleDragLeave(draggingNode, dropNode, ev) {
-      console.log('tree drag leave: ', dropNode.label);
-    },
-    handleDragOver(draggingNode, dropNode, ev) {
-      console.log('tree drag over: ', dropNode.label);
-    },
-    handleDragEnd(draggingNode, dropNode, dropType, ev) {
-      console.log('tree drag end: ', dropNode && dropNode.label, dropType);
-    },
-    handleDrop(draggingNode, dropNode, dropType, ev) {
-      console.log('tree drop: ', dropNode.label, dropType);
-    },
+
     allowDrop(draggingNode, dropNode, type) {
       if (dropNode.data.label.indexOf('队列') != -1) {
         return type !== 'inner';
@@ -787,21 +806,16 @@ export default {
     allowDrag(draggingNode) {
       return draggingNode.data.label.indexOf('文件夹') === -1;
     },
+
     //以下为切换tab
     handleClick(tab, event) {
-
       this.checkVue(tab.name);
-
     },
     handleClick2(tab, event) {
-
       this.checkVue(tab.name);
-
     },
     handleClick3(tab, event) {
-
       this.checkVue(tab.name);
-
     },
     checkVue(name) {
 
