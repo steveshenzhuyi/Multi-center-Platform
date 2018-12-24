@@ -61,9 +61,9 @@ export default new Router({
               }
             },
             {
-              path: "queuelist",
+              path: "cohortlist",
               name: "队列列表",
-              component: () => import("@/components/indiresearch/queuelist"),
+              component: () => import("@/components/indiresearch/cohortlist"),
               meta: {
                 title: "队列列表"
               }
