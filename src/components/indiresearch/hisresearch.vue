@@ -139,7 +139,7 @@ export default {
     // 跳转至对应研究页面
     toMyresearch: function () {
       this.$router.replace({
-        path: "queuelist",
+        path: "cohortlist",
         query:
           {
             researchid: ""

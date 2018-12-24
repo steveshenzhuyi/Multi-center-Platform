@@ -87,10 +87,10 @@
               <span>队列</span>
             </div>
             <el-button size="mini"
-                       @click="handleAddTop_queue">添加新文件夹</el-button>
+                       @click="handleAddTop_cohort">添加新文件夹</el-button>
             <el-button type="primary"
                        size="mini"
-                       @click="toCreateQueue">新建队列</el-button>
+                       @click="toCreatecohort">新建队列</el-button>
             <div class="slot-tree">
               <el-tree ref="SlotMenuList"
                        class="expand-tree"
@@ -100,24 +100,24 @@
                        draggable
                        :allow-drop="allowDrop"
                        :allow-drag="allowDrag"
-                       :data="queuesets"
+                       :data="cohortsets"
                        :props="defaultProps"
                        :expand-on-click-node="false">
                 <span class="slot-t-node"
                       slot-scope="{ node, data }">
                   <!-- 未编辑状态 -->
                   <span v-show="!node.isEdit">
-                    <span :class="[data.id > queue_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                    <span :class="[data.id > cohort_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
                     <span class="slot-t-icons">
                       <!-- 新增按钮 -->
                       <!--i class="el-icon-plus"
                          @click="NodeAdd(node, data)"></i-->
                       <!-- 编辑按钮 -->
                       <i class="el-icon-edit"
-                         @click="NodeEdit_queue(node, data)"></i>
+                         @click="NodeEdit_cohort(node, data)"></i>
                       <!-- 删除按钮 -->
                       <i class="el-icon-delete"
-                         @click="NodeDel_queue(node, data)"></i>
+                         @click="NodeDel_cohort(node, data)"></i>
                     </span>
                   </span>
                   <!-- 编辑输入框 -->
@@ -127,8 +127,8 @@
                               autofocus
                               v-model="data.label"
                               :ref="'slotTreeInput'+data.id"
-                              @blur.stop="NodeBlur_queue(node, data)"
-                              @keyup.enter.native="NodeBlur_queue(node, data)"></el-input>
+                              @blur.stop="NodeBlur_cohort(node, data)"
+                              @keyup.enter.native="NodeBlur_cohort(node, data)"></el-input>
                   </span>
                 </span>
               </el-tree>
@@ -173,10 +173,10 @@
                            name="summarygenerate1">
                 <el-select v-model="summarygeneratevalue"
                            placeholder="请选择">
-                  <el-option-group v-for="queue in queuesets"
-                                   :key="queue.label"
-                                   :label="queue.label">
-                    <el-option v-for="item in queue.children"
+                  <el-option-group v-for="cohort in cohortsets"
+                                   :key="cohort.label"
+                                   :label="cohort.label">
+                    <el-option v-for="item in cohort.children"
                                :key="item.label"
                                :label="item.label"
                                :value="item.label">
@@ -187,13 +187,13 @@
                            @click="toNewVariable()">新增变量</el-button>
               </el-tab-pane>
               <el-tab-pane label="队列分析"
-                           name="queueanalysis">
-                <el-select v-model="queueanalysisvalue"
+                           name="cohortanalysis">
+                <el-select v-model="cohortanalysisvalue"
                            placeholder="请选择">
-                  <el-option-group v-for="queue in queuesets"
-                                   :key="queue.label"
-                                   :label="queue.label">
-                    <el-option v-for="item in queue.children"
+                  <el-option-group v-for="cohort in cohortsets"
+                                   :key="cohort.label"
+                                   :label="cohort.label">
+                    <el-option v-for="item in cohort.children"
                                :key="item.label"
                                :label="item.label"
                                :value="item.label">
@@ -431,6 +431,11 @@ export default {
   },
   data() {
     return {
+      activeName: 'summarygenerate1',
+      summarygeneratevalue: '',
+      cohortanalysisvalue: '',
+      analysismethodvalue: '',
+      dialogVisible: false,
       methodName: '',
       mycreateconceptset: createconceptset,
       researchstatus: this.$route.query.researchstatus,
@@ -444,68 +449,18 @@ export default {
       // 概念集假数据/RH
       concept_maxexpandId: 3,//新增节点开始id
       non_concept_maxexpandId: 3,//新增节点开始id(不更改)
-      queue_maxexpandId: 3,//新增节点开始id
-      non_queue_maxexpandId: 3,//新增节点开始id(不更改)
+      cohort_maxexpandId: 3,//新增节点开始id
+      non_cohort_maxexpandId: 3,//新增节点开始id(不更改)
       isLoadingTree: true,//是否加载节点树
       conceptsets: [],
-      queuesets: [],
+      cohortsets: [],
       analysismethods: [],
       defaultProps: {
         children: "children",
         label: "label"
       },
-      //新增概念集假数据
-      dialogVisible: false,
-      NewConceptSets: {
-        SetName: "",
-        SetDescription: ""
-      },
-      activeName: 'summarygenerate1',
-      summarygeneratevalue: '',
-      queueanalysisvalue: '',
-      analysismethodvalue: '',
-      table: [
-        {
-          ConceptCode: "E14.901",
-          ConceptName: "糖尿病",
-          ConceptType: "ICD10 code",
-          ConceptField: "Condition",
-          ConceptSource: "SZ_ICD10",
-          Except: " ",
-          ChilerenConcept: " "
-        },
-        {
-          ConceptCode: "80_000",
-          ConceptName: "糖尿病",
-          ConceptType: "ICD10 code",
-          ConceptField: "Condition",
-          ConceptSource: "SZ_ICD10",
-          Except: "  ",
-          ChilerenConcept: "  "
-        },
-        {
-          ConceptCode: "E10.904",
-          ConceptName: "暴发性1型糖尿病",
-          ConceptType: "ICD10 code",
-          ConceptField: "Condition",
-          ConceptSource: "SZ_ICD10",
-          Except: "   ",
-          ChilerenConcept: "   "
-        }
-      ],
-      multipleSelection: [],
-      InputConceptName: "",
-      checkAll1: false,
-      isIndeterminate1: false,
-      checkAll2: false,
-      isIndeterminate2: false,
-      checkedExcludeditems: [],
-      checkedChilerenConcepts: [],
-      Excludeditems: Excludeditemsoptions,
-      ChilerenConcepts: ChilerenConceptsoptions,
-      //NewMethodVisible: false,
+      NewMethodVisible: false,
       tabPosition: "left",
-
       checked: true,
       // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
@@ -515,7 +470,7 @@ export default {
   mounted() {
     // console.log(this.GLOBAL.token)
     this.getConceptsetsData();
-    this.getQueuesetsData();
+    this.getcohortsetsData();
     this.getAnalysismethodsData();
   },
   methods: {
@@ -540,23 +495,23 @@ export default {
           console.log("error", error);
         });
     },
-    getQueuesetsData() {
+    getcohortsetsData() {
       axios.get('/structure/getStructure', {
         params: {
           "token": this.GLOBAL.token
         }
       })
         .then((response) => {
-          this.queuesets = JSON.parse(response.data.data.privateCohortStructure)
-          for (var i = 0; i < this.queuesets.length; i++) {
-            this.queuesets[i].isEdit = false;
-            this.queuesets[i].id = 1;
-            this.queuesets[i].children[0].id = 2;
-            this.queuesets[i].children[1].id = 3;
-            this.queuesets[i].children[0].isEdit = false;
-            this.queuesets[i].children[1].isEdit = false;
-            //for (var j = 0; j < this.queuesets[i].children[j].length; j++) {
-            //this.queuesets[i].children[j].isEdit = false;
+          this.cohortsets = JSON.parse(response.data.data.privateCohortStructure)
+          for (var i = 0; i < this.cohortsets.length; i++) {
+            this.cohortsets[i].isEdit = false;
+            this.cohortsets[i].id = 1;
+            this.cohortsets[i].children[0].id = 2;
+            this.cohortsets[i].children[1].id = 3;
+            this.cohortsets[i].children[0].isEdit = false;
+            this.cohortsets[i].children[1].isEdit = false;
+            //for (var j = 0; j < this.cohortsets[i].children[j].length; j++) {
+            //this.cohortsets[i].children[j].isEdit = false;
             //}
           }
         })
@@ -588,7 +543,7 @@ export default {
       // console.log(data);
     },
     handleAddTop() { },
-    toCreateQueue() {
+    toCreatecohort() {
       this.$router.push({
         path: 'createqueue',
       });
@@ -614,7 +569,7 @@ export default {
       axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": "[]",
-        "collaborationCohortStructure": JSON.stringify(this.queuesets),
+        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
         "modelStructure": "[]",
         "featureStructure": "[]",
         "resultStructure": "[]"
@@ -666,24 +621,21 @@ export default {
     },
 
     //队列鼠标hover事件所需
-    handleAddTop_queue() {
-      this.queuesets.push({
-        id: ++this.queue_maxexpandId,
+    handleAddTop_cohort() {
+      this.cohortsets.push({
+        id: ++this.cohort_maxexpandId,
         label: '新增文件夹',
         isEdit: false,
         children: []
       });
     },
-    handleAddTop() {
-
-    },
-    NodeBlur_queue(n, d) {//输入框失焦
+    NodeBlur_cohort(n, d) {//输入框失焦
       console.log(n, d)
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
       }
     },
-    NodeEdit_queue(n, d) {//编辑节点
+    NodeEdit_cohort(n, d) {//编辑节点
       console.log(n, d)
       if (!n.isEdit) {//检测isEdit是否存在or是否为false
         this.$set(n, 'isEdit', true)
@@ -692,7 +644,7 @@ export default {
         this.$refs['slotTreeInput' + d.id].$refs.input.focus()
       })
     },
-    NodeDel_queue(n, d) {//删除节点
+    NodeDel_cohort(n, d) {//删除节点
       console.log(n, d)
       let that = this;
       if (d.children && d.children.length !== 0) {
@@ -719,39 +671,62 @@ export default {
           }).catch(() => { })
         }
         //判断是否是新增节点
-        d.id > this.non_queue_maxexpandId ? DelFun() : ConfirmFun()
+        d.id > this.non_cohort_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-    //新增概念集所需
-    handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then(_ => {
-          done();
-        })
-        .catch(_ => { });
+    //队列鼠标hover事件所需
+    handleAddTop_cohort() {
+      this.cohortsets.push({
+        id: ++this.cohort_maxexpandId,
+        label: '新增文件夹',
+        isEdit: false,
+        children: []
+      });
     },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
+    NodeBlur_cohort(n, d) {//输入框失焦
+      console.log(n, d)
+      if (n.isEdit) {
+        this.$set(n, 'isEdit', false)
+      }
     },
-    handleCheckAllExcludeditemsChange(val) {
-      this.checkedExcludeditems = val ? Excludeditemsoptions : [];
-      this.isIndeterminate1 = false;
+    NodeEdit_cohort(n, d) {//编辑节点
+      console.log(n, d)
+      if (!n.isEdit) {//检测isEdit是否存在or是否为false
+        this.$set(n, 'isEdit', true)
+      }
+      this.$nextTick(() => {
+        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
+      })
     },
-    handleCheckedExcludeditemsChange(value) {
-      let checkedCount = value.length;
-      this.checkAll1 = checkedCount === this.Excludeditems.length;
-      this.isIndeterminate1 =
-        checkedCount > 0 && checkedCount < this.Excludeditems.length;
-    },
-    handleCheckAllChilerenConceptsChange(val) {
-      this.checkedChilerenConcepts = val ? ChilerenConceptsoptions : [];
-      this.isIndeterminate2 = false;
-    },
-    handleCheckedChilerenConceptsChange(value) {
-      let checkedCount = value.length;
-      this.checkAll2 = checkedCount === this.ChilerenConcepts.length;
-      this.isIndeterminate2 =
-        checkedCount > 0 && checkedCount < this.ChilerenConcepts.length;
+    NodeDel_cohort(n, d) {//删除节点
+      console.log(n, d)
+      let that = this;
+      if (d.children && d.children.length !== 0) {
+        this.$message.error("此节点有子级，不可删除！")
+        return false;
+      } else {
+        //新增节点可直接删除，已存在的节点要二次确认
+        //删除操作
+        let DelFun = () => {
+          let _list = n.parent.data.children || n.parent.data;//节点同级数据
+          let _index = _list.map((c) => c.id).indexOf(d.id);
+          console.log(_index)
+          _list.splice(_index, 1);
+          this.$message.success("删除成功！")
+        }
+        //二次确认
+        let ConfirmFun = () => {
+          this.$confirm("是否删除此节点？", "提示", {
+            confirmButtonText: "确认",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            DelFun()
+          }).catch(() => { })
+        }
+        //判断是否是新增节点
+        d.id > this.non_cohort_maxexpandId ? DelFun() : ConfirmFun()
+      }
     },
 
     // 新增变量弹框 dwx
@@ -912,7 +887,7 @@ export default {
   width: 100%;
   height: 10px;
 }
-.sifting-queue-content {
+.sifting-cohort-content {
   background: linear-gradient(to bottom, #eaeaea, #f9f9f9);
   border-radius: 5px;
   padding: 10px 0 0 10px;
