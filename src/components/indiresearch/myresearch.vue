@@ -412,18 +412,7 @@ import onesample_ttest from './methodform/onesample_ttest.vue'
 import oneway_anova from './methodform/oneway_anova.vue'
 import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
 import svmanalysis from './methodform/svmanalysis.vue'
-// import firstanalysisVue from './methodform/firstanalysis.vue';
-// import firstanalysis from './methodform/firstanalysis.vue'
-// import bayesiannetworks from './methodform/bayesiannetworks.vue'
-// import decisiontree from './methodform/decisiontree.vue'
-// import independent_ttest from './methodform/independent_ttest.vue'
-// import linearregression from './methodform/linearregression.vue'
-// import logicregression from './methodform/logicregression.vue'
-// import multifactor_analysis from './methodform/multifactor_analysis.vue'
-// import onesample_ttest from './methodform/onesample_ttest.vue'
-// import oneway_anova from './methodform/oneway_anova.vue'
-// import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
-// import svm from './methodform/svm.vue'
+
 
 
 export default {
@@ -514,7 +503,7 @@ export default {
       checkedChilerenConcepts: [],
       Excludeditems: Excludeditemsoptions,
       ChilerenConcepts: ChilerenConceptsoptions,
-      NewMethodVisible: false,
+      //NewMethodVisible: false,
       tabPosition: "left",
 
       checked: true,
