@@ -126,9 +126,9 @@
                               size="mini"
                               autofocus
                               v-model="data.label"
-                              :ref="'slotTreeInput_queue'+data.id"
-                              @blur.stop="NodeBlur_queue(node, data)"
-                              @keyup.enter.native="NodeBlur_queue(node, data)"></el-input>
+                              :ref="'slotTreeInput_cohort'+data.id"
+                              @blur.stop="NodeBlur_cohort(node, data)"
+                              @keyup.enter.native="NodeBlur_cohort(node, data)"></el-input>
                   </span>
                 </span>
               </el-tree>
@@ -515,8 +515,8 @@ export default {
       // 概念集假数据/RH
       concept_maxexpandId: 3,//新增节点开始id
       non_concept_maxexpandId: 3,//新增节点开始id(不更改)
-      queue_maxexpandId: 3,//新增节点开始id
-      non_queue_maxexpandId: 3,//新增节点开始id(不更改)
+      cohort_maxexpandId: 3,//新增节点开始id
+      non_cohort_maxexpandId: 3,//新增节点开始id(不更改)
       method_maxexpandId: 3,//新增节点开始id
       non_method_maxexpandId: 3,//新增节点开始id(不更改)
       isLoadingTree: true,//是否加载节点树
@@ -581,12 +581,12 @@ export default {
         }
       })
         .then((response) => {
-          this.queuesets = JSON.parse(response.data.data.collaborationCohortStructure)
-          // for (var i = 0; i < this.queuesets.length; i++) {
-          //   this.queuesets[i].isEdit = false;
-          //   this.queuesets[i].id = 1;
-          //   this.queuesets[i].children[0].id = 2;
-          //   this.queuesets[i].children[1].id = 3;
+          this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
+          // for (var i = 0; i < this.cohortsets.length; i++) {
+          //   this.cohortsets[i].isEdit = false;
+          //   this.cohortsets[i].id = 1;
+          //   this.cohortsets[i].children[0].id = 2;
+          //   this.cohortsets[i].children[1].id = 3;
           // }
         })
         .catch(function (error) {
@@ -632,8 +632,8 @@ export default {
       for (var i = 0; i < this.multipleSelection.length; i++) {
         this.concepts.push({
           conceptCode: this.multipleSelection[i].subject,
-          excludeTag: 0,
-          childTag: 0
+          excludeTag: "0",
+          childTag: "0"
         });
       }
       for (var i = 0; i < this.Excludeditems.length; i++) {
@@ -643,14 +643,14 @@ export default {
         for (var j = 0; j < this.concepts.length; j++) {
           if (a[0].indexOf(this.concepts[j].conceptCode) != -1) {
             this.concept_exist = true;
-            this.concepts[j].excludeTag = 1
+            this.concepts[j].excludeTag = "1"
           }
         }
         if (!this.concept_exist) {
           this.concepts.push({
             conceptCode: a[0],
-            excludeTag: 1,
-            childTag: 0
+            excludeTag: "1",
+            childTag: "0"
           });
         }
       }
@@ -661,14 +661,14 @@ export default {
         for (var j = 0; j < this.concepts.length; j++) {
           if (a[0].indexOf(this.concepts[j].conceptCode) != -1) {
             this.concept_exist = true;
-            this.concepts[j].childTag = 1
+            this.concepts[j].childTag = "1"
           }
         }
         if (!this.concept_exist) {
           this.concepts.push({
             conceptCode: a[0],
-            excludeTag: 0,
-            childTag: 1
+            excludeTag: "0",
+            childTag: "1"
           });
         }
       }
@@ -721,7 +721,7 @@ export default {
       axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": "[]",
-        "collaborationCohortStructure": JSON.stringify(this.queuesets),
+        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
         "modelStructure": JSON.stringify(this.analysismethods),
         "featureStructure": "[]",
         "resultStructure": "[]"
@@ -772,9 +772,9 @@ export default {
       }
     },
     //队列资源结构编辑函数
-    handleAddTop_queue() {
-      this.queuesets.push({
-        id: ++this.queue_maxexpandId,
+    handleAddTop_cohort() {
+      this.cohortsets.push({
+        id: ++this.cohort_maxexpandId,
         label: '新增文件夹',
         isEdit: false,
         children: []
@@ -789,7 +789,7 @@ export default {
 
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": "[]",
-        "collaborationCohortStructure": JSON.stringify(this.queuesets),
+        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
         "modelStructure": JSON.stringify(this.analysismethods),
         "featureStructure": "[]",
         "resultStructure": "[]"
@@ -806,7 +806,7 @@ export default {
         this.$set(n, 'isEdit', true)
       }
       this.$nextTick(() => {
-        this.$refs['slotTreeInput_queue' + d.id].$refs.input.focus()
+        this.$refs['slotTreeInput_cohort' + d.id].$refs.input.focus()
       })
     },
     NodeDel_cohort(n, d) {//删除节点
@@ -910,7 +910,7 @@ export default {
 
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": "[]",
-        "collaborationCohortStructure": JSON.stringify(this.queuesets),
+        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
         "modelStructure": JSON.stringify(this.analysismethods),
         "featureStructure": "[]",
         "resultStructure": "[]"
@@ -929,7 +929,7 @@ export default {
         this.$refs['slotTreeInput_method' + d.id].$refs.input.focus()
       })
     },
-    NodeDel_queue(n, d) {//删除节点
+    NodeDel_cohort(n, d) {//删除节点
       console.log(n, d)
       let that = this;
       if (d.children && d.children.length !== 0) {
