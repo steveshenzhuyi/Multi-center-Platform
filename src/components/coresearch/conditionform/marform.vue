@@ -1,10 +1,10 @@
 <template>
-  <el-form ref="marform"
+  <el-form ref="marForm"
            :model="marform"
-           label-width="100px"
            size="mini"
            :inline="true"
            class="mar">
+    <!-- 用药记录rzx -->
     <draggable :options="{group:'mar'}">
       <el-checkbox v-model="marform.debut">首次出现</el-checkbox>
       <el-form-item label="性别">

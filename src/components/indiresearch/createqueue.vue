@@ -1,21 +1,22 @@
 <template>
   <div class="creat-queue-vue">
     <!-- 队列基本信息表单 -->
-    <div class="user-fill-info">
+    <div class="user-fill-info"
+         style="margin-top:20px">
       <el-form :model="queueInfo"
                :rules="rules"
                ref="queueInfo"
                label-width="110px"
                label-position="left"
                class="queue-Info">
-        <el-form-item label="队列类型"
+        <!-- <el-form-item label="队列类型"
                       prop="type">
           <el-radio-group v-model="queueInfo.type">
             <el-radio label="1">队列筛选</el-radio>
             <el-radio label="2">队列模式</el-radio>
             <el-radio label="3">变量模式</el-radio>
           </el-radio-group>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="队列名称"
                       prop="name">
           <el-col :span="11">
@@ -23,7 +24,7 @@
                       placeholder="请输入队列名称"></el-input>
           </el-col>
         </el-form-item>
-        <el-form-item label="队列创建时间"
+        <!-- <el-form-item label="队列创建时间"
                       required>
           <el-col :span="11">
             <el-form-item prop="date">
@@ -33,20 +34,20 @@
                               style="width: 100%;"></el-date-picker>
             </el-form-item>
           </el-col>
-        </el-form-item>
-        <el-form-item label="队列创建者"
+        </el-form-item> -->
+        <!-- <el-form-item label="队列创建者"
                       prop="creator">
           <el-col :span="11">
             <el-input v-model="queueInfo.creator"
                       placeholder="请输入队列创建者"></el-input>
           </el-col>
-        </el-form-item>
-        <el-form-item label="关键字">
+        </el-form-item> -->
+        <!-- <el-form-item label="关键字">
           <el-col :span="11">
             <el-input v-model="queueInfo.keyword"
                       placeholder="请输入关键字"></el-input>
           </el-col>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="队列描述">
           <el-col :span="11">
             <el-input type="textarea"
@@ -59,7 +60,8 @@
     <el-row :gutter="20">
       <el-col :span="18">
         <div class="conditon-info"
-             style="margin-right:10px;margin-left:10px">
+             style="margin-left:10px">
+          <!-- 主要条件 -->
           <div class="main-condition">
             <div class="one-of-main-condition">
               <span>主要条件：满足下列条件其中之一的人群队列</span>
@@ -71,7 +73,8 @@
               <el-form ref="siftingform"
                        :model="siftingform"
                        label-width="100px"
-                       :inline="true">
+                       :inline="true"
+                       class="siftingform">
                 <el-select v-model="siftingform.condtype"
                            placeholder="请选择"
                            @change="choosetype"
@@ -86,9 +89,24 @@
               </el-form>
               <div class="droparea">
                 <draggable :options="{group:condition}"
-                           v-model="condition">
+                           @add="getsort"
+                           @update="getsortupdate">
                   <div class="drag-cover"></div>
                 </draggable>
+                <div class="limit-condition">
+                  <div><span>在主要事件发生日期之前，至少有</span>
+                    <label><input class="PriorDays num-input"
+                             type="number"
+                             min="0"></label><span>天的记录，且该条件发生后，至少有</span>
+                    <label><input class="PostDays num-input"
+                             type="number"
+                             min="0"></label>
+                    <span>天的记录。</span></div>
+                  <div>设定样本<select class="PrimaryLimitSelect">
+                      <option value="earliest">最早</option>
+                      <option value="latest">最晚</option>
+                    </select>发生的主要条件记录，为该样本优先纳入队列的条件记录。</div>
+                </div>
               </div>
             </div>
             <div class=main-condition-detail>
@@ -97,8 +115,7 @@
                      @click="add">
               </span>
             </div>
-
-            <div class="limit-condition">
+            <!-- <div class="limit-condition">
               <div><span>在主要事件发生日期之前，至少有</span>
                 <label><input class="PriorDays num-input"
                          type="number"
@@ -111,7 +128,7 @@
                   <option value="earliest">最早</option>
                   <option value="latest">最晚</option>
                 </select>发生的主要条件记录，为该样本优先纳入队列的条件记录。</div>
-            </div>
+            </div> -->
           </div>
           <div class="secondary-condition">
             <div style="transform: translate(10px, -20px);">
@@ -128,9 +145,6 @@
                 </select>
                 条件的人群
               </span>
-              <el-button type="primary"
-                         plain
-                         style="float:right;margin-right:1px">添加</el-button>
             </div>
             <div class="secondary-condition-detail"
                  style="margin-top:-5px">
@@ -138,6 +152,28 @@
                 <div>
                   <span style="">并</span>
                   <span>满足</span>
+                </div>
+                <el-form ref="siftingform"
+                         :model="siftingform"
+                         label-width="100px"
+                         :inline="true"
+                         class="siftingform">
+                  <el-select v-model="siftingform.condtype"
+                             placeholder="请选择"
+                             @change="choosetype"
+                             style="padding-bottom:10px">
+                    <el-option v-for="item in condtypes"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value">
+                    </el-option>
+                  </el-select>
+                  <!-- <component :is="comName"></component> -->
+                </el-form>
+                <div class="droparea">
+                  <draggable :options="{group:condition}">
+                    <div class="drag-cover"></div>
+                  </draggable>
                 </div>
               </div>
 
@@ -155,7 +191,10 @@
       <el-col :span="6">
         <div id="sifting-condition-item"
              class="sifting-queue-content">
-          <component :is="comName"></component>
+          <!-- 下拉选择显示右侧二级条件 -->
+          <component :is="comName"
+                     ref="comName"
+                     :queuedict="queuedict"></component>
         </div>
       </el-col>
     </el-row>
@@ -164,49 +203,52 @@
 
 <script>
 import draggable from 'vuedraggable'
-import Vue from 'vue';
-import diagnoseform from './conditionform/diagnoseform.vue'
-import marform from './conditionform/marform.vue'
-import operatingform from './conditionform/operatingform.vue'
-import medicalform from './conditionform/medicalform.vue'
-import deathRecordsform from './conditionform/deathRecordsform.vue'
+import Vue from 'vue'
+import axios from 'axios'
+import diagnoseForm from './conditionform/diagnoseform.vue'
+import marForm from './conditionform/marform.vue'
+import operatingForm from './conditionform/operatingform.vue'
+import medicalForm from './conditionform/medicalform.vue'
+import deathRecordsForm from './conditionform/deathRecordsform.vue'
+import { error } from 'util';
 
 const items = []
 
 export default {
   components: {
-    'diagnoseform': diagnoseform,
-    'marform': marform,
-    'operatingform': operatingform,
-    'medicalform': medicalform,
-    'deathRecordsform': deathRecordsform,
+    'diagnoseForm': diagnoseForm,
+    'marForm': marForm,
+    'operatingForm': operatingForm,
+    'medicalForm': medicalForm,
+    'deathRecordsForm': deathRecordsForm,
     draggable,
   },
 
   data() {
     return {
       limitvalue: '',
-      comName: 'diagnoseform',
+      comName: 'diagnoseForm',
       condition: 'diagnose',
+      queuedict: '',
       queueInfo: {
-        type: '',
+        // type: '',
+        // date: '',
+        // creator: '',
+        // keyword: '',
         name: '',
-        date: '',
-        creator: '',
-        keyword: '',
         desc: ''
       },
       // 表单验证
       rules: {
-        type: [
-          { required: true, message: '请选择队列类型', trigger: 'blur' },
-        ],
+        // type: [
+        //   { required: true, message: '请选择队列类型', trigger: 'blur' },
+        // ],
         name: [
           { required: true, message: '请输入队列名称', trigger: 'blur' },
         ],
-        date: [
-          { type: 'date', required: true, message: '请选择创建时间', trigger: 'change' }
-        ],
+        // date: [
+        //   { type: 'date', required: true, message: '请选择创建时间', trigger: 'change' }
+        // ],
       },
       condtypes: [{
         value: '1',
@@ -225,8 +267,10 @@ export default {
         label: '死亡记录'
       }],
       siftingform: {
-        condtype: '1',
+        condtype: '',
       },
+      creatInfo: '',
+      sortNo: ''
     }
   },
   methods: {
@@ -235,46 +279,92 @@ export default {
       this.items.push(items)
     },
     choosetype(condtype) {
+      // axios.get('cohort/dict', {
+      //   params: {
+      //     token: this.GLOBAL.token,
+      //     criteriaLayer1Code: condtype
+      //   }
+      // })
+      //   .then((response) => {
+      //     this.queuedict = response.data.data
+      //     console.log(this.queuedict)
+      //   })
+      //   .catch(function (error) {
+      //     console.log("error", error);
+      //   });
+
       console.log(condtype)
       switch (condtype) {
-        case '1': this.comName = 'diagnoseform';
+        case '1': this.comName = 'diagnoseForm';
           this.condition = 'diagnose';
           break;
-        case '2': this.comName = 'marform';
+        case '2': this.comName = 'marForm';
           this.condition = 'mar';
           break;
-        case '3': this.comName = 'operatingform';
+        case '3': this.comName = 'operatingForm';
           this.condition = 'operating';
           break;
-        case '4': this.comName = 'medicalform';
+        case '4': this.comName = 'medicalForm';
           this.condition = 'medical';
           break;
-        case '5': this.comName = 'deathRecordsform';
+        case '5': this.comName = 'deathRecordsForm';
           this.condition = 'deathRecords';
           break;
         default:
           break;
       }
     },
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          alert('submit!');
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+    submitForm(queueInfo) {
+      // console.log(this.$refs.comName.diagnoseform)
+      //表单验证--rzx
+      // this.$refs[queueInfo].validate((valid) => {
+      //   if (valid) {
+      //     console.log('valid success!!');
+      //   } else {
+      //     console.log('valid error!!');
+      //     return false;
+      //   }
+      // });
+      this.creatInfo = {
+        collaborationTag: "1",
+        token: this.GLOBAL.token,
+      }
+      this.creatInfo = Object.assign(this.creatInfo, this.queueInfo)
+      console.log(this.creatInfo)
+      axios.get('cohort/create', {
+        params: this.creatInfo
+      })
+        .then((response) => {
+          console.log(response)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
+    resetForm(queueInfo) {
+      this.$refs[queueInfo].resetFields();
+    },
+    getsort(evt) {
+      console.log(evt.newIndex)
+      // console.log(evt.newIndex)
+    },
+    getsortupdate(evt) {
+      console.log(evt.newIndex)
+      // console.log(evt.newIndex)
     }
   }
 }
 
 </script>
 <style>
-.main-condition,
+.main-condition {
+  border: 1px solid #ccc;
+  display: block;
+  /* margin-top: 40px; */
+}
+.main-condition-detail:hover {
+  background-color: rgba(234, 235, 242, 0.67);
+}
 .secondary-condition {
   border: 1px solid #ccc;
   display: block;
@@ -294,6 +384,7 @@ export default {
   margin-bottom: 5px;
   font-size: 14px;
   line-height: 1.5;
+  color: #606266;
 }
 .one-of-main-condition {
   transform: translate(10px, -12px);
@@ -327,6 +418,9 @@ input.num-input {
   padding: 10px 0 0 10px;
   display: block;
 }
+.line {
+  color: #606266;
+}
 </style>
 <style>
 .droparea .el-input {
@@ -338,6 +432,9 @@ input.num-input {
 } */
 .droparea .el-form-item__label {
   text-align: left;
+}
+.siftingform {
+  margin-top: 10px;
 }
 </style>
 

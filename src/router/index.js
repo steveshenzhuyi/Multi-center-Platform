@@ -59,6 +59,14 @@ export default new Router({
               meta: {
                 title: "新建队列"
               }
+            },
+            {
+              path: "cohortlist",
+              name: "队列列表",
+              component: () => import("@/components/indiresearch/cohortlist"),
+              meta: {
+                title: "队列列表"
+              }
             }
           ]
         },
