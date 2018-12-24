@@ -1,10 +1,10 @@
 <template>
-  <el-form ref="deathRecordsform"
+  <el-form ref="deathRecordsForm"
            :model="deathRecordsform"
-           label-width="100px"
            size="mini"
            :inline="true"
            class="deathRecords">
+    <!-- 死亡记录rzx -->
     <draggable :options="{group:'deathRecords'}">
       <el-form-item label="性别">
         <el-input v-model="deathRecordsform.sex"></el-input>

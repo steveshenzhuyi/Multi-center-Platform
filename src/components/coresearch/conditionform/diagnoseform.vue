@@ -1,10 +1,10 @@
 <template>
-  <el-form ref="diagnoseform"
+  <el-form ref="diagnoseForm"
            :model="diagnoseform"
-           label-width="100px"
            size="mini"
            :inline="true"
            class="diagnose">
+    <!-- 诊断编码 rzx-->
     <draggable :options="{group:'diagnose'}">
       <el-checkbox v-model="diagnoseform.debut">首次出现</el-checkbox>
       <el-form-item label="性别">
