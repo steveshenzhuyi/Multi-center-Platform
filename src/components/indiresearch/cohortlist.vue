@@ -3,27 +3,27 @@
     <el-tabs v-model="activeName">
       <el-tab-pane label="队列生成结果"
                    name="summarygenerateresult">
-        <ul id="queuelist">
+        <ul id="cohortlist">
           <li>
             <el-tooltip class="item"
                         effect="dark"
                         content="新建队列"
                         placement="right-start">
 
-              <div id="newqueue"
+              <div id="newcohort"
                    class="cardBox"
                    shadow="hover"
-                   @click="ifNewqueue">
+                   @click="ifNewcohort">
 
                 <span class="el-icon-plus"></span>
               </div>
             </el-tooltip>
           </li>
 
-          <li v-for="queue in generateresultlist">
+          <li v-for="cohort in generateresultlist">
             <div class="cardBox">
               <div class="headerBox">
-                <span style="font-size:20px; font-weight:bold">{{queue.queuename}}</span>
+                <span style="font-size:20px; font-weight:bold">{{cohort.cohortname}}</span>
                 <el-dropdown style="float: right; padding: 3px 0"
                              trigger="click">
                   <span class="el-icon-more">
@@ -38,14 +38,14 @@
                  style="position:absolute;"
                  :src="imgUrl"> -->
                 <div class="bodyBox"
-                     @click="toMyqueue"
+                     @click="toMycohort"
                      style="position:absolute;">
                   <div class="flex-container">
-                    {{'计算时间 ' }}<span style="float: right; ">{{queue.createtime}}</span>
+                    {{'计算时间 ' }}<span style="float: right; ">{{cohort.createtime}}</span>
                   </div>
                   <div class="flex-container">
                     {{'研究者 ' }}
-                    <span style="float: right; ">{{queue.researchadmin }}</span>
+                    <span style="float: right; ">{{cohort.researchadmin }}</span>
                   </div>
                   <!-- <div class="flex-container">
                 {{'研究状态 ' }}
@@ -58,28 +58,28 @@
         </ul>
       </el-tab-pane>
       <el-tab-pane label="队列分析结果"
-                   name="queueanalysisresult">
-        <ul id="queuelist">
+                   name="cohortanalysisresult">
+        <ul id="cohortlist">
           <li>
             <el-tooltip class="item"
                         effect="dark"
                         content="新建队列"
                         placement="right-start">
 
-              <div id="newqueue"
+              <div id="newcohort"
                    class="cardBox"
                    shadow="hover"
-                   @click="ifNewqueue">
+                   @click="ifNewcohort">
 
                 <span class="el-icon-plus"></span>
               </div>
             </el-tooltip>
           </li>
 
-          <li v-for="queue in analysisresultlist">
+          <li v-for="cohort in analysisresultlist">
             <div class="cardBox">
               <div class="headerBox">
-                <span style="font-size:20px; font-weight:bold">{{queue.queuename}}</span>
+                <span style="font-size:20px; font-weight:bold">{{cohort.cohortname}}</span>
                 <el-dropdown style="float: right; padding: 3px 0"
                              trigger="click">
                   <span class="el-icon-more">
@@ -94,14 +94,14 @@
                  style="position:absolute;"
                  :src="imgUrl"> -->
                 <div class="bodyBox"
-                     @click="toMyqueue"
+                     @click="toMycohort"
                      style="position:absolute;">
                   <div class="flex-container">
-                    {{'计算时间 ' }}<span style="float: right; ">{{queue.createtime}}</span>
+                    {{'计算时间 ' }}<span style="float: right; ">{{cohort.createtime}}</span>
                   </div>
                   <div class="flex-container">
                     {{'研究者 ' }}
-                    <span style="float: right; ">{{queue.researchadmin }}</span>
+                    <span style="float: right; ">{{cohort.researchadmin }}</span>
                   </div>
                   <!-- <div class="flex-container">
                 {{'研究状态 ' }}
@@ -124,7 +124,7 @@
         <el-form-item label="队列名称："
                       :label-width="formLabelWidth">
           <el-input placeholder="请输入队列名称"
-                    v-model="newqueuename"
+                    v-model="newcohortname"
                     clearable>
           </el-input>
         </el-form-item>
@@ -133,7 +133,7 @@
             class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary"
-                   @click="dialogVisible = false;toNewqueue()">确 定</el-button>
+                   @click="dialogVisible = false;toNewcohort()">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -153,47 +153,47 @@ export default {
       activeName: 'summarygenerateresult',
       // imgUrl: wait,
       dialogVisible: false,
-      newqueuename: "",
+      newcohortname: "",
       formLabelWidth: '90px',
       createtime: "",
       generateresultlist: [
         {
-          queuename: "队列生成结果1",
+          cohortname: "队列生成结果1",
           researchadmin: "Admin",
           createtime: "2018-12-06",
-          queuestatus: 1,
+          cohortstatus: 1,
 
         }, {
-          queuename: "队列生成结果2",
+          cohortname: "队列生成结果2",
           researchadmin: "Admin",
           createtime: "2018-12-08",
-          queuestatus: 1
+          cohortstatus: 1
 
         }, {
-          queuename: "队列生成结果3",
+          cohortname: "队列生成结果3",
           researchadmin: "Admin",
           createtime: "2018-12-08",
-          queuestatus: 2
+          cohortstatus: 2
         }
       ],
       analysisresultlist: [
         {
-          queuename: "队列分析结果1",
+          cohortname: "队列分析结果1",
           researchadmin: "Admin",
           createtime: "2018-12-06",
-          queuestatus: 1,
+          cohortstatus: 1,
 
         }, {
-          queuename: "队列分析结果2",
+          cohortname: "队列分析结果2",
           researchadmin: "Admin",
           createtime: "2018-12-08",
-          queuestatus: 2
+          cohortstatus: 2
         }
       ]
     }
   },
   filters: {
-    queuestatusfilter: function (input) {
+    cohortstatusfilter: function (input) {
       switch (input) {
         case 1:
           return '等待审核';
@@ -216,28 +216,28 @@ export default {
         .catch(_ => { });
     },
     // 跳转至对应研究页面
-    toMyqueue: function () {
+    toMycohort: function () {
       this.$router.replace({
         path: "myresearch",
         query:
           {
-            queueid: ""
+            cohortid: ""
           }
       });
     },
     // 新建研究对话框
-    ifNewqueue: function () {
+    ifNewcohort: function () {
       this.dialogVisible = true;
     },
 
     // 跳转至新建队列
-    toNewqueue: function () {
+    toNewcohort: function () {
       this.createtime = new Date();
       this.$router.push({
         path: 'myresearch',
         query:
           {
-            researchstatus: 1
+            cohortid: 1
           }
       });
     },
@@ -246,13 +246,13 @@ export default {
 };
 </script>
 <style>
-#queuelist li {
+#cohortlist li {
   display: block;
   float: left;
   margin: 5px;
 }
 
-#newqueue {
+#newcohort {
   vertical-align: middle;
   text-align: center;
   font-size: 105px;
