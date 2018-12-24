@@ -1,7 +1,6 @@
 <template>
   <el-form ref="operatingform"
            :model="operatingform"
-           label-width="100px"
            size="mini"
            :inline="true"
            class="operating">

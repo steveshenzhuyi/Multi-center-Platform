@@ -66,8 +66,8 @@
                 <div>发起人单位：{{Initiator[0].ORGANIZATIONNAME}}</div>
               </el-col>
             </el-row>
-            <div v-if="detail[2].length > 0">
-              <el-row v-for="people in detail[2]"
+            <div v-if="detail[1].length > 0">
+              <el-row v-for="people in detail[1]"
                       :key="people.USERID"
                       style="margin-top:10px;margin-bottom:10px">
                 <el-col :span="1">
@@ -123,7 +123,7 @@ export default {
         //console.log(this.detail[1][i].INITIATORTAG)
         if (this.detail[1][i].INITIATORTAG == "1   ") {
           console.log(this.detail[1][i].INITIATORTAG)
-          return this.detail[2].splice(i, 1)
+          return this.detail[1].splice(i, 1)
         }
       }
       console.log("mistake")
@@ -160,24 +160,36 @@ export default {
         });
     },
     deleteParticipation(USERID) {
-      axios.post('/collaboration/deleteParticipation', {
-        "token": this.GLOBAL.token,
-        "userId": USERID,
-        "collaborationId": this.$route.query.collaborationId
+      this.$confirm('删除该成员, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios.post('/collaboration/deleteParticipation', {
+          "token": this.GLOBAL.token,
+          "userId": USERID,
+          "collaborationId": this.$route.query.collaborationId
 
-      })
-        .then((response) => {
-          if (response.data.msg == "成功删除成员") {
-            this.$message.success("删除成功！");
-            console.log("deletesuccess")
-            this.getCollaborInfo(this.$route.query.collaborationId)
-          } else {
-            this.$message.error("删除失败！");
-          }
         })
-        .catch(function (error) {
-          console.log("error", error);
+          .then((response) => {
+            if (response.data.msg == "成功删除成员") {
+              this.$message.success("删除成功！");
+              console.log("deletesuccess")
+              this.getCollaborInfo(this.$route.query.collaborationId)
+            } else {
+              this.$message.error("删除失败！");
+            }
+          })
+          .catch(function (error) {
+            console.log("error", error);
+          });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
         });
+      });
+
     },
     goResult() {
       this.$router.push({

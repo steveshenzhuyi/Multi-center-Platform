@@ -1,10 +1,10 @@
 <template>
-  <el-form ref="operatingform"
+  <el-form ref="operatingForm"
            :model="operatingform"
-           label-width="100px"
            size="mini"
            :inline="true"
            class="operating">
+    <!-- 手术操作rzx -->
     <draggable :options="{group:'operating'}">
       <el-checkbox v-model="operatingform.debut">首次出现</el-checkbox>
       <el-form-item label="性别">
