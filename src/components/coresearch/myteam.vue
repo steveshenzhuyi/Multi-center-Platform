@@ -62,8 +62,8 @@
                 <div>发起人单位：{{Initiator[0].ORGANIZATIONNAME}}</div>
               </el-col>
             </el-row>
-            <div v-if=" detail[2].length > 0">
-              <el-row v-for="people in detail[2]"
+            <div v-if=" detail[1].length > 0">
+              <el-row v-for="people in detail[1]"
                       :key="people.USERID"
                       style="margin-top:10px;margin-bottom:10px">
                 <el-col :span="8">
@@ -92,7 +92,7 @@
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="24">
-                <div>项目进度：{{detail[3][0].NAME}}</div>
+                <div>项目进度：{{detail[0][0].COLLABORATIONSTATENAME}}</div>
               </el-col>
             </el-row>
             <!-- <el-row style="margin-top:10px;margin-bottom:10px">
@@ -147,7 +147,7 @@ export default {
         //console.log(this.detail[1][i].INITIATORTAG)
         if (this.detail[1][i].INITIATORTAG == "1   ") {
           console.log(this.detail[1][i].INITIATORTAG)
-          return this.detail[2].splice(i, 1)
+          return this.detail[1].splice(i, 1)
         }
       }
       console.log("mistake")

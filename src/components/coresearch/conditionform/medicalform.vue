@@ -1,10 +1,10 @@
 <template>
-  <el-form ref="medicalform"
+  <el-form ref="medicalForm"
            :model="medicalform"
-           label-width="100px"
            size="mini"
            :inline="true"
            class="medical">
+    <!-- 医学检测rzx -->
     <draggable :options="{group:'medical'}">
       <el-checkbox v-model="medicalform.debut">首次出现</el-checkbox>
       <el-form-item label="性别">
@@ -18,11 +18,6 @@
       </el-form-item>
       <el-form-item label="检测结果">
         <el-input v-model="medicalform.result"></el-input>
-      </el-form-item>
-      <el-form-item label="医学检测集合">
-        <el-input v-model="medicalform.medicalSet"></el-input>
-        <el-checkbox v-model="medicalform.medicalSetchecked"
-                     class="except">不在其之间</el-checkbox>
       </el-form-item>
       <el-form-item label="检测年龄">
         <el-input-number v-model="medicalform.age1"
@@ -52,14 +47,19 @@
       <el-form-item label="检测单位">
         <el-input v-model="medicalform.unit"></el-input>
       </el-form-item>
-      <el-form-item label="检测值操作符">
-        <el-input v-model="medicalform.character"></el-input>
-      </el-form-item>
       <el-form-item label="所需结果">
         <el-input v-model="medicalform.desiredResult1"></el-input>
         <span class="line"> - </span>
         <el-input v-model="medicalform.desiredResult2"></el-input>
         <el-checkbox v-model="medicalform.desiredResultchecked"
+                     class="except">不在其之间</el-checkbox>
+      </el-form-item>
+      <el-form-item label="检测值操作符">
+        <el-input v-model="medicalform.character"></el-input>
+      </el-form-item>
+      <el-form-item label="医学检测集合">
+        <el-input v-model="medicalform.medicalSet"></el-input>
+        <el-checkbox v-model="medicalform.medicalSetchecked"
                      class="except">不在其之间</el-checkbox>
       </el-form-item>
       <el-form-item label="结果下限范围">
@@ -69,18 +69,18 @@
         <el-checkbox v-model="medicalform.lowerLimitchecked"
                      class="except">不在其之间</el-checkbox>
       </el-form-item>
-      <el-form-item label="结果下限范围百分比">
-        <el-input v-model="medicalform.lowerPct1"></el-input>
-        <span class="line"> - </span>
-        <el-input v-model="medicalform.lowerPct2"></el-input>
-        <el-checkbox v-model="medicalform.lowerPctchecked"
-                     class="except">不在其之间</el-checkbox>
-      </el-form-item>
       <el-form-item label="结果上限范围">
         <el-input v-model="medicalform.upperLimit1"></el-input>
         <span class="line"> - </span>
         <el-input v-model="medicalform.upperLimit2"></el-input>
         <el-checkbox v-model="medicalform.upperLimitchecked"
+                     class="except">不在其之间</el-checkbox>
+      </el-form-item>
+      <el-form-item label="结果下限范围百分比">
+        <el-input v-model="medicalform.lowerPct1"></el-input>
+        <span class="line"> - </span>
+        <el-input v-model="medicalform.lowerPct2"></el-input>
+        <el-checkbox v-model="medicalform.lowerPctchecked"
                      class="except">不在其之间</el-checkbox>
       </el-form-item>
       <el-form-item label="结果上限范围百分比">

@@ -1,7 +1,6 @@
 <template>
   <el-form ref="marform"
            :model="marform"
-           label-width="100px"
            size="mini"
            :inline="true"
            class="mar">

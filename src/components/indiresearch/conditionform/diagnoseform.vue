@@ -1,33 +1,32 @@
 <template>
   <el-form ref="diagnoseform"
            :model="diagnoseform"
-           label-width="100px"
            size="mini"
            :inline="true"
            class="diagnose">
     <draggable :options="{group:'diagnose'}">
-      <el-checkbox v-model="diagnoseform.debut">首次出现</el-checkbox>
+      <el-checkbox v-model="diagnoseform.debut.data1">首次出现</el-checkbox>
       <el-form-item label="性别">
-        <el-input v-model="diagnoseform.sex"></el-input>
+        <el-input v-model="diagnoseform.sex.data1"></el-input>
       </el-form-item>
       <el-form-item label="记录来源">
-        <el-input v-model="diagnoseform.source"></el-input>
+        <el-input v-model="diagnoseform.source.data1"></el-input>
       </el-form-item>
       <el-form-item label="诊断类型">
         <el-input v-model="diagnoseform.type"></el-input>
       </el-form-item>
       <el-form-item label="诊断编码集合">
-        <el-input v-model="diagnoseform.code"></el-input>
+        <el-input v-model="diagnoseform.code.data1"></el-input>
         <el-checkbox v-model="diagnoseform.codechecked"
                      class="except">不在其之间</el-checkbox>
       </el-form-item>
       <el-form-item label="诊断年龄">
-        <el-input-number v-model="diagnoseform.age1"
+        <el-input-number v-model="diagnoseform.age.data1"
                          controls-position="right"
                          @change="ageChange"
                          :min="0"
                          :max="120"></el-input-number><span class="line"> - </span>
-        <el-input-number v-model="diagnoseform.age2"
+        <el-input-number v-model="diagnoseform.age.data2"
                          controls-position="right"
                          @change="ageChange"
                          :min="0"
@@ -36,46 +35,107 @@
                      class="except">不在其之间</el-checkbox>
       </el-form-item>
       <el-form-item label="诊断日期">
-        <el-date-picker v-model="diagnoseform.date"
+        <el-date-picker v-model="diagnoseform.date.data1"
+                        type="date"
+                        placeholder="选择日期">
+        </el-date-picker>
+        <span class="line"> — </span>
+        <el-date-picker v-model="diagnoseform.date.data2"
+                        type="date"
+                        placeholder="选择日期">
+        </el-date-picker>
+        <!-- <el-date-picker v-model="diagnoseform.datearray"
                         type="daterange"
                         unlink-panels
                         range-separator="至"
                         start-placeholder="开始日期"
                         end-placeholder="结束日期">
-        </el-date-picker>
+        </el-date-picker> -->
         <el-checkbox v-model="diagnoseform.datechecked"
                      class="except">不在其之间</el-checkbox>
       </el-form-item>
+      <el-button type="primary"
+                 @click="submitForm(diagnoseform)">保存</el-button>
     </draggable>
   </el-form>
 </template>
 
 <script>
 import draggable from 'vuedraggable'
+import axios from 'axios'
 export default {
   components: {
     draggable,
   },
+  // props: ['queuedict'],
   data() {
     return {
       diagnoseform: {
-        debut: false,
-        sex: '',
-        code: '',
+        debut: { data1: false },
+        sex: {
+          data1: '',
+        },
+        code: {
+          date1: '',
+        },
         codechecked: false,
-        age1: '',
-        age2: '',
+        age: {
+          data1: '',
+          data2: '',
+        },
         agechecked: false,
         type: '',
-        date: '',
+        date: {
+          data1: '',
+          data2: '',
+        },
         datechecked: false,
-        source: ''
-      }
+        source: {
+          data1: '',
+        },
+      },
+      queuedict: []
     }
   },
+  mounted: function () {
+    this.getQueueDict()
+  },
   methods: {
+    getQueueDict() {
+      axios.get('cohort/dict', {
+        params: {
+          token: this.GLOBAL.token,
+          criteriaLayer1Code: "1"
+        }
+      })
+        .then((response) => {
+          this.queuedict = response.data.data
+          this.renameKeys()
+          console.log(this.queuedict)
+          this.diagnoseform.code = Object.assign(this.diagnoseform.code, this.queuedict[0])
+          this.diagnoseform.date = Object.assign(this.diagnoseform.date, this.queuedict[1])
+          this.diagnoseform.age = Object.assign(this.diagnoseform.age, this.queuedict[2])
+          this.diagnoseform.source = Object.assign(this.diagnoseform.source, this.queuedict[3])
+          this.diagnoseform.sex = Object.assign(this.diagnoseform.sex, this.queuedict[4])
+          this.diagnoseform.debut = Object.assign(this.diagnoseform.debut, this.queuedict[5])
+          console.log(this.diagnoseform)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+    //替换字典里面的key--rzx
+    renameKeys() {
+      for (var i = 0; i < this.queuedict.length; i++) {
+        this.queuedict[i]['typeSortNo'] = this.queuedict[i]['sortNo']
+        delete this.queuedict[i]['sortNo']
+      }
+    },
     ageChange(value) {
       console.log(value);
+    },
+    submitForm(diagnoseform) {
+      console.log(diagnoseform)
     }
   }
 }
@@ -100,6 +160,9 @@ export default {
   display: none;
 }
 .diagnose .line {
+  display: none;
+}
+.diagnose .el-form-item__content {
   display: none;
 }
 .diagnose .el-checkbox__label {
