@@ -519,6 +519,7 @@ export default {
   data() {
     return {
       activeName: 'summarygenerate',
+      formLabelWidth: "90px",
       summarygeneratevalue: '',
       cohortanalysisvalue: '',
       analysismethodvalue: '',

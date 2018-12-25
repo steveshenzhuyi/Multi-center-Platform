@@ -127,7 +127,27 @@ export default {
       }
     }
   },
+  mounted() {
+    this.getpersonalResearch();
+
+  },
   methods: {
+
+    getpersonalResearch() {
+      axios.get('/personalResearch/getMyResearchList', {
+        params: {
+          "token": this.GLOBAL.token
+        }
+      })
+        .then((response) => {
+          //console.log(response)
+
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+
     // 关闭对话框
     handleClose(done) {
       this.$confirm("确认关闭？")
