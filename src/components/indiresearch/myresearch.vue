@@ -212,7 +212,7 @@
             <el-tabs v-model="activeName"
                      style="margin-top:-10px">
               <el-tab-pane label="队列生成"
-                           name="summarygenerate1">
+                           name="summarygenerate">
                 <el-select v-model="summarygeneratevalue"
                            placeholder="请选择">
                   <el-option-group v-for="cohort in cohortsets"
@@ -227,6 +227,9 @@
                 </el-select>
                 <el-button type="primary"
                            @click="toNewVariable()">新增变量</el-button>
+                <el-button style="float:right;margin-bottom:5px;margin-top:5px"
+                           type="primary"
+                           @click="summarygenerate">生成</el-button>
               </el-tab-pane>
               <el-tab-pane label="队列分析"
                            name="cohortanalysis">
@@ -254,6 +257,11 @@
                     </el-option>
                   </el-option-group>
                 </el-select>
+
+                <el-button style="float:right;margin-bottom:5px;margin-top:5px"
+                           type="primary"
+                           @click="cohortanalysis">分析</el-button>
+
               </el-tab-pane>
             </el-tabs>
           </el-card>
@@ -270,12 +278,32 @@
               <span>分析结果</span>
             </div>
             <el-button style="float:right;margin-bottom:5px;margin-top:5px"
-                       type="primary">保存</el-button>
+                       type="primary"
+                       @click="saveresult=true">保存</el-button>
           </el-card>
         </el-row>
       </el-col>
     </el-row>
-
+    <el-dialog title="保存结果"
+               :visible.sync="saveresult"
+               width="30%"
+               :before-close="handleClose">
+      <el-form>
+        <el-form-item label="结果名称："
+                      :label-width="formLabelWidth">
+          <el-input placeholder="请输入结果名称"
+                    v-model="saveresultname"
+                    clearable>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="saveresult = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="saveresult = false;">确 定</el-button>
+      </span>
+    </el-dialog>
     <!-- 新建变量 dwx -->
     <el-dialog title="新建变量"
                :visible.sync="NewVarVisible"
@@ -486,16 +514,18 @@ export default {
     'oneway_anova': oneway_anova,
     'pairedsample_ttest': pairedsample_ttest,
     'svmanalysis': svmanalysis,
-    'createconceptset': createconceptset,
+    'createconceptset': createconceptset
   },
   data() {
     return {
-      activeName: 'summarygenerate1',
+      activeName: 'summarygenerate',
       summarygeneratevalue: '',
       cohortanalysisvalue: '',
       analysismethodvalue: '',
       dialogVisible: false,
       methodName: '',
+      saveresult: false,
+      saveresultname: '',
       mycreateconceptset: createconceptset,
       conceptSetName: '',
       conceptSetDes: '',
@@ -1102,10 +1132,15 @@ export default {
 
         default:
           break;
-
-      };
-
+      }
     },
+    cohortanalysis() {
+      console.log("开始分析")
+    },
+    summarygenerate() {
+      console.log("开始生成")
+    },
+
   },
   components: {
     draggable
