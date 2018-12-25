@@ -559,18 +559,7 @@ export default {
       checked: true,
       // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
-      VariableTable: [],
-      // analysismethods: [{
-      //   'label': '模型文件夹1',
-      //   'children': [
-      //     {
-      //       'label': 'SVM'
-      //     },
-      //     {
-      //       'label': 'RF'
-      //     }
-      //   ]
-      // }]
+      VariableTable: []
     };
   },
   mounted() {
@@ -602,9 +591,6 @@ export default {
       })
         .then((response) => {
           this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
-          this.cohortsets[0].tag = '0'
-          this.cohortsets[0].children[0].tag = '1'
-          this.cohortsets[0].children[1].tag = '1'
         })
         .catch(function (error) {
           console.log("error", error);
@@ -618,9 +604,6 @@ export default {
       })
         .then((response) => {
           this.analysismethods = JSON.parse(response.data.data.modelStructure)
-          this.analysismethods[0].tag = '0'
-          this.analysismethods[0].children[0].tag = '1'
-          this.analysismethods[0].children[1].tag = '1'
         })
         .catch(function (error) {
           console.log("error", error);
@@ -1000,6 +983,7 @@ export default {
           }
         })
     },
+
     allowDrop(draggingNode, dropNode, type) {
       if (dropNode.data.tag.indexOf('1') != -1) {
         return type !== 'inner';
