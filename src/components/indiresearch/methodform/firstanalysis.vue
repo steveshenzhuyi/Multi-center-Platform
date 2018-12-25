@@ -1,5 +1,8 @@
 <template>
   <div>
+    <el-row>模型名称：<el-input v-model="mstjForm.name"></el-input>
+    </el-row>
+
     <el-row>
       <el-col :span="20">
         <el-row :gutter="10">
@@ -51,7 +54,7 @@
                                  width="55">
                 </el-table-column> -->
                 <el-table-column prop="name"
-                                 label="结局变量">
+                                 label="目标变量">
                 </el-table-column>
                 <el-table-column prop="featureId"
                                  v-if="idshow2">
@@ -100,7 +103,6 @@
                                    :disabled="!mstjForm.quantile.includes(2)"
                                    size="mini"
                                    controls-position="right"
-                                   @change="handleChange1"
                                    :min="0"
                                    :max="100"></el-input-number>
 
@@ -228,23 +230,12 @@ export default {
         distribution: [],
         chart: [],
         num1: '',
+        name: '',
 
       },
-      // 
-      fl: {
-        sortNo: '',
-        featureId: '',
-        featureType: '',
-      },
+
       List1: [],
-      // checkList1_1: [],
-      // checkList1_2: [],
-      // checkList1_3: [],
-      //checkList1_4: [],
-      //checkList1_5: [],
-      //value1: [],
-      //num1: 3,
-      //input1: "",
+
     }
   },
   mounted() {
@@ -268,10 +259,16 @@ export default {
         });
     },
     rightshift: function () {
-      this.Chosenlist.push(this.currentRow1);
-      // console.log(this.Chosenlist[0].featureId)
-      this.Varlist.splice(this.currentRow1, 1);
+      // var t = this.Chosenlist.length;
+      if (this.Chosenlist.length < 1) {
+        this.Chosenlist.push(this.currentRow1);
+        this.Varlist.splice(this.currentRow1, 1);
+      }
+      else {
 
+        this.$message('只能选择一个目标变量');
+
+      }
 
     },
     leftshift: function () {
@@ -289,35 +286,13 @@ export default {
       this.currentRow2 = val;
     },
 
-    // handleSelectionChange1(val) {
-    //   this.multipleSelection1 = val;
-
-
-    // },
-    // handleSelectionChange2(val) {
-    //   this.multipleSelection2 = val;
-
-
-    // },
-    handleChange1(value) {
-      // console.log(value);
-
-    },
-    //确定就是保存 然后关闭窗口
     save: function () {
-
 
       console.log(this.Chosenlist.length);
       for (var i = 0; i < this.Chosenlist.length; i++) {
 
-        // var a = i + 1;
-        // var b = this.Chosenlist[i].featureId
-        // var c = 1;
-        //var f = { "sortNo": a, "featureId": b, "featureType": c };
-        var ff = { "sortNo": i + 1, "featureId": this.Chosenlist[i].featureId, "featureType": 1 }
+        var f = { "sortNo": i + 1, "featureId": this.Chosenlist[i].featureId, "featureType": 1 }
         this.List1.push(f);
-
-
 
 
       }
@@ -325,7 +300,7 @@ export default {
 
       axios.post('/model/create', {
         "token": this.GLOBAL.token,
-        // "name":JSON.stringify(this.mstjForm.name),
+        "name": JSON.stringify(this.mstjForm.name),
         "modelTypeLayer1Code": 1,
         "modelTypeLayer2Code": 1,
         "data": {

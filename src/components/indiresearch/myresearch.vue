@@ -137,6 +137,7 @@
         </el-row>
 
         <!-- 分析模块/RH -->
+        <!--分析模块删除编辑/ GYX -->
         <el-row>
           <el-card class="box-card"
                    style="text-align:center;font-size:13px;height:100%">
@@ -147,15 +148,53 @@
             </div>
             <div class="expand">
               <el-button size="mini"
-                         @click="handleAddTop">添加新文件夹</el-button>
+                         @click="handleAddTop_method">添加新文件夹</el-button>
               <el-button type="primary"
                          size="mini"
                          @click="NewMethodVisible=true">新建方法</el-button>
               <div>
-                <el-tree :data="analysismethods"
+                <el-tree ref="SlotMenuList"
+                         class="expand-tree"
+                         v-if="isLoadingTree"
+                         default-expand-all
+                         node-key="id"
+                         draggable
+                         :allow-drop="allowDrop"
+                         :allow-drag="allowDrag"
+                         :data="analysismethods"
                          :props="defaultProps"
-                         @node-click="handleNodeClick"
-                         default-expand-all></el-tree>
+                         default-expand-all>
+
+                  <span class="slot-t-node"
+                        slot-scope="{ node, data }">
+                    <!-- 未编辑状态 -->
+                    <span v-show="!node.isEdit">
+                      <span :class="[data.id > method_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                      <span class="slot-t-icons">
+                        <!-- 新增按钮 -->
+                        <!--i class="el-icon-plus"
+                         @click="NodeAdd(node, data)"></i-->
+                        <!-- 编辑按钮 -->
+                        <i class="el-icon-edit"
+                           @click="NodeEdit_method(node, data)"></i>
+                        <!-- 删除按钮 -->
+                        <i class="el-icon-delete"
+                           @click="NodeDel_method(node, data)"></i>
+                      </span>
+                    </span>
+                    <!-- 编辑输入框 -->
+                    <span v-show="node.isEdit">
+                      <el-input class="slot-t-input"
+                                size="mini"
+                                autofocus
+                                v-model="data.label"
+                                :ref="'slotTreeInput'+data.id"
+                                @blur.stop="NodeBlur_method(node, data)"
+                                @keyup.enter.native="NodeBlur_method(node, data)"></el-input>
+                    </span>
+                  </span>
+
+                </el-tree>
               </div>
             </div>
 
@@ -539,10 +578,10 @@ export default {
         })
         .catch(_ => { });
     },
-    handleNodeClick(data) {
-      // console.log(data);
-    },
-    handleAddTop() { },
+    // handleNodeClick(data) {
+    //   // console.log(data);
+    // },
+    //handleAddTop() { },
     toCreatecohort() {
       this.$router.push({
         path: 'createqueue',
@@ -728,6 +767,118 @@ export default {
         d.id > this.non_cohort_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
+    //GYX  TREE分析方法编辑 删除
+    handleAddTop_method() {
+      this.analysismethods.push({
+        id: ++this.method_maxexpandId,
+        label: '新增文件夹',
+        isEdit: false,
+        children: []
+      });
+    },
+    NodeBlur_method(n, d) {//输入框失焦
+      console.log(n, d)
+      if (n.isEdit) {
+        this.$set(n, 'isEdit', false)
+      }
+    },
+    NodeEdit_method(n, d) {//编辑节点
+      console.log(n, d)
+      if (!n.isEdit) {//检测isEdit是否存在or是否为false
+        this.$set(n, 'isEdit', true)
+      }
+      this.$nextTick(() => {
+        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
+      })
+    },
+    NodeDel_method(n, d) {//删除节点
+      console.log(n, d)
+      let that = this;
+      if (d.children && d.children.length !== 0) {
+        this.$message.error("此节点有子级，不可删除！")
+        return false;
+      } else {
+        //新增节点可直接删除，已存在的节点要二次确认
+        //删除操作
+        let DelFun = () => {
+          let _list = n.parent.data.children || n.parent.data;//节点同级数据
+          let _index = _list.map((c) => c.id).indexOf(d.id);
+          console.log(_index)
+          _list.splice(_index, 1);
+          this.$message.success("删除成功！")
+        }
+        //二次确认
+        let ConfirmFun = () => {
+          this.$confirm("是否删除此节点？", "提示", {
+            confirmButtonText: "确认",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            DelFun()
+          }).catch(() => { })
+        }
+        //判断是否是新增节点
+        d.id > this.non_method_maxexpandId ? DelFun() : ConfirmFun()
+      }
+    },
+    //队列鼠标hover事件所需
+    handleAddTop_method() {
+      this.analysismethods.push({
+        id: ++this.method_maxexpandId,
+        label: '新增文件夹',
+        isEdit: false,
+        children: []
+      });
+    },
+    NodeBlur_method(n, d) {//输入框失焦
+      console.log(n, d)
+      if (n.isEdit) {
+        this.$set(n, 'isEdit', false)
+      }
+    },
+    NodeEdit_method(n, d) {//编辑节点
+      console.log(n, d)
+      if (!n.isEdit) {//检测isEdit是否存在or是否为false
+        this.$set(n, 'isEdit', true)
+      }
+      this.$nextTick(() => {
+        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
+      })
+    },
+    NodeDel_methodt(n, d) {//删除节点
+      console.log(n, d)
+      let that = this;
+      if (d.children && d.children.length !== 0) {
+        this.$message.error("此节点有子级，不可删除！")
+        return false;
+      } else {
+        //新增节点可直接删除，已存在的节点要二次确认
+        //删除操作
+        let DelFun = () => {
+          let _list = n.parent.data.children || n.parent.data;//节点同级数据
+          let _index = _list.map((c) => c.id).indexOf(d.id);
+          console.log(_index)
+          _list.splice(_index, 1);
+          this.$message.success("删除成功！")
+        }
+        //二次确认
+        let ConfirmFun = () => {
+          this.$confirm("是否删除此节点？", "提示", {
+            confirmButtonText: "确认",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            DelFun()
+          }).catch(() => { })
+        }
+        //判断是否是新增节点
+        d.id > this.non_method_maxexpandId ? DelFun() : ConfirmFun()
+      }
+    },
+
+
+
+
 
     // 新增变量弹框 dwx
     getVariableTable() {
