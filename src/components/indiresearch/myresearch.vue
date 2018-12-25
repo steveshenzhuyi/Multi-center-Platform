@@ -66,7 +66,7 @@
                                 size="mini"
                                 autofocus
                                 v-model="data.label"
-                                :ref="'slotTreeInput'+data.id"
+                                :ref="'slotTreeInput_concept'+data.id"
                                 @blur.stop="NodeBlur_concept(node, data)"
                                 @keyup.enter.native="NodeBlur_concept(node, data)"></el-input>
                     </span>
@@ -126,7 +126,7 @@
                               size="mini"
                               autofocus
                               v-model="data.label"
-                              :ref="'slotTreeInput'+data.id"
+                              :ref="'slotTreeInput_cohort'+data.id"
                               @blur.stop="NodeBlur_cohort(node, data)"
                               @keyup.enter.native="NodeBlur_cohort(node, data)"></el-input>
                   </span>
@@ -152,19 +152,24 @@
               <el-button type="primary"
                          size="mini"
                          @click="NewMethodVisible=true">新建方法</el-button>
-              <div>
+              <div class="slot-tree">
                 <el-tree ref="SlotMenuList"
                          class="expand-tree"
                          v-if="isLoadingTree"
                          default-expand-all
                          node-key="id"
+                         @node-drag-start="handleDragStart"
+                         @node-drag-enter="handleDragEnter"
+                         @node-drag-leave="handleDragLeave"
+                         @node-drag-over="handleDragOver"
+                         @node-drag-end="handleDragEnd"
+                         @node-drop="handleDrop"
                          draggable
                          :allow-drop="allowDrop"
                          :allow-drag="allowDrag"
                          :data="analysismethods"
                          :props="defaultProps"
-                         default-expand-all>
-
+                         :expand-on-click-node="false">
                   <span class="slot-t-node"
                         slot-scope="{ node, data }">
                     <!-- 未编辑状态 -->
@@ -188,12 +193,11 @@
                                 size="mini"
                                 autofocus
                                 v-model="data.label"
-                                :ref="'slotTreeInput'+data.id"
+                                :ref="'slotTreeInput_method'+data.id"
                                 @blur.stop="NodeBlur_method(node, data)"
                                 @keyup.enter.native="NodeBlur_method(node, data)"></el-input>
                     </span>
                   </span>
-
                 </el-tree>
               </div>
             </div>
@@ -209,7 +213,7 @@
             <el-tabs v-model="activeName"
                      style="margin-top:-10px">
               <el-tab-pane label="队列生成"
-                           name="summarygenerate1">
+                           name="summarygenerate">
                 <el-select v-model="summarygeneratevalue"
                            placeholder="请选择">
                   <el-option-group v-for="cohort in cohortsets"
@@ -224,6 +228,9 @@
                 </el-select>
                 <el-button type="primary"
                            @click="toNewVariable()">新增变量</el-button>
+                <el-button style="float:right;margin-bottom:5px;margin-top:5px"
+                           type="primary"
+                           @click="summarygenerate">生成</el-button>
               </el-tab-pane>
               <el-tab-pane label="队列分析"
                            name="cohortanalysis">
@@ -251,6 +258,11 @@
                     </el-option>
                   </el-option-group>
                 </el-select>
+
+                <el-button style="float:right;margin-bottom:5px;margin-top:5px"
+                           type="primary"
+                           @click="cohortanalysis">分析</el-button>
+
               </el-tab-pane>
             </el-tabs>
           </el-card>
@@ -267,12 +279,32 @@
               <span>分析结果</span>
             </div>
             <el-button style="float:right;margin-bottom:5px;margin-top:5px"
-                       type="primary">保存</el-button>
+                       type="primary"
+                       @click="saveresult=true">保存</el-button>
           </el-card>
         </el-row>
       </el-col>
     </el-row>
-
+    <el-dialog title="保存结果"
+               :visible.sync="saveresult"
+               width="30%"
+               :before-close="handleClose">
+      <el-form>
+        <el-form-item label="结果名称："
+                      :label-width="formLabelWidth">
+          <el-input placeholder="请输入结果名称"
+                    v-model="saveresultname"
+                    clearable>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="saveresult = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="saveresult = false;">确 定</el-button>
+      </span>
+    </el-dialog>
     <!-- 新建变量 dwx -->
     <el-dialog title="新建变量"
                :visible.sync="NewVarVisible"
@@ -328,12 +360,17 @@
                :visible.sync="createConceptVisible"
                width="60%"
                :before-close="handleClose">
-      <component :is="mycreateconceptset"></component>
+      <component :is="mycreateconceptset"
+                 @getdata="getMultipleSelection"
+                 @getdata1="getExcludeditems"
+                 @getdata2="getChilerenConcepts"
+                 @getdata3="getConceptName"
+                 @getdata4="getConceptDes"></component>
       <span slot="footer"
             class="dialog-footer">
         <el-button @click="createConceptVisible = false">取 消</el-button>
         <el-button type="primary"
-                   @click="createConceptVisible = false">确 定</el-button>
+                   @click="postConceptData()">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -467,16 +504,26 @@ export default {
     'oneway_anova': oneway_anova,
     'pairedsample_ttest': pairedsample_ttest,
     'svmanalysis': svmanalysis,
+    'createconceptset': createconceptset
   },
   data() {
     return {
-      activeName: 'summarygenerate1',
+      activeName: 'summarygenerate',
       summarygeneratevalue: '',
       cohortanalysisvalue: '',
       analysismethodvalue: '',
       dialogVisible: false,
       methodName: '',
+      saveresult: false,
+      saveresultname: '',
       mycreateconceptset: createconceptset,
+      conceptSetName: '',
+      conceptSetDes: '',
+      Excludeditems: [],
+      ChilerenConcepts: [],
+      multipleSelection: [],
+      concepts: [],
+      concept_exist: false,
       researchstatus: this.$route.query.researchstatus,
       createConceptVisible: false,
       NewVarVisible: false,
@@ -490,6 +537,8 @@ export default {
       non_concept_maxexpandId: 3,//新增节点开始id(不更改)
       cohort_maxexpandId: 3,//新增节点开始id
       non_cohort_maxexpandId: 3,//新增节点开始id(不更改)
+      method_maxexpandId: 3,//新增节点开始id
+      non_method_maxexpandId: 3,//新增节点开始id(不更改)
       isLoadingTree: true,//是否加载节点树
       conceptsets: [],
       cohortsets: [],
@@ -503,7 +552,18 @@ export default {
       checked: true,
       // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
-      VariableTable: []
+      VariableTable: [],
+      // analysismethods: [{
+      //   'label': '模型文件夹1',
+      //   'children': [
+      //     {
+      //       'label': 'SVM'
+      //     },
+      //     {
+      //       'label': 'RF'
+      //     }
+      //   ]
+      // }]
     };
   },
   mounted() {
@@ -522,13 +582,13 @@ export default {
         .then((response) => {
           //console.log(response)
           this.conceptsets = JSON.parse(response.data.data.conceptSetStructure)
-          for (var i = 0; i < this.conceptsets.length; i++) {
-            this.conceptsets[i].isEdit = false;
-            this.conceptsets[i].id = 3;
-            for (var j = 0; j < this.conceptsets[i].children[j].length; j++) {
-              this.conceptsets[i].children[j].isEdit = false;
-            }
-          }
+          // for (var i = 0; i < this.conceptsets.length; i++) {
+          //   this.conceptsets[i].isEdit = false;
+          //   this.conceptsets[i].id = 3;
+          //   for (var j = 0; j < this.conceptsets[i].children.length; j++) {
+          //     this.conceptsets[i].children[j].isEdit = false;
+          //   }
+          // }
         })
         .catch(function (error) {
           console.log("error", error);
@@ -541,18 +601,13 @@ export default {
         }
       })
         .then((response) => {
-          this.cohortsets = JSON.parse(response.data.data.privateCohortStructure)
-          for (var i = 0; i < this.cohortsets.length; i++) {
-            this.cohortsets[i].isEdit = false;
-            this.cohortsets[i].id = 1;
-            this.cohortsets[i].children[0].id = 2;
-            this.cohortsets[i].children[1].id = 3;
-            this.cohortsets[i].children[0].isEdit = false;
-            this.cohortsets[i].children[1].isEdit = false;
-            //for (var j = 0; j < this.cohortsets[i].children[j].length; j++) {
-            //this.cohortsets[i].children[j].isEdit = false;
-            //}
-          }
+          this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
+          // for (var i = 0; i < this.cohortsets.length; i++) {
+          //   this.cohortsets[i].isEdit = false;
+          //   this.cohortsets[i].id = 1;
+          //   this.cohortsets[i].children[0].id = 2;
+          //   this.cohortsets[i].children[1].id = 3;
+          // }
         })
         .catch(function (error) {
           console.log("error", error);
@@ -570,6 +625,84 @@ export default {
         .catch(function (error) {
           console.log("error", error);
         });
+    },
+    getConceptName(val) {
+      this.conceptSetName = val;
+      console.log(this.conceptSetName)
+    },
+    getConceptDes(val) {
+      this.conceptSetDes = val;
+      console.log(this.conceptSetDes)
+    },
+    getExcludeditems(val) {
+      this.Excludeditems = val;
+      //console.log(this.Excludeditems)
+    },
+    getChilerenConcepts(val) {
+      this.ChilerenConcepts = val;
+      //console.log(this.ChilerenConcepts)
+    },
+    getMultipleSelection(val) {
+      this.multipleSelection = val;
+      //console.log(this.multipleSelection)
+    },
+    postConceptData() {
+      this.createConceptVisible = false;
+      this.concepts = [];
+      for (var i = 0; i < this.multipleSelection.length; i++) {
+        this.concepts.push({
+          conceptCode: this.multipleSelection[i].subject,
+          excludeTag: "0",
+          childTag: "0"
+        });
+      }
+      for (var i = 0; i < this.Excludeditems.length; i++) {
+        this.concept_exist = false;
+        var a = []
+        a = this.Excludeditems[i].split('#')
+        for (var j = 0; j < this.concepts.length; j++) {
+          if (a[0].indexOf(this.concepts[j].conceptCode) != -1) {
+            this.concept_exist = true;
+            this.concepts[j].excludeTag = "1"
+          }
+        }
+        if (!this.concept_exist) {
+          this.concepts.push({
+            conceptCode: a[0],
+            excludeTag: "1",
+            childTag: "0"
+          });
+        }
+      }
+      for (var i = 0; i < this.ChilerenConcepts.length; i++) {
+        this.concept_exist = false;
+        var a = []
+        a = this.ChilerenConcepts[i].split('#')
+        for (var j = 0; j < this.concepts.length; j++) {
+          if (a[0].indexOf(this.concepts[j].conceptCode) != -1) {
+            this.concept_exist = true;
+            this.concepts[j].childTag = "1"
+          }
+        }
+        if (!this.concept_exist) {
+          this.concepts.push({
+            conceptCode: a[0],
+            excludeTag: "0",
+            childTag: "1"
+          });
+        }
+      }
+      axios.post('/conceptSet/createConceptSet?token=' + this.GLOBAL.token, ({
+        "conceptSetName": this.conceptSetName,
+        "conceptSetDes": this.conceptSetDes,
+        "concepts": this.concepts,
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("新建成功！")
+          }
+        })
+      console.log(this.concepts)
     },
     handleClose(done) {
       this.$confirm("确认关闭？")
@@ -591,7 +724,7 @@ export default {
       this.NewVarVisible = true
       this.getVariableTable()
     },
-    //概念集鼠标hover事件所需
+    //概念集资源结构编辑函数
     handleAddTop_concept() {
       this.conceptsets.push({
         id: ++this.concept_maxexpandId,
@@ -601,7 +734,7 @@ export default {
       });
     },
     NodeBlur_concept(n, d) {//输入框失焦
-      // console.log(n, d)
+      //console.log(n, d)
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
       }
@@ -609,7 +742,7 @@ export default {
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": "[]",
         "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-        "modelStructure": "[]",
+        "modelStructure": JSON.stringify(this.analysismethods),
         "featureStructure": "[]",
         "resultStructure": "[]"
       }))
@@ -620,16 +753,16 @@ export default {
         })
     },
     NodeEdit_concept(n, d) {//编辑节点
-      console.log(n, d)
+      //console.log(n, d)
       if (!n.isEdit) {//检测isEdit是否存在or是否为false
         this.$set(n, 'isEdit', true)
       }
       this.$nextTick(() => {
-        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
+        this.$refs['slotTreeInput_concept' + d.id].$refs.input.focus()
       })
     },
     NodeDel_concept(n, d) {//删除节点
-      console.log(n, d)
+      //console.log(n, d)
       let that = this;
       if (d.children && d.children.length !== 0) {
         this.$message.error("此节点有子级，不可删除！")
@@ -640,7 +773,7 @@ export default {
         let DelFun = () => {
           let _list = n.parent.data.children || n.parent.data;//节点同级数据
           let _index = _list.map((c) => c.id).indexOf(d.id);
-          console.log(_index)
+          //console.log(_index)
           _list.splice(_index, 1);
           this.$message.success("删除成功！")
         }
@@ -658,8 +791,7 @@ export default {
         d.id > this.non_concept_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-
-    //队列鼠标hover事件所需
+    //队列资源结构编辑函数
     handleAddTop_cohort() {
       this.cohortsets.push({
         id: ++this.cohort_maxexpandId,
@@ -673,6 +805,20 @@ export default {
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
       }
+      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+
+        "conceptSetStructure": JSON.stringify(this.conceptsets),
+        "privateCohortStructure": "[]",
+        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+        "modelStructure": JSON.stringify(this.analysismethods),
+        "featureStructure": "[]",
+        "resultStructure": "[]"
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("编辑成功！")
+          }
+        })
     },
     NodeEdit_cohort(n, d) {//编辑节点
       console.log(n, d)
@@ -680,7 +826,7 @@ export default {
         this.$set(n, 'isEdit', true)
       }
       this.$nextTick(() => {
-        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
+        this.$refs['slotTreeInput_cohort' + d.id].$refs.input.focus()
       })
     },
     NodeDel_cohort(n, d) {//删除节点
@@ -767,7 +913,7 @@ export default {
         d.id > this.non_cohort_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-    //GYX  TREE分析方法编辑 删除
+    //模型方法资源结构编辑函数
     handleAddTop_method() {
       this.analysismethods.push({
         id: ++this.method_maxexpandId,
@@ -777,21 +923,33 @@ export default {
       });
     },
     NodeBlur_method(n, d) {//输入框失焦
-      console.log(n, d)
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
       }
+      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+
+        "conceptSetStructure": JSON.stringify(this.conceptsets),
+        "privateCohortStructure": "[]",
+        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+        "modelStructure": JSON.stringify(this.analysismethods),
+        "featureStructure": "[]",
+        "resultStructure": "[]"
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("编辑成功！")
+          }
+        })
     },
     NodeEdit_method(n, d) {//编辑节点
-      console.log(n, d)
       if (!n.isEdit) {//检测isEdit是否存在or是否为false
         this.$set(n, 'isEdit', true)
       }
       this.$nextTick(() => {
-        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
+        this.$refs['slotTreeInput_method' + d.id].$refs.input.focus()
       })
     },
-    NodeDel_method(n, d) {//删除节点
+    NodeDel_cohort(n, d) {//删除节点
       console.log(n, d)
       let that = this;
       if (d.children && d.children.length !== 0) {
@@ -821,62 +979,6 @@ export default {
         d.id > this.non_method_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-    //队列鼠标hover事件所需
-    handleAddTop_method() {
-      this.analysismethods.push({
-        id: ++this.method_maxexpandId,
-        label: '新增文件夹',
-        isEdit: false,
-        children: []
-      });
-    },
-    NodeBlur_method(n, d) {//输入框失焦
-      console.log(n, d)
-      if (n.isEdit) {
-        this.$set(n, 'isEdit', false)
-      }
-    },
-    NodeEdit_method(n, d) {//编辑节点
-      console.log(n, d)
-      if (!n.isEdit) {//检测isEdit是否存在or是否为false
-        this.$set(n, 'isEdit', true)
-      }
-      this.$nextTick(() => {
-        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
-      })
-    },
-    NodeDel_methodt(n, d) {//删除节点
-      console.log(n, d)
-      let that = this;
-      if (d.children && d.children.length !== 0) {
-        this.$message.error("此节点有子级，不可删除！")
-        return false;
-      } else {
-        //新增节点可直接删除，已存在的节点要二次确认
-        //删除操作
-        let DelFun = () => {
-          let _list = n.parent.data.children || n.parent.data;//节点同级数据
-          let _index = _list.map((c) => c.id).indexOf(d.id);
-          console.log(_index)
-          _list.splice(_index, 1);
-          this.$message.success("删除成功！")
-        }
-        //二次确认
-        let ConfirmFun = () => {
-          this.$confirm("是否删除此节点？", "提示", {
-            confirmButtonText: "确认",
-            cancelButtonText: "取消",
-            type: "warning"
-          }).then(() => {
-            DelFun()
-          }).catch(() => { })
-        }
-        //判断是否是新增节点
-        d.id > this.non_method_maxexpandId ? DelFun() : ConfirmFun()
-      }
-    },
-
-
 
 
 
@@ -913,7 +1015,25 @@ export default {
     EditVar(index) {
 
     },
+    //队列拖拽所需
+    handleDragStart(node, ev) {
 
+    },
+    handleDragEnter(draggingNode, dropNode, ev) {
+
+    },
+    handleDragLeave(draggingNode, dropNode, ev) {
+
+    },
+    handleDragOver(draggingNode, dropNode, ev) {
+
+    },
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
+
+    },
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+
+    },
     allowDrop(draggingNode, dropNode, type) {
       if (dropNode.data.label.indexOf('队列') != -1) {
         return type !== 'inner';
@@ -990,10 +1110,15 @@ export default {
 
         default:
           break;
-
-      };
-
+      }
     },
+    cohortanalysis() {
+      console.log("开始分析")
+    },
+    summarygenerate() {
+      console.log("开始生成")
+    },
+
   },
   components: {
     draggable

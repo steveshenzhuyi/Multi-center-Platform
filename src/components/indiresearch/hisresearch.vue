@@ -10,7 +10,7 @@
           <div id="newresearch"
                class="cardBox"
                shadow="hover"
-               @click="ifNewresearch">
+               @click="dialogVisible=true">
 
             <span class="el-icon-plus"></span>
           </div>
@@ -146,11 +146,6 @@ export default {
           }
       });
     },
-    // 新建研究对话框
-    ifNewresearch: function () {
-      this.dialogVisible = true;
-    },
-
     // 跳转至新建研究
     toNewresearch: function () {
       this.createtime = new Date();
