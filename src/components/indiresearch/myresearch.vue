@@ -107,6 +107,7 @@
                       slot-scope="{ node, data }">
                   <!-- 未编辑状态 -->
                   <span v-show="!node.isEdit">
+
                     <span :class="[data.id > cohort_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
                     <span class="slot-t-icons">
                       <!-- 新增按钮 -->
@@ -174,7 +175,9 @@
                         slot-scope="{ node, data }">
                     <!-- 未编辑状态 -->
                     <span v-show="!node.isEdit">
-                      <span :class="[data.id > method_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                      <!--GYX 鼠标点击名字  打开编辑页面 -->
+                      <span :class="[data.id > method_maxexpandId ? 'slot-t-node--label' : '']"
+                            @click="editModule(node,data)">{{ node.label }}</span>
                       <span class="slot-t-icons">
                         <!-- 新增按钮 -->
                         <!--i class="el-icon-plus"
@@ -383,6 +386,7 @@
 
       <el-tabs :tab-position="tabPosition"
                type="border-card"
+               v-model="activeMethod1"
                @tab-click="handleClick">
 
         <el-tab-pane name="A"
@@ -395,7 +399,8 @@
         </el-tab-pane>
         <el-tab-pane name="B "
                      label="t检验">
-          <el-tabs @tab-click="handleClick2">
+          <el-tabs @tab-click="handleClick2"
+                   v-model="activeMethod2">
             <el-tab-pane name="a"
                          label="单样本t检验">
               <div id="2-1">
@@ -419,7 +424,8 @@
         </el-tab-pane>
         <el-tab-pane name="C"
                      label="方差分析">
-          <el-tabs @tab-click="handleClick3">
+          <el-tabs @tab-click="handleClick3"
+                   v-model="activeMethod3">
             <el-tab-pane name="d"
                          label="单因素方差分析">
               <div id="3-1">
@@ -564,6 +570,11 @@ export default {
       //     }
       //   ]
       // }]
+      //GYX 模型一级 二级条件
+      MethodDetails: '',
+      activeMethod1: 'A',
+      activeMethod2: 'a',
+      activeMethod3: 'd',
     };
   },
   mounted() {
@@ -949,7 +960,7 @@ export default {
         this.$refs['slotTreeInput_method' + d.id].$refs.input.focus()
       })
     },
-    NodeDel_cohort(n, d) {//删除节点
+    NodeDel_method(n, d) {//删除节点
       console.log(n, d)
       let that = this;
       if (d.children && d.children.length !== 0) {
@@ -979,8 +990,6 @@ export default {
         d.id > this.non_method_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-
-
 
     // 新增变量弹框 dwx
     getVariableTable() {
@@ -1045,18 +1054,22 @@ export default {
       return draggingNode.data.label.indexOf('文件夹') === -1;
     },
 
-    //以下为切换tab
+
+
+
+    //以下为切换tab GYX 新建模型切换tab
     handleClick(tab, event) {
       this.checkVue(tab.name);
     },
     handleClick2(tab, event) {
+
       this.checkVue(tab.name);
     },
     handleClick3(tab, event) {
+
       this.checkVue(tab.name);
     },
     checkVue(name) {
-
       switch (name) {
         // case 'first':
         //   console.log('第一');
@@ -1112,6 +1125,133 @@ export default {
           break;
       }
     },
+
+    //GYX  编辑分析方法
+    //获得方法ID
+    editModule(n, d) {
+      // 获得了ID
+      console.log(d.id)
+
+      this.getMethodDetails(d.id)
+
+
+      // console.log('ok')
+      // this.NewMethodVisible = true;
+
+    },
+    getMethodDetails(t) {
+      console.log(t)
+      axios.get('/model/getDetail', {
+        params: {
+          "token": this.GLOBAL.token,
+          "modelId": t
+        }
+      })
+        // .then((response) => {
+
+        //   this.MethodDetails = JSON.parse(response.data.data)
+
+        //   var a = this.MethodDetails.modelTypeLayer1Code
+        //   var b = this.MethodDetails.modelTypeLayer2Code
+        //   console.log(a, b)
+
+        // })
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('获取成功');
+            this.MethodDetails = response.data.data
+            var c = this.MethodDetails.modelTypeLayer1Code
+            var d = this.MethodDetails.modelTypeLayer2Code
+
+            var a = parseInt(c)
+            var b = parseInt(d)
+
+            this.NewMethodVisible = true
+            this.chooseVue(a, b)
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+
+
+    },
+    chooseVue(a, b) {
+      console.log('进入vue')
+      console.log(a, b)
+      switch (a) {
+        case 1:
+          this.methodName = firstanalysis;
+          break;
+        case 2:
+          this.chooseVue1(b);
+
+
+
+          break;
+        case 3:
+          this.chooseVue2(b);
+          break;
+        case 4:
+          this.methodName = linearregression;
+          break;
+        case 5:
+          this.methodName = logicregression;
+          break;
+        case 6:
+          this.methodName = svmanalysis;
+          break;
+        case 7:
+          this.methodName = bayesiannetworks;
+          break;
+        case 8:
+          this.methodName = decisiontree;
+          break;
+        default:
+          break;
+
+      }
+
+    },
+    chooseVue1(b) {
+      console.log('进入t检验选择')
+      switch (b) {
+        case 1:
+          console.log('单样本t检验')
+          this.activeMethod1 = "B";
+          console.log("第一步");
+          this.activeMethod2 = "a";
+          console.log("第二步");
+          this.methodName = onesample_ttest;
+
+          break;
+
+        case 2:
+          this.methodName = independent_ttest;
+          break;
+        case 3:
+          this.methodName = pairedsample_ttest;
+          break;
+        default:
+          break;
+      }
+    },
+    chooseVue2(b) {
+      switch (b) {
+        case 1:
+          this.methodName = oneway_anova;
+
+          break;
+        case 2:
+          this.methodName = multifactor_analysis;
+          break;
+        default:
+          break;
+      }
+
+    },
+
+
     cohortanalysis() {
       console.log("开始分析")
     },

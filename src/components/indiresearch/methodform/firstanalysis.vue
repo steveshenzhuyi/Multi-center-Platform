@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row>模型名称：<el-input v-model="mstjForm.name"></el-input>
+    <el-row>模型名称：<el-input v-model="mstjForm.methodname"></el-input>
     </el-row>
 
     <el-row>
@@ -230,7 +230,7 @@ export default {
         distribution: [],
         chart: [],
         num1: '',
-        name: '',
+        methodname: '',
 
       },
 
@@ -288,7 +288,7 @@ export default {
 
     save: function () {
 
-      console.log(this.Chosenlist.length);
+      //console.log(this.Chosenlist.length);
       for (var i = 0; i < this.Chosenlist.length; i++) {
 
         var f = { "sortNo": i + 1, "featureId": this.Chosenlist[i].featureId, "featureType": 1 }
@@ -296,11 +296,12 @@ export default {
 
 
       }
-      console.log(this.List1)
+
 
       axios.post('/model/create', {
         "token": this.GLOBAL.token,
-        "name": JSON.stringify(this.mstjForm.name),
+        //"name": JSON.stringify(this.mstjForm.methodname),
+        "name": this.mstjForm.methodname,
         "modelTypeLayer1Code": 1,
         "modelTypeLayer2Code": 1,
         "data": {
@@ -322,7 +323,7 @@ export default {
         .then(response => {
           if (response.data.code == "0") {
             this.$alert('创建成功');
-            console.log(response.data.data.modelId)
+            console.log(response.data.id)
             // this.getVariableTable()
           }
         })
