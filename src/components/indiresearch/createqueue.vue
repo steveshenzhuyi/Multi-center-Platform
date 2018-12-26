@@ -9,14 +9,6 @@
                label-width="110px"
                label-position="left"
                class="queue-Info">
-        <!-- <el-form-item label="队列类型"
-                      prop="type">
-          <el-radio-group v-model="queueInfo.type">
-            <el-radio label="1">队列筛选</el-radio>
-            <el-radio label="2">队列模式</el-radio>
-            <el-radio label="3">变量模式</el-radio>
-          </el-radio-group>
-        </el-form-item> -->
         <el-form-item label="队列名称"
                       prop="name">
           <el-col :span="11">
@@ -24,34 +16,10 @@
                       placeholder="请输入队列名称"></el-input>
           </el-col>
         </el-form-item>
-        <!-- <el-form-item label="队列创建时间"
-                      required>
-          <el-col :span="11">
-            <el-form-item prop="date">
-              <el-date-picker type="date"
-                              placeholder="请选择创建日期"
-                              v-model="queueInfo.date"
-                              style="width: 100%;"></el-date-picker>
-            </el-form-item>
-          </el-col>
-        </el-form-item> -->
-        <!-- <el-form-item label="队列创建者"
-                      prop="creator">
-          <el-col :span="11">
-            <el-input v-model="queueInfo.creator"
-                      placeholder="请输入队列创建者"></el-input>
-          </el-col>
-        </el-form-item> -->
-        <!-- <el-form-item label="关键字">
-          <el-col :span="11">
-            <el-input v-model="queueInfo.keyword"
-                      placeholder="请输入关键字"></el-input>
-          </el-col>
-        </el-form-item> -->
         <el-form-item label="队列描述">
           <el-col :span="11">
             <el-input type="textarea"
-                      v-model="queueInfo.desc"
+                      v-model="queueInfo.description"
                       placeholder="请输入队列描述"></el-input>
           </el-col>
         </el-form-item>
@@ -66,71 +34,19 @@
             <div class="one-of-main-condition">
               <span>主要条件：满足下列条件其中之一的人群队列</span>
             </div>
-            <div class="main-condition-detail">
-              <div class="condition-code">
-                <span>满足</span>
-              </div>
-              <el-form ref="siftingform"
-                       :model="siftingform"
-                       label-width="100px"
-                       :inline="true"
-                       class="siftingform">
-                <el-select v-model="siftingform.condtype"
-                           placeholder="请选择"
-                           @change="choosetype"
-                           style="padding-bottom:10px">
-                  <el-option v-for="item in condtypes"
-                             :key="item.value"
-                             :label="item.label"
-                             :value="item.value">
-                  </el-option>
-                </el-select>
-                <!-- <component :is="comName"></component> -->
-              </el-form>
-              <div class="droparea">
-                <draggable :options="{group:condition}"
-                           @add="getsort"
-                           @update="getsortupdate"
-                           class="drag-main-condition">
-                  <div class="drag-cover"></div>
-                </draggable>
-                <div class="limit-condition">
-                  <div><span>在主要事件发生日期之前，至少有</span>
-                    <label><input class="PriorDays num-input"
-                             type="number"
-                             min="0"></label><span>天的记录，且该条件发生后，至少有</span>
-                    <label><input class="PostDays num-input"
-                             type="number"
-                             min="0"></label>
-                    <span>天的记录。</span></div>
-                  <div>设定样本<select class="PrimaryLimitSelect">
-                      <option value="earliest">最早</option>
-                      <option value="latest">最晚</option>
-                    </select>发生的主要条件记录，为该样本优先纳入队列的条件记录。</div>
-                </div>
-              </div>
-            </div>
+            <component :is="maindiv.component"
+                       v-for="(maindiv,index) in maindivs"
+                       :id="maindiv.id"
+                       :key="index"
+                       @selectType="choosetype"></component>
             <div class=main-condition-detail>
-              <span style="padding-left:50%">
-                <img src="../../assets/plus.png"
-                     @click="add">
+              <span style="padding-left:50%"
+                    @click="addMajor('maincondition')">
+                <img src="../../assets/plus.png">
               </span>
             </div>
-            <!-- <div class="limit-condition">
-              <div><span>在主要事件发生日期之前，至少有</span>
-                <label><input class="PriorDays num-input"
-                         type="number"
-                         min="0"></label><span>天的记录，且该条件发生后，至少有</span>
-                <label><input class="PostDays num-input"
-                         type="number"
-                         min="0"></label>
-                <span>天的记录。</span></div>
-              <div>设定样本<select class="PrimaryLimitSelect">
-                  <option value="earliest">最早</option>
-                  <option value="latest">最晚</option>
-                </select>发生的主要条件记录，为该样本优先纳入队列的条件记录。</div>
-            </div> -->
           </div>
+          <!-- 次要条件 -->
           <div class="secondary-condition">
             <div style="transform: translate(10px, -20px);">
               <span style="background:#ffffff;">次要条件：在满足主要条件的同时，也满足下列
@@ -147,37 +63,15 @@
                 条件的人群
               </span>
             </div>
-            <div class="secondary-condition-detail"
-                 style="margin-top:-5px">
-              <div style="margin-top:-25px;line-height:1.6">
-                <div>
-                  <span style="">并</span>
-                  <span>满足</span>
-                </div>
-                <el-form ref="siftingform"
-                         :model="siftingform"
-                         label-width="100px"
-                         :inline="true"
-                         class="siftingform">
-                  <el-select v-model="siftingform.condtype"
-                             placeholder="请选择"
-                             @change="choosetype"
-                             style="padding-bottom:10px">
-                    <el-option v-for="item in condtypes"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value">
-                    </el-option>
-                  </el-select>
-                  <!-- <component :is="comName"></component> -->
-                </el-form>
-                <div class="droparea">
-                  <draggable :options="{group:condition}">
-                    <div class="drag-cover"></div>
-                  </draggable>
-                </div>
-              </div>
-
+            <component :is="minordiv.component"
+                       v-for="(minordiv,index) in minordivs"
+                       :id="minordiv.id"
+                       :key="index"></component>
+            <div class=secondary-condition-detail>
+              <span style="padding-left:50%"
+                    @click="addMinor('minorcondition')">
+                <img src="../../assets/plus.png">
+              </span>
             </div>
           </div>
           <div>
@@ -205,14 +99,13 @@
 import draggable from 'vuedraggable'
 import Vue from 'vue'
 import axios from 'axios'
-import diagnoseForm from './conditionform/diagnoseform.vue'
-import marForm from './conditionform/marform.vue'
-import operatingForm from './conditionform/operatingform.vue'
-import medicalForm from './conditionform/medicalform.vue'
-import deathRecordsForm from './conditionform/deathRecordsform.vue'
-
-const items = []
-// let mainitems = this.$el(".drag-main-conditon")
+import diagnoseForm from './conditionForm/diagnoseform.vue'
+import marForm from './conditionForm/marform.vue'
+import operatingForm from './conditionForm/operatingform.vue'
+import medicalForm from './conditionForm/medicalform.vue'
+import deathRecordsForm from './conditionForm/deathRecordsform.vue'
+import maincondition from './conditionDiv/mainCondition.vue'
+import minorcondition from './conditionDiv/minorCondition.vue'
 
 export default {
   components: {
@@ -222,21 +115,17 @@ export default {
     'medicalForm': medicalForm,
     'deathRecordsForm': deathRecordsForm,
     draggable,
+    'maincondition': maincondition,
+    'minorcondition': minorcondition,
   },
-
   data() {
     return {
       limitvalue: '',
       comName: 'diagnoseForm',
-      condition: 'diagnose',
-      // queuedict: '',
+      // condition: 'diagnose',  //拖拽group名
       queueInfo: {
-        // type: '',
-        // date: '',
-        // creator: '',
-        // keyword: '',
         name: '',
-        desc: ''
+        description: ''
       },
       // 表单验证
       rules: {
@@ -247,114 +136,170 @@ export default {
         //   { type: 'date', required: true, message: '请选择创建时间', trigger: 'change' }
         // ],
       },
-      condtypes: [{
-        value: '1',
-        label: '诊断编码'
-      }, {
-        value: '2',
-        label: '用药记录'
-      }, {
-        value: '3',
-        label: '手术操作'
-      }, {
-        value: '4',
-        label: '医学检测'
-      }, {
-        value: '5',
-        label: '死亡记录'
-      }],
-      siftingform: {
-        condtype: '',
-      },
+      // condtypes: [{
+      //   value: '1',
+      //   label: '诊断编码'
+      // }, {
+      //   value: '2',
+      //   label: '用药记录'
+      // }, {
+      //   value: '3',
+      //   label: '手术操作'
+      // }, {
+      //   value: '4',
+      //   label: '医学检测'
+      // }, {
+      //   value: '5',
+      //   label: '死亡记录'
+      // }],
+      // siftingform: {
+      //   condtype: '1',
+      // },
       creatInfo: {},
-      sortNo: ''
+      cohortdict: '',
+      conditiondetails: [],
+      importdetails: [],
+      itemId: '',
+      maindivs: [{ component: "maincondition", id: 0 }],
+      mainId: 0,
+      minordivs: [{ component: "minorcondition", id: 0 }],
+      minorId: 0,
     }
   },
+  mounted: function () {
+    this.getQueueDict(1)
+  },
   methods: {
-    add() {
-      console.log('jia')
-      this.items.push(items)
+    //新增主要条件
+    addMajor(component) {
+      this.mainId = this.mainId + 1
+      this.maindivs.push({
+        'component': component,
+        'id': this.mainId
+      })
+      console.log(this.maindivs)
+      console.log(this.mainId)
     },
+    //新增次要条件
+    addMinor(component) {
+      this.minorId = this.minorId + 1
+      this.minordivs.push({
+        'component': component,
+        'id': this.minorId
+      })
+      console.log(this.minordivs)
+      console.log(this.minorId)
+    },
+
+    // // 选择一级条件
     choosetype(condtype) {
       console.log(condtype)
+      this.getQueueDict(condtype)
       switch (condtype) {
         case '1': this.comName = 'diagnoseForm';
-          this.condition = 'diagnose';
           break;
         case '2': this.comName = 'marForm';
-          this.condition = 'mar';
           break;
         case '3': this.comName = 'operatingForm';
-          this.condition = 'operating';
           break;
         case '4': this.comName = 'medicalForm';
-          this.condition = 'medical';
           break;
         case '5': this.comName = 'deathRecordsForm';
-          this.condition = 'deathRecords';
           break;
         default:
           break;
       }
     },
+    //查询队列条件字典
+    getQueueDict(condtype) {
+      axios.get('cohort/dict', {
+        params: {
+          token: this.GLOBAL.token,
+          criteriaLayer1Code: condtype
+        }
+      })
+        .then((response) => {
+          this.cohortdict = response.data.data
+          for (var i = 0; i < this.cohortdict.length; i++) {
+            delete this.cohortdict[i]['sortNo']
+          }
+          // console.log(this.cohortdict)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+    // //得到初始序号--rzx
+    // getsort(evt) {
+    //   this.itemId = evt.item.getAttribute("id")
+    //   this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
+    //   console.log(this.cohortdict[this.itemId])
+    // },
+    // //更新拖拽后序号--rzx
+    // getsortupdate(evt) {
+    //   this.itemId = evt.item.getAttribute("id")
+    //   this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
+    //   console.log(this.cohortdict[this.itemId])
+    // },
     submitForm(queueInfo) {
       //表单验证--rzx
-      // this.$refs[queueInfo].validate((valid) => {
-      //   if (valid) {
-      //     console.log('valid success!!');
-      //   } else {
-      //     console.log('valid error!!');
-      //     return false;
-      //   }
-      // });
+      this.$refs[queueInfo].validate((valid) => {
+        if (valid) {
+          console.log('valid success!!');
+        } else {
+          console.log('valid error!!');
+          return false;
+        }
+      });
       this.fulfilCreatInfo(queueInfo)
-      // console.log(this.creatInfo)
-      // axios.get('cohort/create', {
-      //   params: this.creatInfo
-      // })
-      //   .then((response) => {
-      //     console.log(response)
-      //   })
-      //   .catch(function (error) {
-      //     console.log("error", error);
-      //   });
+      console.log(this.creatInfo)
+      axios.post('cohort/create', {
+        params: this.creatInfo
+      })
+        .then((response) => {
+          console.log(response)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
     },
     //重置表单
     resetForm(queueInfo) {
       this.$refs[queueInfo].resetFields();
     },
-    //得到初始序号--rzx
-    getsort(evt) {
-      console.log(evt)
-      console.log(evt.newIndex)
-      evt.target.data(evt.newIndex)
-      console.log(evt.target.sortno)
-      console.log(evt.target.innerText)
-    },
-    //更新拖拽后序号--rzx
-    getsortupdate(evt) {
-      console.log(evt)
-      // console.log(evt.newIndex)
-    },
     //拼接队列创建条件--rzx
     fulfilCreatInfo(queueInfo) {
       this.creatInfo = {
-        collaborationTag: "1",
         token: this.GLOBAL.token,
         detail: []
       }
       this.creatInfo = Object.assign(this.creatInfo, this.queueInfo)
-      console.log(this.$refs.comName.form.age)
-      this.creatInfo['detail'].push(this.$refs.comName.form.code)
-      this.creatInfo['detail'].push(this.$refs.comName.form.date)
-      this.creatInfo['detail'].push(this.$refs.comName.form.source)
-      this.creatInfo['detail'].push(this.$refs.comName.form.sex)
-      this.creatInfo['detail'].push(this.$refs.comName.form.debut)
-      console.log(this.creatInfo)
-    }
+      //import的组件所对应的form输入
+      this.importdetails = this.$refs.comName.form.formdetail
+      // console.log(this.importdetails)
+      var j = 0
+      for (var i = 0; i < this.importdetails.length; i++) {
+        if (this.importdetails[i].data1 != "" && this.importdetails[i].data1 != -1) {
+          if (j == 0) {
+            this.conditiondetails[j] = this.cohortdict[i]
+            this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.importdetails[i])
+            this.conditiondetails[j]['layer1SortNo'] = 1
+            this.conditiondetails[j]['criteriaTypeCode'] = 1
+            j += j
+          }
+          else {
+            this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.cohortdict[i])
+            this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.importdetails[i])
+            this.conditiondetails[j]['layer1SortNo'] = 1
+            this.conditiondetails[j]['criteriaTypeCode'] = 1
+            j += j
+          }
+        }
+      }
+      this.creatInfo['detail'] = this.conditiondetails
+    },
   }
 }
-
 </script>
 <style>
 .main-condition {
@@ -362,7 +307,8 @@ export default {
   display: block;
   /* margin-top: 40px; */
 }
-.main-condition-detail:hover {
+.main-condition-detail:hover,
+.secondary-condition-detail:hover {
   background-color: rgba(234, 235, 242, 0.67);
 }
 .secondary-condition {
