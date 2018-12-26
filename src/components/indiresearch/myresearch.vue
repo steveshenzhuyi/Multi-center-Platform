@@ -25,6 +25,7 @@
                          default-expand-all
                          node-key="id"
                          draggable
+                         @node-drop="handleDrop"
                          :allow-drop="allowDrop"
                          :allow-drag="allowDrag"
                          :data="conceptsets"
@@ -67,8 +68,8 @@
                                 autofocus
                                 v-model="data.label"
                                 :ref="'slotTreeInput_concept'+data.id"
-                                @blur.stop="NodeBlur_concept(node, data)"
-                                @keyup.enter.native="NodeBlur_concept(node, data)"></el-input>
+                                @blur.stop="NodeBlur(node, data)"
+                                @keyup.enter.native="NodeBlur(node, data)"></el-input>
                     </span>
                   </span>
                 </el-tree>
@@ -98,6 +99,7 @@
                        default-expand-all
                        node-key="id"
                        draggable
+                       @node-drop="handleDrop"
                        :allow-drop="allowDrop"
                        :allow-drag="allowDrag"
                        :data="cohortsets"
@@ -127,8 +129,8 @@
                               autofocus
                               v-model="data.label"
                               :ref="'slotTreeInput_cohort'+data.id"
-                              @blur.stop="NodeBlur_cohort(node, data)"
-                              @keyup.enter.native="NodeBlur_cohort(node, data)"></el-input>
+                              @blur.stop="NodeBlur(node, data)"
+                              @keyup.enter.native="NodeBlur(node, data)"></el-input>
                   </span>
                 </span>
               </el-tree>
@@ -157,11 +159,6 @@
                          v-if="isLoadingTree"
                          default-expand-all
                          node-key="id"
-                         @node-drag-start="handleDragStart"
-                         @node-drag-enter="handleDragEnter"
-                         @node-drag-leave="handleDragLeave"
-                         @node-drag-over="handleDragOver"
-                         @node-drag-end="handleDragEnd"
                          @node-drop="handleDrop"
                          draggable
                          :allow-drop="allowDrop"
@@ -193,8 +190,8 @@
                                 autofocus
                                 v-model="data.label"
                                 :ref="'slotTreeInput_method'+data.id"
-                                @blur.stop="NodeBlur_method(node, data)"
-                                @keyup.enter.native="NodeBlur_method(node, data)"></el-input>
+                                @blur.stop="NodeBlur(node, data)"
+                                @keyup.enter.native="NodeBlur(node, data)"></el-input>
                     </span>
                   </span>
                 </el-tree>
@@ -592,13 +589,6 @@ export default {
         .then((response) => {
           //console.log(response)
           this.conceptsets = JSON.parse(response.data.data.conceptSetStructure)
-          // for (var i = 0; i < this.conceptsets.length; i++) {
-          //   this.conceptsets[i].isEdit = false;
-          //   this.conceptsets[i].id = 3;
-          //   for (var j = 0; j < this.conceptsets[i].children.length; j++) {
-          //     this.conceptsets[i].children[j].isEdit = false;
-          //   }
-          // }
         })
         .catch(function (error) {
           console.log("error", error);
@@ -612,12 +602,9 @@ export default {
       })
         .then((response) => {
           this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
-          // for (var i = 0; i < this.cohortsets.length; i++) {
-          //   this.cohortsets[i].isEdit = false;
-          //   this.cohortsets[i].id = 1;
-          //   this.cohortsets[i].children[0].id = 2;
-          //   this.cohortsets[i].children[1].id = 3;
-          // }
+          this.cohortsets[0].tag = '0'
+          this.cohortsets[0].children[0].tag = '1'
+          this.cohortsets[0].children[1].tag = '1'
         })
         .catch(function (error) {
           console.log("error", error);
@@ -631,6 +618,9 @@ export default {
       })
         .then((response) => {
           this.analysismethods = JSON.parse(response.data.data.modelStructure)
+          this.analysismethods[0].tag = '0'
+          this.analysismethods[0].children[0].tag = '1'
+          this.analysismethods[0].children[1].tag = '1'
         })
         .catch(function (error) {
           console.log("error", error);
@@ -638,11 +628,9 @@ export default {
     },
     getConceptName(val) {
       this.conceptSetName = val;
-      console.log(this.conceptSetName)
     },
     getConceptDes(val) {
       this.conceptSetDes = val;
-      console.log(this.conceptSetDes)
     },
     getExcludeditems(val) {
       this.Excludeditems = val;
@@ -724,7 +712,6 @@ export default {
     handleNodeClick(data) {
       // console.log(data);
     },
-    handleAddTop() { },
     toCreatecohort() {
       this.$router.push({
         path: 'createqueue',
@@ -739,11 +726,24 @@ export default {
       this.conceptsets.push({
         id: ++this.concept_maxexpandId,
         label: '新增文件夹',
-        isEdit: false,
-        children: []
+        children: [],
+        tag: "0"
       });
+      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+        "conceptSetStructure": JSON.stringify(this.conceptsets),
+        "privateCohortStructure": "[]",
+        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+        "modelStructure": JSON.stringify(this.analysismethods),
+        "featureStructure": "[]",
+        "resultStructure": "[]"
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("编辑成功！")
+          }
+        })
     },
-    NodeBlur_concept(n, d) {//输入框失焦
+    NodeBlur(n, d) {//输入框失焦
       //console.log(n, d)
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
@@ -786,6 +786,19 @@ export default {
           //console.log(_index)
           _list.splice(_index, 1);
           this.$message.success("删除成功！")
+          axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+            "conceptSetStructure": JSON.stringify(this.conceptsets),
+            "privateCohortStructure": "[]",
+            "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+            "modelStructure": JSON.stringify(this.analysismethods),
+            "featureStructure": "[]",
+            "resultStructure": "[]"
+          }))
+            .then(response => {
+              if (response.data.code == "0") {
+                //this.$message.success("编辑成功！")
+              }
+            })
         }
         //二次确认
         let ConfirmFun = () => {
@@ -806,29 +819,9 @@ export default {
       this.cohortsets.push({
         id: ++this.cohort_maxexpandId,
         label: '新增文件夹',
-        isEdit: false,
-        children: []
+        children: [],
+        tag: "0"
       });
-    },
-    NodeBlur_cohort(n, d) {//输入框失焦
-      console.log(n, d)
-      if (n.isEdit) {
-        this.$set(n, 'isEdit', false)
-      }
-      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-
-        "conceptSetStructure": JSON.stringify(this.conceptsets),
-        "privateCohortStructure": "[]",
-        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-        "modelStructure": JSON.stringify(this.analysismethods),
-        "featureStructure": "[]",
-        "resultStructure": "[]"
-      }))
-        .then(response => {
-          if (response.data.code == "0") {
-            this.$message.success("编辑成功！")
-          }
-        })
     },
     NodeEdit_cohort(n, d) {//编辑节点
       console.log(n, d)
@@ -854,6 +847,19 @@ export default {
           console.log(_index)
           _list.splice(_index, 1);
           this.$message.success("删除成功！")
+          axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+            "conceptSetStructure": JSON.stringify(this.conceptsets),
+            "privateCohortStructure": "[]",
+            "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+            "modelStructure": JSON.stringify(this.analysismethods),
+            "featureStructure": "[]",
+            "resultStructure": "[]"
+          }))
+            .then(response => {
+              if (response.data.code == "0") {
+                //this.$message.success("编辑成功！")
+              }
+            })
         }
         //二次确认
         let ConfirmFun = () => {
@@ -869,87 +875,15 @@ export default {
         d.id > this.non_cohort_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-    //队列鼠标hover事件所需
-    handleAddTop_cohort() {
-      this.cohortsets.push({
-        id: ++this.cohort_maxexpandId,
-        label: '新增文件夹',
-        isEdit: false,
-        children: []
-      });
-    },
-    NodeBlur_cohort(n, d) {//输入框失焦
-      console.log(n, d)
-      if (n.isEdit) {
-        this.$set(n, 'isEdit', false)
-      }
-    },
-    NodeEdit_cohort(n, d) {//编辑节点
-      console.log(n, d)
-      if (!n.isEdit) {//检测isEdit是否存在or是否为false
-        this.$set(n, 'isEdit', true)
-      }
-      this.$nextTick(() => {
-        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
-      })
-    },
-    NodeDel_cohort(n, d) {//删除节点
-      console.log(n, d)
-      let that = this;
-      if (d.children && d.children.length !== 0) {
-        this.$message.error("此节点有子级，不可删除！")
-        return false;
-      } else {
-        //新增节点可直接删除，已存在的节点要二次确认
-        //删除操作
-        let DelFun = () => {
-          let _list = n.parent.data.children || n.parent.data;//节点同级数据
-          let _index = _list.map((c) => c.id).indexOf(d.id);
-          console.log(_index)
-          _list.splice(_index, 1);
-          this.$message.success("删除成功！")
-        }
-        //二次确认
-        let ConfirmFun = () => {
-          this.$confirm("是否删除此节点？", "提示", {
-            confirmButtonText: "确认",
-            cancelButtonText: "取消",
-            type: "warning"
-          }).then(() => {
-            DelFun()
-          }).catch(() => { })
-        }
-        //判断是否是新增节点
-        d.id > this.non_cohort_maxexpandId ? DelFun() : ConfirmFun()
-      }
-    },
+
     //模型方法资源结构编辑函数
     handleAddTop_method() {
       this.analysismethods.push({
         id: ++this.method_maxexpandId,
         label: '新增文件夹',
-        isEdit: false,
-        children: []
+        children: [],
+        tag: "0"
       });
-    },
-    NodeBlur_method(n, d) {//输入框失焦
-      if (n.isEdit) {
-        this.$set(n, 'isEdit', false)
-      }
-      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-
-        "conceptSetStructure": JSON.stringify(this.conceptsets),
-        "privateCohortStructure": "[]",
-        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-        "modelStructure": JSON.stringify(this.analysismethods),
-        "featureStructure": "[]",
-        "resultStructure": "[]"
-      }))
-        .then(response => {
-          if (response.data.code == "0") {
-            this.$message.success("编辑成功！")
-          }
-        })
     },
     NodeEdit_method(n, d) {//编辑节点
       if (!n.isEdit) {//检测isEdit是否存在or是否为false
@@ -959,7 +893,7 @@ export default {
         this.$refs['slotTreeInput_method' + d.id].$refs.input.focus()
       })
     },
-    NodeDel_cohort(n, d) {//删除节点
+    NodeDel_method(n, d) {//删除节点
       console.log(n, d)
       let that = this;
       if (d.children && d.children.length !== 0) {
@@ -974,6 +908,19 @@ export default {
           console.log(_index)
           _list.splice(_index, 1);
           this.$message.success("删除成功！")
+          axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+            "conceptSetStructure": JSON.stringify(this.conceptsets),
+            "privateCohortStructure": "[]",
+            "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+            "modelStructure": JSON.stringify(this.analysismethods),
+            "featureStructure": "[]",
+            "resultStructure": "[]"
+          }))
+            .then(response => {
+              if (response.data.code == "0") {
+                //this.$message.success("成功！")
+              }
+            })
         }
         //二次确认
         let ConfirmFun = () => {
@@ -1038,33 +985,30 @@ export default {
 
     },
     //队列拖拽所需
-    handleDragStart(node, ev) {
-
-    },
-    handleDragEnter(draggingNode, dropNode, ev) {
-
-    },
-    handleDragLeave(draggingNode, dropNode, ev) {
-
-    },
-    handleDragOver(draggingNode, dropNode, ev) {
-
-    },
-    handleDragEnd(draggingNode, dropNode, dropType, ev) {
-
-    },
     handleDrop(draggingNode, dropNode, dropType, ev) {
-
+      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+        "conceptSetStructure": JSON.stringify(this.conceptsets),
+        "privateCohortStructure": "[]",
+        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+        "modelStructure": JSON.stringify(this.analysismethods),
+        "featureStructure": "[]",
+        "resultStructure": "[]"
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            //this.$message.success("编辑成功！")
+          }
+        })
     },
     allowDrop(draggingNode, dropNode, type) {
-      if (dropNode.data.label.indexOf('队列') != -1) {
+      if (dropNode.data.tag.indexOf('1') != -1) {
         return type !== 'inner';
       } else {
         return true;
       }
     },
     allowDrag(draggingNode) {
-      return draggingNode.data.label.indexOf('文件夹') === -1;
+      return draggingNode.data.tag.indexOf('0') === -1;
     },
 
     //以下为切换tab
