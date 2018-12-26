@@ -4,7 +4,9 @@
            size="mini"
            :inline="true"
            class="diagnose">
-    <draggable :options="{group:'diagnose'}">
+    <!-- id对应条件在字典的index -->
+    <draggable :options="{group:'diagnose'}"
+               @end="itemMove">
       <el-checkbox v-model="form.formdetail[5].data1"
                    id="5">首次出现</el-checkbox>
       <el-form-item label="性别"
@@ -67,34 +69,12 @@ export default {
   components: {
     draggable,
   },
-  // props: ['queuedict'],
+  props: ['conditionFormId'],
   data() {
     return {
-      // form: {
-      //   debut: { data1: false },
-      //   sex: {
-      //     data1: '',
-      //   },
-      //   code: {
-      //     date1: '',
-      //   },
-      //   codechecked: false,
-      //   age: {
-      //     data1: '',
-      //     data2: '',
-      //   },
-      //   agechecked: false,
-      //   type: '',
-      //   date: {
-      //     data1: '',
-      //     data2: '',
-      //   },
-      //   datechecked: false,
-      //   source: {
-      //     data1: '',
-      //   },
-      // },
+      conditionFormId: '',
       form: {
+        id: '',
         formdetail: [
           { data1: '', },
           {
@@ -110,43 +90,13 @@ export default {
           { data1: false, },
         ]
       },
-      queuedict: []
     }
   },
-  mounted: function () {
-    this.getQueueDict()
-  },
   methods: {
-    //查询队列条件字典
-    getQueueDict() {
-      axios.get('cohort/dict', {
-        params: {
-          token: this.GLOBAL.token,
-          criteriaLayer1Code: "1"
-        }
-      })
-        .then((response) => {
-          this.queuedict = response.data.data
-          // this.renameKeys()
-          // console.log(this.queuedict)
-          // this.form.code = Object.assign(this.form.code, this.queuedict[0])
-          // this.form.date = Object.assign(this.form.date, this.queuedict[1])
-          // this.form.age = Object.assign(this.form.age, this.queuedict[2])
-          // this.form.source = Object.assign(this.form.source, this.queuedict[3])
-          // this.form.sex = Object.assign(this.form.sex, this.queuedict[4])
-          // this.form.debut = Object.assign(this.form.debut, this.queuedict[5])
-          // console.log(this.form)
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
-    },
-    //替换字典里面的key--rzx
-    renameKeys() {
-      for (var i = 0; i < this.queuedict.length; i++) {
-        this.queuedict[i]['typeSortNo'] = this.queuedict[i]['sortNo']
-        delete this.queuedict[i]['sortNo']
-      }
+    itemMove() {
+      console.log('lallal')
+      form.id = this.conditionFormId
+      console.log(form.id)
     },
     // ageChange(value) {
     //   console.log(value);

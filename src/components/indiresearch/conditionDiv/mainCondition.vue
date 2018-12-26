@@ -47,25 +47,14 @@
 import draggable from 'vuedraggable'
 import Vue from 'vue'
 import axios from 'axios'
-// import diagnoseForm from '../conditionform/diagnoseform.vue'
-// import marForm from '../conditionform/marform.vue'
-// import operatingForm from '../conditionform/operatingform.vue'
-// import medicalForm from '../conditionform/medicalform.vue'
-// import deathRecordsForm from '../conditionform/deathRecordsform.vue'
 
 export default {
   components: {
-    // 'diagnoseForm': diagnoseForm,
-    // 'marForm': marForm,
-    // 'operatingForm': operatingForm,
-    // 'medicalForm': medicalForm,
-    // 'deathRecordsForm': deathRecordsForm,
     draggable,
   },
   props: ['id'],
   data() {
     return {
-      condition: 'diagnose',  //拖拽group名
       condtypes: [{
         value: '1',
         label: '诊断编码'
@@ -86,38 +75,62 @@ export default {
         condtype: '1',
       },
       condition: 'diagnose',  //拖拽group名
+      itemId: '', //被拖拽元素的id
+      cohortdict: '', //查询队列字典得到
+      // id: '',
     }
   },
+  mounted: function () {
+    this.getQueueDict(1)
+  },
   methods: {
+    //查询队列条件字典
+    getQueueDict(condtype) {
+      axios.get('cohort/dict', {
+        params: {
+          token: this.GLOBAL.token,
+          criteriaLayer1Code: condtype
+        }
+      })
+        .then((response) => {
+          this.cohortdict = response.data.data
+          for (var i = 0; i < this.cohortdict.length; i++) {
+            delete this.cohortdict[i]['sortNo']
+          }
+          // console.log(this.cohortdict)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
     //选择一级条件
     selectType(condtype) {
-      console.log(condtype)
       this.$emit('selectType', condtype)
+      this.$emit('insertID', id)
+      this.getQueueDict(condtype)
       switch (condtype) {
-        case '1':
-          this.condition = 'diagnose';
+        case '1': this.condition = 'diagnose';
           break;
-        case '2':
-          this.condition = 'mar';
+        case '2': this.condition = 'mar';
           break;
-        case '3':
-          this.condition = 'operating';
+        case '3': this.condition = 'operating';
           break;
-        case '4':
-          this.condition = 'medical';
+        case '4': this.condition = 'medical';
           break;
-        case '5':
-          this.condition = 'deathRecords';
+        case '5': this.condition = 'deathRecords';
           break;
         default:
           break;
       }
-
     },
     //得到初始序号--rzx
     getsort(evt) {
+      console.log(id)
+      // this.$emit('insertID', this.id)
       this.itemId = evt.item.getAttribute("id")
       this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
+      this.cohortdict[this.itemId]['layer1SortNo'] = id
+      this.cohortdict[this.itemId]['criteriaTypeCode'] = "1"
       console.log(this.cohortdict[this.itemId])
     },
     //更新拖拽后序号--rzx

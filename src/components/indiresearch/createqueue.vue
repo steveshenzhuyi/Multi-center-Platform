@@ -38,7 +38,8 @@
                        v-for="(maindiv,index) in maindivs"
                        :id="maindiv.id"
                        :key="index"
-                       @selectType="choosetype"></component>
+                       @selectType="choosetype"
+                       @insertID="insertID"></component>
             <div class=main-condition-detail>
               <span style="padding-left:50%"
                     @click="addMajor('maincondition')">
@@ -88,7 +89,7 @@
              class="sifting-queue-content">
           <!-- 下拉选择显示右侧二级条件 -->
           <component :is="comName"
-                     ref="comName"></component>
+                     :id="conditionFormId"></component>
         </div>
       </el-col>
     </el-row>
@@ -121,8 +122,7 @@ export default {
   data() {
     return {
       limitvalue: '',
-      comName: 'diagnoseForm',
-      // condition: 'diagnose',  //拖拽group名
+      comName: 'diagnoseForm', //右侧加载的组件
       queueInfo: {
         name: '',
         description: ''
@@ -136,39 +136,19 @@ export default {
         //   { type: 'date', required: true, message: '请选择创建时间', trigger: 'change' }
         // ],
       },
-      // condtypes: [{
-      //   value: '1',
-      //   label: '诊断编码'
-      // }, {
-      //   value: '2',
-      //   label: '用药记录'
-      // }, {
-      //   value: '3',
-      //   label: '手术操作'
-      // }, {
-      //   value: '4',
-      //   label: '医学检测'
-      // }, {
-      //   value: '5',
-      //   label: '死亡记录'
-      // }],
-      // siftingform: {
-      //   condtype: '1',
-      // },
       creatInfo: {},
-      cohortdict: '',
       conditiondetails: [],
       importdetails: [],
-      itemId: '',
       maindivs: [{ component: "maincondition", id: 0 }],
       mainId: 0,
       minordivs: [{ component: "minorcondition", id: 0 }],
       minorId: 0,
+      conditionFormId: '',
     }
   },
-  mounted: function () {
-    this.getQueueDict(1)
-  },
+  // mounted: function () {
+  //   this.getQueueDict(1)
+  // },
   methods: {
     //新增主要条件
     addMajor(component) {
@@ -190,11 +170,9 @@ export default {
       console.log(this.minordivs)
       console.log(this.minorId)
     },
-
-    // // 选择一级条件
+    //选择一级条件
     choosetype(condtype) {
       console.log(condtype)
-      this.getQueueDict(condtype)
       switch (condtype) {
         case '1': this.comName = 'diagnoseForm';
           break;
@@ -210,36 +188,29 @@ export default {
           break;
       }
     },
-    //查询队列条件字典
-    getQueueDict(condtype) {
-      axios.get('cohort/dict', {
-        params: {
-          token: this.GLOBAL.token,
-          criteriaLayer1Code: condtype
-        }
-      })
-        .then((response) => {
-          this.cohortdict = response.data.data
-          for (var i = 0; i < this.cohortdict.length; i++) {
-            delete this.cohortdict[i]['sortNo']
-          }
-          // console.log(this.cohortdict)
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+    // 条件表单插入id区别位置
+    insertID(id) {
+      console.log(id)
+      this.conditionFormId = id
     },
-    // //得到初始序号--rzx
-    // getsort(evt) {
-    //   this.itemId = evt.item.getAttribute("id")
-    //   this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
-    //   console.log(this.cohortdict[this.itemId])
-    // },
-    // //更新拖拽后序号--rzx
-    // getsortupdate(evt) {
-    //   this.itemId = evt.item.getAttribute("id")
-    //   this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
-    //   console.log(this.cohortdict[this.itemId])
+    // //查询队列条件字典
+    // getQueueDict(condtype) {
+    //   axios.get('cohort/dict', {
+    //     params: {
+    //       token: this.GLOBAL.token,
+    //       criteriaLayer1Code: condtype
+    //     }
+    //   })
+    //     .then((response) => {
+    //       this.cohortdict = response.data.data
+    //       for (var i = 0; i < this.cohortdict.length; i++) {
+    //         delete this.cohortdict[i]['sortNo']
+    //       }
+    //       // console.log(this.cohortdict)
+    //     })
+    //     .catch(function (error) {
+    //       console.log("error", error);
+    //     });
     // },
     submitForm(queueInfo) {
       //表单验证--rzx
