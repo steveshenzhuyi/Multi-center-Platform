@@ -11,10 +11,14 @@
               type="flex"
               justify="center">
 
-        <el-col :span="16">
+        <el-col :span="14">
           <el-input prefix-icon="el-icon-search"
                     v-model="InputConceptName"
                     type="text"></el-input>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary"
+                     @click="getSearchData">搜索</el-button>
         </el-col>
       </el-row>
       <el-row style="margin-top:10px;margin-bottom:10px">
@@ -47,101 +51,161 @@
                       @blur.stop="DesInputBlur()"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="2"
-                :offset="1">
-          <el-button type="primary">待选择</el-button>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="primary">已选择</el-button>
-        </el-col>
       </el-row>
     </el-form>
     <el-row style="margin-top:10px;margin-bottom:10px"
             type="flex"
             justify="center">
       <el-col :span="20">
-        <el-table :data="SearchResult"
-                  v-model="SearchResult"
-                  valign="center"
-                  height="300"
-                  border
-                  style="width: 100%"
-                  @selection-change="handleSelectionChange">
-          <el-table-column type="selection"
-                           label="全选"
-                           width="60"></el-table-column>
-          <el-table-column prop="subject"
-                           label="概念编号"
-                           width="120"></el-table-column>
-          <el-table-column prop="label"
-                           label="概念名称"
-                           width="160"></el-table-column>
-          <el-table-column prop="domain"
-                           label="概念领域"
-                           width="90"></el-table-column>
-          <el-table-column prop="class"
-                           label="概念类型"
-                           width="90"></el-table-column>
-          <el-table-column prop="voc"
-                           label="术语表"
-                           width="90"></el-table-column>
-          <el-table-column prop="std"
-                           label="标准概念"
-                           width="90"></el-table-column>
-          <el-table-column width="100">
-            <template slot="header"
-                      slot-scope="scope">
-              <el-checkbox :indeterminate="isIndeterminate1"
-                           v-model="checkAll1"
-                           @change="handleCheckAllExcludeditemsChange">排除</el-checkbox>
-            </template>
-            <template slot-scope="scope">
-              <el-checkbox-group v-model="checkedExcludeditems"
-                                 @change="handleCheckedExcludeditemsChange">
-                <el-checkbox :label="scope.row.Except">&nbsp;</el-checkbox>
-              </el-checkbox-group>
-            </template>
-          </el-table-column>
-          <el-table-column>
-            <template slot="header"
-                      slot-scope="scope">
-              <el-checkbox :indeterminate="isIndeterminate2"
-                           v-model="checkAll2"
-                           @change="handleCheckAllChilerenConceptsChange">子概念</el-checkbox>
-            </template>
-            <template slot-scope="scope">
-              <el-checkbox-group v-model="checkedChilerenConcepts"
-                                 @change="handleCheckedChilerenConceptsChange">
-                <el-checkbox :label="scope.row.ChilerenConcept">&nbsp;</el-checkbox>
-              </el-checkbox-group>
-            </template>
-          </el-table-column>
-        </el-table>
+        <el-tabs v-model="activeName"
+                 type="card"
+                 @tab-click="handleClick">
+          <el-tab-pane label="待选择"
+                       name="first">
+            <el-table :data="tableAll"
+                      ref="multipleTable"
+                      valign="center"
+                      height="300"
+                      border
+                      style="width: 100%"
+                      @selection-change="handleSelectionChange">
+              <el-table-column type="selection"
+                               label="全选"
+                               width="60"></el-table-column>
+              <el-table-column prop="subject"
+                               label="概念编号"
+                               width="120"></el-table-column>
+              <el-table-column prop="label"
+                               label="概念名称"
+                               width="160"></el-table-column>
+              <el-table-column prop="domain"
+                               label="概念领域"
+                               width="90"></el-table-column>
+              <el-table-column prop="class"
+                               label="概念类型"
+                               width="90"></el-table-column>
+              <el-table-column prop="voc"
+                               label="术语表"
+                               width="90"></el-table-column>
+              <el-table-column prop="std"
+                               label="标准概念"
+                               width="90"></el-table-column>
+              <el-table-column width="100">
+                <template slot="header"
+                          slot-scope="scope">
+                  <el-checkbox :indeterminate="isIndeterminate1"
+                               v-model="checkAll1"
+                               @change="handleCheckAllExcludeditemsChange">排除</el-checkbox>
+                </template>
+                <template slot-scope="scope">
+                  <el-checkbox-group v-model="checkedExcludeditems"
+                                     @change="handleCheckedExcludeditemsChange">
+                    <el-checkbox :label="scope.row.Except">&nbsp;</el-checkbox>
+                  </el-checkbox-group>
+                </template>
+              </el-table-column>
+              <el-table-column>
+                <template slot="header"
+                          slot-scope="scope">
+                  <el-checkbox :indeterminate="isIndeterminate2"
+                               v-model="checkAll2"
+                               @change="handleCheckAllChilerenConceptsChange">子概念</el-checkbox>
+                </template>
+                <template slot-scope="scope">
+                  <el-checkbox-group v-model="checkedChilerenConcepts"
+                                     @change="handleCheckedChilerenConceptsChange">
+                    <el-checkbox :label="scope.row.ChilerenConcept">&nbsp;</el-checkbox>
+                  </el-checkbox-group>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="已选择"
+                       name="second">
+            <el-table :data="tableChecked"
+                      ref="multipleTable2"
+                      valign="center"
+                      height="300"
+                      border
+                      style="width: 100%"
+                      @selection-change="handleSelectionChange2">
+              <el-table-column type="selection"
+                               label="全选"
+                               width="60"></el-table-column>
+              <el-table-column prop="subject"
+                               label="概念编号"
+                               width="120"></el-table-column>
+              <el-table-column prop="label"
+                               label="概念名称"
+                               width="160"></el-table-column>
+              <el-table-column prop="domain"
+                               label="概念领域"
+                               width="90"></el-table-column>
+              <el-table-column prop="class"
+                               label="概念类型"
+                               width="90"></el-table-column>
+              <el-table-column prop="voc"
+                               label="术语表"
+                               width="90"></el-table-column>
+              <el-table-column prop="std"
+                               label="标准概念"
+                               width="90"></el-table-column>
+              <el-table-column width="100">
+                <template slot="header"
+                          slot-scope="scope">
+                  <el-checkbox :indeterminate="isIndeterminate1"
+                               v-model="checkAll1"
+                               @change="handleCheckAllExcludeditemsChange">排除</el-checkbox>
+                </template>
+                <template slot-scope="scope">
+                  <el-checkbox-group v-model="checkedExcludeditems"
+                                     @change="handleCheckedExcludeditemsChange">
+                    <el-checkbox :label="scope.row.Except">&nbsp;</el-checkbox>
+                  </el-checkbox-group>
+                </template>
+              </el-table-column>
+              <el-table-column>
+                <template slot="header"
+                          slot-scope="scope">
+                  <el-checkbox :indeterminate="isIndeterminate2"
+                               v-model="checkAll2"
+                               @change="handleCheckAllChilerenConceptsChange">子概念</el-checkbox>
+                </template>
+                <template slot-scope="scope">
+                  <el-checkbox-group v-model="checkedChilerenConcepts"
+                                     @change="handleCheckedChilerenConceptsChange">
+                    <el-checkbox :label="scope.row.ChilerenConcept">&nbsp;</el-checkbox>
+                  </el-checkbox-group>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+        </el-tabs>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
       //新增概念集假数据
-      createConceptVisible: false,
+      searchConcepts: [],
+      activeName: 'first',
       multipleSelection: [],
+      multipleSelection2: [],
       InputConceptName: "",
       checkAll1: false,
       isIndeterminate1: false,
       checkAll2: false,
       isIndeterminate2: false,
       checkedExcludeditems: [],
-      checkedExcludeditems: [],
       checkedChilerenConcepts: [],
       Excludeditems: [],
       ChilerenConcepts: [],
-      checkedConcepts: [],
       concept_exist: false,
-      //checkedConcepts: [{ subject: "" }],
       NewConceptSets: {
         SetName: "",
         SetDescription: ""
@@ -151,47 +215,131 @@ export default {
           { required: true, message: '请输入概念名称', trigger: 'blur' }
         ]
       },
-      table: [
-        {
-          subject: "1862084081",
-          label: "盐酸二甲双胍",
-          domain: "药品",
-          class: "IN",
-          voc: "NCCD",
-          std: "76423",
-          Except: "1862084081#1",
-          ChilerenConcept: "1862084081#0"
-        },
-        {
-          subject: "1862234183",
-          label: "盐酸二甲双胍",
-          domain: "药品",
-          class: "IN",
-          voc: "NCCD",
-          std: "183745",
-          Except: "1862234183#1",
-          ChilerenConcept: "1862234183#0"
-        },
-        {
-          subject: "1862084082",
-          label: "盐酸二甲双胍 0.25克",
-          domain: "药品",
-          class: "SCDC",
-          voc: "NCCD",
-          std: "76423",
-          Except: "1862084082#1",
-          ChilerenConcept: "1862084082#1"
-        }
-      ],
+      // tableAll: [
+      //   {
+      //     subject: "1862084081",
+      //     label: "盐酸二甲双胍",
+      //     domain: "药品",
+      //     class: "IN",
+      //     voc: "NCCD",
+      //     std: "76423",
+      //     Except: "1862084081#1",
+      //     ChilerenConcept: "1862084081#0"
+      //   },
+      //   {
+      //     subject: "1862234183",
+      //     label: "盐酸二甲双胍",
+      //     domain: "药品",
+      //     class: "IN",
+      //     voc: "NCCD",
+      //     std: "183745",
+      //     Except: "1862234183#1",
+      //     ChilerenConcept: "1862234183#0"
+      //   },
+      //   {
+      //     subject: "1862084082",
+      //     label: "盐酸二甲双胍 0.25克",
+      //     domain: "药品",
+      //     class: "SCDC",
+      //     voc: "NCCD",
+      //     std: "76423",
+      //     Except: "1862084082#1",
+      //     ChilerenConcept: "1862084082#1"
+      //   }
+      // ],
+      tableAll: [],
+      tableChecked: []
     }
   },
   mounted() {
-    for (let i = 0; i < this.table.length; i++) {
-      this.Excludeditems[i] = this.table[i].Except
-      this.ChilerenConcepts[i] = this.table[i].ChilerenConcept
+    for (let i = 0; i < this.tableAll.length; i++) {
+      this.Excludeditems[i] = this.tableAll[i].Except
+      this.ChilerenConcepts[i] = this.tableAll[i].ChilerenConcept
     }
   },
   methods: {
+    getSearchData() {
+      const InputConceptName = this.InputConceptName;
+      axios.get('/knowledgeGraph/queryConcept', {
+        params: {
+          "token": this.GLOBAL.token,
+          "query": InputConceptName
+        }
+      })
+        .then((response) => {
+          this.searchConcepts = response.data.data.results.bindings
+          for (var i = 0; i < this.searchConcepts.length; i++) {
+            this.tableAll.push({
+              subject: this.searchConcepts[i].subject.value.split('#')[1],
+              label: this.searchConcepts[i].label.value,
+              domain: this.searchConcepts[i].domain.value.split('#')[1],
+              class: this.searchConcepts[i].class.value.split('#')[1],
+              voc: this.searchConcepts[i].voc.value.split('#')[1],
+              std: Object.getOwnPropertyNames(this.searchConcepts[i]).length > 5 ? this.searchConcepts[i].std : '',
+              Except: this.searchConcepts[i].subject.value.split('#')[1],
+              ChilerenConcept: this.searchConcepts[i].subject.value.split('#')[1]
+            })
+          }
+          for (let i = 0; i < this.tableAll.length; i++) {
+            this.Excludeditems[i] = this.tableAll[i].Except
+            this.ChilerenConcepts[i] = this.tableAll[i].ChilerenConcept
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+    handleClick(tab, event) {
+      this.tableChecked = [];
+      for (var i = 0; i < this.multipleSelection.length; i++) {
+        this.tableChecked.push({
+          subject: this.multipleSelection[i].subject,
+          label: this.multipleSelection[i].label,
+          domain: this.multipleSelection[i].domain,
+          class: this.multipleSelection[i].class,
+          voc: this.multipleSelection[i].voc,
+          std: this.multipleSelection[i].std,
+          Except: this.multipleSelection[i].Except,
+          ChilerenConcept: this.multipleSelection[i].ChilerenConcept
+        });
+      }
+      for (var i = 0; i < this.checkedExcludeditems.length; i++) {
+        var concept_exist = false;
+        var a = []
+        a = this.checkedExcludeditems[i].split('#')
+        for (var j = 0; j < this.tableChecked.length; j++) {
+          if (a[0].indexOf(this.tableChecked[j].subject) != -1) {
+            concept_exist = true;
+            //this.tableChecked[j].excludeTag = "1"
+          }
+        }
+        if (!concept_exist) {
+          const result = this.tableAll.find(g => g.subject === a[0])
+          this.tableChecked.push(result)
+        }
+      }
+      for (var i = 0; i < this.checkedChilerenConcepts.length; i++) {
+        var concept_exist = false;
+        var a = []
+        a = this.checkedChilerenConcepts[i].split('#')
+        for (var j = 0; j < this.tableChecked.length; j++) {
+          if (a[0].indexOf(this.tableChecked[j].subject) != -1) {
+            concept_exist = true;
+            //this.tableChecked[j].childTag = "1"
+          }
+        }
+        if (!concept_exist) {
+          const result = this.tableAll.find(g => g.subject === a[0])
+          this.tableChecked.push(result)
+        }
+      }
+      var rows = this.tableChecked
+      this.$nextTick(function () {
+        rows.forEach(row => {
+          this.$refs.multipleTable2.toggleRowSelection(row, true);
+        });
+      })
+    },
     //新增概念集所需
     NameInputBlur() {
       this.$emit('getdata3', this.NewConceptSets.SetName);
@@ -206,35 +354,12 @@ export default {
         })
         .catch(_ => { });
     },
+    handleSelectionChange2(val) {
+      this.multipleSelection2 = val;
+    },
     handleSelectionChange(val) {
       this.multipleSelection = val;
       this.$emit('getdata', this.multipleSelection);
-      //this.checkedConcepts = []; 
-      if (this.checkedConcepts.length == 0) {
-        this.checkedConcepts.push({
-          subject: this.multipleSelection[0].subject,
-          excludeTag: 0,
-          childTag: 0
-        });
-      }
-      else {
-        for (var i = 0; i < this.multipleSelection.length; i++) {
-          this.concept_exist = false;
-          for (var j = 0; j < this.checkedConcepts.length; j++) {
-            if (this.checkedConcepts[j].subject.indexOf(this.multipleSelection[i].subject) != -1) {
-              this.concept_exist = true;
-            }
-          }
-          if (!this.concept_exist) {
-            this.checkedConcepts.push({
-              subject: this.multipleSelection[i].subject,
-              excludeTag: 0,
-              childTag: 0
-            });
-          }
-        }
-        //this.checkedConcepts[i] = this.multipleSelection[i].subject
-      }
     },
     handleCheckAllExcludeditemsChange(val) {
       this.checkedExcludeditems = val ? this.Excludeditems : [];
@@ -263,24 +388,23 @@ export default {
         checkedCount > 0 && checkedCount < this.ChilerenConcepts.length;
     },
   },
-  computed: {
-    // 新增概念集中实现搜索功能
-    SearchResult() {
-      const InputConceptName = this.InputConceptName;
-      if (InputConceptName) {
-        return this.table.filter(data => {
-          return Object.keys(data).some(key => {
-            return String(data[key]).indexOf(InputConceptName) > -1;
-          });
-        });
-      }
-      return this.table;
-    },
-    options() {
-      return this.$store.state.options;
-    }
-
-  },
+  // computed: {
+  //   // 新增概念集中实现搜索功能
+  //   SearchResult() {
+  //     const InputConceptName = this.InputConceptName;
+  //     if (InputConceptName) {
+  //       return this.tableAll.filter(data => {
+  //         return Object.keys(data).some(key => {
+  //           return String(data[key]).indexOf(InputConceptName) > -1;
+  //         });
+  //       });
+  //     }
+  //     return this.tableAll;
+  //   },
+  //   options() {
+  //     return this.$store.state.options;
+  //   }
+  // },
 }
 </script>
 >
