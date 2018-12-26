@@ -89,7 +89,7 @@
              class="sifting-queue-content">
           <!-- 下拉选择显示右侧二级条件 -->
           <component :is="comName"
-                     :id="conditionFormId"></component>
+                     :conditionFormId="conditionFormId"></component>
         </div>
       </el-col>
     </el-row>
@@ -146,9 +146,6 @@ export default {
       conditionFormId: '',
     }
   },
-  // mounted: function () {
-  //   this.getQueueDict(1)
-  // },
   methods: {
     //新增主要条件
     addMajor(component) {
@@ -188,30 +185,11 @@ export default {
           break;
       }
     },
-    // 条件表单插入id区别位置
+    // 条件表单插入DIV的id区别位置
     insertID(id) {
       console.log(id)
       this.conditionFormId = id
     },
-    // //查询队列条件字典
-    // getQueueDict(condtype) {
-    //   axios.get('cohort/dict', {
-    //     params: {
-    //       token: this.GLOBAL.token,
-    //       criteriaLayer1Code: condtype
-    //     }
-    //   })
-    //     .then((response) => {
-    //       this.cohortdict = response.data.data
-    //       for (var i = 0; i < this.cohortdict.length; i++) {
-    //         delete this.cohortdict[i]['sortNo']
-    //       }
-    //       // console.log(this.cohortdict)
-    //     })
-    //     .catch(function (error) {
-    //       console.log("error", error);
-    //     });
-    // },
     submitForm(queueInfo) {
       //表单验证--rzx
       this.$refs[queueInfo].validate((valid) => {

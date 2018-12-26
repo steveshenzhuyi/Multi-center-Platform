@@ -5,8 +5,7 @@
            :inline="true"
            class="diagnose">
     <!-- id对应条件在字典的index -->
-    <draggable :options="{group:'diagnose'}"
-               @end="itemMove">
+    <draggable :options="{group:'diagnose'}">
       <el-checkbox v-model="form.formdetail[5].data1"
                    id="5">首次出现</el-checkbox>
       <el-form-item label="性别"
@@ -72,7 +71,6 @@ export default {
   props: ['conditionFormId'],
   data() {
     return {
-      conditionFormId: '',
       form: {
         id: '',
         formdetail: [
@@ -90,14 +88,17 @@ export default {
           { data1: false, },
         ]
       },
+
+    }
+  },
+  // 监听条件表单被拖拽到所对应的div的序号变化
+  watch: {
+    conditionFormId() {
+      this.form.id = this.conditionFormId
+      console.log(this.form.id)
     }
   },
   methods: {
-    itemMove() {
-      console.log('lallal')
-      form.id = this.conditionFormId
-      console.log(form.id)
-    },
     // ageChange(value) {
     //   console.log(value);
     // },

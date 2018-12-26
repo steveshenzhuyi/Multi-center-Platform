@@ -106,7 +106,6 @@ export default {
     //选择一级条件
     selectType(condtype) {
       this.$emit('selectType', condtype)
-      this.$emit('insertID', id)
       this.getQueueDict(condtype)
       switch (condtype) {
         case '1': this.condition = 'diagnose';
@@ -125,11 +124,10 @@ export default {
     },
     //得到初始序号--rzx
     getsort(evt) {
-      console.log(id)
-      // this.$emit('insertID', this.id)
+      this.$emit('insertID', this.id)
       this.itemId = evt.item.getAttribute("id")
       this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
-      this.cohortdict[this.itemId]['layer1SortNo'] = id
+      this.cohortdict[this.itemId]['layer1SortNo'] = this.id
       this.cohortdict[this.itemId]['criteriaTypeCode'] = "1"
       console.log(this.cohortdict[this.itemId])
     },
