@@ -38,7 +38,7 @@
         </el-row>
 
       </el-col>
-      <el-col :span="12">
+      <el-col :span="15">
         <el-row>
           <el-card class="box-card">
             <div slot="header"
@@ -48,40 +48,43 @@
             <el-row style="margin-top:20px;margin-bottom:10px">
               <el-col :span="23"
                       :offset="1">
-                <div>项目名称：{{detail[0][0].NAME}}</div>
+                <div>项目名称：{{detail.collaborInfo.NAME}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="23"
                       :offset="1">
-                <div>项目发起日期：{{detail[0][0].CREATEDATE}}</div>
+                <div>项目发起日期：{{detail.collaborInfo.CREATEDATE}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="7"
                       :offset="1">
-                <div>项目发起人：{{Initiator[0].DOCTORNAME}}</div>
+                <div>项目发起人：{{Initiator[0].MEMBERNAME}}</div>
               </el-col>
-              <el-col :span="16">
+              <el-col :span="15"
+                      :offset="1">
                 <div>发起人单位：{{Initiator[0].ORGANIZATIONNAME}}</div>
               </el-col>
             </el-row>
-            <div v-if="detail[1].length > 0">
-              <el-row v-for="people in detail[1]"
+            <div v-if="detail.collaborMemberList.length > 0">
+              <el-row v-for="people in detail.collaborMemberList"
                       :key="people.USERID"
                       style="margin-top:10px;margin-bottom:10px">
                 <el-col :span="1">
                   <i class="el-icon-delete"
+                     style="cursor:pointer"
                      @click="deleteParticipation(people.USERID)"></i>
                 </el-col>
                 <el-col :span="7">
-                  <div>项目参与人：{{people.DOCTORNAME}}</div>
+                  <div>项目参与人：{{people.MEMBERNAME}}</div>
                 </el-col>
-                <el-col :span="8">
+                <el-col :span="7"
+                        :offset="1">
                   <div>参与人单位：{{people.ORGANIZATIONNAME}}</div>
                 </el-col>
                 <el-col :span="8">
-                  <div>参与人状态：</div>
+                  <div>参与人状态：{{getParticipationState(people.PARTICIPATIONSTATE)}}</div>
                 </el-col>
               </el-row>
             </div>
@@ -112,23 +115,49 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      detail: []
-      //Initiator: null
+      detail: {
+        collaborInfo: {
+          COLLABORATIONSTATENAM: "",
+          COLLABORATIONSTATECODE: "",
+          NAME: "",
+          CREATEDATE: "",
+          TARGET: "",
+          PROPOSAL: "",
+          EXPECTEDOUTCOMES: "",
+          OUTCOMEDISTRIBUTION: ""
+        },
+        collaborMemberList: [
+          {
+            ORGANIZATIONNAME: "",
+            ORGANIZATIONCODE: "",
+            MEMBERNAME: "",
+            SORTNO: 1,
+            USERID: "",
+            INITIATORTAG: "",
+            PARTICIPATIONSTATE: "",
+            NAME: "",
+            CREATEDATE: "",
+            TARGET: "",
+            PROPOSAL: "",
+            EXPECTEDOUTCOMES: "",
+            OUTCOMEDISTRIBUTION: ""
+          }
+        ]
+      },
     }
   },
   computed: {
+    // ParticipationState: function () {
+    //   if (this.people.PARTICIPATIONSTATE == 0) {
+    //     return "待响应"
+    //   } else if (this.people.PARTICIPATIONSTATE == 1) {
+    //     return "已参加"
+    //   } else if (this.people.PARTICIPATIONSTATE == 2) {
+    //     return "已拒绝"
+    //   }
+    // },
     Initiator: function () {
-      //console.log("datail", this.detail[1].length)
-      for (var i = 0; i < this.detail[1].length; i++) {
-        //console.log(this.detail[1][i].INITIATORTAG)
-        if (this.detail[1][i].INITIATORTAG == "1   ") {
-          console.log(this.detail[1][i].INITIATORTAG)
-          return this.detail[1].splice(i, 1)
-        }
-      }
-      console.log("mistake")
-
-
+      return this.detail.collaborMemberList.splice(0, 1)
     }
   },
   mounted() {
@@ -146,18 +175,24 @@ export default {
         }
       })
         .then((response) => {
-          if (response.data.msg == "success!") {
-            //console.log("success")
-
+          if (response.data.code == 0) {
             console.log("data", response.data.data)
             this.detail = response.data.data
-            //this.detail[3][0].NAME = response.data.data[3][0].NAME
 
           }
         })
         .catch(function (error) {
           console.log("error", error);
         });
+    },
+    getParticipationState(PARTICIPATIONSTATE) {
+      if (PARTICIPATIONSTATE == 0) {
+        return "待响应"
+      } else if (PARTICIPATIONSTATE == 1) {
+        return "已参加"
+      } else if (PARTICIPATIONSTATE == 2) {
+        return "已拒绝"
+      }
     },
     deleteParticipation(USERID) {
       this.$confirm('删除该成员, 是否继续?', '提示', {
@@ -172,7 +207,7 @@ export default {
 
         })
           .then((response) => {
-            if (response.data.msg == "成功删除成员") {
+            if (response.data.code == 0) {
               this.$message.success("删除成功！");
               console.log("deletesuccess")
               this.getCollaborInfo(this.$route.query.collaborationId)
@@ -206,7 +241,7 @@ export default {
       })
         .then((response) => {
 
-          if (response.data.msg == "成功修改协同状态数据!") {
+          if (response.data.code == 0) {
             console.log("newteamsuccess")
             // this.$router.push({
             //   path: 'result',
