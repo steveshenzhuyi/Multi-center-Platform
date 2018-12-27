@@ -295,7 +295,7 @@ export default {
         path: 'newteam',
         query:
           {
-            collaborationId: 12
+            collaborationId: 49
           }
       });
       axios.post('/collaboration/createResearch', {
