@@ -24,7 +24,7 @@
         <!-- <component :is="comName"></component> -->
       </el-form>
       <div class="droparea">
-        <draggable :options="{group:condition}">
+        <draggable :options="{group:groupName}">
           <div class="drag-cover"></div>
         </draggable>
       </div>
@@ -62,7 +62,7 @@ export default {
       siftingform: {
         condtype: '1',
       },
-      condition: 'diagnose',  //拖拽group名
+      groupName: 'diagnose',  //拖拽group名
       itemId: '',//被拖拽元素的id
     }
   },
@@ -72,15 +72,15 @@ export default {
       console.log(condtype)
       this.getQueueDict(condtype)
       switch (condtype) {
-        case '1': this.condition = 'diagnose';
+        case '1': this.groupName = 'diagnose';
           break;
-        case '2': this.condition = 'mar';
+        case '2': this.groupName = 'mar';
           break;
-        case '3': this.condition = 'operating';
+        case '3': this.groupName = 'operating';
           break;
-        case '4': this.condition = 'medical';
+        case '4': this.groupName = 'medical';
           break;
-        case '5': this.condition = 'deathRecords';
+        case '5': this.groupName = 'deathRecords';
           break;
         default:
           break;

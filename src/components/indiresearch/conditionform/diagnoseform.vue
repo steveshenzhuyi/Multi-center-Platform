@@ -68,7 +68,7 @@ export default {
   components: {
     draggable,
   },
-  props: ['conditionFormId'],
+  props: ['conditionFormId', 'mainItems'],
   data() {
     return {
       form: {
@@ -95,6 +95,15 @@ export default {
   watch: {
     conditionFormId() {
       this.form.id = this.conditionFormId
+    },
+    mainItems: {
+      handler() {
+        if (this.mainItems.groupName == 'diagnose') {
+          console.log(this.mainItems)
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {
@@ -103,6 +112,10 @@ export default {
     // },
     submitForm(form) {
       console.log(form)
+      console.log('sss')
+      console.log(this.mainItems)
+
+
     },
   }
 }

@@ -90,7 +90,8 @@
              class="sifting-queue-content">
           <!-- 下拉选择显示右侧二级条件 -->
           <component :is="comName"
-                     :conditionFormId="conditionFormId"></component>
+                     :conditionFormId="conditionFormId"
+                     :mainItems="mainItems"></component>
         </div>
       </el-col>
     </el-row>
@@ -142,7 +143,7 @@ export default {
       importdetails: [],
       maindivs: [{ component: "maincondition", id: 0 }],
       maindivCount: 0,
-      mainItems: [{ itemId: '', sortNo: '', id: '' }],
+      mainItems: { itemId: '', sortNo: 0, id: 0, groupName: '' },
       mainItemCount: 0,
       minordivs: [{ component: "minorcondition", id: 0 }],
       minordivCount: 0,
@@ -197,12 +198,13 @@ export default {
       this.conditionFormId = id
     },
     //得到每个item的sortno跟字典信息
-    getSortNo(itemId, newIndex, id) {
-      console.log(itemId, newIndex, id)
-      this.mainItems[this.mainItemCount].itemId = itemId
-      this.mainItems[this.mainItemCounti].sortNo = newIndex
-      this.mainItems[this.mainItemCount].id = id
-      this.mainItemCount = this.mainItemCount + 1
+    getSortNo(itemId, newIndex, id, groupName) {
+      this.mainItems.itemId = itemId
+      this.mainItems.sortNo = newIndex
+      this.mainItems.id = id
+      this.mainItems.groupName = groupName
+      console.log(this.mainItems)
+      // this.mainItemCount = this.mainItemCount + 1
     },
     submitForm(queueInfo) {
       //表单验证--rzx

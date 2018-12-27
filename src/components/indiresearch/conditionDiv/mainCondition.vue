@@ -20,7 +20,7 @@
       </el-select>
     </el-form>
     <div class="droparea">
-      <draggable :options="{group:condition}"
+      <draggable :options="{group:groupName}"
                  @add="getsort"
                  @update="getsortupdate"
                  class="drag-main-condition">
@@ -74,7 +74,7 @@ export default {
       siftingform: {
         condtype: '1',
       },
-      condition: 'diagnose',  //拖拽group名
+      groupName: 'diagnose',  //拖拽group名
       itemId: '', //被拖拽元素的id
       cohortdict: '', //查询队列字典得到
       // id: '',
@@ -85,38 +85,38 @@ export default {
   },
   methods: {
     //查询队列条件字典
-    getQueueDict(condtype) {
-      axios.get('cohort/dict', {
-        params: {
-          token: this.GLOBAL.token,
-          criteriaLayer1Code: condtype
-        }
-      })
-        .then((response) => {
-          this.cohortdict = response.data.data
-          for (var i = 0; i < this.cohortdict.length; i++) {
-            delete this.cohortdict[i]['sortNo']
-          }
-          // console.log(this.cohortdict)
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
-    },
+    // getQueueDict(condtype) {
+    //   axios.get('cohort/dict', {
+    //     params: {
+    //       token: this.GLOBAL.token,
+    //       criteriaLayer1Code: condtype
+    //     }
+    //   })
+    //     .then((response) => {
+    //       this.cohortdict = response.data.data
+    //       for (var i = 0; i < this.cohortdict.length; i++) {
+    //         delete this.cohortdict[i]['sortNo']
+    //       }
+    //       // console.log(this.cohortdict)
+    //     })
+    //     .catch(function (error) {
+    //       console.log("error", error);
+    //     });
+    // },
     //选择一级条件
     selectType(condtype) {
       this.$emit('selectType', condtype, this.id)
-      this.getQueueDict(condtype)
+      // this.getQueueDict(condtype)
       switch (condtype) {
-        case '1': this.condition = 'diagnose';
+        case '1': this.groupName = 'diagnose';
           break;
-        case '2': this.condition = 'mar';
+        case '2': this.groupName = 'mar';
           break;
-        case '3': this.condition = 'operating';
+        case '3': this.groupName = 'operating';
           break;
-        case '4': this.condition = 'medical';
+        case '4': this.groupName = 'medical';
           break;
-        case '5': this.condition = 'deathRecords';
+        case '5': this.groupName = 'deathRecords';
           break;
         default:
           break;
@@ -126,18 +126,18 @@ export default {
     getsort(evt) {
       this.$emit('insertID', this.id)
       this.itemId = evt.item.getAttribute("id")
-      this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
-      this.cohortdict[this.itemId]['layer1SortNo'] = this.id
-      this.cohortdict[this.itemId]['criteriaTypeCode'] = "1"
-      console.log(this.cohortdict[this.itemId])
-      this.$emit('getSortNo', this.itemId, evt.newIndex, this.id)
+      // this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
+      // this.cohortdict[this.itemId]['layer1SortNo'] = this.id
+      // this.cohortdict[this.itemId]['criteriaTypeCode'] = "1"
+      // console.log(this.cohortdict[this.itemId])
+      this.$emit('getSortNo', this.itemId, evt.newIndex, this.id, this.groupName)
     },
     //更新拖拽后序号--rzx
     getsortupdate(evt) {
       this.itemId = evt.item.getAttribute("id")
-      this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
-      console.log(this.cohortdict[this.itemId])
-      this.$emit('getSortNo', this.cohortdict[this.itemId])
+      // this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
+      // console.log(this.cohortdict[this.itemId])
+      this.$emit('getSortNo', this.itemId, evt.newIndex, this.id, this.groupName)
     },
   }
 }
