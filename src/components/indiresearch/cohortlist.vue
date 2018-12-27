@@ -237,7 +237,8 @@ export default {
         path: 'myresearch',
         query:
           {
-            cohortid: 1
+            researchId: this.$route.params.researchId,
+            cohortId: 1
           }
       });
     },
