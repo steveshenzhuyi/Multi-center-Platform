@@ -231,12 +231,12 @@
                                  placeholder="请输入内容"
                                  @select="handleSelect"></el-autocomplete> -->
                 <!-- 变量标签/RH -->
-                <el-tag :key="tag"
-                        v-for="tag in dynamicTags"
+                <el-tag :key="selectedvariable.featureId"
+                        v-for="selectedvariable in dynamicTags"
                         closable
                         :disable-transitions="false"
-                        @close="taghandleClose(tag)">
-                  {{tag}}
+                        @close="taghandleClose(selectedvariable.name)">
+                  {{selectedvariable.name}}
                 </el-tag>
                 <el-input class="input-new-tag"
                           v-if="inputVisible"
@@ -549,6 +549,7 @@ export default {
       formLabelWidth: "90px",
       cohortstatisticdata: {},
       cohortanalysisdata: {},
+      selectedvariable: [],
       dialogVisible: false,
       methodName: '',
       saveresult: false,
@@ -591,7 +592,16 @@ export default {
       NewVarTabs: "NewVariable",
       VariableTable: [],
       // 增加变量标签初始化/RH
-      dynamicTags: ['性别', '年龄'],
+      dynamicTags: [
+        {
+          "featureId": 1,
+          "name": "性别"
+        },
+        {
+          "featureId": 2,
+          "name": "年龄"
+        },
+      ],
       inputVisible: false,
       inputValue: ''
       // analysismethods: [{
@@ -1165,13 +1175,49 @@ export default {
           break;
       }
     },
-    cohortanalysis(cohortId, modelId) {
-      console.log(cohortId, modelId)
 
-    },
+    // 队列统计/RH
     cohortstatistic(cohortId) {
       console.log(cohortId)
-      console.log("开始生成")
+      if (cohortId == undefined) { this.$message.warning("请选择统计队列！") }
+      else {
+        for (var i = 0; i < this.dynamicTags.length; i++) { console.log(this.dynamicTags[i].featureId) }
+        this.$message.success("开始分析！")
+        console.log("开始统计")
+      }
+    },
+    // 队列分析/RH
+    cohortanalysis(cohortId, modelId) {
+      //       axios.post('/result/createResult', ({
+      //   "token": this.GLOBAL.token,
+      //   "researchId": "53",
+      //   "researchTypeTag":1,
+      //   "name": this.newresearchname,
+      //   "target": "aaa",
+      //   "proposal": "aaa",
+      //   "expectedOutcomes": "aaa",
+      //   "dataRange": "aaa",
+      //   "projectSupport": "aaa",
+      //   "redundancy": "qwerty"
+      // }))
+      //   .then(response => {
+      //     if (response.data.code == "0") {
+      //       this.$message.success("新建成功！")
+      //       setTimeout(function () {
+      //         location.reload()
+      //       }, 1000);
+      //     }
+      //   })
+
+      console.log("开始统计")
+      if (cohortId == undefined) {        this.$message.warning("请选择统计队列！")
+      } else if (modelId == undefined) { this.$message.warning("请选择计算模型！") } else {
+        console.log(cohortId, modelId)
+        this.$message.success("开始统计！")
+        //开始计算
+      }
+
+
     },
 
 
@@ -1190,7 +1236,9 @@ export default {
     handleInputConfirm() {
       let inputValue = this.inputValue;
       if (inputValue) {
-        this.dynamicTags.push(inputValue);
+        this.dynamicTags.push({
+          "featureId": this.dynamicTags.length - 1,
+          "name": inputValue        });
       }
       this.inputVisible = false;
       this.inputValue = '';

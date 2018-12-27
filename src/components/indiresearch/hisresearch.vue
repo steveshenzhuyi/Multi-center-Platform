@@ -180,13 +180,9 @@ export default {
         .then(response => {
           if (response.data.code == "0") {
             this.$message.success("新建成功！")
-            // this.$router.push({
-            //   path: 'myresearch',
-            //   query:
-            //     {
-            //       researchstatus: 1
-            //     }
-            // });
+            setTimeout(function () {
+              location.reload()
+            }, 1000);
           }
         })
 
