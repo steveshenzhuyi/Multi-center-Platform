@@ -211,56 +211,82 @@
                    style="height:100%">
             <el-tabs v-model="activeName"
                      style="margin-top:-10px">
-              <el-tab-pane label="队列生成"
-                           name="summarygenerate">
-                <el-select v-model="summarygeneratevalue"
+              <el-tab-pane label="队列统计"
+                           name="cohortstatistic">
+                <el-select v-model="cohortstatisticdata.cohortId"
                            placeholder="请选择">
                   <el-option-group v-for="cohort in cohortsets"
-                                   :key="cohort.label"
+                                   :key="cohort.id"
                                    :label="cohort.label">
                     <el-option v-for="item in cohort.children"
-                               :key="item.label"
+                               :key="item.id"
                                :label="item.label"
-                               :value="item.label">
+                               :value="item.id">
                     </el-option>
                   </el-option-group>
                 </el-select>
+                <!-- <el-autocomplete class="inline-input"
+                                 v-model="state1"
+                                 :fetch-suggestions="querySearch"
+                                 placeholder="请输入内容"
+                                 @select="handleSelect"></el-autocomplete> -->
+                <!-- 变量标签/RH -->
+                <el-tag :key="tag"
+                        v-for="tag in dynamicTags"
+                        closable
+                        :disable-transitions="false"
+                        @close="taghandleClose(tag)">
+                  {{tag}}
+                </el-tag>
+                <el-input class="input-new-tag"
+                          v-if="inputVisible"
+                          v-model="inputValue"
+                          ref="saveTagInput"
+                          size="small"
+                          @keyup.enter.native="handleInputConfirm"
+                          @blur="handleInputConfirm">
+                </el-input>
+                <el-button v-else
+                           class="button-new-tag"
+                           size="small"
+                           @click="showInput">+ New Tag</el-button>
+
                 <el-button type="primary"
                            @click="toNewVariable()">新增变量</el-button>
                 <el-button style="float:right;margin-bottom:5px;margin-top:5px"
                            type="primary"
-                           @click="summarygenerate">生成</el-button>
+                           @click="cohortstatistic(cohortstatisticdata.cohortId)">统计</el-button>
               </el-tab-pane>
               <el-tab-pane label="队列分析"
                            name="cohortanalysis">
-                <el-select v-model="cohortanalysisvalue"
+                <el-select v-model="cohortanalysisdata.cohortId"
                            placeholder="请选择">
                   <el-option-group v-for="cohort in cohortsets"
-                                   :key="cohort.label"
+                                   :key="cohort.id"
                                    :label="cohort.label">
                     <el-option v-for="item in cohort.children"
-                               :key="item.label"
+                               :key="item.id"
                                :label="item.label"
-                               :value="item.label">
+                               :value="item.id">
                     </el-option>
                   </el-option-group>
                 </el-select>
-                <el-select v-model="analysismethodvalue"
+                <el-select v-model="cohortanalysisdata.modelId"
                            placeholder="请选择">
                   <el-option-group v-for="method in analysismethods"
-                                   :key="method.label"
+                                   :key="method.id"
                                    :label="method.label">
                     <el-option v-for="item in method.children"
-                               :key="item.label"
+                               :key="item.id"
                                :label="item.label"
-                               :value="item.label">
+                               :value="item.id">
                     </el-option>
                   </el-option-group>
                 </el-select>
 
                 <el-button style="float:right;margin-bottom:5px;margin-top:5px"
                            type="primary"
-                           @click="cohortanalysis">分析</el-button>
+                           @click="cohortanalysis(cohortanalysisdata.cohortId,cohortanalysisdata.modelId)">分析</el-button>
 
               </el-tab-pane>
             </el-tabs>
@@ -487,6 +513,7 @@ import onesample_ttest from './methodform/onesample_ttest.vue'
 import oneway_anova from './methodform/oneway_anova.vue'
 import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
 import svmanalysis from './methodform/svmanalysis.vue'
+
 // import firstanalysisVue from './methodform/firstanalysis.vue';
 // import firstanalysis from './methodform/firstanalysis.vue'
 // import bayesiannetworks from './methodform/bayesiannetworks.vue'
@@ -518,11 +545,10 @@ export default {
   },
   data() {
     return {
-      activeName: 'summarygenerate',
+      activeName: 'cohortstatistic',
       formLabelWidth: "90px",
-      summarygeneratevalue: '',
-      cohortanalysisvalue: '',
-      analysismethodvalue: '',
+      cohortstatisticdata: {},
+      cohortanalysisdata: {},
       dialogVisible: false,
       methodName: '',
       saveresult: false,
@@ -564,6 +590,10 @@ export default {
       // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
       VariableTable: [],
+      // 增加变量标签初始化/RH
+      dynamicTags: ['性别', '年龄'],
+      inputVisible: false,
+      inputValue: ''
       // analysismethods: [{
       //   'label': '模型文件夹1',
       //   'children': [
@@ -1135,12 +1165,36 @@ export default {
           break;
       }
     },
-    cohortanalysis() {
-      console.log("开始分析")
+    cohortanalysis(cohortId, modelId) {
+      console.log(cohortId, modelId)
+
     },
-    summarygenerate() {
+    cohortstatistic(cohortId) {
+      console.log(cohortId)
       console.log("开始生成")
     },
+
+
+    // 删除变量/RH
+    taghandleClose(tag) {
+      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+    },
+    //新增变量（显示输入框）/RH
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+    // 新增变量（确定新增）/RH
+    handleInputConfirm() {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        this.dynamicTags.push(inputValue);
+      }
+      this.inputVisible = false;
+      this.inputValue = '';
+    }
 
   },
   components: {
@@ -1200,5 +1254,20 @@ export default {
   padding: 0 10px;
   background-color: #428bca;
   color: #fffffb;
+}
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
 }
 </style>

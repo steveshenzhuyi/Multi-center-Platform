@@ -20,7 +20,7 @@
       <li v-for="research in researchlist">
         <div class="cardBox">
           <div class="headerBox">
-            <span style="font-size:20px; font-weight:bold">{{research.researchname}}</span>
+            <span style="font-size:20px; font-weight:bold">{{research.NAME}}</span>
             <el-dropdown style="float: right; padding: 3px 0"
                          trigger="click">
               <span class="el-icon-more">
@@ -35,19 +35,19 @@
                  style="position:absolute;"
                  :src="imgUrl"> -->
             <div class="bodyBox"
-                 @click="toMyresearch"
+                 @click="toMyresearch(research.RESEARCHID)"
                  style="position:absolute;">
               <div class="flex-container">
-                {{'项目创建时间 ' }}<span style="float: right; ">{{research.createtime}}</span>
+                {{'项目创建时间 ' }}<span style="float: right; ">{{research.CREATEDATE}}</span>
               </div>
               <div class="flex-container">
                 {{'研究者 ' }}
-                <span style="float: right; ">{{research.researchadmin }}</span>
+                <span style="float: right; ">{{research.USERID }}</span>
               </div>
-              <!-- <div class="flex-container">
+              <div class="flex-container">
                 {{'研究状态 ' }}
-                <span style="float: right; ">{{research.researchstatus |researchstatusfilter }}</span>
-              </div> -->
+                <span style="float: right; ">{{research.RESEARCHSTATECODE |researchstatusfilter }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -79,6 +79,7 @@
 <script>
 // import wait from '../../assets/等待审核.png'
 // import end from '../../assets/已结束.png'
+import axios from 'axios';
 
 export default {
   data() {
@@ -93,34 +94,29 @@ export default {
       formLabelWidth: '90px',
       createtime: "",
       researchlist: [
-        {
-          researchname: "项目1",
-          researchadmin: "Admin",
-          createtime: "2018-12-06",
-          researchstatus: 1,
-
-        }, {          researchname: "项目2",
-          researchadmin: "Admin",
-          createtime: "2018-12-08",
-          researchstatus: 1
-
-        }, {
-          researchname: "项目3",
-          researchadmin: "Admin",
-          createtime: "2018-12-08",
-          researchstatus: 2
-        }
       ]
     }
   },
   filters: {
     researchstatusfilter: function (input) {
       switch (input) {
+        case 0:
+          return '个人研究构建完成';
+          break;
         case 1:
-          return '等待审核';
+          return '队列构建中';
           break;
         case 2:
-          return '已结束';
+          return '队列构建完成';
+          break;
+        case 3:
+          return '研究成果构建中';
+          break;
+        case 4:
+          return '资格审核中';
+          break;
+        case 5:
+          return '研究完成';
           break;
         default:
           return '未知';
@@ -140,7 +136,8 @@ export default {
         }
       })
         .then((response) => {
-          //console.log(response)
+          // console.log(response)
+          this.researchlist = response.data.data
 
         })
         .catch(function (error) {
@@ -157,12 +154,13 @@ export default {
         .catch(_ => { });
     },
     // 跳转至对应研究页面
-    toMyresearch: function () {
+    toMyresearch: function (researchid) {
+      console.log(researchid)
       this.$router.replace({
         path: "cohortlist",
         query:
           {
-            researchid: ""
+            researchid: researchid
           }
       });
     },
@@ -193,13 +191,13 @@ export default {
   text-align: center;
   font-size: 105px;
   color: dimgrey;
-  height: 150px;
+  height: 170px;
   cursor: pointer;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   border-radius: 5px;
 }
 .cardBox {
-  height: 150px;
+  height: 170px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   margin-right: 10px;
   padding: 5px;
