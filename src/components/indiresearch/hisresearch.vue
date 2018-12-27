@@ -167,13 +167,30 @@ export default {
     // 跳转至新建研究
     toNewresearch: function () {
       this.createtime = new Date();
-      this.$router.push({
-        path: 'myresearch',
-        query:
-          {
-            researchstatus: 1
+      axios.post('/personalResearch/createResearch', ({
+        "token": this.GLOBAL.token,
+        "name": this.newresearchname,
+        "target": "aaa",
+        "proposal": "aaa",
+        "expectedOutcomes": "aaa",
+        "dataRange": "aaa",
+        "projectSupport": "aaa",
+        "redundancy": "qwerty"
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("新建成功！")
+            // this.$router.push({
+            //   path: 'myresearch',
+            //   query:
+            //     {
+            //       researchstatus: 1
+            //     }
+            // });
           }
-      });
+        })
+
+
     },
 
   },
