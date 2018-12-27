@@ -141,9 +141,11 @@ export default {
       conditiondetails: [],
       importdetails: [],
       maindivs: [{ component: "maincondition", id: 0 }],
-      mainId: 0,
+      maindivCount: 0,
+      mainItems: [{ itemId: '', sortNo: '', id: '' }],
+      mainItemCount: 0,
       minordivs: [{ component: "minorcondition", id: 0 }],
-      minorId: 0,
+      minordivCount: 0,
       conditionFormId: '',
     }
   },
@@ -153,23 +155,23 @@ export default {
   methods: {
     //新增主要条件
     addMajor(component) {
-      this.mainId = this.mainId + 1
+      this.maindivCount = this.maindivCount + 1
       this.maindivs.push({
         'component': component,
-        'id': this.mainId
+        'id': this.maindivCount
       })
       console.log(this.maindivs)
-      console.log(this.mainId)
+      console.log(this.maindivCount)
     },
     //新增次要条件
     addMinor(component) {
-      this.minorId = this.minorId + 1
+      this.minordivCount = this.minordivCount + 1
       this.minordivs.push({
         'component': component,
-        'id': this.minorId
+        'id': this.minordivCount
       })
       console.log(this.minordivs)
-      console.log(this.minorId)
+      console.log(this.minordivCount)
     },
     //选择一级条件
     choosetype(condtype, id) {
@@ -195,8 +197,12 @@ export default {
       this.conditionFormId = id
     },
     //得到每个item的sortno跟字典信息
-    getSortNo(item) {
-      console.log(item)
+    getSortNo(itemId, newIndex, id) {
+      console.log(itemId, newIndex, id)
+      this.mainItems[this.mainItemCount].itemId = itemId
+      this.mainItems[this.mainItemCounti].sortNo = newIndex
+      this.mainItems[this.mainItemCount].id = id
+      this.mainItemCount = this.mainItemCount + 1
     },
     submitForm(queueInfo) {
       //表单验证--rzx
@@ -231,7 +237,7 @@ export default {
         detail: []
       }
       this.creatInfo = Object.assign(this.creatInfo, this.queueInfo)
-      for (var i = 0; i <= this.mainId; i++) {
+      for (var i = 0; i <= this.maindivCount; i++) {
         console.log(i)
         this.importdetails = this.$refs.maindiv.cohortdict
         console.log(this.importdetails)

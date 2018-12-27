@@ -69,7 +69,8 @@ export default {
   methods: {
     //选择一级条件
     selectType(condtype) {
-      this.$emit('selectType', condtype)
+      console.log(condtype)
+      this.getQueueDict(condtype)
       switch (condtype) {
         case '1': this.condition = 'diagnose';
           break;

@@ -95,7 +95,6 @@ export default {
   watch: {
     conditionFormId() {
       this.form.id = this.conditionFormId
-      console.log(this.form.id)
     }
   },
   methods: {

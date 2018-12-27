@@ -130,7 +130,7 @@ export default {
       this.cohortdict[this.itemId]['layer1SortNo'] = this.id
       this.cohortdict[this.itemId]['criteriaTypeCode'] = "1"
       console.log(this.cohortdict[this.itemId])
-      this.$emit('getSortNo', this.cohortdict[this.itemId])
+      this.$emit('getSortNo', this.itemId, evt.newIndex, this.id)
     },
     //更新拖拽后序号--rzx
     getsortupdate(evt) {
