@@ -91,7 +91,8 @@
           <!-- 下拉选择显示右侧二级条件 -->
           <component :is="comName"
                      :conditionFormId="conditionFormId"
-                     :mainItems="mainItems"></component>
+                     :mainItem="mainItem"
+                     ref="mainCondName"></component>
         </div>
       </el-col>
     </el-row>
@@ -143,15 +144,18 @@ export default {
       importdetails: [],
       maindivs: [{ component: "maincondition", id: 0 }],
       maindivCount: 0,
-      mainItems: { itemId: '', sortNo: 0, id: 0, groupName: '' },
-      mainItemCount: 0,
+      mainItem: { itemId: '', sortNo: 0, id: 0, groupName: '' },
+      condId: [{ cond: 'diagnoseForm', id: 0 },
+      { cond: 'marForm', id: '' },
+      { cond: 'operatingForm', id: '' },
+      { cond: 'medicalForm', id: '' },
+      { cond: 'deathRecordsForm', id: '' },],
+      lastcondId: 0, //保存上一次condtype id结果
+      mainCondName: '',
       minordivs: [{ component: "minorcondition", id: 0 }],
       minordivCount: 0,
       conditionFormId: '',
     }
-  },
-  mounted: function () {
-    this.choosetype(1, 0)
   },
   methods: {
     //新增主要条件
@@ -161,6 +165,7 @@ export default {
         'component': component,
         'id': this.maindivCount
       })
+      this.condId[0]['id'] = this.maindivCount
       console.log(this.maindivs)
       console.log(this.maindivCount)
     },
@@ -177,34 +182,43 @@ export default {
     //选择一级条件
     choosetype(condtype, id) {
       console.log(condtype, id)
+      for (var i = 0; i < this.condId.length; i++) {
+        if (this.condId[i].id == this.lastcondId) {
+          this.condId[i].id = ''
+        }
+      }
       switch (condtype) {
         case '1': this.comName = 'diagnoseForm';
+          this.condId[0]['id'] = id
           break;
         case '2': this.comName = 'marForm';
+          this.condId[1]['id'] = id
           break;
         case '3': this.comName = 'operatingForm';
+          this.condId[2]['id'] = id
           break;
         case '4': this.comName = 'medicalForm';
+          this.condId[3]['id'] = id
           break;
         case '5': this.comName = 'deathRecordsForm';
+          this.condId[4]['id'] = id
           break;
         default:
           break;
       }
+      this.lastcondId = id
     },
     // 条件表单插入DIV的id区别位置
     insertID(id) {
       console.log(id)
       this.conditionFormId = id
     },
-    //得到每个item的sortno跟字典信息
+    //得到每个item的sortno和在字典中的序号
     getSortNo(itemId, newIndex, id, groupName) {
-      this.mainItems.itemId = itemId
-      this.mainItems.sortNo = newIndex
-      this.mainItems.id = id
-      this.mainItems.groupName = groupName
-      console.log(this.mainItems)
-      // this.mainItemCount = this.mainItemCount + 1
+      this.mainItem.itemId = itemId
+      this.mainItem.sortNo = newIndex
+      this.mainItem.id = id
+      this.mainItem.groupName = groupName
     },
     submitForm(queueInfo) {
       //表单验证--rzx
@@ -218,15 +232,15 @@ export default {
       // });
       this.fulfilCreatInfo(queueInfo)
       console.log(this.creatInfo)
-      // axios.post('cohort/create', {
-      //   params: this.creatInfo
-      // })
-      //   .then((response) => {
-      //     console.log(response)
-      //   })
-      //   .catch(function (error) {
-      //     console.log("error", error);
-      //   });
+      axios.post('cohort/create', {
+        params: this.creatInfo
+      })
+        .then((response) => {
+          console.log(response)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
     },
     //重置表单
     resetForm(queueInfo) {
@@ -239,34 +253,20 @@ export default {
         detail: []
       }
       this.creatInfo = Object.assign(this.creatInfo, this.queueInfo)
-      for (var i = 0; i <= this.maindivCount; i++) {
-        console.log(i)
-        this.importdetails = this.$refs.maindiv.cohortdict
-        console.log(this.importdetails)
+      // 若id存在则读取子组件form
+      for (var i = 0; i < this.condId.length; i++) {
+        if (this.condId[i].id !== '') {
+          this.mainCondName = this.condId[i].cond
+          // 去掉未拖拽出来的条件
+          for (var j = 0; j < this.$refs.mainCondName.form.formdetail.length; j++) {
+            if (this.$refs.mainCondName.form.formdetail[j]['layer2SortNo'] !== undefined) {
+              this.importdetails.push(this.$refs.mainCondName.form.formdetail[j])
+            }
+          }
+        }
       }
-      //import的组件所对应的form输入
-      // this.importdetails = this.$refs.comName.form.formdetail
-      // console.log(this.importdetails)
-      // var j = 0
-      // for (var i = 0; i < this.importdetails.length; i++) {
-      //   if (this.importdetails[i].data1 != "" && this.importdetails[i].data1 != -1) {
-      //     if (j == 0) {
-      //       this.conditiondetails[j] = this.cohortdict[i]
-      //       this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.importdetails[i])
-      //       this.conditiondetails[j]['layer1SortNo'] = 1
-      //       this.conditiondetails[j]['criteriaTypeCode'] = 1
-      //       j += j
-      //     }
-      //     else {
-      //       this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.cohortdict[i])
-      //       this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.importdetails[i])
-      //       this.conditiondetails[j]['layer1SortNo'] = 1
-      //       this.conditiondetails[j]['criteriaTypeCode'] = 1
-      //       j += j
-      //     }
-      //   }
-      // }
-      // this.creatInfo['detail'] = this.conditiondetails
+      console.log(this.importdetails)
+      this.creatInfo['detail'] = this.importdetails
     },
   }
 }
@@ -326,7 +326,7 @@ input.num-input {
   width: 100%;
   height: 10px;
   /* background-color: rgba(216, 216, 216, 0.18); */
-  /* position: absolute; */
+  position: absolute;
 }
 .sifting-queue-content {
   background: linear-gradient(to bottom, #eaeaea, #f9f9f9);

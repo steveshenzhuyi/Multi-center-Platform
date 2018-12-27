@@ -55,8 +55,6 @@
         <!-- <el-checkbox v-model="form.datechecked"
                      class="except">不在其之间</el-checkbox> -->
       </el-form-item>
-      <el-button type="primary"
-                 @click="submitForm(form)">保存</el-button>
     </draggable>
   </el-form>
 </template>
@@ -68,7 +66,7 @@ export default {
   components: {
     draggable,
   },
-  props: ['conditionFormId', 'mainItems'],
+  props: ['conditionFormId', 'mainItem'],
   data() {
     return {
       form: {
@@ -88,7 +86,7 @@ export default {
           { data1: false, },
         ]
       },
-
+      cohortdict: '', //查询队列字典得到
     }
   },
   // 监听条件表单被拖拽到所对应的div的序号变化
@@ -96,26 +94,44 @@ export default {
     conditionFormId() {
       this.form.id = this.conditionFormId
     },
-    mainItems: {
+    mainItem: {
       handler() {
-        if (this.mainItems.groupName == 'diagnose') {
-          console.log(this.mainItems)
+        if (this.mainItem.groupName == 'diagnose') {
+          this.cohortdict[this.mainItem.itemId]['layer2SortNo'] = this.mainItem.sortNo
+          this.cohortdict[this.mainItem.itemId]['layer1SortNo'] = this.mainItem.id
+          this.cohortdict[this.mainItem.itemId]['criteriaTypeCode'] = "1"
+          this.form.formdetail[this.mainItem.itemId] = Object.assign(this.form.formdetail[this.mainItem.itemId], this.cohortdict[this.mainItem.itemId])
+          console.log(this.form.formdetail[this.mainItem.itemId])
         }
       },
       deep: true,
       immediate: true
     }
   },
+  mounted: function () {
+    this.getQueueDict()
+  },
   methods: {
     // ageChange(value) {
     //   console.log(value);
     // },
-    submitForm(form) {
-      console.log(form)
-      console.log('sss')
-      console.log(this.mainItems)
-
-
+    //查询队列条件字典
+    getQueueDict() {
+      axios.get('cohort/dict', {
+        params: {
+          token: this.GLOBAL.token,
+          criteriaLayer1Code: 1
+        }
+      })
+        .then((response) => {
+          this.cohortdict = response.data.data
+          for (var i = 0; i < this.cohortdict.length; i++) {
+            delete this.cohortdict[i]['sortNo']
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
     },
   }
 }

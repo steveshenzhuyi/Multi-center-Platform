@@ -26,7 +26,9 @@
                  class="drag-main-condition">
         <div class="drag-cover"></div>
       </draggable>
-      <div class="limit-condition">
+      <div class="limit-condition"
+           slot="footer"
+           style="display: block;">
         <div><span>在主要事件发生日期之前，至少有</span>
           <label><input class="PriorDays num-input"
                    type="number"
@@ -76,35 +78,15 @@ export default {
       },
       groupName: 'diagnose',  //拖拽group名
       itemId: '', //被拖拽元素的id
-      cohortdict: '', //查询队列字典得到
-      // id: '',
     }
   },
-  mounted: function () {
-    this.getQueueDict(1)
-  },
+  // mounted: function () {
+  //   this.selectType(1)
+  // },
   methods: {
-    //查询队列条件字典
-    // getQueueDict(condtype) {
-    //   axios.get('cohort/dict', {
-    //     params: {
-    //       token: this.GLOBAL.token,
-    //       criteriaLayer1Code: condtype
-    //     }
-    //   })
-    //     .then((response) => {
-    //       this.cohortdict = response.data.data
-    //       for (var i = 0; i < this.cohortdict.length; i++) {
-    //         delete this.cohortdict[i]['sortNo']
-    //       }
-    //       // console.log(this.cohortdict)
-    //     })
-    //     .catch(function (error) {
-    //       console.log("error", error);
-    //     });
-    // },
     //选择一级条件
     selectType(condtype) {
+      console.log(this.id)
       this.$emit('selectType', condtype, this.id)
       // this.getQueueDict(condtype)
       switch (condtype) {
@@ -126,17 +108,11 @@ export default {
     getsort(evt) {
       this.$emit('insertID', this.id)
       this.itemId = evt.item.getAttribute("id")
-      // this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
-      // this.cohortdict[this.itemId]['layer1SortNo'] = this.id
-      // this.cohortdict[this.itemId]['criteriaTypeCode'] = "1"
-      // console.log(this.cohortdict[this.itemId])
       this.$emit('getSortNo', this.itemId, evt.newIndex, this.id, this.groupName)
     },
     //更新拖拽后序号--rzx
     getsortupdate(evt) {
       this.itemId = evt.item.getAttribute("id")
-      // this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
-      // console.log(this.cohortdict[this.itemId])
       this.$emit('getSortNo', this.itemId, evt.newIndex, this.id, this.groupName)
     },
   }
