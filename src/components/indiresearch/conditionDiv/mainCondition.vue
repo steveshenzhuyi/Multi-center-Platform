@@ -105,7 +105,7 @@ export default {
     },
     //选择一级条件
     selectType(condtype) {
-      this.$emit('selectType', condtype)
+      this.$emit('selectType', condtype, this.id)
       this.getQueueDict(condtype)
       switch (condtype) {
         case '1': this.condition = 'diagnose';
@@ -130,12 +130,14 @@ export default {
       this.cohortdict[this.itemId]['layer1SortNo'] = this.id
       this.cohortdict[this.itemId]['criteriaTypeCode'] = "1"
       console.log(this.cohortdict[this.itemId])
+      this.$emit('getSortNo', this.cohortdict[this.itemId])
     },
     //更新拖拽后序号--rzx
     getsortupdate(evt) {
       this.itemId = evt.item.getAttribute("id")
       this.cohortdict[this.itemId]['layer2SortNo'] = evt.newIndex
       console.log(this.cohortdict[this.itemId])
+      this.$emit('getSortNo', this.cohortdict[this.itemId])
     },
   }
 }

@@ -39,6 +39,7 @@
                        :id="maindiv.id"
                        :key="index"
                        @selectType="choosetype"
+                       @getSortNo="getSortNo"
                        @insertID="insertID"></component>
             <div class=main-condition-detail>
               <span style="padding-left:50%"
@@ -146,6 +147,9 @@ export default {
       conditionFormId: '',
     }
   },
+  mounted: function () {
+    this.choosetype(1, 0)
+  },
   methods: {
     //新增主要条件
     addMajor(component) {
@@ -168,8 +172,8 @@ export default {
       console.log(this.minorId)
     },
     //选择一级条件
-    choosetype(condtype) {
-      console.log(condtype)
+    choosetype(condtype, id) {
+      console.log(condtype, id)
       switch (condtype) {
         case '1': this.comName = 'diagnoseForm';
           break;
@@ -190,27 +194,31 @@ export default {
       console.log(id)
       this.conditionFormId = id
     },
+    //得到每个item的sortno跟字典信息
+    getSortNo(item) {
+      console.log(item)
+    },
     submitForm(queueInfo) {
       //表单验证--rzx
-      this.$refs[queueInfo].validate((valid) => {
-        if (valid) {
-          console.log('valid success!!');
-        } else {
-          console.log('valid error!!');
-          return false;
-        }
-      });
+      // this.$refs[queueInfo].validate((valid) => {
+      //   if (valid) {
+      //     console.log('valid success!!');
+      //   } else {
+      //     console.log('valid error!!');
+      //     return false;
+      //   }
+      // });
       this.fulfilCreatInfo(queueInfo)
       console.log(this.creatInfo)
-      axios.post('cohort/create', {
-        params: this.creatInfo
-      })
-        .then((response) => {
-          console.log(response)
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+      // axios.post('cohort/create', {
+      //   params: this.creatInfo
+      // })
+      //   .then((response) => {
+      //     console.log(response)
+      //   })
+      //   .catch(function (error) {
+      //     console.log("error", error);
+      //   });
     },
     //重置表单
     resetForm(queueInfo) {
@@ -223,29 +231,34 @@ export default {
         detail: []
       }
       this.creatInfo = Object.assign(this.creatInfo, this.queueInfo)
-      //import的组件所对应的form输入
-      this.importdetails = this.$refs.comName.form.formdetail
-      // console.log(this.importdetails)
-      var j = 0
-      for (var i = 0; i < this.importdetails.length; i++) {
-        if (this.importdetails[i].data1 != "" && this.importdetails[i].data1 != -1) {
-          if (j == 0) {
-            this.conditiondetails[j] = this.cohortdict[i]
-            this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.importdetails[i])
-            this.conditiondetails[j]['layer1SortNo'] = 1
-            this.conditiondetails[j]['criteriaTypeCode'] = 1
-            j += j
-          }
-          else {
-            this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.cohortdict[i])
-            this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.importdetails[i])
-            this.conditiondetails[j]['layer1SortNo'] = 1
-            this.conditiondetails[j]['criteriaTypeCode'] = 1
-            j += j
-          }
-        }
+      for (var i = 0; i <= this.mainId; i++) {
+        console.log(i)
+        this.importdetails = this.$refs.maindiv.cohortdict
+        console.log(this.importdetails)
       }
-      this.creatInfo['detail'] = this.conditiondetails
+      //import的组件所对应的form输入
+      // this.importdetails = this.$refs.comName.form.formdetail
+      // console.log(this.importdetails)
+      // var j = 0
+      // for (var i = 0; i < this.importdetails.length; i++) {
+      //   if (this.importdetails[i].data1 != "" && this.importdetails[i].data1 != -1) {
+      //     if (j == 0) {
+      //       this.conditiondetails[j] = this.cohortdict[i]
+      //       this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.importdetails[i])
+      //       this.conditiondetails[j]['layer1SortNo'] = 1
+      //       this.conditiondetails[j]['criteriaTypeCode'] = 1
+      //       j += j
+      //     }
+      //     else {
+      //       this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.cohortdict[i])
+      //       this.conditiondetails[j] = Object.assign(this.conditiondetails[j], this.importdetails[i])
+      //       this.conditiondetails[j]['layer1SortNo'] = 1
+      //       this.conditiondetails[j]['criteriaTypeCode'] = 1
+      //       j += j
+      //     }
+      //   }
+      // }
+      // this.creatInfo['detail'] = this.conditiondetails
     },
   }
 }
