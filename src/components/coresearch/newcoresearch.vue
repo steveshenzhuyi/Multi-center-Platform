@@ -85,13 +85,8 @@
             <div slot="header"
                  style="height:12px;"
                  class="clearfix">
-              <span>队列</span>
+              <span>团队队列</span>
             </div>
-            <el-button size="mini"
-                       @click="handleAddTop_cohort">添加新文件夹</el-button>
-            <el-button type="primary"
-                       size="mini"
-                       @click="toCreatecohort">新建队列</el-button>
             <div class="slot-tree">
               <el-tree ref="SlotMenuList"
                        class="expand-tree"
@@ -135,9 +130,49 @@
                 </span>
               </el-tree>
             </div>
+            <el-button type="primary"
+                       size="mini"
+                       @click="toCreatecohort">新建</el-button>
+            <el-button type="primary"
+                       size="mini"
+                       @click="ifcopy2collab = true;">导入</el-button>
+            <el-button size="mini"
+                       @click="toCohortAccredit">发起申请</el-button>
+
           </el-card>
         </el-row>
-
+        <!-- 导入个人队列到团队队列/RH -->
+        <el-dialog title="队列导入"
+                   :visible.sync="ifcopy2collab"
+                   width="30%"
+                   :before-close="handleClose">
+          <el-table :data="tableData"
+                    border
+                    style="width: 100%">
+            <el-table-column fixed
+                             prop="date"
+                             label="日期"
+                             width="150">
+            </el-table-column>
+            <el-table-column fixed="right"
+                             label="操作"
+                             width="100">
+              <template slot-scope="scope">
+                <el-button @click="handleClick(scope.row)"
+                           type="text"
+                           size="small">查看</el-button>
+                <el-button type="text"
+                           size="small">编辑</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <span slot="footer"
+                class="dialog-footer">
+            <el-button @click="ifcopy2collab = false;">取 消</el-button>
+            <el-button type="primary"
+                       @click="ifcopy2collab = false;tocopy2collab">确 定</el-button>
+          </span>
+        </el-dialog>
         <!-- 分析模块/RH -->
         <el-row>
           <el-card class="box-card"
@@ -208,63 +243,88 @@
                    style="height:100%">
             <el-tabs v-model="activeName"
                      style="margin-top:-10px">
-              <el-tab-pane label="队列生成"
-                           name="summarygenerate">
-                <el-select v-model="summarygeneratevalue"
+              <el-tab-pane label="队列统计"
+                           name="cohortstatistic">
+                <el-select v-model="cohortstatisticdata.cohortId"
                            placeholder="请选择">
                   <el-option-group v-for="cohort in cohortsets"
-                                   :key="cohort.label"
+                                   :key="cohort.id"
                                    :label="cohort.label">
                     <el-option v-for="item in cohort.children"
-                               :key="item.label"
+                               :key="item.id"
                                :label="item.label"
-                               :value="item.label">
+                               :value="item.id">
                     </el-option>
                   </el-option-group>
                 </el-select>
+                <!-- <el-autocomplete class="inline-input"
+                                 v-model="state1"
+                                 :fetch-suggestions="querySearch"
+                                 placeholder="请输入内容"
+                                 @select="handleSelect"></el-autocomplete> -->
+                <!-- 变量标签/RH -->
+                <el-tag :key="selectedvariable.featureId"
+                        v-for="selectedvariable in dynamicTags"
+                        closable
+                        :disable-transitions="false"
+                        @close="taghandleClose(selectedvariable.name)">
+                  {{selectedvariable.name}}
+                </el-tag>
+                <el-input class="input-new-tag"
+                          v-if="inputVisible"
+                          v-model="inputValue"
+                          ref="saveTagInput"
+                          size="small"
+                          @keyup.enter.native="handleInputConfirm"
+                          @blur="handleInputConfirm">
+                </el-input>
+                <!-- <el-button v-else
+                           class="button-new-tag"
+                           size="small"
+                           @click="showInput">+ New Tag</el-button> -->
+
                 <el-button type="primary"
                            @click="toNewVariable()">新增变量</el-button>
                 <el-button style="float:right;margin-bottom:5px;margin-top:5px"
                            type="primary"
-                           @click="summarygenerate">生成</el-button>
+                           @click="cohortstatistic(cohortstatisticdata.cohortId)">统计</el-button>
               </el-tab-pane>
               <el-tab-pane label="队列分析"
                            name="cohortanalysis">
-                <el-select v-model="cohortanalysisvalue"
+                <el-select v-model="cohortanalysisdata.cohortId"
                            placeholder="请选择">
                   <el-option-group v-for="cohort in cohortsets"
-                                   :key="cohort.label"
+                                   :key="cohort.id"
                                    :label="cohort.label">
                     <el-option v-for="item in cohort.children"
-                               :key="item.label"
+                               :key="item.id"
                                :label="item.label"
-                               :value="item.label">
+                               :value="item.id">
                     </el-option>
                   </el-option-group>
                 </el-select>
-                <el-select v-model="analysismethodvalue"
+                <el-select v-model="cohortanalysisdata.modelId"
                            placeholder="请选择">
                   <el-option-group v-for="method in analysismethods"
-                                   :key="method.label"
+                                   :key="method.id"
                                    :label="method.label">
                     <el-option v-for="item in method.children"
-                               :key="item.label"
+                               :key="item.id"
                                :label="item.label"
-                               :value="item.label">
+                               :value="item.id">
                     </el-option>
                   </el-option-group>
                 </el-select>
 
                 <el-button style="float:right;margin-bottom:5px;margin-top:5px"
                            type="primary"
-                           @click="cohortanalysis">分析</el-button>
+                           @click="cohortanalysis(cohortanalysisdata.cohortId,cohortanalysisdata.modelId)">分析</el-button>
 
               </el-tab-pane>
             </el-tabs>
           </el-card>
 
         </el-row>
-
         <!-- 分析结果模块/RH -->
         <el-row>
           <el-card class="box-card"
@@ -274,10 +334,22 @@
                  class="clearfix">
               <span>分析结果</span>
             </div>
-            <el-button style="float:right;margin-bottom:5px;margin-top:5px"
+            <ul id="containerlist">
+              <li>
+                <div id="echartContainer1"
+                     style="width:500px; height:500px"></div>
+              </li>
+              <li>
+                <div id="echartContainer2"
+                     style="width:500px; height:500px"></div>
+              </li>
+            </ul>
+            <el-button v-show="ifsave"
+                       style="float:right;margin-bottom:20px;margin-top:480px"
                        type="primary"
                        @click="saveresult=true">保存</el-button>
           </el-card>
+
         </el-row>
       </el-col>
     </el-row>
@@ -515,10 +587,11 @@ export default {
   },
   data() {
     return {
-      activeName: 'summarygenerate',
-      summarygeneratevalue: '',
-      cohortanalysisvalue: '',
-      analysismethodvalue: '',
+      activeName: 'cohortstatistic',
+      formLabelWidth: "90px",
+      cohortstatisticdata: {},
+      cohortanalysisdata: {},
+      selectedvariable: [],
       dialogVisible: false,
       methodName: '',
       saveresult: false,
@@ -559,12 +632,29 @@ export default {
       checked: true,
       // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
-      VariableTable: []
+      VariableTable: [],
+      // 增加变量标签初始化/RH
+      dynamicTags: [
+        // {
+        //   "featureId": 1,
+        //   "name": "性别"
+        // },
+        // {
+        //   "featureId": 2,
+        //   "name": "年龄"
+        // },
+      ],
+      inputVisible: false,
+      inputValue: '',
+      ifsave: false,
+      ifcopy2collab: false,
+      personalcohortsets: []
     };
   },
   mounted() {
     // console.log(this.GLOBAL.token)
     this.getConceptsetsData();
+    this.getpersonalcohortsetsData();
     this.getcohortsetsData();
     this.getAnalysismethodsData();
   },
@@ -583,18 +673,34 @@ export default {
           console.log("error", error);
         });
     },
-    getcohortsetsData() {
+
+    // 获得个人队列/RH
+    getpersonalcohortsetsData() {
       axios.get('/structure/getStructure', {
         params: {
           "token": this.GLOBAL.token
         }
       })
         .then((response) => {
-          this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
+          this.cohortsets = JSON.parse(response.data.data.privateCohortStructure)
         })
         .catch(function (error) {
           console.log("error", error);
         });
+    },
+    // 获得团队队列/RH
+    getcohortsetsData() {
+      // axios.get('/structure/getStructure', {
+      //   params: {
+      //     "token": this.GLOBAL.token
+      //   }
+      // })
+      //   .then((response) => {
+      //     this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
+      //   })
+      //   .catch(function (error) {
+      //     console.log("error", error);
+      //   });
     },
     getAnalysismethodsData() {
       axios.get('/structure/getStructure', {
@@ -1062,12 +1168,200 @@ export default {
           break;
       }
     },
-    cohortanalysis() {
+    // 队列统计（未完）/RH
+    cohortstatistic(cohortId) {
+      console.log(this.$route.params.researchId)
+      console.log(cohortId)
+      if (cohortId == undefined) { this.$message.warning("请选择统计队列！") }
+      else {
+        for (var i = 0; i < this.dynamicTags.length; i++) { console.log(this.dynamicTags[i].featureId) }
+        // 定性！
+
+        axios.post('/cohort/statInfo', ({
+          "token": this.GLOBAL.token,
+          "cohortId": "1",
+          "organizationCode": "1",
+          "featureId": "23"
+        }))
+          .then(response => {
+            console.log(response)
+            axios.post('/result/createResearch2CohortStatInfo', ({
+              "token": this.GLOBAL.token,
+              "researchTypeTag": "1",
+              "researchId": this.$route.params.researchId,
+              "userId": this.GLOBAL.userId,
+              "cohortId": "1",
+              "featureId": "23"
+            }))
+              .then(response2 => {
+                if ((response.data.code == 0) && (response2.data.code == 0)) {
+                  this.$message.success("开始统计！")
+                  setTimeout(function () {
+                    // 基于准备好的dom，初始化echarts实例
+                    var myChart = echarts.init(document.getElementById('echartContainer1'));
+                    // 绘制图表
+                    myChart.setOption({
+                      title: { text: '队列统计结果' },
+                      tooltip: {},
+                      xAxis: {
+                        data: ["0-1", "1-2", "2-3", "3-4", "4-5"]
+                      },
+                      yAxis: {},
+                      series: [{
+                        type: 'bar',
+                        data: JSON.parse(response.data.data.histogramData)
+                      }]
+                    });
+                  }, 1000);
+                }
+              })
+          })
+        // 定量！
+
+        axios.post('/cohort/statInfo', ({
+          "token": this.GLOBAL.token,
+          "cohortId": "1",
+          "organizationCode": "1",
+          "featureId": "18"
+        }))
+          .then(response => {
+            console.log(response)
+            axios.post('/result/createResearch2CohortStatInfo', ({
+              "token": this.GLOBAL.token,
+              "researchTypeTag": "1",
+              "researchId": this.$route.params.researchId,
+              "userId": this.GLOBAL.userId,
+              "cohortId": "1",
+              "featureId": "18"
+            }))
+              .then(response2 => {
+                console.log(response2)
+                if ((response.data.code == 0) && (response2.data.code == 0)) {                  this.$message.success("开始统计！")
+                  setTimeout(function () {
+                    // 基于准备好的dom，初始化echarts实例
+                    var myChart = echarts.init(document.getElementById('echartContainer2'));
+                    // 绘制图表
+                    myChart.setOption({
+                      title: { text: '队列统计结果' },
+                      tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                      },
+                      series: [
+                        {
+                          type: 'pie',
+                          radius: '55%',
+                          center: ['50%', '50%'],
+                          data: [
+                            { value: JSON.parse(response.data.data.positiveNo), name: '正样本' },
+                            { value: JSON.parse(response.data.data.positiveNo), name: '负样本' },
+                          ].sort(function (a, b) { return a.value - b.value; }),
+                          roseType: 'radius',
+                          label: {
+                            normal: {
+                              textStyle: {
+                                color: 'rgba(0, 0, 0, 1)'
+                              }
+                            }
+                          },
+                        }
+                      ]
+                    });
+                  }, 1000);
+                }
+
+              })
+          })
+      }
+    },
+    // 队列分析（未完）/RH
+    cohortanalysis(cohortId, modelId) {
+      //       axios.post('/result/createResult', ({
+      //   "token": this.GLOBAL.token,
+      //   "researchId": "53",
+      //   "researchTypeTag":1,
+      //   "name": this.newresearchname,
+      //   "target": "aaa",
+      //   "proposal": "aaa",
+      //   "expectedOutcomes": "aaa",
+      //   "dataRange": "aaa",
+      //   "projectSupport": "aaa",
+      //   "redundancy": "qwerty"
+      // }))
+      //   .then(response => {
+      //     if (response.data.code == "0") {
+      //       this.$message.success("新建成功！")
+      //       setTimeout(function () {
+      //         location.reload()
+      //       }, 1000);
+      //     }
+      //   })
+
       console.log("开始分析")
+
+      if (cohortId == undefined) {        this.$message.warning("请选择分析队列！")
+      } else if (modelId == undefined) { this.$message.warning("请选择计算模型！") } else {
+        console.log(cohortId, modelId)
+        this.$message.success("开始分析！")
+
+        // 开始计算
+        this.ifsave = true
+      }
     },
-    summarygenerate() {
-      console.log("开始生成")
+    // 删除变量/RH
+    taghandleClose(tag) {
+      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
+    //新增变量（显示输入框）/RH
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+    // 新增变量（确定新增）/RH
+    handleInputConfirm() {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        this.dynamicTags.push({
+          "featureId": this.dynamicTags.length - 1,
+          "name": inputValue        });
+      }
+      this.inputVisible = false;
+      this.inputValue = '';
+    },
+
+    // 个人队列导入到团队队列（未完）/RH
+    tocopy2collab() {
+      axios.post('/result/createResult', ({
+        "token": this.GLOBAL.token,
+        "cohortId": "4",
+        "collaborationId": "3"
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("导入完成！")
+          }
+        })
+    },
+
+
+    // 发出授权申请（未完）/RH
+    toCohortAccredit() {
+      axios.post('/result/createResult', ({
+        "token": this.GLOBAL.token,
+        "collaborationId": "1",
+        "userId": this.GLOBAL.userId,
+        "cohortId": "1"
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("授权申请已发出！")
+          }
+        })
+    }
+
+
 
   },
   components: {
