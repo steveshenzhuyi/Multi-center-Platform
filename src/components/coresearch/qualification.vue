@@ -32,7 +32,7 @@
                        :data="{token: this.GLOBAL.token}"
                        :on-preview="handlePreview"
                        :on-remove="handleRemove"
-                       :file-list="fileList2"
+                       :file-list="certificationList"
                        list-type="picture">
               <el-button type="primary">材料上传</el-button>
               <div slot="tip"
@@ -40,12 +40,13 @@
             </el-upload>
           </el-card>
         </el-row>
-        <!-- <el-row type="flex"
+        <el-row type="flex"
                 justify="center"
                 style="margin-top:10px;margin-bottom:10px">
 
-          <el-button type="primary">材料上传</el-button>
-        </el-row> -->
+          <el-button type="primary"
+                     @click="submitResearchApproval()">申请审核</el-button>
+        </el-row>
       </el-col>
       <el-col :span="12">
         <el-row>
@@ -57,11 +58,14 @@
             <div>
               <el-row>
                 <el-col :span="12">
-                  项目发起人：张XX
+                  项目发起人：{{}}
                 </el-col>
                 <el-col :span="12">
-                  通过
+                  {{}}
                 </el-col>
+              </el-row>
+              <el-row>
+
               </el-row>
             </div>
           </el-card>
@@ -82,11 +86,35 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      a: { token: this.GLOBAL.token },
-      fileList2: []
+      //a: { token: this.GLOBAL.token },
+      certificationList: [],
+      detail: []
     };
   },
+  mounted() {
+    console.log("collaborationId", this.$route.query.collaborationId)
+    this.getResearchVerifyStatus(this.$route.query.collaborationId)
+  },
   methods: {
+    getResearchVerifyStatus(RESEARCHID) {
+      axios.get('result/getResearchVerifyStatus', {
+        params: {
+          token: this.GLOBAL.token,
+          researchTypeTag: 0,
+          researchId: RESEARCHID
+        }
+      })
+        .then((response) => {
+          if (response.data.code == 0) {
+            console.log("data", response.data.data)
+            this.detail = response.data.data
+
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
@@ -113,6 +141,37 @@ export default {
           }
           console.log(response.data)
         })
+    },
+    submitResearchApproval() {
+      this.$confirm('确认提交资格审核', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // axios.post('/collaboration/deleteParticipation', {
+        //   "token": this.GLOBAL.token,
+        //   "userId": USERID,
+        //   "collaborationId": this.$route.query.collaborationId
+
+        // })
+        //   .then((response) => {
+        //     if (response.data.code == 0) {
+        //       this.$message.success("删除成功！");
+        //       console.log("deletesuccess")
+        //       this.getCollaborInfo(this.$route.query.collaborationId)
+        //     } else {
+        //       this.$message.error("删除失败！");
+        //     }
+        //   })
+        //   .catch(function (error) {
+        //     console.log("error", error);
+        //   });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消申请'
+        });
+      });
     }
   }
 }
