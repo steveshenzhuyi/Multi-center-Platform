@@ -97,7 +97,7 @@
                        @node-drop="handleDrop"
                        :allow-drop="allowDrop"
                        :allow-drag="allowDrag"
-                       :data="cohortsets"
+                       :data="collabcohortsets"
                        :props="defaultProps"
                        :expand-on-click-node="false">
                 <span class="slot-t-node"
@@ -598,6 +598,7 @@ export default {
       saveresultname: '',
       mycreateconceptset: createconceptset,
       conceptSetName: '',
+      collabcohortsets: [],
       conceptSetDes: '',
       Excludeditems: [],
       ChilerenConcepts: [],
@@ -688,19 +689,20 @@ export default {
           console.log("error", error);
         });
     },
-    // 获得团队队列/RH
+    // 获得团队队列（未完）/RH
     getcohortsetsData() {
-      // axios.get('/structure/getStructure', {
-      //   params: {
-      //     "token": this.GLOBAL.token
-      //   }
-      // })
-      //   .then((response) => {
-      //     this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
-      //   })
-      //   .catch(function (error) {
-      //     console.log("error", error);
-      //   });
+      axios.get('/cohort/initator', {
+        params: {
+          "token": this.GLOBAL.token,
+          "collaborationId": this.$route.params.collaborationId
+        }
+      })
+        .then((response) => {
+          this.collabcohortsets = JSON.parse(response.data.data)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
     },
     getAnalysismethodsData() {
       axios.get('/structure/getStructure', {

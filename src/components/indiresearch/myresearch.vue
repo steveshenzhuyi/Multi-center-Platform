@@ -336,7 +336,7 @@
             class="dialog-footer">
         <el-button @click="saveresult = false">取 消</el-button>
         <el-button type="primary"
-                   @click="saveresult = false;">确 定</el-button>
+                   @click="saveresult = false;tosaveresult(saveresultname)">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 新建变量 dwx -->
@@ -615,6 +615,8 @@ export default {
       inputVisible: false,
       inputValue: '',
       ifsave: false,
+      cohortidnow: "",
+      modelidnow: "",
     };
   },
   mounted() {
@@ -1231,36 +1233,40 @@ export default {
     },
     // 队列分析（未完）/RH
     cohortanalysis(cohortId, modelId) {
-      //       axios.post('/result/createResult', ({
-      //   "token": this.GLOBAL.token,
-      //   "researchId": "53",
-      //   "researchTypeTag":1,
-      //   "name": this.newresearchname,
-      //   "target": "aaa",
-      //   "proposal": "aaa",
-      //   "expectedOutcomes": "aaa",
-      //   "dataRange": "aaa",
-      //   "projectSupport": "aaa",
-      //   "redundancy": "qwerty"
-      // }))
-      //   .then(response => {
-      //     if (response.data.code == "0") {
-      //       this.$message.success("新建成功！")
-      //       setTimeout(function () {
-      //         location.reload()
-      //       }, 1000);
-      //     }
-      //   })
-
       console.log("开始分析")
-
       if (cohortId == undefined) {        this.$message.warning("请选择分析队列！")
       } else if (modelId == undefined) { this.$message.warning("请选择计算模型！") } else {
         console.log(cohortId, modelId)
+        this.cohortidnow = cohortId;
+        this.modelidnow = modelId;
         this.$message.success("开始分析！")
         // 开始计算
         this.ifsave = true
       }
+    },
+
+    tosaveresult(saveresultname) {
+      axios.post('/result/createResult', ({
+        "token": this.GLOBAL.token,
+        "researchTypeTag": "1",
+        "researchId": this.$route.params.researchId,
+        "name": saveresultname,
+        "description": "test",
+        "userId": this.GLOBAL.userId,
+        "cohortId": this.cohortidnow,
+        "cohortVersion": "1",
+        "modelId": this.modelidnow,
+        "modelVersion": "1",
+        "modelTypeLayer1Code": "1",
+        "modelTypeLayer2Code": "1",
+        "resultTemplateVersion": "1",
+        "organizationCode": this.GLOBAL.ORGANIZATIONCODE
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("保存成功")
+          }
+        })
     },
     // 删除变量/RH
     taghandleClose(tag) {
