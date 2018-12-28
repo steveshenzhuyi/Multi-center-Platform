@@ -954,7 +954,7 @@ export default {
     },
     GetVarSelection(val) {
       this.VarSelection = val
-      console.log(this.VarSelection)
+      // console.log(this.VarSelection)
     },
     // handleChange2_2(value) {
     //   console.log(value);
