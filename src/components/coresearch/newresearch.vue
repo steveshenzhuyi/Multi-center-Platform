@@ -89,7 +89,7 @@
       </el-col>
       <el-col :span="1"></el-col>
     </el-row>
-    <el-row v-for="(n,index) in number"
+    <!-- <el-row v-for="(n,index) in number"
             :key="index"
             type="flex"
             justify="center"
@@ -112,7 +112,7 @@
         <el-select size="small"
                    v-model="select3"
                    placeholder="请选择">
-          <el-option v-for="item in orgdep[0].children"
+          <el-option v-for="item in orgdep[select2].children"
                      :key="item.value"
                      :label="item.label"
                      :value="item.value">
@@ -133,7 +133,7 @@
            @click="number++"></i><i v-if="n == number"
            class="el-icon-delete"
            @click="number--"></i></el-col>
-    </el-row>
+    </el-row> -->
     <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
@@ -224,23 +224,15 @@ export default {
       select2: [],
       select3: [],
       orgdep: [{
-        value: '0',
-        label: '浙一',
-        children: [{
-          value: '0',
-          label: '内科',
-        }, {
-          value: '1',
-          label: '外科',
-        }]
+        value: "",
+        label: "",
+        children: []
       }, {
-        value: '1',
-        label: '浙二',
-        children: [{
-          value: '0',
-          label: '内科',
-        }]
+        value: "",
+        label: "",
+        children: []
       }],
+      organization: [],
       researchDetail: {
         name: '',
         target: '',
@@ -257,6 +249,7 @@ export default {
   },
   mounted() {
     this.getOrgAndDep()
+
   },
   methods: {
     showProtocol() {
@@ -279,25 +272,67 @@ export default {
       })
         .then((response) => {
 
-          if (response.data.msg == "success!") {
-            console.log("org", response.data.data)
-
+          if (response.data.code == 0) {
+            this.organization = response.data.data
+            console.log("org", this.organization)
+            // this.orgdep[0].value = this.organization[0]['organizationCode'.toUpperCase()]
+            // this.orgdep[0].label = this.organization[0]['name'.toUpperCase()]
+            for (var i = 0; i < this.organization.length; i++) {
+              this.orgdep[i].value = this.organization[i]['organizationCode'.toUpperCase()]
+              this.orgdep[i].label = this.organization[i]['name'.toUpperCase()]
+              // this.orgdep.push({
+              //   value: this.organization[i]['organizationCode'.toUpperCase()],
+              //   label: this.organization[i]['name'.toUpperCase()],
+              //   children: []
+              // })
+            }
+            this.getDep()
           }
         })
         .catch(function (error) {
           console.log("error", error);
+        })
+    },
+    getDep() {
+      //for (var n = 0; n < this.organization.length; n++) {
+      axios.get('/collaboration/department', {
+        params: {
+          token: this.GLOBAL.token,
+          organizationCode: this.organization[0]['organizationCode'.toUpperCase()]
+        }
+      })
+        .then((response) => {
+
+          if (response.data.code == 0) {
+            this.department = response.data.data
+            console.log("dep", this.department)
+
+            for (var j = 0; j < this.department.length; j++) {
+              this.orgdep[0].children.push({
+                "value": this.department[j]['departmentCode'.toUpperCase()],
+                "label": this.department[j]['name'.toUpperCase()]
+              })
+            }
+          }
+
+
+        })
+        .catch(function (error) {
+          console.log("error", error);
         });
+      //}
+      console.log("orgdep", this.orgdep)
 
     },
     goNewTeam() {
       console.log(this.researchDetail)
-      this.$router.push({
-        path: 'newteam',
-        query:
-          {
-            collaborationId: 49
-          }
-      });
+      // this.$router.push({
+      //   path: 'newteam',
+      //   query:
+      //     {
+      //       collaborationId: 49
+      //     }
+      // });
       axios.post('/collaboration/createResearch', {
         "token": this.GLOBAL.token,
         "name": this.researchDetail.name,
@@ -315,13 +350,13 @@ export default {
         .then((response) => {
 
           if (response.data.msg == "成功插入协同状态数据!") {
-            // this.$router.push({
-            //   path: 'newteam',
-            //   params:
-            //     {
-            //       collaborationId: response.data.data
-            //     }
-            // });
+            this.$router.push({
+              path: 'newteam',
+              params:
+                {
+                  collaborationId: response.data.data
+                }
+            });
           }
         })
         .catch(function (error) {
