@@ -76,10 +76,10 @@
             </el-tooltip>
           </li>
 
-          <li v-for="cohort in analysisresultlist">
+          <li v-for="result in analysisresultlist">
             <div class="cardBox">
               <div class="headerBox">
-                <span style="font-size:20px; font-weight:bold">{{cohort.cohortname}}</span>
+                <span style="font-size:20px; font-weight:bold">{{result.NAME}}</span>
                 <el-dropdown style="float: right; padding: 3px 0"
                              trigger="click">
                   <span class="el-icon-more">
@@ -97,11 +97,11 @@
                      @click="toMycohort"
                      style="position:absolute;">
                   <div class="flex-container">
-                    {{'计算时间 ' }}<span style="float: right; ">{{cohort.createtime}}</span>
+                    {{'结果ID ' }}<span style="float: right; ">{{result.RESULTID}}</span>
                   </div>
                   <div class="flex-container">
                     {{'研究者 ' }}
-                    <span style="float: right; ">{{cohort.researchadmin }}</span>
+                    <span style="float: right; ">{{name}}</span>
                   </div>
                   <!-- <div class="flex-container">
                 {{'研究状态 ' }}
@@ -142,6 +142,7 @@
 <script>
 // import wait from '../../assets/等待审核.png'
 // import end from '../../assets/已结束.png'
+import axios from 'axios';
 
 export default {
   data() {
@@ -156,6 +157,8 @@ export default {
       newcohortname: "",
       formLabelWidth: '90px',
       createtime: "",
+      researchId: "",
+      name: "",
       generateresultlist: [
         {
           cohortname: "队列生成结果1",
@@ -206,7 +209,50 @@ export default {
       }
     }
   },
+  mounted() {
+    this.getStatInfoList();
+    this.getResearchResultList();
+    this.name = this.GLOBAL.NAME
+  },
   methods: {
+    // 获取队列统计信息列表/RH
+    getStatInfoList() {
+      axios.get('/result/getStatInfoList', {
+        params: {
+          "token": this.GLOBAL.token,
+          "researchTypeTag": "1",
+          "researchId": this.$route.params.researchId,
+        }
+      })
+        .then((response) => {
+          console.log(response)
+          this.generateresultlist = response.data.data
+
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+
+    // 获取研究对应分析结果列表/RH
+    getResearchResultList() {
+      axios.get('/result/getResearchResultList', {
+        params: {
+          "token": this.GLOBAL.token,
+          "researchTypeTag": "1",
+          "researchId": this.$route.params.researchId,
+        }
+      })
+        .then((response) => {
+          console.log(response)
+          this.analysisresultlist = response.data.data
+
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+
     // 关闭对话框
     handleClose(done) {
       this.$confirm("确认关闭？")
@@ -218,14 +264,15 @@ export default {
     // 跳转至对应研究页面
     toMycohort: function () {
       this.$router.replace({
-        path: "myresearch",
-        query:
+        name: "我的研究",
+        params:
           {
+            "researchId": this.$route.params.researchId,
             cohortid: ""
           }
       });
     },
-    // 新建研究对话框
+    // 新建队列对话框
     ifNewcohort: function () {
       this.dialogVisible = true;
     },
@@ -234,10 +281,10 @@ export default {
     toNewcohort: function () {
       this.createtime = new Date();
       this.$router.push({
-        path: 'myresearch',
-        query:
+        name: '我的研究',
+        params:
           {
-            cohortid: 1
+            "researchId": this.$route.params.researchId,
           }
       });
     },
