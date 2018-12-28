@@ -6,32 +6,10 @@
            class="diagnose">
     <!-- id对应条件在字典的index -->
     <draggable :options="{group:'diagnose'}">
-      <el-checkbox v-model="form.formdetail[5].data1"
-                   id="5">首次出现</el-checkbox>
-      <el-form-item label="性别"
-                    id="4">
-        <el-input v-model="form.formdetail[4].data1"></el-input>
-      </el-form-item>
-      <el-form-item label="记录来源"
-                    id="3">
-        <el-input v-model="form.formdetail[3].data1"></el-input>
-      </el-form-item>
-      <!-- <el-form-item label="诊断类型">
-        <el-input v-model="form.type"></el-input>
-      </el-form-item> -->
       <el-form-item label="诊断编码集合"
                     id="0">
         <el-input v-model="form.formdetail[0].data1"></el-input>
         <!-- <el-checkbox v-model="form.codechecked"
-                     class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="诊断年龄"
-                    id="2">
-        <el-input-number v-model="form.formdetail[2].data1"
-                         controls-position="right"></el-input-number><span class="line"> - </span>
-        <el-input-number v-model="form.formdetail[2].data2"
-                         controls-position="right"></el-input-number>
-        <!-- <el-checkbox v-model="form.agechecked"
                      class="except">不在其之间</el-checkbox> -->
       </el-form-item>
       <el-form-item label="诊断日期"
@@ -55,6 +33,28 @@
         <!-- <el-checkbox v-model="form.datechecked"
                      class="except">不在其之间</el-checkbox> -->
       </el-form-item>
+      <el-form-item label="诊断年龄"
+                    id="2">
+        <el-input-number v-model="form.formdetail[2].data1"
+                         controls-position="right"></el-input-number><span class="line"> - </span>
+        <el-input-number v-model="form.formdetail[2].data2"
+                         controls-position="right"></el-input-number>
+        <!-- <el-checkbox v-model="form.agechecked"
+                     class="except">不在其之间</el-checkbox> -->
+      </el-form-item>
+      <el-form-item label="记录来源"
+                    id="3">
+        <el-input v-model="form.formdetail[3].data1"></el-input>
+      </el-form-item>
+      <el-form-item label="性别"
+                    id="4">
+        <el-input v-model="form.formdetail[4].data1"></el-input>
+      </el-form-item>
+      <el-checkbox v-model="form.formdetail[5].data1"
+                   id="5">首次出现</el-checkbox>
+      <!-- <el-form-item label="诊断类型">
+        <el-input v-model="form.type"></el-input>
+      </el-form-item> -->
     </draggable>
   </el-form>
 </template>
@@ -72,18 +72,18 @@ export default {
       form: {
         id: '',
         formdetail: [
-          { data1: '', },
+          { data1: '', },//诊断编码集合
           {
             data1: '',
             data2: '',
-          },
+          },          //诊断日期
           {
             data1: -1,
             data2: -1,
-          },
-          { data1: '', },
-          { data1: '', },
-          { data1: false, },
+          },          //诊断年龄
+          { data1: '', },//记录来源
+          { data1: '', },//性别
+          { data1: false, },//首次出现
         ]
       },
       cohortdict: '', //查询队列字典得到
@@ -96,7 +96,7 @@ export default {
     },
     mainItem: {
       handler() {
-        if (this.mainItem.groupName == 'diagnose') {
+        if (this.mainItem.groupName == 'mar') {
           this.cohortdict[this.mainItem.itemId]['layer2SortNo'] = this.mainItem.sortNo
           this.cohortdict[this.mainItem.itemId]['layer1SortNo'] = this.mainItem.id
           this.cohortdict[this.mainItem.itemId]['criteriaTypeCode'] = "1"

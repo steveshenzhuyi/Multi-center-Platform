@@ -220,36 +220,40 @@ export default {
       this.mainItem.sortNo = newIndex
       this.mainItem.id = id
       this.mainItem.groupName = groupName
+      console.log(this.mainItem)
     },
     submitForm(cohortInfo) {
       //表单验证--rzx
       this.$refs[cohortInfo].validate((valid) => {
         if (valid) {
-          console.log('valid success!!');
+          this.fulfilCreateInfo(cohortInfo)
+          console.log(this.createInfo)
+          axios.post('cohort/create',
+            this.createInfo
+          )
+            .then((response) => {
+              console.log(response)
+              if (response.data.msg == '新建成功') {
+                this.cohortId = response.data.id
+                this.$message({
+                  message: '队列新建成功！',
+                  type: 'success',
+                  duration: 1000
+                });
+              }
+            })
+            .catch(function (error) {
+              console.log("error", error);
+            });
         } else {
-          console.log('valid error!!');
+          this.$message({
+            message: '请输入队列名称',
+            duration: 1000,
+            type: 'warning'
+          });
           return false;
         }
       });
-      this.fulfilCreateInfo(cohortInfo)
-      console.log(this.createInfo)
-      axios.post('cohort/create',
-        this.createInfo
-      )
-        .then((response) => {
-          console.log(response)
-          if (response.data.msg == '新建成功') {
-            this.cohortId = response.data.id
-            this.$message({
-              message: '队列新建成功！',
-              type: 'success',
-              duration: 1000
-            });
-          }
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
     },
     //重置表单
     resetForm(cohortInfo) {
