@@ -1,25 +1,25 @@
 <template>
-  <div class="creat-queue-vue">
+  <div class="creat-cohort-vue">
     <!-- 队列基本信息表单 -->
     <div class="user-fill-info"
          style="margin-top:20px">
-      <el-form :model="queueInfo"
+      <el-form :model="cohortInfo"
                :rules="rules"
-               ref="queueInfo"
+               ref="cohortInfo"
                label-width="110px"
                label-position="left"
-               class="queue-Info">
+               class="cohort-Info">
         <el-form-item label="队列名称"
                       prop="name">
           <el-col :span="11">
-            <el-input v-model="queueInfo.name"
+            <el-input v-model="cohortInfo.name"
                       placeholder="请输入队列名称"></el-input>
           </el-col>
         </el-form-item>
         <el-form-item label="队列描述">
           <el-col :span="11">
             <el-input type="textarea"
-                      v-model="queueInfo.description"
+                      v-model="cohortInfo.description"
                       placeholder="请输入队列描述"></el-input>
           </el-col>
         </el-form-item>
@@ -78,16 +78,16 @@
           </div>
           <div>
             <el-button style="float:right;margin-top:10px"
-                       @click="resetForm('queueInfo')">取消</el-button>
+                       @click="resetForm('cohortInfo')">取消</el-button>
             <el-button type="primary"
                        style="float:right;margin-right:5px;margin-top:10px"
-                       @click="submitForm('queueInfo')">保存</el-button>
+                       @click="submitForm('cohortInfo')">保存</el-button>
           </div>
         </div>
       </el-col>
       <el-col :span="6">
         <div id="sifting-condition-item"
-             class="sifting-queue-content">
+             class="sifting-cohort-content">
           <!-- 下拉选择显示右侧二级条件 -->
           <component :is="comName"
                      :conditionFormId="conditionFormId"
@@ -126,7 +126,7 @@ export default {
     return {
       limitvalue: '',
       comName: 'diagnoseForm', //右侧加载的组件
-      queueInfo: {
+      cohortInfo: {
         name: '',
         description: ''
       },
@@ -155,6 +155,7 @@ export default {
       minordivs: [{ component: "minorcondition", id: 0 }],
       minordivCount: 0,
       conditionFormId: '',
+      cohortId: '',
     }
   },
   methods: {
@@ -220,39 +221,47 @@ export default {
       this.mainItem.id = id
       this.mainItem.groupName = groupName
     },
-    submitForm(queueInfo) {
+    submitForm(cohortInfo) {
       //表单验证--rzx
-      // this.$refs[queueInfo].validate((valid) => {
-      //   if (valid) {
-      //     console.log('valid success!!');
-      //   } else {
-      //     console.log('valid error!!');
-      //     return false;
-      //   }
-      // });
-      this.fulfilCreatInfo(queueInfo)
+      this.$refs[cohortInfo].validate((valid) => {
+        if (valid) {
+          console.log('valid success!!');
+        } else {
+          console.log('valid error!!');
+          return false;
+        }
+      });
+      this.fulfilCreatInfo(cohortInfo)
       console.log(this.creatInfo)
-      axios.post('cohort/create', {
-        params: this.creatInfo
-      })
+      axios.post('cohort/create',
+        this.creatInfo
+      )
         .then((response) => {
           console.log(response)
+          if (response.data.msg == '新建成功') {
+            this.cohortId = response.data.id
+            this.$message({
+              message: '队列新建成功！',
+              type: 'success',
+              duration: 1000
+            });
+          }
         })
         .catch(function (error) {
           console.log("error", error);
         });
     },
     //重置表单
-    resetForm(queueInfo) {
-      this.$refs[queueInfo].resetFields();
+    resetForm(cohortInfo) {
+      this.$refs[cohortInfo].resetFields();
     },
     //拼接队列创建条件--rzx
-    fulfilCreatInfo(queueInfo) {
+    fulfilCreatInfo(cohortInfo) {
       this.creatInfo = {
         token: this.GLOBAL.token,
         detail: []
       }
-      this.creatInfo = Object.assign(this.creatInfo, this.queueInfo)
+      this.creatInfo = Object.assign(this.creatInfo, this.cohortInfo)
       // 若id存在则读取子组件form
       for (var i = 0; i < this.condId.length; i++) {
         if (this.condId[i].id !== '') {
@@ -328,7 +337,7 @@ input.num-input {
   /* background-color: rgba(216, 216, 216, 0.18); */
   position: absolute;
 }
-.sifting-queue-content {
+.sifting-cohort-content {
   background: linear-gradient(to bottom, #eaeaea, #f9f9f9);
   border-radius: 5px;
   padding: 10px 0 0 10px;
