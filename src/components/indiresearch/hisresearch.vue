@@ -104,18 +104,12 @@ export default {
           return '个人研究构建完成';
           break;
         case 1:
-          return '队列构建中';
-          break;
-        case 2:
-          return '队列构建完成';
-          break;
-        case 3:
           return '研究成果构建中';
           break;
-        case 4:
+        case 2:
           return '资格审核中';
           break;
-        case 5:
+        case 3:
           return '研究完成';
           break;
         default:
@@ -156,11 +150,11 @@ export default {
     // 跳转至对应研究页面
     toMyresearch: function (researchid) {
       console.log(researchid)
-      this.$router.replace({
-        path: "cohortlist",
-        query:
+      this.$router.push({
+        name: "结果列表",
+        params:
           {
-            researchid: researchid
+            "researchId": researchid
           }
       });
     },

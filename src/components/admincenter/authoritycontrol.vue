@@ -14,7 +14,7 @@
     </el-row>
     <!-- 审核 -->
     <!--（“同意”、“拒绝”按钮如果用el-col，随着屏幕变窄el-col的宽度也会变窄，两个按钮就会重叠，
-        因此需要把按钮和input放在同一行，所以使用表单(否则按钮和input会自动换行)。用el的表单会有无法居中的问题，所以用普通表单） -->
+        因此需要把按钮和input放在同一行，所以使用表格(否则按钮和input会自动换行)。用el的表格会有无法居中的问题，所以用普通表格） -->
     <div v-if="OptionValue==0">
       <el-row style="margin-top:20px;margin-bottom:10px">
         <el-col :span=5
