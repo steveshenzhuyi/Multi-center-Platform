@@ -1,25 +1,7 @@
 <template>
-  <div>
-
-    <el-row style="margin-top:15px;margin-bottom:10px;">
-
-      <!-- 进度条/RH -->
-      <el-col :span="20">
-        <el-steps :active="researchstatus"
-                  align-center>
-          <el-step title="1 队列选择"></el-step>
-          <el-step title="2 数据模型"></el-step>
-          <el-step title="3 预测结果"></el-step>
-          <el-step title></el-step>
-        </el-steps>
-      </el-col>
-      <el-col :span="4">
-        <el-button type="primary"
-                   @click="toNewVariable()">新增变量</el-button>
-
-      </el-col>
-    </el-row>
-    <el-row :gutter="20">
+  <div onselectstart="return false">
+    <el-row :gutter="20"
+            style="margin-top:15px;margin-bottom:10px;">
       <el-col :span="6">
         <!-- 概念集模块/RH by lqh-->
         <el-row>
@@ -35,20 +17,15 @@
                          @click="handleAddTop_concept">添加新文件夹</el-button>
               <el-button type="primary"
                          size="mini"
-                         @click="dialogVisible = true">新建概念集</el-button>
+                         @click="createConceptVisible = true">新建概念集</el-button>
               <div class="slot-tree">
                 <el-tree ref="SlotMenuList"
                          class="expand-tree"
                          v-if="isLoadingTree"
                          default-expand-all
                          node-key="id"
-                         @node-drag-start="handleDragStart"
-                         @node-drag-enter="handleDragEnter"
-                         @node-drag-leave="handleDragLeave"
-                         @node-drag-over="handleDragOver"
-                         @node-drag-end="handleDragEnd"
-                         @node-drop="handleDrop"
                          draggable
+                         @node-drop="handleDrop"
                          :allow-drop="allowDrop"
                          :allow-drag="allowDrag"
                          :data="conceptsets"
@@ -58,7 +35,20 @@
                         slot-scope="{ node, data }">
                     <!-- 未编辑状态 -->
                     <span v-show="!node.isEdit">
-                      <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                      <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']"
+                            @click="dialogVisible = true">{{ node.label }}</span>
+                      <el-dialog title="提示"
+                                 :visible.sync="dialogVisible"
+                                 width="30%"
+                                 :before-close="handleClose">
+                        <span>这是一段信息</span>
+                        <span slot="footer"
+                              class="dialog-footer">
+                          <el-button @click="dialogVisible = false">取 消</el-button>
+                          <el-button type="primary"
+                                     @click="dialogVisible = false">确 定</el-button>
+                        </span>
+                      </el-dialog>
                       <span class="slot-t-icons">
                         <!-- 新增按钮 -->
                         <!--i class="el-icon-plus"
@@ -77,9 +67,9 @@
                                 size="mini"
                                 autofocus
                                 v-model="data.label"
-                                :ref="'slotTreeInput'+data.id"
-                                @blur.stop="NodeBlur_concept(node, data)"
-                                @keyup.enter.native="NodeBlur_concept(node, data)"></el-input>
+                                :ref="'slotTreeInput_concept'+data.id"
+                                @blur.stop="NodeBlur(node, data)"
+                                @keyup.enter.native="NodeBlur(node, data)"></el-input>
                     </span>
                   </span>
                 </el-tree>
@@ -98,43 +88,38 @@
               <span>队列</span>
             </div>
             <el-button size="mini"
-                       @click="handleAddTop_queue">添加新文件夹</el-button>
+                       @click="handleAddTop_cohort">添加新文件夹</el-button>
             <el-button type="primary"
                        size="mini"
-                       @click="toCreateQueue">新建队列</el-button>
+                       @click="toCreatecohort">新建队列</el-button>
             <div class="slot-tree">
               <el-tree ref="SlotMenuList"
                        class="expand-tree"
                        v-if="isLoadingTree"
                        default-expand-all
                        node-key="id"
-                       @node-drag-start="handleDragStart"
-                       @node-drag-enter="handleDragEnter"
-                       @node-drag-leave="handleDragLeave"
-                       @node-drag-over="handleDragOver"
-                       @node-drag-end="handleDragEnd"
-                       @node-drop="handleDrop"
                        draggable
+                       @node-drop="handleDrop"
                        :allow-drop="allowDrop"
                        :allow-drag="allowDrag"
-                       :data="queuesets"
+                       :data="cohortsets"
                        :props="defaultProps"
                        :expand-on-click-node="false">
                 <span class="slot-t-node"
                       slot-scope="{ node, data }">
                   <!-- 未编辑状态 -->
                   <span v-show="!node.isEdit">
-                    <span :class="[data.id > queue_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                    <span :class="[data.id > cohort_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
                     <span class="slot-t-icons">
                       <!-- 新增按钮 -->
                       <!--i class="el-icon-plus"
                          @click="NodeAdd(node, data)"></i-->
                       <!-- 编辑按钮 -->
                       <i class="el-icon-edit"
-                         @click="NodeEdit_queue(node, data)"></i>
+                         @click="NodeEdit_cohort(node, data)"></i>
                       <!-- 删除按钮 -->
                       <i class="el-icon-delete"
-                         @click="NodeDel_queue(node, data)"></i>
+                         @click="NodeDel_cohort(node, data)"></i>
                     </span>
                   </span>
                   <!-- 编辑输入框 -->
@@ -143,9 +128,9 @@
                               size="mini"
                               autofocus
                               v-model="data.label"
-                              :ref="'slotTreeInput'+data.id"
-                              @blur.stop="NodeBlur_queue(node, data)"
-                              @keyup.enter.native="NodeBlur_queue(node, data)"></el-input>
+                              :ref="'slotTreeInput_cohort'+data.id"
+                              @blur.stop="NodeBlur(node, data)"
+                              @keyup.enter.native="NodeBlur(node, data)"></el-input>
                   </span>
                 </span>
               </el-tree>
@@ -164,15 +149,52 @@
             </div>
             <div class="expand">
               <el-button size="mini"
-                         @click="handleAddTop">添加新文件夹</el-button>
+                         @click="handleAddTop_method">添加新文件夹</el-button>
               <el-button type="primary"
                          size="mini"
                          @click="NewMethodVisible=true">新建方法</el-button>
-              <div>
-                <el-tree :data="analysismethods"
+              <div class="slot-tree">
+                <el-tree ref="SlotMenuList"
+                         class="expand-tree"
+                         v-if="isLoadingTree"
+                         default-expand-all
+                         node-key="id"
+                         @node-drop="handleDrop"
+                         draggable
+                         :allow-drop="allowDrop"
+                         :allow-drag="allowDrag"
+                         :data="analysismethods"
                          :props="defaultProps"
-                         @node-click="handleNodeClick"
-                         default-expand-all></el-tree>
+                         :expand-on-click-node="false">
+                  <span class="slot-t-node"
+                        slot-scope="{ node, data }">
+                    <!-- 未编辑状态 -->
+                    <span v-show="!node.isEdit">
+                      <span :class="[data.id > method_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
+                      <span class="slot-t-icons">
+                        <!-- 新增按钮 -->
+                        <!--i class="el-icon-plus"
+                         @click="NodeAdd(node, data)"></i-->
+                        <!-- 编辑按钮 -->
+                        <i class="el-icon-edit"
+                           @click="NodeEdit_method(node, data)"></i>
+                        <!-- 删除按钮 -->
+                        <i class="el-icon-delete"
+                           @click="NodeDel_method(node, data)"></i>
+                      </span>
+                    </span>
+                    <!-- 编辑输入框 -->
+                    <span v-show="node.isEdit">
+                      <el-input class="slot-t-input"
+                                size="mini"
+                                autofocus
+                                v-model="data.label"
+                                :ref="'slotTreeInput_method'+data.id"
+                                @blur.stop="NodeBlur(node, data)"
+                                @keyup.enter.native="NodeBlur(node, data)"></el-input>
+                    </span>
+                  </span>
+                </el-tree>
               </div>
             </div>
 
@@ -184,27 +206,63 @@
         <el-row>
           <el-card class="box-card"
                    style="height:100%">
-            <div slot="header"
-                 style="height:12px;font-size:13px;"
-                 class="clearfix">
-              <span>构建</span>
-            </div>
+            <el-tabs v-model="activeName"
+                     style="margin-top:-10px">
+              <el-tab-pane label="队列生成"
+                           name="summarygenerate">
+                <el-select v-model="summarygeneratevalue"
+                           placeholder="请选择">
+                  <el-option-group v-for="cohort in cohortsets"
+                                   :key="cohort.label"
+                                   :label="cohort.label">
+                    <el-option v-for="item in cohort.children"
+                               :key="item.label"
+                               :label="item.label"
+                               :value="item.label">
+                    </el-option>
+                  </el-option-group>
+                </el-select>
+                <el-button type="primary"
+                           @click="toNewVariable()">新增变量</el-button>
+                <el-button style="float:right;margin-bottom:5px;margin-top:5px"
+                           type="primary"
+                           @click="summarygenerate">生成</el-button>
+              </el-tab-pane>
+              <el-tab-pane label="队列分析"
+                           name="cohortanalysis">
+                <el-select v-model="cohortanalysisvalue"
+                           placeholder="请选择">
+                  <el-option-group v-for="cohort in cohortsets"
+                                   :key="cohort.label"
+                                   :label="cohort.label">
+                    <el-option v-for="item in cohort.children"
+                               :key="item.label"
+                               :label="item.label"
+                               :value="item.label">
+                    </el-option>
+                  </el-option-group>
+                </el-select>
+                <el-select v-model="analysismethodvalue"
+                           placeholder="请选择">
+                  <el-option-group v-for="method in analysismethods"
+                                   :key="method.label"
+                                   :label="method.label">
+                    <el-option v-for="item in method.children"
+                               :key="item.label"
+                               :label="item.label"
+                               :value="item.label">
+                    </el-option>
+                  </el-option-group>
+                </el-select>
 
-            <draggable :options="{group:'condition'}">
-              <div class="drag-cover"></div>
-            </draggable>
-            <!-- <el-table :data="tableData"
-                      style="width: 100%">
+                <el-button style="float:right;margin-bottom:5px;margin-top:5px"
+                           type="primary"
+                           @click="cohortanalysis">分析</el-button>
 
-              <el-table-column prop="quene"
-                               label="队列"
-                               width="180"></el-table-column>
-              <el-table-column prop="method"
-                               label="分析方法"></el-table-column>
-            </el-table> -->
-            <el-button style="float:right;margin-bottom:5px;margin-top:5px"
-                       type="primary">计算</el-button>
+              </el-tab-pane>
+            </el-tabs>
           </el-card>
+
         </el-row>
 
         <!-- 分析结果模块/RH -->
@@ -217,70 +275,73 @@
               <span>分析结果</span>
             </div>
             <el-button style="float:right;margin-bottom:5px;margin-top:5px"
-                       type="primary">保存</el-button>
+                       type="primary"
+                       @click="saveresult=true">保存</el-button>
           </el-card>
         </el-row>
       </el-col>
     </el-row>
-
-    <!-- 新建变量 -->
+    <el-dialog title="保存结果"
+               :visible.sync="saveresult"
+               width="30%"
+               :before-close="handleClose">
+      <el-form>
+        <el-form-item label="结果名称："
+                      :label-width="formLabelWidth">
+          <el-input placeholder="请输入结果名称"
+                    v-model="saveresultname"
+                    clearable>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="saveresult = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="saveresult = false;">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 新建变量 dwx -->
     <el-dialog title="新建变量"
                :visible.sync="NewVarVisible"
-               width="80%"
+               width="50%"
                :before-close="handleClose">
       <el-tabs :value="NewVarTabs">
         <el-tab-pane label="新增变量"
                      name="NewVariable">
-          <el-row :gutter=30>
-            <el-col :span=10
-                    :offset=1>
-              <div class="main-border">
-                <div class="one-of-main-border">
-                  <span>拖拽右侧变量至此</span>
-                </div>
-                <draggable :options="{group:'condition'}">
-                  <div class="drag-cover"></div>
-                </draggable>
-              </div>
-            </el-col>
-            <el-col :span=10
-                    :offset=1>
-              <div id="sifting-condition-item"
-                   class="sifting-queue-content">
-                <component :is="VarForm"></component>
-              </div>
-            </el-col>
-          </el-row>
         </el-tab-pane>
         <el-tab-pane label="变量列表"
                      name="VarList">
-          <el-table :data="VariableTable"
-                    stripe
-                    border>
-            <el-table-column prop="VarCName"
-                             label="变量名称（中文）"
-                             width="150"></el-table-column>
-            <el-table-column prop="VarEName"
-                             label="变量名称（英文）"
-                             width="150"></el-table-column>
-            <el-table-column prop="VarDiscription"
-                             label="变量描述"
-                             width="200"></el-table-column>
-            <el-table-column prop="VarDetail"
-                             label="变量详情"
-                             width="300"
-                             show-overflow-tooltip></el-table-column>
-            <el-table-column label="编辑">
-              <template slot-scope="scope">
-                <el-button size="mini"
-                           type="primary"
-                           @click="EditVar(scope.$index)">编辑</el-button>
-                <el-button size="mini"
-                           type="primary"
-                           @click="CancelVar(scope.$index)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <el-row>
+            <el-col :span=24
+                    :offset=1>
+              <el-table :data="VariableTable"
+                        style="width:90%"
+                        stripe
+                        border>
+                <el-table-column prop="name"
+                                 label="变量名称"
+                                 min-width="60%"></el-table-column>
+                <el-table-column prop="type"
+                                 label="变量类型"
+                                 min-width="60%"></el-table-column>
+                <el-table-column prop="description"
+                                 label="变量描述"
+                                 min-width="150%"
+                                 show-overflow-tooltip></el-table-column>
+                <el-table-column label="编辑"
+                                 min-width="120%">
+                  <template slot-scope="scope">
+                    <el-button size="mini"
+                               type="primary"
+                               @click="EditVar(scope.$index)">编辑</el-button>
+                    <el-button size="mini"
+                               @click="CancelVar(scope.$index)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-col>
+          </el-row>
         </el-tab-pane>
       </el-tabs>
       <span slot="footer"
@@ -292,1052 +353,186 @@
 
     <!--新增概念集 by lqh—-->
     <el-dialog title="新增概念集"
-               :visible.sync="dialogVisible"
+               :visible.sync="createConceptVisible"
                width="60%"
                :before-close="handleClose">
-      <el-form :model="NewConceptSets"
-               ref="NewConceptSets"
-               label-width="100px"
-               class="demo-ruleForm concept-container">
-        <el-row :gutter="10"
-                style="margin-top:10px;margin-bottom:10px"
-                type="flex"
-                justify="center">
-
-          <el-col :span="16">
-            <el-input prefix-icon="el-icon-search"
-                      v-model="InputConceptName"
-                      type="text"></el-input>
-          </el-col>
-        </el-row>
-        <el-row style="margin-top:10px;margin-bottom:10px">
-          <el-col :span="16"
-                  :offset="4">
-            <el-form-item label="*集合名称"
-                          prop="SetName"
-                          class="form-inline">
-              <el-input type="text"
-                        v-model="NewConceptSets.SetName"
-                        auto-complete="off"
-                        placeholder="请输入集合名称"
-                        class="form-control"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row style="margin-top:10px;margin-bottom:10px">
-          <el-col :span="14"
-                  :offset="4">
-            <el-form-item label="集合描述"
-                          prop="SetDescription"
-                          class="form-inline">
-              <el-input type="text"
-                        v-model="NewConceptSets.SetDescription"
-                        auto-complete="off"
-                        placeholder="请输入集合描述"
-                        class="form-control"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="2"
-                  :offset="1">
-            <el-button type="primary">待选择</el-button>
-          </el-col>
-          <el-col :span="2">
-            <el-button type="primary">已选择</el-button>
-          </el-col>
-        </el-row>
-      </el-form>
-      <el-row style="margin-top:10px;margin-bottom:10px"
-              type="flex"
-              justify="center">
-        <el-col :span="20">
-          <el-table :data="SearchResult"
-                    v-model="SearchResult"
-                    valign="center"
-                    height="300"
-                    border
-                    style="width: 100%"
-                    @selction-change="handleSelectionChange">
-            <el-table-column type="selection"
-                             label="全选"
-                             width="60"></el-table-column>
-            <el-table-column prop="ConceptCode"
-                             label="概念编码"
-                             width="120"></el-table-column>
-            <el-table-column prop="ConceptName"
-                             label="概念名称"
-                             width="150"></el-table-column>
-            <el-table-column prop="ConceptType"
-                             label="概念类别"
-                             width="120"></el-table-column>
-            <el-table-column prop="ConceptField"
-                             label="概念领域"
-                             width="120"></el-table-column>
-            <el-table-column prop="ConceptSource"
-                             label="概念来源（全部）"
-                             width="150"></el-table-column>
-            <el-table-column width="100">
-              <template slot="header"
-                        slot-scope="scope">
-                <el-checkbox :indeterminate="isIndeterminate1"
-                             v-model="checkAll1"
-                             @change="handleCheckAllExcludeditemsChange">排除</el-checkbox>
-              </template>
-              <template slot-scope="scope">
-                <el-checkbox-group v-model="checkedExcludeditems"
-                                   @change="handleCheckedExcludeditemsChange">
-                  <el-checkbox :label="scope.row.Except"></el-checkbox>
-                </el-checkbox-group>
-              </template>
-            </el-table-column>
-            <el-table-column>
-              <template slot="header"
-                        slot-scope="scope">
-                <el-checkbox :indeterminate="isIndeterminate2"
-                             v-model="checkAll2"
-                             @change="handleCheckAllChilerenConceptsChange">子概念</el-checkbox>
-              </template>
-              <template slot-scope="scope">
-                <el-checkbox-group v-model="checkedChilerenConcepts"
-                                   @change="handleCheckedChilerenConceptsChange">
-                  <el-checkbox :label="scope.row.ChilerenConcept"></el-checkbox>
-                </el-checkbox-group>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-col>
-      </el-row>
+      <component :is="mycreateconceptset"
+                 @getdata="getMultipleSelection"
+                 @getdata1="getExcludeditems"
+                 @getdata2="getChilerenConcepts"
+                 @getdata3="getConceptName"
+                 @getdata4="getConceptDes"></component>
       <span slot="footer"
             class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="createConceptVisible = false">取 消</el-button>
         <el-button type="primary"
-                   @click="dialogVisible = false">确 定</el-button>
+                   @click="postConceptData()">确 定</el-button>
       </span>
     </el-dialog>
 
-    <!--顾忆芯  2018/12/2 -->
+    <!--顾忆芯  2018/12/13 构建方法，统一了组合框 -->
+
     <el-dialog :visible.sync="NewMethodVisible"
                width="50%"
                height="80%"
                :before-close="handleClose">
+
       <el-tabs :tab-position="tabPosition"
-               type="border-card">
-        <el-tab-pane name="first "
+               type="border-card"
+               @tab-click="handleClick">
+
+        <el-tab-pane name="A"
                      label="描述性分析">
-          <el-row :gutter="20">
-            <el-col :span="18">
-              <el-transfer v-model="value1"
-                           :data="data1"
-                           :titles="['变量', '目标变量']"></el-transfer>
-            </el-col>
-            <el-col :span="6">
-              <el-row>
-                <el-button type="primary">确定</el-button>
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <el-button type="primary">取消</el-button>
-              </el-row>
-              <el-row>
-                <el-button type="primary">帮助</el-button>
-              </el-row>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20"
-                  style="margin-top:10px;margin-bottom:10px">
-            <el-col :span="16">
-              <el-row>
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">百分位数</legend>
-                    <el-checkbox-group v-model="checkList1_1">
-                      <el-row>
-                        <el-checkbox :label="1">中位数</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="2">百分位数：
-                          <el-input-number v-model="num1"
-                                           size="mini"
-                                           controls-position="right"
-                                           @change="handleChange1"
-                                           :min="0"
-                                           :max="100"></el-input-number>% </el-checkbox>
 
-                      </el-row>
+          <div id="1">
+            <component :is="methodName"></component>
+          </div>
 
-                    </el-checkbox-group>
-                  </fieldset>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">集中趋势</legend>
-                    <el-checkbox-group v-model="checkList1_2">
-                      <el-row>
-                        <el-checkbox :label="5">均值</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="6">几何平均数</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="7">众数</el-checkbox>
-                      </el-row>
-                    </el-checkbox-group>
-                  </fieldset>
-
-                </form>
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder"> 离散趋势</legend>
-                    <el-checkbox-group v-model="checkList1_3">
-                      <el-col :span="8">
-                        <el-row>
-                          <el-checkbox :label="11">极大值</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="13">极小值</el-checkbox>
-                        </el-row>
-
-                      </el-col>
-                      <el-col :span="16">
-                        <el-row>
-                          <el-checkbox :label="12">方差</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="14">标准差</el-checkbox>
-                        </el-row>
-
-                      </el-col>
-                    </el-checkbox-group>
-                  </fieldset>
-                </form>
-              </el-row>
-            </el-col>
-            <el-col :span="8">
-              <el-row>
-
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">分布状态</legend>
-                    <el-checkbox-group v-model="checkList1_4">
-                      <el-row>
-                        <el-checkbox :label="1">偏度（Skewness）</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="2">峰度（Kurtosis）</el-checkbox>
-                      </el-row>
-                    </el-checkbox-group>
-                  </fieldset>
-                </form>
-
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">图表</legend>
-                    <el-checkbox-group v-model="checkList1_5">
-                      <el-row>
-                        <el-checkbox :label="5">条形图</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="6">饼图</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="7">折线图</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="8">箱线图</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="9">直方图</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="10">散点图</el-checkbox>
-                      </el-row>
-                    </el-checkbox-group>
-                  </fieldset>
-                </form>
-
-              </el-row>
-            </el-col>
-          </el-row>
         </el-tab-pane>
-        <el-tab-pane name="second "
+        <el-tab-pane name="B "
                      label="t检验">
-          <el-tabs>
-            <el-tab-pane name="second-1"
+          <el-tabs @tab-click="handleClick2">
+            <el-tab-pane name="a"
                          label="单样本t检验">
-              <el-row :gutter="20">
-                <el-col :span="18">
-                  <el-transfer v-model="value2_1"
-                               :data="data2_1"
-                               :titles="['变量', '目标变量']"></el-transfer>
-                </el-col>
-                <el-col :span="6">
-                  <el-row>
-                    <el-button type="primary">确定</el-button>
-                  </el-row>
-                  <el-row style="margin-top:10px;margin-bottom:10px">
-                    <el-button type="primary">取消</el-button>
-                  </el-row>
-                  <el-row>
-                    <el-button type="primary">帮助</el-button>
-                  </el-row>
-                </el-col>
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
-                <el-input-number v-model="num2_1"
-                                 controls-position="right"
-                                 @change="handleChange2_1"
-                                 :min="0"
-                                 :max="100"></el-input-number>%
-
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">零假设的期望值：
-                <el-input style="width:180px;"></el-input>
-
-              </el-row>
+              <div id="2-1">
+                <component :is="methodName"></component>
+              </div>
             </el-tab-pane>
-            <el-tab-pane name="second-2"
+            <el-tab-pane name="b"
                          label="独立样本t检验">
-              <el-row :gutter="20">
-                <el-col :span="18">
-                  <el-transfer v-model="value2_2"
-                               :data="data2_2"
-                               :titles="['变量', '目标变量']"></el-transfer>
-                </el-col>
-                <el-col :span="6">
-                  <el-row>
-                    <el-button type="primary">确定</el-button>
-                  </el-row>
-                  <el-row style="margin-top:10px;margin-bottom:10px">
-                    <el-button type="primary">取消</el-button>
-                  </el-row>
-                  <el-row>
-                    <el-button type="primary">帮助</el-button>
-                  </el-row>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-transfer v-model="value2_2_2"
-                             :data="data2_2_2"
-                             :titles="['变量', '分组变量']"></el-transfer>
-              </el-row>
-
-              <el-row :gutter="20">
-
-                <el-col :span="12">
-                  <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
-                    <el-input-number size="mini"
-                                     v-model="num2_2"
-                                     controls-position="right"
-                                     @change="handleChange2_2"
-                                     :min="0"
-                                     :max="100"></el-input-number>%
-                  </el-row>
-                  <el-row>
-                    <el-checkbox>
-                      进行方差齐性预检验
-                    </el-checkbox>
-                  </el-row>
-                </el-col>
-                <el-col :span="12">
-                  <form>
-                    <fieldset class="groupbox-boarder">
-                      <legend class="one-of-groupbox-boarder">t检验的方式</legend>
-                      <el-radio-group v-model="radio2_2">
-                        <el-radio :label="3">标准t检验</el-radio></br>
-                        <el-radio :label="6">Welch t 检验</el-radio></br>
-                        <el-radio :label="9">根据方差齐性检验结果自动选择</el-radio>
-                      </el-radio-group>
-                    </fieldset>
-                  </form>
-
-                </el-col>
-
-              </el-row>
-
+              <div id="2-2">
+                <component :is="methodName"></component>
+              </div>
+              独立样本t检验
             </el-tab-pane>
-            <el-tab-pane name="second-3"
+            <el-tab-pane name="c"
                          label="配对样本t检验">
-              <el-row :gutter="20">
-                <el-col :span="18">
-                  <el-transfer v-model="value2_3"
-                               :data="data2_3"
-                               :titles="['变量', '目标变量']"></el-transfer>
-                </el-col>
-                <el-col :span="6">
-                  <el-row>
-                    <el-button type="primary">确定</el-button>
-                  </el-row>
-                  <el-row style="margin-top:10px;margin-bottom:10px">
-                    <el-button type="primary">取消</el-button>
-                  </el-row>
-                  <el-row>
-                    <el-button type="primary">帮助</el-button>
-                  </el-row>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-transfer v-model="value2_3_2"
-                             :data="data2_3_2"
-                             :titles="['变量', '分组变量']"></el-transfer>
-
-              </el-row>
-              <el-row :gutter="20"
-                      style="margin-top:10px;margin-bottom:10px">
-
-                <el-col :span="12">
-                  <el-row>置信区间百分比：
-                    <el-input-number v-model="num2_3"
-                                     controls-position="right"
-                                     @change="handleChange2_3"
-                                     :min="0"
-                                     :max="100"></el-input-number>%
-                  </el-row>
-                </el-col>
-                <el-col :span="12">
-
-                  <form>
-                    <fieldset class="groupbox-boarder">
-                      <legend class="one-of-groupbox-boarder">预检验</legend>
-                      <el-checkbox-group v-model="checkList2_3">
-                        <el-row>
-                          <el-checkbox :label="1">方差齐性预检验</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="2">组别相关性检验</el-checkbox>
-                        </el-row>
-                      </el-checkbox-group>
-                    </fieldset>
-                  </form>
-
-                </el-col>
-              </el-row>
+              <div id="2-3">
+                <component :is="methodName"></component>
+              </div>
             </el-tab-pane>
           </el-tabs>
         </el-tab-pane>
-        <el-tab-pane name="third "
+        <el-tab-pane name="C"
                      label="方差分析">
-          <el-tabs>
-            <el-tab-pane label="单因素方差分析">
-              <el-row :gutter="20">
-                <el-col :span="18">
-                  <el-transfer v-model="value3_1_1"
-                               :data="data3_1_1"
-                               :titles="['变量', '因变量']"></el-transfer>
-
-                </el-col>
-                <el-col :span="6">
-                  <el-row>
-                    <el-button type="primary">确定</el-button>
-                  </el-row>
-                  <el-row style="margin-top:10px;margin-bottom:10px">
-                    <el-button type="primary">取消</el-button>
-                  </el-row>
-                  <el-row>
-                    <el-button type="primary">帮助</el-button>
-                  </el-row>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-transfer v-model="value3_1_2"
-                             :data="data3_1_2"
-                             :titles="['变量', '自变量']"></el-transfer>
-
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
-                <el-input-number v-model="num3_1"
-                                 controls-position="right"
-                                 @change="handleChange3_1"
-                                 :min="0"
-                                 :max="100"></el-input-number>%
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <form>
-                    <fieldset class="groupbox-boarder">
-                      <legend class="one-of-groupbox-boarder">分析选项</legend>
-                      <el-row>
-                        方差分析类型：
-                        <el-select v-model="value3_1"
-                                   size="mini">
-                          <el-option v-for="item in options3_1"
-                                     :key="item.value"
-                                     :label="item.label"
-                                     :value="item.value">
-                          </el-option>
-                        </el-select>
-
-                      </el-row>
-                      <el-checkbox-group v-model="checkList3_1_1">
-
-                        <el-row>
-                          <el-checkbox :label="1">levene方差齐性检验</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="2">正态性检验</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="3">因素间交互作用检验</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="4">tukey检验</el-checkbox>
-                        </el-row>
-                      </el-checkbox-group>
-                    </fieldset>
-                  </form>
-                  <!-- <form>
-                          <fieldset class="groupbox-boarder">
-                            <legend class="one-of-groupbox-boarder"></legend>
-                          </fieldset>
-                        </form> -->
-
-                </el-col>
-                <el-col :span="12">
-                  <form>
-                    <fieldset class="groupbox-boarder">
-                      <legend class="one-of-groupbox-boarder">输出选项</legend>
-                      <el-checkbox-group v-model="checkList3_1_2">
-
-                        <el-row>
-                          <el-checkbox :label="1">方差分析结果</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="2">回归结果</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="3">eta平方</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="4">omega平方</el-checkbox>
-                        </el-row>
-                      </el-checkbox-group>
-                    </fieldset>
-                  </form>
-
-                </el-col>
-              </el-row>
+          <el-tabs @tab-click="handleClick3">
+            <el-tab-pane name="d"
+                         label="单因素方差分析">
+              <div id="3-1">
+                <component :is="methodName"></component>
+              </div>
             </el-tab-pane>
-            <el-tab-pane label="多因素方差分析">
-              <el-row :gutter="20">
-                <el-col :span="18">
-                  <el-row>
-                    <el-transfer v-model="value3_2_1"
-                                 :data="data3_2_1"
-                                 :titles="['变量', '检测变量']"></el-transfer>
-                    <el-transfer v-model="value3_2_2"
-                                 :data="data3_2_2"
-                                 :titles="['变量', '分组变量']"></el-transfer>
-
-                  </el-row>
-
-                </el-col>
-                <el-col :span="6">
-                  <el-row>
-                    <el-button type="primary">确定</el-button>
-                  </el-row>
-                  <el-row style="margin-top:10px;margin-bottom:10px">
-                    <el-button type="primary">取消</el-button>
-                  </el-row>
-                  <el-row>
-                    <el-button type="primary">帮助</el-button>
-                  </el-row>
-                </el-col>
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
-                <el-input-number v-model="num3_2"
-                                 controls-position="right"
-                                 @change="handleChange3_2"
-                                 :min="0"
-                                 :max="100"></el-input-number>%
-              </el-row>
-
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <form>
-                    <fieldset class="groupbox-boarder">
-                      <legend class="one-of-groupbox-boarder">分析选项</legend>
-                      <el-row>
-                        方差分析类型：
-                        <el-select v-model="value3_2"
-                                   size="mini">
-                          <el-option v-for="item in options3_2"
-                                     :key="item.value"
-                                     :label="item.label"
-                                     :value="item.value">
-                          </el-option>
-                        </el-select>
-
-                      </el-row>
-                      <el-checkbox-group v-model="checkList3_2_1">
-
-                        <el-row>
-                          <el-checkbox :label="1">levene方差齐性检验</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="2">正态性检验</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="3">因素间交互作用检验</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="4">tukey检验</el-checkbox>
-                        </el-row>
-                      </el-checkbox-group>
-                    </fieldset>
-                  </form>
-
-                </el-col>
-                <el-col :span="12">
-                  <form>
-                    <fieldset class="groupbox-boarder">
-                      <legend class="one-of-groupbox-boarder">输出选项</legend>
-                      <el-checkbox-group v-model="checkList3_2_2">
-
-                        <el-row>
-                          <el-checkbox :label="1">方差分析结果</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="2">回归结果</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="3">eta平方</el-checkbox>
-                        </el-row>
-                        <el-row>
-                          <el-checkbox :label="4">omega平方</el-checkbox>
-                        </el-row>
-                      </el-checkbox-group>
-                    </fieldset>
-                  </form>
-
-                </el-col>
-              </el-row>
+            <el-tab-pane name="e"
+                         label="多因素方差分析">
+              <div id="3-2">
+                <component :is="methodName"></component>
+              </div>
             </el-tab-pane>
           </el-tabs>
         </el-tab-pane>
-        <el-tab-pane name="fourth "
+        <el-tab-pane name="D"
                      label="线性回归">
-          <el-row :gutter="20">
-            <el-col :span="18">
-              <el-row>
-                <el-transfer v-model="value4_1"
-                             :data="data4_1"
-                             :titles="['变量', '因变量']"></el-transfer>
-              </el-row>
-              <el-row>
-                <el-transfer v-model="value4_2"
-                             :data="data4_2"
-                             :titles="['变量', '自变量']"></el-transfer>
-
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">参数设置</legend>
-                    <el-checkbox-group v-model="checkList4">
-
-                      <el-row>
-                        <el-checkbox :label="1">interception</el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="2">normalization</el-checkbox>
-                      </el-row>
-
-                    </el-checkbox-group>
-                  </fieldset>
-                </form>
-              </el-row>
-            </el-col>
-            <el-col :span="6">
-              <el-row>
-                <el-button type="primary">确定</el-button>
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <el-button type="primary">取消</el-button>
-              </el-row>
-              <el-row>
-                <el-button type="primary">帮助</el-button>
-              </el-row>
-            </el-col>
-          </el-row>
+          <div id="4">
+            <component :is="methodName"></component>
+          </div>
         </el-tab-pane>
-        <el-tab-pane name="fifth "
+        <el-tab-pane name="E"
                      label="逻辑回归">
-          <el-row :gutter="20">
-            <el-col :span="18">
-              <el-row>
-                <el-transfer v-model="value5_1"
-                             :data="data5_1"
-                             :titles="['变量', '因变量']"></el-transfer>
-              </el-row>
-              <el-row>
-                <el-transfer v-model="value5_2"
-                             :data="data5_2"
-                             :titles="['变量', '自变量']"></el-transfer>
-
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">参数设置</legend>
-                    <el-checkbox-group v-model="checkList5">
-
-                      <el-row>
-                        <el-checkbox :label="1">intercept</el-checkbox>
-                        基准精度<el-input v-model="input5_1"
-                                  type="number"
-                                  size="mini"
-                                  style="width:100px;"></el-input>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox :label="2">class weight</el-checkbox>
-                      </el-row>
-
-                    </el-checkbox-group>
-                  </fieldset>
-                </form>
-                <!-- <form>
-                          <fieldset class="groupbox-boarder">
-                            <legend class="one-of-groupbox-boarder"></legend>
-                          </fieldset>
-                        </form> -->
-                <!-- <el-card shadow="never"
-                                 :body-style="{ padding: '10px'}">
-                          <span>参数设置</span>
-                          <el-checkbox-group v-model="checkList5">
-
-                            <el-row>
-                              <el-checkbox :label="1">intercept</el-checkbox>
-                              基准精度<el-input v-model="input5_1"
-                                        type="number"
-                                        size="mini"
-                                        style="width:100px;"></el-input>
-                            </el-row>
-                            <el-row>
-                              <el-checkbox :label="2">class weight</el-checkbox>
-                            </el-row>
-
-                          </el-checkbox-group>
-                        </el-card> -->
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">高级参数</legend>
-                    <el-row>正规化
-                      <el-select v-model="value5"
-                                 size="mini">
-                        <el-option v-for="item in options5"
-                                   :key="item.value"
-                                   :label="item.label"
-                                   :value="item.value">
-                        </el-option>
-                      </el-select>
-                      精度基准<el-input v-model="input5_1"
-                                type="number"
-                                size="mini"
-                                style="width:100px;"></el-input>
-                    </el-row>
-                    <el-row style="margin-top:10px;margin-bottom:10px">
-                      惩罚因子C <el-input type="number"
-                                v-model="input5_2"
-                                size="mini"
-                                style="width:100px;"></el-input>
-                    </el-row>
-                  </fieldset>
-                </form>
-
-              </el-row>
-            </el-col>
-            <el-col :span="6">
-              <el-row>
-                <el-button type="primary">确定</el-button>
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <el-button type="primary">取消</el-button>
-              </el-row>
-              <el-row>
-                <el-button type="primary">帮助</el-button>
-              </el-row>
-            </el-col>
-          </el-row>
+          <div id="5">
+            <component :is="methodName"></component>
+          </div>
         </el-tab-pane>
-        <el-tab-pane name="sixth "
+        <el-tab-pane name="F"
                      label="SVM">
-          <el-row :gutter="20">
-            <el-col :span="18">
-              <el-row>
-                <el-transfer v-model="value6_1"
-                             :data="data6_1"
-                             :titles="['变量', '结局变量']"></el-transfer>
-              </el-row>
-              <el-row>
-                <el-transfer v-model="value6_2"
-                             :data="data6_2"
-                             :titles="['变量', '自变量']"></el-transfer>
-              </el-row>
-
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">参数设置</legend>
-                    <el-row>
-                      kernal<el-select v-model="value6"
-                                 size="mini">
-                        <el-option v-for="item in options6"
-                                   :key="item.value"
-                                   :label="item.label"
-                                   :value="item.value">
-                        </el-option>
-                      </el-select>
-                      基准精度<el-input v-model="input6_1"
-                                type="number"
-                                size="mini"
-                                style="width:100px;"></el-input>
-                    </el-row>
-                    <el-row>
-                      max iter<el-input v-model="input6_2"
-                                type="number"
-                                size="mini"
-                                style="width:100px;"></el-input>
-                    </el-row>
-
-                  </fieldset>
-                </form>
-
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">高级参数</legend>
-
-                    <el-row tyle="margin-top:20px;margin-bottom:10px">
-                      惩罚因子C <el-input-number v-model="input6_3"
-                                       :precision="1"
-                                       :step="0.1"
-                                       controls-position="right"
-                                       size="mini"
-                                       style="width:100px;"></el-input-number>
-                      degree <el-input-number v-model="input6_4"
-                                       :precision="1"
-                                       :step="0.1"
-                                       controls-position="right"
-                                       size="mini"
-                                       style="width:100px;"></el-input-number>
-                    </el-row>
-                    <el-row tyle="margin-top:10px;margin-bottom:10px">
-                      核函数常数 <el-input-number v-model="input6_5"
-                                       :precision="1"
-                                       :step="0.1"
-                                       controls-position="right"
-                                       size="mini"
-                                       style="width:100px;"></el-input-number>
-                      gamma <el-input-number :precision="1"
-                                       :step="0.1"
-                                       controls-position="right"
-                                       v-model="input6_6"
-                                       size="mini"
-                                       style="width:100px;"></el-input-number>
-                    </el-row>
-                  </fieldset>
-                </form>
-
-              </el-row>
-
-            </el-col>
-            <el-col :span="6">
-              <el-row>
-                <el-button type="primary">确定</el-button>
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <el-button type="primary">取消</el-button>
-              </el-row>
-              <el-row>
-                <el-button type="primary">帮助</el-button>
-              </el-row>
-            </el-col>
-          </el-row>
+          <div id="6">
+            <component :is="methodName"></component>
+          </div>
         </el-tab-pane>
-        <el-tab-pane name="seventh "
+        <el-tab-pane name="G"
                      label="贝叶斯网络">
-          <el-row :gutter="20">
-            <el-col :span="18">
-              <el-row>
-                <el-transfer v-model="value7_1"
-                             :data="data7_1"
-                             :titles="['变量', '结局变量']"></el-transfer>
-              </el-row>
-              <el-row>
-                <el-transfer v-model="value7_2"
-                             :data="data7_2"
-                             :titles="['变量', '自变量']"></el-transfer>
-
-              </el-row>
-
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">参数设置</legend>
-                    <el-row>
-                      模型<el-select v-model="value7"
-                                 size="mini">
-                        <el-option v-for="item in options7"
-                                   :key="item.value"
-                                   :label="item.label"
-                                   :value="item.value">
-                        </el-option>
-                      </el-select>
-                      <el-checkbox v-model="check7">fit prior</el-checkbox>
-
-                    </el-row>
-                  </fieldset>
-                </form>
-
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">高级参数</legend>
-                    <el-row tyle="margin-top:20px;margin-bottom:10px">
-                      smoothing<el-input type="number"
-                                v-model="input7_1"
-                                size="mini"
-                                style="width:100px;"></el-input>
-
-                    </el-row>
-                    <el-row tyle="margin-top:10px;margin-bottom:10px">
-                      alpha <el-input type="number"
-                                v-model="input7_2"
-                                size="mini"
-                                style="width:100px;"></el-input>
-                    </el-row>
-                    <el-row>
-                      gamma <el-input type="number"
-                                v-model="input7_3"
-                                size="mini"
-                                style="width:100px;"></el-input>
-                    </el-row>
-                  </fieldset>
-                </form>
-
-              </el-row>
-            </el-col>
-            <el-col :span="6">
-              <el-row>
-                <el-button type="primary">确定</el-button>
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <el-button type="primary">取消</el-button>
-              </el-row>
-              <el-row>
-                <el-button type="primary">帮助</el-button>
-              </el-row>
-            </el-col>
-          </el-row>
+          <div id="7">
+            <component :is="methodName"></component>
+          </div>
         </el-tab-pane>
-        <el-tab-pane name="eighth "
+        <el-tab-pane name="H"
                      label="决策树">
-          <el-row :gutter="20">
-            <el-col :span="18">
-              <el-row>
-                <el-transfer v-model="value7_1"
-                             :data="data7_1"
-                             :titles="['变量', '结局变量']"></el-transfer>
-              </el-row>
-              <el-row>
-                <el-transfer v-model="value7_2"
-                             :data="data7_2"
-                             :titles="['变量', '自变量']"></el-transfer>
-              </el-row>
-
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">参数设置</legend>
-                    <el-row>
-                      criterion<el-select v-model="value8"
-                                 size="mini">
-                        <el-option v-for="item in options8"
-                                   :key="item.value"
-                                   :label="item.label"
-                                   :value="item.value">
-                        </el-option>
-                      </el-select>
-                      <el-checkbox v-model="check8">class weight</el-checkbox>
-
-                    </el-row>
-                    <el-row tyle="margin-top:20px;margin-bottom:10px">
-                      max deepth<el-input type="number"
-                                v-model="input8_1"
-                                size="mini"
-                                style="width:100px;"></el-input>
-
-                    </el-row>
-                    <el-row tyle="margin-top:20px;margin-bottom:10px">
-                      max features<el-input type="number"
-                                v-model="input8_2"
-                                size="mini"
-                                style="width:100px;"></el-input>
-
-                    </el-row>
-
-                  </fieldset>
-                </form>
-
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <form>
-                  <fieldset class="groupbox-boarder">
-                    <legend class="one-of-groupbox-boarder">高级参数</legend>
-                    <el-row tyle="margin-top:20px;margin-bottom:10px">
-                      min samples split<el-input type="number"
-                                v-model="input8_3"
-                                size="mini"
-                                style="width:100px;"></el-input>
-
-                    </el-row>
-                    <el-row tyle="margin-top:10px;margin-bottom:10px">
-                      min samples leaf <el-input type="number"
-                                v-model="input8_4"
-                                size="mini"
-                                style="width:100px;"></el-input>
-                    </el-row>
-
-                  </fieldset>
-                </form>
-
-              </el-row>
-            </el-col>
-            <el-col :span="6">
-              <el-row>
-                <el-button type="primary">确定</el-button>
-              </el-row>
-              <el-row style="margin-top:10px;margin-bottom:10px">
-                <el-button type="primary">取消</el-button>
-              </el-row>
-              <el-row>
-                <el-button type="primary">帮助</el-button>
-              </el-row>
-            </el-col>
-          </el-row>
+          <div id="8">
+            <component :is='methodName'></component>
+          </div>
         </el-tab-pane>
       </el-tabs>
+
     </el-dialog>
+
   </div>
 </template>
 <script>
+
 import axios from 'axios';
 
+import createconceptset from './createconceptset/createconceptset.vue';
 import draggable from 'vuedraggable';
-import VarForm from './conditionform/Variableform.vue'
+import Vue from 'vue';
+import firstanalysis from './methodform/firstanalysis.vue'
+import bayesiannetworks from './methodform/bayesiannetworks.vue'
+import decisiontree from './methodform/decisiontree.vue'
+import independent_ttest from './methodform/independent_ttest.vue'
+import linearregression from './methodform/linearregression.vue'
+import logicregression from './methodform/logicregression.vue'
+import multifactor_analysis from './methodform/multifactor_analysis.vue'
+import onesample_ttest from './methodform/onesample_ttest.vue'
+import oneway_anova from './methodform/oneway_anova.vue'
+import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
+import svmanalysis from './methodform/svmanalysis.vue'
+// import firstanalysisVue from './methodform/firstanalysis.vue';
+// import firstanalysis from './methodform/firstanalysis.vue'
+// import bayesiannetworks from './methodform/bayesiannetworks.vue'
+// import decisiontree from './methodform/decisiontree.vue'
+// import independent_ttest from './methodform/independent_ttest.vue'
+// import linearregression from './methodform/linearregression.vue'
+// import logicregression from './methodform/logicregression.vue'
+// import multifactor_analysis from './methodform/multifactor_analysis.vue'
+// import onesample_ttest from './methodform/onesample_ttest.vue'
+// import oneway_anova from './methodform/oneway_anova.vue'
+// import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
+// import svm from './methodform/svm.vue'
 
-const Excludeditemsoptions = [' ', '  ', '   '];
-const ChilerenConceptsoptions = [' ', '  ', '   '];
 
 export default {
+  components: {
+    'firstanalysis': firstanalysis,
+    'bayesiannetworks': bayesiannetworks,
+    'decisiontree': decisiontree,
+    'independent_ttest': independent_ttest,
+    'linearregression': linearregression,
+    'logicregression': logicregression,
+    'multifactor_analysis': multifactor_analysis,
+    'onesample_ttest': onesample_ttest,
+    'oneway_anova': oneway_anova,
+    'pairedsample_ttest': pairedsample_ttest,
+    'svmanalysis': svmanalysis,
+    'createconceptset': createconceptset
+  },
   data() {
     return {
-
+      activeName: 'summarygenerate',
+      summarygeneratevalue: '',
+      cohortanalysisvalue: '',
+      analysismethodvalue: '',
+      dialogVisible: false,
+      methodName: '',
+      saveresult: false,
+      saveresultname: '',
+      mycreateconceptset: createconceptset,
+      conceptSetName: '',
+      conceptSetDes: '',
+      Excludeditems: [],
+      ChilerenConcepts: [],
+      multipleSelection: [],
+      concepts: [],
+      concept_exist: false,
       researchstatus: this.$route.query.researchstatus,
+      createConceptVisible: false,
       NewVarVisible: false,
       NewMethodVisible: false,
       tableData: [{
@@ -1347,321 +542,30 @@ export default {
       // 概念集假数据/RH
       concept_maxexpandId: 3,//新增节点开始id
       non_concept_maxexpandId: 3,//新增节点开始id(不更改)
-      queue_maxexpandId: 3,//新增节点开始id
-      non_queue_maxexpandId: 3,//新增节点开始id(不更改)
+      cohort_maxexpandId: 3,//新增节点开始id
+      non_cohort_maxexpandId: 3,//新增节点开始id(不更改)
+      method_maxexpandId: 3,//新增节点开始id
+      non_method_maxexpandId: 3,//新增节点开始id(不更改)
       isLoadingTree: true,//是否加载节点树
       conceptsets: [],
-      queuesets: [],
+      cohortsets: [],
       analysismethods: [],
       defaultProps: {
         children: "children",
         label: "label"
       },
-      //新增概念集假数据
-      dialogVisible: false,
-      NewConceptSets: {
-        SetName: "",
-        SetDescription: ""
-      },
-      table: [
-        {
-          ConceptCode: "E14.901",
-          ConceptName: "糖尿病",
-          ConceptType: "ICD10 code",
-          ConceptField: "Condition",
-          ConceptSource: "SZ_ICD10",
-          Except: " ",
-          ChilerenConcept: " "
-        },
-        {
-          ConceptCode: "80_000",
-          ConceptName: "糖尿病",
-          ConceptType: "ICD10 code",
-          ConceptField: "Condition",
-          ConceptSource: "SZ_ICD10",
-          Except: "  ",
-          ChilerenConcept: "  "
-        },
-        {
-          ConceptCode: "E10.904",
-          ConceptName: "暴发性1型糖尿病",
-          ConceptType: "ICD10 code",
-          ConceptField: "Condition",
-          ConceptSource: "SZ_ICD10",
-          Except: "   ",
-          ChilerenConcept: "   "
-        }
-      ],
-      multipleSelection: [],
-      InputConceptName: "",
-      checkAll1: false,
-      isIndeterminate1: false,
-      checkAll2: false,
-      isIndeterminate2: false,
-      checkedExcludeditems: [],
-      checkedChilerenConcepts: [],
-      Excludeditems: Excludeditemsoptions,
-      ChilerenConcepts: ChilerenConceptsoptions,
       NewMethodVisible: false,
       tabPosition: "left",
-      radio2_2: 3,
-      data1: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data2_1: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data2_2: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data2_2_2: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data2_3: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data2_3_2: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data3_1_1: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data3_1_2: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data3_2_1: [{ key: "1", label: "变量1" }, { key: "2", label: "变量2" }],
-      data3_2_2: [{ key: "1", label: "变量1" }, { key: "2", label: "变量2" }],
-      data3_2_3: [{ key: "1", label: "变量1" }, { key: "2", label: "变量2" }],
-      data3_2_4: [{ key: "1", label: "变量1" }, { key: "2", label: "变量2" }],
-      data4_1: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data4_2: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data5_1: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data5_2: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data6_1: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data6_2: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data6_3: [
-        { key: "1", label: "线性" },
-        { key: "2", label: "多项式" },
-        { key: "3", label: "Radial basis" },
-        { key: "4", label: "Sigmoid" }
-      ],
-      data7_1: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      data7_2: [
-        { key: "1", label: "变量1" },
-        { key: "2", label: "变量2" },
-        { key: "3", label: "变量3" },
-        { key: "4", label: "变量4" }
-      ],
-      value1: [],
-      value2_1: [],
-      value2_2: [],
-      value2_2_2: [],
-      value2_3: [],
-      value2_3_2: [],
-      value3_1_1: [],
-      value3_1_2: [],
-      value3_2_1: [],
-      value3_2_2: [],
-      //select 的model
-      value3_1: [],
-      value3_2: [],
-      value5: [],
-      value6: [],
-      value7: [],
-      value8: [],
-      //
-      value4_1: [],
-      value4_2: [],
-      value5_1: [],
-      value5_2: [],
-      value6_1: [],
-      value6_2: [],
-      value6_3: [],
-      value7_1: [],
-      value7_2: [],
-      checkList1_1: [],
-      checkList1_2: [],
-      checkList1_3: [],
-      checkList1_4: [],
-      checkList1_5: [],
-      checkList2_3: [2],
-      checkList3_1_1: [1, 2, 3, 4],
-      checkList3_1_2: [1, 2, 3],
-      checkList3_2_1: [1, 2, 3, 4],
-      checkList3_2_2: [1, 2, 3],
-      checkList4: [2],
-      checkList5: [1, 2],
-      check7: true,
-      check8: true,
-      input5_1: 0.0001,
-      input5_2: 1.0,
-      input6_1: 0.0001,
-      input6_2: 10000,
-      input6_3: 1.0,
-      input6_4: 1.0,
-      input6_5: 1.0,
-      input6_6: 1.0,
-      input7_1: 0.0001,
-      input7_2: 1.0,
-      input7_3: 1.0,
-      input1: "",
-      input8_1: 8,
-      input8_2: 5,
-      input8_3: 5,
-      input8_4: 2,
-      num1: 3,
-      num2_1: 95,
-      num2_2: 95,
-      num2_3: 95,
-      num3_1: 95,
-      num3_2: 95,
-      options3_1: [{
-        value: '选项1',
-        label: 'typeⅠ'
-      }, {
-        value: '选项2',
-        label: 'typeⅡ'
-      }, {
-        value: '选项3',
-        label: 'typeⅢ'
-      }],
-      options3_2: [{
-        value: '选项1',
-        label: 'typeⅠ'
-      }, {
-        value: '选项2',
-        label: 'typeⅡ'
-      }, {
-        value: '选项3',
-        label: 'typeⅢ'
-      }],
-      options5: [{
-        value: '选项1',
-        label: 'L1'
-      }, {
-        value: '选项2',
-        label: 'L2'
-      },],
-      options6: [
-        {
-          value: '选项1',
-          label: '多项式'
-        }, {
-          value: '选项2',
-          label: 'Radial basis'
-        },
-        {
-          value: '选项3',
-          label: '线性'
-        },
-        {
-          value: '选项4',
-          label: 'Sigmoid'
-        },
-      ],
-      options7: [
-        {
-          value: '选项1',
-          label: '高斯'
-        }, {
-          value: '选项2',
-          label: '多项分布'
-        },
-        {
-          value: '选项3',
-          label: '伯努利'
-        }
-      ],
-      options8: [
-        {
-          value: '选项1',
-          label: '信息增益'
-        }, {
-          value: '选项2',
-          label: 'gini impurity'
-        }
-      ],
       checked: true,
-      // 新增变量弹框
+      // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
-      VariableTable: [{
-        VarCName: '性别',
-        VarEName: 'GENDER',
-        VarDiscription: '样本的性别',
-        VarDetail: 'SELECT PERSON_ID, CASE WHEN WHATWAHTWAHT'
-      },
-      {
-        VarCName: '年龄',
-        VarEName: 'AGE',
-        VarDiscription: '样本的年龄',
-        VarDetail: 'SELECT PERSON_ID, TO_NUMBER(WHATWAHTWAHT)'
-      }],
-      VarForm
+      VariableTable: []
     };
   },
   mounted() {
     // console.log(this.GLOBAL.token)
     this.getConceptsetsData();
-    this.getQueuesetsData();
+    this.getcohortsetsData();
     this.getAnalysismethodsData();
   },
   methods: {
@@ -1673,38 +577,20 @@ export default {
       })
         .then((response) => {
           //console.log(response)
-          this.conceptsets = JSON.parse(response.data.data.conceptSetStructur)
-          for (var i = 0; i < this.conceptsets.length; i++) {
-            this.conceptsets[i].isEdit = false;
-            this.conceptsets[i].id = 3;
-            for (var j = 0; j < this.conceptsets[i].children[j].length; j++) {
-              this.conceptsets[i].children[j].isEdit = false;
-            }
-          }
+          this.conceptsets = JSON.parse(response.data.data.conceptSetStructure)
         })
         .catch(function (error) {
           console.log("error", error);
         });
     },
-    getQueuesetsData() {
+    getcohortsetsData() {
       axios.get('/structure/getStructure', {
         params: {
           "token": this.GLOBAL.token
         }
       })
         .then((response) => {
-          this.queuesets = JSON.parse(response.data.data.collaborationCohortStructure)
-          for (var i = 0; i < this.queuesets.length; i++) {
-            this.queuesets[i].isEdit = false;
-            this.queuesets[i].id = 1;
-            this.queuesets[i].children[0].id = 2;
-            this.queuesets[i].children[1].id = 3;
-            this.queuesets[i].children[0].isEdit = false;
-            this.queuesets[i].children[1].isEdit = false;
-            //for (var j = 0; j < this.queuesets[i].children[j].length; j++) {
-            //this.queuesets[i].children[j].isEdit = false;
-            //}
-          }
+          this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
         })
         .catch(function (error) {
           console.log("error", error);
@@ -1723,6 +609,82 @@ export default {
           console.log("error", error);
         });
     },
+    getConceptName(val) {
+      this.conceptSetName = val;
+    },
+    getConceptDes(val) {
+      this.conceptSetDes = val;
+    },
+    getExcludeditems(val) {
+      this.Excludeditems = val;
+      //console.log(this.Excludeditems)
+    },
+    getChilerenConcepts(val) {
+      this.ChilerenConcepts = val;
+      //console.log(this.ChilerenConcepts)
+    },
+    getMultipleSelection(val) {
+      this.multipleSelection = val;
+      //console.log(this.multipleSelection)
+    },
+    postConceptData() {
+      this.createConceptVisible = false;
+      this.concepts = [];
+      for (var i = 0; i < this.multipleSelection.length; i++) {
+        this.concepts.push({
+          conceptCode: this.multipleSelection[i].subject,
+          excludeTag: "0",
+          childTag: "0"
+        });
+      }
+      for (var i = 0; i < this.Excludeditems.length; i++) {
+        this.concept_exist = false;
+        var a = []
+        a = this.Excludeditems[i].split('#')
+        for (var j = 0; j < this.concepts.length; j++) {
+          if (a[0].indexOf(this.concepts[j].conceptCode) != -1) {
+            this.concept_exist = true;
+            this.concepts[j].excludeTag = "1"
+          }
+        }
+        if (!this.concept_exist) {
+          this.concepts.push({
+            conceptCode: a[0],
+            excludeTag: "1",
+            childTag: "0"
+          });
+        }
+      }
+      for (var i = 0; i < this.ChilerenConcepts.length; i++) {
+        this.concept_exist = false;
+        var a = []
+        a = this.ChilerenConcepts[i].split('#')
+        for (var j = 0; j < this.concepts.length; j++) {
+          if (a[0].indexOf(this.concepts[j].conceptCode) != -1) {
+            this.concept_exist = true;
+            this.concepts[j].childTag = "1"
+          }
+        }
+        if (!this.concept_exist) {
+          this.concepts.push({
+            conceptCode: a[0],
+            excludeTag: "0",
+            childTag: "1"
+          });
+        }
+      }
+      axios.post('/conceptSet/createConceptSet?token=' + this.GLOBAL.token, ({
+        "conceptSetName": this.conceptSetName,
+        "conceptSetDes": this.conceptSetDes,
+        "concepts": this.concepts,
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("新建成功！")
+          }
+        })
+      console.log(this.concepts)
+    },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(_ => {
@@ -1733,35 +695,47 @@ export default {
     handleNodeClick(data) {
       // console.log(data);
     },
-    toCreateQueue() {
+    toCreatecohort() {
       this.$router.push({
         path: 'createqueue',
       });
     },
     toNewVariable: function () {
-      // this.$router.push({ path: "/newvariable" });
       this.NewVarVisible = true
+      this.getVariableTable()
     },
-    //概念集鼠标hover事件所需
+    //概念集资源结构编辑函数
     handleAddTop_concept() {
       this.conceptsets.push({
         id: ++this.concept_maxexpandId,
-        label: '新增节点',
-        isEdit: false,
-        children: []
+        label: '新增文件夹',
+        children: [],
+        tag: "0"
       });
+      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+        "conceptSetStructure": JSON.stringify(this.conceptsets),
+        "privateCohortStructure": "[]",
+        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+        "modelStructure": JSON.stringify(this.analysismethods),
+        "featureStructure": "[]",
+        "resultStructure": "[]"
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("编辑成功！")
+          }
+        })
     },
-    NodeBlur_concept(n, d) {//输入框失焦
-      console.log(n, d)
+    NodeBlur(n, d) {//输入框失焦
+      //console.log(n, d)
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
       }
       axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": "[]",
-        "collaborationCohortStructure": JSON.stringify(this.queuesets),
-        "modelStructure": "[]",
+        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+        "modelStructure": JSON.stringify(this.analysismethods),
         "featureStructure": "[]",
         "resultStructure": "[]"
       }))
@@ -1772,16 +746,16 @@ export default {
         })
     },
     NodeEdit_concept(n, d) {//编辑节点
-      console.log(n, d)
+      //console.log(n, d)
       if (!n.isEdit) {//检测isEdit是否存在or是否为false
         this.$set(n, 'isEdit', true)
       }
       this.$nextTick(() => {
-        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
+        this.$refs['slotTreeInput_concept' + d.id].$refs.input.focus()
       })
     },
     NodeDel_concept(n, d) {//删除节点
-      console.log(n, d)
+      //console.log(n, d)
       let that = this;
       if (d.children && d.children.length !== 0) {
         this.$message.error("此节点有子级，不可删除！")
@@ -1792,9 +766,22 @@ export default {
         let DelFun = () => {
           let _list = n.parent.data.children || n.parent.data;//节点同级数据
           let _index = _list.map((c) => c.id).indexOf(d.id);
-          console.log(_index)
+          //console.log(_index)
           _list.splice(_index, 1);
           this.$message.success("删除成功！")
+          axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+            "conceptSetStructure": JSON.stringify(this.conceptsets),
+            "privateCohortStructure": "[]",
+            "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+            "modelStructure": JSON.stringify(this.analysismethods),
+            "featureStructure": "[]",
+            "resultStructure": "[]"
+          }))
+            .then(response => {
+              if (response.data.code == "0") {
+                //this.$message.success("编辑成功！")
+              }
+            })
         }
         //二次确认
         let ConfirmFun = () => {
@@ -1810,50 +797,25 @@ export default {
         d.id > this.non_concept_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-    // NodeAdd(n, d) {//新增节点
-    //   console.log(n, d)
-    //   //判断层级
-    //   if (n.level >= 3) {
-    //     this.$message.error("最多只支持三级！")
-    //     return false;
-    //   }
-    //   //新增数据
-    //   d.children.push({
-    //     id: ++this.concept_maxexpandId,
-    //     label: '新增节点',
-    //     pid: d.id,
-    //     children: []
-    //   })
-    //   //同时展开节点
-    //   if (!n.expanded) {
-    //     n.expanded = true
-    //   }
-    // },
-    //队列鼠标hover事件所需
-    handleAddTop_queue() {
-      this.queuesets.push({
-        id: ++this.queue_maxexpandId,
-        label: '新增节点',
-        isEdit: false,
-        children: []
+    //队列资源结构编辑函数
+    handleAddTop_cohort() {
+      this.cohortsets.push({
+        id: ++this.cohort_maxexpandId,
+        label: '新增文件夹',
+        children: [],
+        tag: "0"
       });
     },
-    NodeBlur_queue(n, d) {//输入框失焦
-      console.log(n, d)
-      if (n.isEdit) {
-        this.$set(n, 'isEdit', false)
-      }
-    },
-    NodeEdit_queue(n, d) {//编辑节点
+    NodeEdit_cohort(n, d) {//编辑节点
       console.log(n, d)
       if (!n.isEdit) {//检测isEdit是否存在or是否为false
         this.$set(n, 'isEdit', true)
       }
       this.$nextTick(() => {
-        this.$refs['slotTreeInput' + d.id].$refs.input.focus()
+        this.$refs['slotTreeInput_cohort' + d.id].$refs.input.focus()
       })
     },
-    NodeDel_queue(n, d) {//删除节点
+    NodeDel_cohort(n, d) {//删除节点
       console.log(n, d)
       let that = this;
       if (d.children && d.children.length !== 0) {
@@ -1868,6 +830,19 @@ export default {
           console.log(_index)
           _list.splice(_index, 1);
           this.$message.success("删除成功！")
+          axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+            "conceptSetStructure": JSON.stringify(this.conceptsets),
+            "privateCohortStructure": "[]",
+            "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+            "modelStructure": JSON.stringify(this.analysismethods),
+            "featureStructure": "[]",
+            "resultStructure": "[]"
+          }))
+            .then(response => {
+              if (response.data.code == "0") {
+                //this.$message.success("编辑成功！")
+              }
+            })
         }
         //二次确认
         let ConfirmFun = () => {
@@ -1880,110 +855,223 @@ export default {
           }).catch(() => { })
         }
         //判断是否是新增节点
-        d.id > this.non_queue_maxexpandId ? DelFun() : ConfirmFun()
+        d.id > this.non_cohort_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-    //新增概念集所需
-    handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then(_ => {
-          done();
-        })
-        .catch(_ => { });
+
+    //模型方法资源结构编辑函数
+    handleAddTop_method() {
+      this.analysismethods.push({
+        id: ++this.method_maxexpandId,
+        label: '新增文件夹',
+        children: [],
+        tag: "0"
+      });
     },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
+    NodeEdit_method(n, d) {//编辑节点
+      if (!n.isEdit) {//检测isEdit是否存在or是否为false
+        this.$set(n, 'isEdit', true)
+      }
+      this.$nextTick(() => {
+        this.$refs['slotTreeInput_method' + d.id].$refs.input.focus()
+      })
     },
-    handleCheckAllExcludeditemsChange(val) {
-      this.checkedExcludeditems = val ? Excludeditemsoptions : [];
-      this.isIndeterminate1 = false;
+    NodeDel_method(n, d) {//删除节点
+      console.log(n, d)
+      let that = this;
+      if (d.children && d.children.length !== 0) {
+        this.$message.error("此节点有子级，不可删除！")
+        return false;
+      } else {
+        //新增节点可直接删除，已存在的节点要二次确认
+        //删除操作
+        let DelFun = () => {
+          let _list = n.parent.data.children || n.parent.data;//节点同级数据
+          let _index = _list.map((c) => c.id).indexOf(d.id);
+          console.log(_index)
+          _list.splice(_index, 1);
+          this.$message.success("删除成功！")
+          axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+            "conceptSetStructure": JSON.stringify(this.conceptsets),
+            "privateCohortStructure": "[]",
+            "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+            "modelStructure": JSON.stringify(this.analysismethods),
+            "featureStructure": "[]",
+            "resultStructure": "[]"
+          }))
+            .then(response => {
+              if (response.data.code == "0") {
+                //this.$message.success("成功！")
+              }
+            })
+        }
+        //二次确认
+        let ConfirmFun = () => {
+          this.$confirm("是否删除此节点？", "提示", {
+            confirmButtonText: "确认",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            DelFun()
+          }).catch(() => { })
+        }
+        //判断是否是新增节点
+        d.id > this.non_method_maxexpandId ? DelFun() : ConfirmFun()
+      }
     },
-    handleCheckedExcludeditemsChange(value) {
-      let checkedCount = value.length;
-      this.checkAll1 = checkedCount === this.Excludeditems.length;
-      this.isIndeterminate1 =
-        checkedCount > 0 && checkedCount < this.Excludeditems.length;
-    },
-    handleCheckAllChilerenConceptsChange(val) {
-      this.checkedChilerenConcepts = val ? ChilerenConceptsoptions : [];
-      this.isIndeterminate2 = false;
-    },
-    handleCheckedChilerenConceptsChange(value) {
-      let checkedCount = value.length;
-      this.checkAll2 = checkedCount === this.ChilerenConcepts.length;
-      this.isIndeterminate2 =
-        checkedCount > 0 && checkedCount < this.ChilerenConcepts.length;
-    },
-    handleChange2_1(value) {
-      console.log(value);
-    },
-    handleChange2_2(value) {
-      console.log(value);
-    },
-    handleChange2_3(value) {
-      console.log(value);
-    },
-    handleChange3_1(value) {
-      console.log(value);
-    },
-    handleChange3_2(value) {
-      console.log(value);
-    },
+    // handleChange2_2(value) {
+    //   console.log(value);
+    // },
+    // handleChange2_3(value) {
+    //   console.log(value);
+    // },
+    // handleChange3_1(value) {
+    //   console.log(value);
+    // },
+    // handleChange3_2(value) {
+    //   console.log(value);
+    // },
     // 新增变量弹框
+
+
+    // 新增变量弹框 dwx
+    getVariableTable() {
+      axios.get('/feature/getList', {
+        params: {
+          "token": this.GLOBAL.token
+        }
+      })
+        .then((response) => {
+          this.VariableTable = response.data.data
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+
     CancelVar(index) {
-      this.VariableTable.splice(index, 1)
+      axios.post('/feature/deleteFeature', {
+        "token": this.GLOBAL.token,
+        "featureId": this.VariableTable[index].featureId
+      })
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('删除成功！', '提示', { confirmButtonText: '确定' });
+            this.getVariableTable()
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+    EditVar(index) {
+
     },
     //队列拖拽所需
-    handleDragStart(node, ev) {
-      console.log('drag start', node);
-    },
-    handleDragEnter(draggingNode, dropNode, ev) {
-      console.log('tree drag enter: ', dropNode.label);
-    },
-    handleDragLeave(draggingNode, dropNode, ev) {
-      console.log('tree drag leave: ', dropNode.label);
-    },
-    handleDragOver(draggingNode, dropNode, ev) {
-      console.log('tree drag over: ', dropNode.label);
-    },
-    handleDragEnd(draggingNode, dropNode, dropType, ev) {
-      console.log('tree drag end: ', dropNode && dropNode.label, dropType);
-    },
     handleDrop(draggingNode, dropNode, dropType, ev) {
-      console.log('tree drop: ', dropNode.label, dropType);
+      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+        "conceptSetStructure": JSON.stringify(this.conceptsets),
+        "privateCohortStructure": "[]",
+        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+        "modelStructure": JSON.stringify(this.analysismethods),
+        "featureStructure": "[]",
+        "resultStructure": "[]"
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            //this.$message.success("编辑成功！")
+          }
+        })
     },
+
     allowDrop(draggingNode, dropNode, type) {
-      if (dropNode.data.label.indexOf('队列') != -1) {
+      if (dropNode.data.tag.indexOf('1') != -1) {
         return type !== 'inner';
       } else {
         return true;
       }
     },
     allowDrag(draggingNode) {
-      return draggingNode.data.label.indexOf('文件夹') === -1;
-    }
-  },
-  computed: {
-    // 新增概念集中实现搜索功能
-    SearchResult() {
-      const InputConceptName = this.InputConceptName;
-      if (InputConceptName) {
-        return this.table.filter(data => {
-          return Object.keys(data).some(key => {
-            return String(data[key]).indexOf(InputConceptName) > -1;
-          });
-        });
-      }
-      return this.table;
+      return draggingNode.data.tag.indexOf('0') === -1;
     },
-    options() {
-      return this.$store.state.options;
-    }
+
+    //以下为切换tab
+    handleClick(tab, event) {
+      this.checkVue(tab.name);
+    },
+    handleClick2(tab, event) {
+      this.checkVue(tab.name);
+    },
+    handleClick3(tab, event) {
+      this.checkVue(tab.name);
+    },
+    checkVue(name) {
+
+      switch (name) {
+        // case 'first':
+        //   console.log('第一');
+        //   // this.methodName='firstanalysis';
+        //   break;
+        case "A":
+          console.log('描述统计');
+          this.methodName = firstanalysis;
+          break;
+        case "a":
+          console.log('单样本t检验');
+          this.methodName = onesample_ttest;
+          break;
+        case "b":
+          console.log('独立样本t检验');
+          this.methodName = independent_ttest;
+          break;
+        case "c":
+          console.log('配对样本t检验');
+          this.methodName = pairedsample_ttest;
+          break;
+        case "d":
+          console.log('单因素方差');
+          this.methodName = oneway_anova;
+
+          break;
+        case "e":
+          console.log('多因素方差');
+          this.methodName = multifactor_analysis;
+          break;
+        case 'D':
+          console.log('线性回归');
+          this.methodName = linearregression;
+          break;
+        case 'E':
+          console.log('逻辑回归');
+          this.methodName = logicregression;
+          break;
+        case 'F':
+          console.log("SVM")
+          this.methodName = svmanalysis;
+          break;
+        case "G":
+          console.log('贝叶斯');
+          this.methodName = bayesiannetworks;
+          break;
+        case "H":
+          console.log('决策树');
+          this.methodName = decisiontree;
+          break;
+
+        default:
+          break;
+      }
+    },
+    cohortanalysis() {
+      console.log("开始分析")
+    },
+    summarygenerate() {
+      console.log("开始生成")
+    },
 
   },
   components: {
-    draggable,
-    VarForm
+    draggable
   },
 };
 </script>
@@ -2025,22 +1113,11 @@ export default {
   width: 100%;
   height: 10px;
 }
-.sifting-queue-content {
+.sifting-cohort-content {
   background: linear-gradient(to bottom, #eaeaea, #f9f9f9);
   border-radius: 5px;
   padding: 10px 0 0 10px;
   display: block;
-}
-.main-border {
-  border: 1px solid #ccc;
-  display: block;
-  margin-top: 40px;
-}
-.one-of-main-border {
-  transform: translate(10px, -12px);
-  background: #ffffff;
-  padding: 0 10px;
-  width: 150px;
 }
 .groupbox-boarder {
   border: 1px solid #ccc;
