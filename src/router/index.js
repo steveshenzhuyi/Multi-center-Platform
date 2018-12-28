@@ -38,10 +38,10 @@ export default new Router({
           children: [
             {
               path: "hisresearch",
-              name: "历史研究",
+              name: "个人研究",
               component: () => import("@/components/indiresearch/hisresearch"),
               meta: {
-                title: "历史研究"
+                title: "个人研究"
               }
             },
             {
