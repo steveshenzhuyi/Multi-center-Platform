@@ -760,7 +760,7 @@ export default {
     },
     toCreatecohort() {
       this.$router.push({
-        path: 'createqueue',
+        path: 'createCohort',
       });
     },
     toNewVariable: function () {
