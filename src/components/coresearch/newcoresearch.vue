@@ -841,7 +841,7 @@ export default {
       });
       axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
         "conceptSetStructure": JSON.stringify(this.conceptsets),
-        "privateCohortStructure": "[]",
+        "privateCohortStructure": JSON.stringify(this.cohortsets),
         "collaborationCohortStructure": JSON.stringify(this.cohortsets),
         "modelStructure": JSON.stringify(this.analysismethods),
         "featureStructure": "[]",
@@ -860,7 +860,7 @@ export default {
       }
       axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
         "conceptSetStructure": JSON.stringify(this.conceptsets),
-        "privateCohortStructure": "[]",
+        "privateCohortStructure": JSON.stringify(this.cohortsets),
         "collaborationCohortStructure": JSON.stringify(this.cohortsets),
         "modelStructure": JSON.stringify(this.analysismethods),
         "featureStructure": "[]",
@@ -905,7 +905,7 @@ export default {
                 this.$message.success("删除成功！")
                 axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
                   "conceptSetStructure": JSON.stringify(this.conceptsets),
-                  "privateCohortStructure": "[]",
+                  "privateCohortStructure": JSON.stringify(this.cohortsets),
                   "collaborationCohortStructure": JSON.stringify(this.cohortsets),
                   "modelStructure": JSON.stringify(this.analysismethods),
                   "featureStructure": "[]",
@@ -969,7 +969,7 @@ export default {
           this.$message.success("删除成功！")
           axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
             "conceptSetStructure": JSON.stringify(this.conceptsets),
-            "privateCohortStructure": "[]",
+            "privateCohortStructure": JSON.stringify(this.cohortsets),
             "collaborationCohortStructure": JSON.stringify(this.cohortsets),
             "modelStructure": JSON.stringify(this.analysismethods),
             "featureStructure": "[]",
@@ -1030,7 +1030,7 @@ export default {
           this.$message.success("删除成功！")
           axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
             "conceptSetStructure": JSON.stringify(this.conceptsets),
-            "privateCohortStructure": "[]",
+            "privateCohortStructure": JSON.stringify(this.cohortsets),
             "collaborationCohortStructure": JSON.stringify(this.cohortsets),
             "modelStructure": JSON.stringify(this.analysismethods),
             "featureStructure": "[]",
@@ -1108,7 +1108,7 @@ export default {
     handleDrop(draggingNode, dropNode, dropType, ev) {
       axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
         "conceptSetStructure": JSON.stringify(this.conceptsets),
-        "privateCohortStructure": "[]",
+        "privateCohortStructure": JSON.stringify(this.cohortsets),
         "collaborationCohortStructure": JSON.stringify(this.cohortsets),
         "modelStructure": JSON.stringify(this.analysismethods),
         "featureStructure": "[]",

@@ -255,11 +255,12 @@ export default {
       // ],
       firstTableAll: [],
       tableAll: [],
-      tableChecked: []
+      tableChecked: [],
+      conceptsLength: 0
     }
   },
 
-  created() {
+  mounted() {
     //console.log(this.existConceptId);
 
     if (this.existConceptId) {
@@ -275,32 +276,45 @@ export default {
             this.NewConceptSets.SetDescription = response.data.data.description
           }
           const concepts = response.data.data.concepts
+          this.conceptsLength = concepts.length
           for (var i = 0; i < concepts.length; i++) {
             var CONCEPTCODE = parseInt(response.data.data.concepts[i].CONCEPTCODE)
             var CHILDTAG = parseInt(response.data.data.concepts[i].CHILDTAG)
             var EXCLUDETAG = parseInt(response.data.data.concepts[i].EXCLUDETAG)
-            axios.get('/knowledgeGraph/queryConcept', {
-              params: {
-                "token": this.GLOBAL.token,
-                "query": CONCEPTCODE
-              }
+            this.tableAll.push({
+              subject: CONCEPTCODE.toString(),
+              label: '',
+              domain: '',
+              class: '',
+              voc: '',
+              std: '',
+              Except: CONCEPTCODE.toString(),
+              ChilerenConcept: CONCEPTCODE.toString()
             })
-              .then((response) => {
-                const searchConcepts = response.data.data.results.bindings
-                this.tableAll.push({
-                  subject: searchConcepts[0].subject.value.split('#')[1],
-                  label: searchConcepts[0].label.value,
-                  domain: searchConcepts[0].domain.value.split('#')[1],
-                  class: searchConcepts[0].class.value.split('#')[1],
-                  voc: searchConcepts[0].voc.value.split('#')[1],
-                  std: Object.getOwnPropertyNames(searchConcepts[0]).length > 5 ? searchConcepts[0].std : '',
-                  Except: searchConcepts[0].subject.value.split('#')[1],
-                  ChilerenConcept: searchConcepts[0].subject.value.split('#')[1]
-                })
-              })
-              .catch(function (error) {
-                console.log("error", error);
-              });
+            // axios.get('/knowledgeGraph/queryConceptID', {
+            //   params: {
+            //     "token": this.GLOBAL.token,
+            //     "query": CONCEPTCODE
+            //   },
+            //   timeout: 1000 * 60 * 3
+            // }
+            // )
+            //   .then((response) => {
+            //     const searchConcepts = response.data.results.bindings
+            //     this.tableAll.push({
+            //       subject: CONCEPTCODE.toString(),
+            //       label: searchConcepts[0].label.value,
+            //       domain: searchConcepts[0].domain.value,
+            //       class: searchConcepts[0].class.value,
+            //       voc: searchConcepts[0].voc.value,
+            //       std: Object.getOwnPropertyNames(searchConcepts[0]).length > 5 ? searchConcepts[0].std.value : '',
+            //       Except: CONCEPTCODE.toString(),
+            //       ChilerenConcept: CONCEPTCODE.toString()
+            //     })
+            //   })
+            //   .catch(function (error) {
+            //     console.log("error", error);
+            //   });
             if (CHILDTAG == 1) {
               this.checkedChilerenConcepts.push(CONCEPTCODE.toString())
             }
@@ -308,13 +322,13 @@ export default {
               this.checkedExcludeditems.push(CONCEPTCODE.toString())
             }
             if (CHILDTAG == 0 && EXCLUDETAG == 0) {
+              console.log(111)
               this.$nextTick(function () {
                 this.$refs.multipleTable.toggleRowSelection(this.tableAll[i], true);
               })
-
             }
           }
-          this.firstTableAll = this.tableAll
+          //this.firstTableAll = this.tableAll
           for (let i = 0; i < this.tableAll.length; i++) {
             this.Excludeditems[i] = this.tableAll[i].Except
             this.ChilerenConcepts[i] = this.tableAll[i].ChilerenConcept
@@ -326,6 +340,18 @@ export default {
     }
 
   },
+  updated() {
+    //var rows = this.firstTableAll
+    this.$nextTick(function () {
+      for (var i = 0; i < this.conceptsLength; i++) {
+        this.$refs.multipleTable.toggleRowSelection(this.tableAll[i], true);
+      }
+      //this.$options.methods.NameInputBlur();
+      //this.$options.methods.DesInputBlur();
+    })
+    //this.$options.methods.NameInputBlur();
+    //this.$options.methods.DesInputBlur();
+  },
   methods: {
     getSearchData() {
       //console.log(this.existConceptId);
@@ -334,7 +360,8 @@ export default {
         params: {
           "token": this.GLOBAL.token,
           "query": InputConceptName
-        }
+        },
+        timeout: 1000 * 60 * 2
       })
         .then((response) => {
           const searchConcepts = response.data.data.results.bindings
@@ -352,10 +379,10 @@ export default {
               this.tableAll.push({
                 subject: a[1],
                 label: searchConcepts[i].label.value,
-                domain: searchConcepts[i].domain.value.split('#')[1],
-                class: searchConcepts[i].class.value.split('#')[1],
-                voc: searchConcepts[i].voc.value.split('#')[1],
-                std: Object.getOwnPropertyNames(searchConcepts[i]).length > 5 ? searchConcepts[i].std : '',
+                domain: searchConcepts[i].domain.value,
+                class: searchConcepts[i].class.value,
+                voc: searchConcepts[i].voc.value,
+                std: Object.getOwnPropertyNames(searchConcepts[i]).length > 5 ? searchConcepts[i].std.value : '',
                 Except: a[1],
                 ChilerenConcept: a[1]
               })
@@ -427,8 +454,10 @@ export default {
     //新增概念集所需
     NameInputBlur() {
       this.$emit('getdata3', this.NewConceptSets.SetName);
+      this.$emit('getdata4', this.NewConceptSets.SetDescription);
     },
     DesInputBlur() {
+      this.$emit('getdata3', this.NewConceptSets.SetName);
       this.$emit('getdata4', this.NewConceptSets.SetDescription);
     },
     handleClose(done) {
@@ -444,6 +473,8 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
       this.$emit('getdata', this.multipleSelection);
+      this.$emit('getdata3', this.NewConceptSets.SetName);
+      this.$emit('getdata4', this.NewConceptSets.SetDescription);
     },
     handleCheckAllExcludeditemsChange(val) {
       this.checkedExcludeditems = val ? this.Excludeditems : [];
@@ -453,6 +484,8 @@ export default {
     },
     handleCheckedExcludeditemsChange(value) {
       this.$emit('getdata1', this.checkedExcludeditems);
+      this.$emit('getdata3', this.NewConceptSets.SetName);
+      this.$emit('getdata4', this.NewConceptSets.SetDescription);
       this.checkedExcludeditems = value;
       let checkedCount = value.length;
       this.checkAll1 = checkedCount === this.Excludeditems.length;
@@ -462,10 +495,14 @@ export default {
     handleCheckAllChilerenConceptsChange(val) {
       this.checkedChilerenConcepts = val ? this.ChilerenConcepts : [];
       this.$emit('getdata2', this.checkedChilerenConcepts);
+      this.$emit('getdata3', this.NewConceptSets.SetName);
+      this.$emit('getdata4', this.NewConceptSets.SetDescription);
       this.isIndeterminate2 = false;
     },
     handleCheckedChilerenConceptsChange(value) {
       this.$emit('getdata2', this.checkedChilerenConcepts);
+      this.$emit('getdata3', this.NewConceptSets.SetName);
+      this.$emit('getdata4', this.NewConceptSets.SetDescription);
       let checkedCount = value.length;
       this.checkAll2 = checkedCount === this.ChilerenConcepts.length;
       this.isIndeterminate2 =
