@@ -159,14 +159,14 @@ export default {
       }).then(() => {
         axios.post('/collaboration/addParticipation', {
           "token": this.GLOBAL.token,
-          "collabrationId": this.team.collaborationId,
+          "collaborationId": this.team.collaborationId,
           "participationState": PARTICIPATIONSTATE
         })
           .then((response) => {
             if (response.data.code == 0) {
               this.$message.success("成功！");
               console.log("deletesuccess")
-              this.getCollaborInfo(this.$route.query.collaborationId)
+              //this.getCollaborInfo(this.$route.query.collaborationId)
             } else {
               this.$message.error("失败！");
             }
@@ -186,7 +186,7 @@ export default {
       }).then(() => {
         axios.post('/collaboration/updateCollaborCohortAccredit', {
           "token": this.GLOBAL.token,
-          "collabrationId": this.cohort.collaborationId,
+          "collaborationId": this.cohort.collaborationId,
           "userId": this.cohort.userId,
           "cohortId": this.cohort.cohortId,
           "organizationCode": this.cohort.organizationCode,
@@ -196,7 +196,7 @@ export default {
             if (response.data.code == 0) {
               this.$message.success("成功！");
               console.log("deletesuccess")
-              this.getCollaborInfo(this.$route.query.collaborationId)
+              //this.getCollaborInfo(this.$route.query.collaborationId)
             } else {
               this.$message.error("失败！");
             }
