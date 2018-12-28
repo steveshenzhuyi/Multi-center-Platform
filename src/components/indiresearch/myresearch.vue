@@ -85,7 +85,7 @@
             <div slot="header"
                  style="height:12px;"
                  class="clearfix">
-              <span>队列</span>
+              <span>个人队列</span>
             </div>
             <el-button size="mini"
                        @click="handleAddTop_cohort">添加新文件夹</el-button>
@@ -243,10 +243,10 @@
                           @keyup.enter.native="handleInputConfirm"
                           @blur="handleInputConfirm">
                 </el-input>
-                <el-button v-else
+                <!-- <el-button v-else
                            class="button-new-tag"
                            size="small"
-                           @click="showInput">+ New Tag</el-button>
+                           @click="showInput">+ New Tag</el-button> -->
 
                 <el-button type="primary"
                            @click="toNewVariable()">新增变量</el-button>
@@ -300,10 +300,22 @@
                  class="clearfix">
               <span>分析结果</span>
             </div>
-            <el-button style="float:right;margin-bottom:5px;margin-top:5px"
+            <ul id="containerlist">
+              <li>
+                <div id="echartContainer1"
+                     style="width:500px; height:500px"></div>
+              </li>
+              <li>
+                <div id="echartContainer2"
+                     style="width:500px; height:500px"></div>
+              </li>
+            </ul>
+            <el-button v-show="ifsave"
+                       style="float:right;margin-bottom:20px;margin-top:480px"
                        type="primary"
                        @click="saveresult=true">保存</el-button>
           </el-card>
+
         </el-row>
       </el-col>
     </el-row>
@@ -324,7 +336,7 @@
             class="dialog-footer">
         <el-button @click="saveresult = false">取 消</el-button>
         <el-button type="primary"
-                   @click="saveresult = false;">确 定</el-button>
+                   @click="saveresult = false;tosaveresult(saveresultname)">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 新建变量 dwx -->
@@ -456,6 +468,7 @@
 <script>
 
 import axios from 'axios';
+import echarts from 'echarts';
 
 import createconceptset from './createconceptset/createconceptset.vue';
 import draggable from 'vuedraggable';
@@ -552,28 +565,20 @@ export default {
       VarSelection: [],
       // 增加变量标签初始化/RH
       dynamicTags: [
-        {
-          "featureId": 1,
-          "name": "性别"
-        },
-        {
-          "featureId": 2,
-          "name": "年龄"
-        },
+        // {
+        //   "featureId": 1,
+        //   "name": "性别"
+        // },
+        // {
+        //   "featureId": 2,
+        //   "name": "年龄"
+        // },
       ],
       inputVisible: false,
-      inputValue: ''
-      // analysismethods: [{
-      //   'label': '模型文件夹1',
-      //   'children': [
-      //     {
-      //       'label': 'SVM'
-      //     },
-      //     {
-      //       'label': 'RF'
-      //     }
-      //   ]
-      // }]
+      inputValue: '',
+      ifsave: false,
+      cohortidnow: "",
+      modelidnow: "",
     };
   },
   mounted() {
@@ -604,7 +609,7 @@ export default {
         }
       })
         .then((response) => {
-          this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
+          this.cohortsets = JSON.parse(response.data.data.privateCohortStructure)
           this.cohortsets[0].tag = '0'
           this.cohortsets[0].children[0].tag = '1'
           this.cohortsets[0].children[1].tag = '1'
@@ -1082,51 +1087,149 @@ export default {
       }
     },
 
-    // 队列统计/RH
+    // 队列统计（未完）/RH
     cohortstatistic(cohortId) {
+      console.log(this.$route.params.researchId)
       console.log(cohortId)
       if (cohortId == undefined) { this.$message.warning("请选择统计队列！") }
       else {
         for (var i = 0; i < this.dynamicTags.length; i++) { console.log(this.dynamicTags[i].featureId) }
-        this.$message.success("开始分析！")
-        console.log("开始统计")
+        // 定性！
+
+        axios.post('/cohort/statInfo', ({
+          "token": this.GLOBAL.token,
+          "cohortId": "1",
+          "organizationCode": "1",
+          "featureId": "23"
+        }))
+          .then(response => {
+            console.log(response)
+            axios.post('/result/createResearch2CohortStatInfo', ({
+              "token": this.GLOBAL.token,
+              "researchTypeTag": "1",
+              "researchId": this.$route.params.researchId,
+              "userId": this.GLOBAL.userId,
+              "cohortId": "1",
+              "featureId": "23"
+            }))
+              .then(response2 => {
+                if ((response.data.code == 0) && (response2.data.code == 0)) {
+                  this.$message.success("开始统计！")
+                  setTimeout(function () {
+                    // 基于准备好的dom，初始化echarts实例
+                    var myChart = echarts.init(document.getElementById('echartContainer1'));
+                    // 绘制图表
+                    myChart.setOption({
+                      title: { text: '队列统计结果' },
+                      tooltip: {},
+                      xAxis: {
+                        data: ["0-1", "1-2", "2-3", "3-4", "4-5"]
+                      },
+                      yAxis: {},
+                      series: [{
+                        type: 'bar',
+                        data: JSON.parse(response.data.data.histogramData)
+                      }]
+                    });
+                  }, 1000);
+                }
+              })
+          })
+        // 定量！
+
+        axios.post('/cohort/statInfo', ({
+          "token": this.GLOBAL.token,
+          "cohortId": "1",
+          "organizationCode": "1",
+          "featureId": "18"
+        }))
+          .then(response => {
+            console.log(response)
+            axios.post('/result/createResearch2CohortStatInfo', ({
+              "token": this.GLOBAL.token,
+              "researchTypeTag": "1",
+              "researchId": this.$route.params.researchId,
+              "userId": this.GLOBAL.userId,
+              "cohortId": "1",
+              "featureId": "18"
+            }))
+              .then(response2 => {
+                console.log(response2)
+                if ((response.data.code == 0) && (response2.data.code == 0)) {                  this.$message.success("开始统计！")
+                  setTimeout(function () {
+                    // 基于准备好的dom，初始化echarts实例
+                    var myChart = echarts.init(document.getElementById('echartContainer2'));
+                    // 绘制图表
+                    myChart.setOption({
+                      title: { text: '队列统计结果' },
+                      tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                      },
+                      series: [
+                        {
+                          type: 'pie',
+                          radius: '55%',
+                          center: ['50%', '50%'],
+                          data: [
+                            { value: JSON.parse(response.data.data.positiveNo), name: '正样本' },
+                            { value: JSON.parse(response.data.data.positiveNo), name: '负样本' },
+                          ].sort(function (a, b) { return a.value - b.value; }),
+                          roseType: 'radius',
+                          label: {
+                            normal: {
+                              textStyle: {
+                                color: 'rgba(0, 0, 0, 1)'
+                              }
+                            }
+                          },
+                        }
+                      ]
+                    });
+                  }, 1000);
+                }
+
+              })
+          })
       }
     },
-    // 队列分析/RH
+    // 队列分析（未完）/RH
     cohortanalysis(cohortId, modelId) {
-      //       axios.post('/result/createResult', ({
-      //   "token": this.GLOBAL.token,
-      //   "researchId": "53",
-      //   "researchTypeTag":1,
-      //   "name": this.newresearchname,
-      //   "target": "aaa",
-      //   "proposal": "aaa",
-      //   "expectedOutcomes": "aaa",
-      //   "dataRange": "aaa",
-      //   "projectSupport": "aaa",
-      //   "redundancy": "qwerty"
-      // }))
-      //   .then(response => {
-      //     if (response.data.code == "0") {
-      //       this.$message.success("新建成功！")
-      //       setTimeout(function () {
-      //         location.reload()
-      //       }, 1000);
-      //     }
-      //   })
-
-      console.log("开始统计")
-      if (cohortId == undefined) {        this.$message.warning("请选择统计队列！")
+      console.log("开始分析")
+      if (cohortId == undefined) {        this.$message.warning("请选择分析队列！")
       } else if (modelId == undefined) { this.$message.warning("请选择计算模型！") } else {
         console.log(cohortId, modelId)
-        this.$message.success("开始统计！")
-        //开始计算
+        this.cohortidnow = cohortId;
+        this.modelidnow = modelId;
+        this.$message.success("开始分析！")
+        // 开始计算
+        this.ifsave = true
       }
-
-
     },
 
-
+    tosaveresult(saveresultname) {
+      axios.post('/result/createResult', ({
+        "token": this.GLOBAL.token,
+        "researchTypeTag": "1",
+        "researchId": this.$route.params.researchId,
+        "name": saveresultname,
+        "description": "test",
+        "userId": this.GLOBAL.userId,
+        "cohortId": this.cohortidnow,
+        "cohortVersion": "1",
+        "modelId": this.modelidnow,
+        "modelVersion": "1",
+        "modelTypeLayer1Code": "1",
+        "modelTypeLayer2Code": "1",
+        "resultTemplateVersion": "1",
+        "organizationCode": this.GLOBAL.ORGANIZATIONCODE
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("保存成功")
+          }
+        })
+    },
     // 删除变量/RH
     taghandleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
@@ -1223,5 +1326,10 @@ export default {
   width: 90px;
   margin-left: 10px;
   vertical-align: bottom;
+}
+#containerlist li {
+  display: block;
+  float: left;
+  margin: 5px;
 }
 </style>
