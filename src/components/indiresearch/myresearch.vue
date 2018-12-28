@@ -332,49 +332,10 @@
                :visible.sync="NewVarVisible"
                width="50%"
                :before-close="handleClose">
-      <el-tabs :value="NewVarTabs">
-        <el-tab-pane label="新增变量"
-                     name="NewVariable">
-        </el-tab-pane>
-        <el-tab-pane label="变量列表"
-                     name="VarList">
-          <el-row>
-            <el-col :span=24
-                    :offset=1>
-              <el-table :data="VariableTable"
-                        style="width:90%"
-                        stripe
-                        border>
-                <el-table-column prop="name"
-                                 label="变量名称"
-                                 min-width="60%"></el-table-column>
-                <el-table-column prop="type"
-                                 label="变量类型"
-                                 min-width="60%"></el-table-column>
-                <el-table-column prop="description"
-                                 label="变量描述"
-                                 min-width="150%"
-                                 show-overflow-tooltip></el-table-column>
-                <el-table-column label="编辑"
-                                 min-width="120%">
-                  <template slot-scope="scope">
-                    <el-button size="mini"
-                               type="primary"
-                               @click="EditVar(scope.$index)">编辑</el-button>
-                    <el-button size="mini"
-                               @click="CancelVar(scope.$index)">删除</el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-col>
-          </el-row>
-        </el-tab-pane>
-      </el-tabs>
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button type="primary"
-                   @click="NewVarVisible = false">确 定</el-button>
-      </span>
+      <component :is="NewVariable"
+                 ref="NewVariable"
+                 @GetNewVarVisiable="GetNewVarVisiable"
+                 @GetVarSelection="GetVarSelection"></component>
     </el-dialog>
 
     <!--新增概念集 by lqh—-->
@@ -523,6 +484,7 @@ import svmanalysis from './methodform/svmanalysis.vue'
 // import oneway_anova from './methodform/oneway_anova.vue'
 // import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
 // import svm from './methodform/svm.vue'
+import NewVariable from './newvariable/newvariable.vue'
 
 
 export default {
@@ -538,6 +500,7 @@ export default {
     'oneway_anova': oneway_anova,
     'pairedsample_ttest': pairedsample_ttest,
     'svmanalysis': svmanalysis,
+    'NewVariable': NewVariable,
     'createconceptset': createconceptset
   },
   data() {
@@ -563,6 +526,7 @@ export default {
       createConceptVisible: false,
       NewVarVisible: false,
       NewMethodVisible: false,
+      NewVariable: NewVariable,
       tableData: [{
         quene: '队列A',
         method: 'SVM',
@@ -585,9 +549,7 @@ export default {
       NewMethodVisible: false,
       tabPosition: "left",
       checked: true,
-      // 新增变量弹框 dwx
-      NewVarTabs: "NewVariable",
-      VariableTable: [],
+      VarSelection: [],
       // 增加变量标签初始化/RH
       dynamicTags: [
         {
@@ -760,7 +722,16 @@ export default {
     },
     toNewVariable: function () {
       this.NewVarVisible = true
-      this.getVariableTable()
+      // this.$refs.NewVariable.Initialize()
+      setTimeout(() => {
+        this.$refs.NewVariable.Initialize();
+      })
+      // if (this.$refs['VarForm'] !== undefined) {
+      //   this.VarResetFields()
+      // }
+      // this.GetVariableLayer1()
+      // this.GetVariableSample()
+      // this.GetVariableTable()
     },
     //概念集资源结构编辑函数
     handleAddTop_concept() {
@@ -977,6 +948,14 @@ export default {
         d.id > this.non_method_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
+    // ------新增变量弹框 dwx------
+    GetNewVarVisiable(val) {
+      this.NewVarVisible = val
+    },
+    GetVarSelection(val) {
+      this.VarSelection = val
+      // console.log(this.VarSelection)
+    },
     // handleChange2_2(value) {
     //   console.log(value);
     // },
@@ -989,41 +968,24 @@ export default {
     // handleChange3_2(value) {
     //   console.log(value);
     // },
-    // 新增变量弹框
-
-
-    // 新增变量弹框 dwx
-    getVariableTable() {
-      axios.get('/feature/getList', {
-        params: {
-          "token": this.GLOBAL.token
-        }
-      })
-        .then((response) => {
-          this.VariableTable = response.data.data
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+    //队列拖拽所需
+    handleDragStart(node, ev) {
+      console.log('drag start', node);
     },
-
-    CancelVar(index) {
-      axios.post('/feature/deleteFeature', {
-        "token": this.GLOBAL.token,
-        "featureId": this.VariableTable[index].featureId
-      })
-        .then(response => {
-          if (response.data.code == "0") {
-            this.$alert('删除成功！', '提示', { confirmButtonText: '确定' });
-            this.getVariableTable()
-          }
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+    handleDragEnter(draggingNode, dropNode, ev) {
+      console.log('tree drag enter: ', dropNode.label);
     },
-    EditVar(index) {
-
+    handleDragLeave(draggingNode, dropNode, ev) {
+      console.log('tree drag leave: ', dropNode.label);
+    },
+    handleDragOver(draggingNode, dropNode, ev) {
+      console.log('tree drag over: ', dropNode.label);
+    },
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
+      console.log('tree drag end: ', dropNode && dropNode.label, dropType);
+    },
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      console.log('tree drop: ', dropNode.label, dropType);
     },
     //队列拖拽所需
     handleDrop(draggingNode, dropNode, dropType, ev) {
