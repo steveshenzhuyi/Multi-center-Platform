@@ -550,7 +550,6 @@ export default {
       createConceptVisible2: false,
       NewVarVisible: false,
       NewMethodVisible: false,
-      NewVariable: NewVariable,
       tableData: [{
         quene: '队列A',
         method: 'SVM',
@@ -573,7 +572,9 @@ export default {
       NewMethodVisible: false,
       tabPosition: "left",
       checked: true,
+      // 新增变量弹框 dwx
       VarSelection: [],
+      NewVariable: NewVariable,
       // 增加变量标签初始化/RH
       dynamicTags: [
         // {
@@ -743,16 +744,9 @@ export default {
     },
     toNewVariable: function () {
       this.NewVarVisible = true
-      // this.$refs.NewVariable.Initialize()
       setTimeout(() => {
         this.$refs.NewVariable.Initialize();
       })
-      // if (this.$refs['VarForm'] !== undefined) {
-      //   this.VarResetFields()
-      // }
-      // this.GetVariableLayer1()
-      // this.GetVariableSample()
-      // this.GetVariableTable()
     },
     //概念集资源结构编辑函数
     handleAddTop_concept() {

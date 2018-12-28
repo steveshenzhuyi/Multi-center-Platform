@@ -88,7 +88,6 @@ export default {
     selectType(condtype) {
       console.log(this.id)
       this.$emit('selectType', condtype, this.id)
-      // this.getQueueDict(condtype)
       switch (condtype) {
         case '1': this.groupName = 'diagnose';
           break;
