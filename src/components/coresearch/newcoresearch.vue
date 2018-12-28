@@ -499,6 +499,8 @@
 <script>
 
 import axios from 'axios';
+import echarts from 'echarts';
+
 
 import createconceptset from './createconceptset/createconceptset.vue';
 import draggable from 'vuedraggable';
@@ -1016,6 +1018,7 @@ export default {
     },
     GetVarSelection(val) {
       this.VarSelection = val
+      this.dynamicTags = this.VarSelection
       // console.log(this.VarSelection)
     },
     //队列拖拽所需
@@ -1122,7 +1125,6 @@ export default {
       else {
         for (var i = 0; i < this.dynamicTags.length; i++) { console.log(this.dynamicTags[i].id) }
         // 定性！
-
         axios.post('/cohort/statInfo', ({
           "token": this.GLOBAL.token,
           "cohortId": "1",
@@ -1131,36 +1133,37 @@ export default {
         }))
           .then(response => {
             console.log(response)
-            axios.post('/result/createResearch2CohortStatInfo', ({
-              "token": this.GLOBAL.token,
-              "researchTypeTag": "1",
-              "researchId": "1",
-              "userId": this.GLOBAL.userId,
-              "cohortId": "1",
-              "featureId": "23"
-            }))
-              .then(response2 => {
-                if ((response.data.code == 0) && ((response2.data.code == 0) || (response2.data.msg == "已存在该研究-队列统计信息对应关系!"))) {
-                  this.$message.success("开始统计！")
-                  setTimeout(function () {
-                    // 基于准备好的dom，初始化echarts实例
-                    var myChart = echarts.init(document.getElementById('echartContainer1'));
-                    // 绘制图表
-                    myChart.setOption({
-                      title: { text: '队列统计结果' },
-                      tooltip: {},
-                      xAxis: {
-                        data: ["0-1", "1-2", "2-3", "3-4", "4-5"]
-                      },
-                      yAxis: {},
-                      series: [{
-                        type: 'bar',
-                        data: JSON.parse(response.data.data.histogramData)
-                      }]
-                    });
-                  }, 1000);
-                }
-              })
+            if ((response.data.code == 0)) {
+              this.$message.success("开始统计！")
+              setTimeout(function () {
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('echartContainer1'));
+                // 绘制图表
+                myChart.setOption({
+                  title: { text: '队列统计结果' },
+                  tooltip: {},
+                  xAxis: {
+                    data: ["0-1", "1-2", "2-3", "3-4", "4-5"]
+                  },
+                  yAxis: {},
+                  series: [{
+                    type: 'bar',
+                    data: JSON.parse(response.data.data.histogramData)
+                  }]
+                });
+              }, 1000);
+            }
+            // axios.post('/result/createResearch2CohortStatInfo', ({
+            //   "token": this.GLOBAL.token,
+            //   "researchTypeTag": "1",
+            //   "researchId": "1",
+            //   "userId": this.GLOBAL.userId,
+            //   "cohortId": "1",
+            //   "featureId": "23"
+            // }))
+            //   .then(response2 => {
+
+            //   })
           })
         // 定量！
 
@@ -1172,52 +1175,53 @@ export default {
         }))
           .then(response => {
             console.log(response)
-            axios.post('/result/createResearch2CohortStatInfo', ({
-              "token": this.GLOBAL.token,
-              "researchTypeTag": "1",
-              "researchId": "1",
-              "userId": this.GLOBAL.userId,
-              "cohortId": "1",
-              "featureId": "18"
-            }))
-              .then(response2 => {
-                console.log(response2)
-                if ((response.data.code == 0) && ((response2.data.code == 0) || (response2.data.msg == "已存在该研究-队列统计信息对应关系!"))) {
-                  this.$message.success("开始统计！")
-                  setTimeout(function () {
-                    // 基于准备好的dom，初始化echarts实例
-                    var myChart = echarts.init(document.getElementById('echartContainer2'));
-                    // 绘制图表
-                    myChart.setOption({
-                      title: { text: '队列统计结果' },
-                      tooltip: {
-                        trigger: 'item',
-                        formatter: "{a} <br/>{b} : {c} ({d}%)"
-                      },
-                      series: [
-                        {
-                          type: 'pie',
-                          radius: '55%',
-                          center: ['50%', '50%'],
-                          data: [
-                            { value: JSON.parse(response.data.data.positiveNo), name: '正样本' },
-                            { value: JSON.parse(response.data.data.positiveNo), name: '负样本' },
-                          ].sort(function (a, b) { return a.value - b.value; }),
-                          roseType: 'radius',
-                          label: {
-                            normal: {
-                              textStyle: {
-                                color: 'rgba(0, 0, 0, 1)'
-                              }
-                            }
-                          },
+            if ((response.data.code == 0)) {
+              this.$message.success("开始统计！")
+              setTimeout(function () {
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('echartContainer2'));
+                // 绘制图表
+                myChart.setOption({
+                  title: { text: '队列统计结果' },
+                  tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                  },
+                  series: [
+                    {
+                      type: 'pie',
+                      radius: '55%',
+                      center: ['50%', '50%'],
+                      data: [
+                        { value: JSON.parse(response.data.data.positiveNo), name: '正样本' },
+                        { value: JSON.parse(response.data.data.positiveNo), name: '负样本' },
+                      ].sort(function (a, b) { return a.value - b.value; }),
+                      roseType: 'radius',
+                      label: {
+                        normal: {
+                          textStyle: {
+                            color: 'rgba(0, 0, 0, 1)'
+                          }
                         }
-                      ]
-                    });
-                  }, 1000);
-                }
+                      },
+                    }
+                  ]
+                });
+              }, 1000);
+            }
+            // axios.post('/result/createResearch2CohortStatInfo', ({
+            //   "token": this.GLOBAL.token,
+            //   "researchTypeTag": "1",
+            //   "researchId": "1",
+            //   "userId": this.GLOBAL.userId,
+            //   "cohortId": "1",
+            //   "featureId": "18"
+            // }))
+            //   .then(response2 => {
+            //     console.log(response2)
 
-              })
+
+            //   })
           })
       }
     },
@@ -1233,6 +1237,30 @@ export default {
         // 开始计算
         this.ifsave = true
       }
+    },
+
+    tosaveresult(saveresultname) {
+      axios.post('/result/createResult', ({
+        "token": this.GLOBAL.token,
+        "researchTypeTag": "1",
+        "researchId": this.$route.params.researchId,
+        "name": saveresultname,
+        "description": "test",
+        "userId": this.GLOBAL.userId,
+        "cohortId": this.cohortidnow,
+        "cohortVersion": "1",
+        "modelId": this.modelidnow,
+        "modelVersion": "1",
+        "modelTypeLayer1Code": "1",
+        "modelTypeLayer2Code": "1",
+        "resultTemplateVersion": "1",
+        "organizationCode": this.GLOBAL.ORGANIZATIONCODE
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("保存成功")
+          }
+        })
     },
     // 删除变量/RH
     taghandleClose(tag) {
@@ -1376,5 +1404,10 @@ export default {
   padding: 0 10px;
   background-color: #428bca;
   color: #fffffb;
+}
+#containerlist li {
+  display: block;
+  float: left;
+  margin: 5px;
 }
 </style>
