@@ -56,11 +56,11 @@
           <el-card>
 
             <el-row style="margin-top:20px;margin-bottom:10px">
-              <div>项目名称：{{detail.collaborInfo.NAME}}</div>
+              <div>项目名称：{{detail.collaborInfo['name'.toUpperCase()]}}</div>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="8">
-                <div>项目发起人：{{Initiator[0].MEMBERNAME}}</div>
+                <div>项目发起人：{{Initiator[0]['MEMBERNAME']}}</div>
               </el-col>
               <el-col :span="16">
                 <div>发起人单位：{{Initiator[0].ORGANIZATIONNAME}}</div>
@@ -127,6 +127,7 @@ export default {
   data() {
     return {
       list: [],
+      collaborationId: null,
       detail: {
         collaborInfo: {
           COLLABORATIONSTATENAM: "",
@@ -218,16 +219,16 @@ export default {
           if (response.data.code == 0) {
             //console.log("success")
             this.list = response.data.data
-            //console.log("data", this.list)
+            console.log("LISTDATA", this.list)
             for (var i = 0; i < this.list.length; i++) {
-              if (this.list[i].COLLABORATIONSTATECODE != 6) {
-                this.team[0].children.push({
+              if (this.list[i].COLLABORATIONSTATECODE == 6) {
+                this.team[1].children.push({
                   label: this.list[i].NAME,
                   id: this.list[i].COLLABORATIONID
                 })
                 console.log(this.list[i].COLLABORATIONID)
               } else {
-                this.team[1].children.push({
+                this.team[0].children.push({
                   label: this.list[i].NAME,
                   id: this.list[i].COLLABORATIONID
                 })
@@ -259,7 +260,7 @@ export default {
         });
     },
     getCollaborInfo(COLLABORATIONID) {
-      axios.get('collaboration/CollaborInfo', {
+      axios.get('collaboration/collaborInfo', {
         params: {
           token: this.GLOBAL.token,
           collaborationId: COLLABORATIONID
@@ -268,8 +269,8 @@ export default {
         .then((response) => {
           if (response.data.code == 0) {
             //console.log("success")
-
-            console.log("data", response.data.data)
+            this.collaborationId = COLLABORATIONID
+            console.log("DETAILDATA", response.data.data)
             this.detail = response.data.data
             //this.detail[2][1].DOCTORNAME = response.data.data[2][1].DOCTORNAME
           }
@@ -299,13 +300,17 @@ export default {
         path: 'newteam',
         query:
           {
-            collaborationId: 49
+            collaborationId: this.collaborationId
           }
       });
     },
     goCoResearch() {
       this.$router.push({
-        path: 'newcoresearch'
+        path: 'newcoresearch',
+        query:
+          {
+            collaborationId: this.collaborationId
+          }
       })
     },
     goResult() {
@@ -313,7 +318,7 @@ export default {
         path: 'result',
         query:
           {
-            collaborationId: 49
+            collaborationId: this.collaborationId
           }
       })
     },
@@ -322,7 +327,7 @@ export default {
         path: 'qualification',
         query:
           {
-            collaborationId: 49
+            collaborationId: this.collaborationId
           }
       })
     }
