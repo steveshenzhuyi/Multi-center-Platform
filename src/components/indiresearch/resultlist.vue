@@ -1,19 +1,19 @@
 <template>
   <div style="margin-left:10px;margin-right:10px">
     <el-tabs v-model="activeName">
-      <el-tab-pane label="队列生成结果"
+      <el-tab-pane label="队列统计结果"
                    name="summarygenerateresult">
         <ul id="cohortlist">
           <li>
             <el-tooltip class="item"
                         effect="dark"
-                        content="新建队列"
+                        content="新建"
                         placement="right-start">
 
               <div id="newcohort"
                    class="cardBox"
                    shadow="hover"
-                   @click="ifNewcohort">
+                   @click="toNewresult">
 
                 <span class="el-icon-plus"></span>
               </div>
@@ -63,13 +63,13 @@
           <li>
             <el-tooltip class="item"
                         effect="dark"
-                        content="新建队列"
+                        content="新建"
                         placement="right-start">
 
               <div id="newcohort"
                    class="cardBox"
                    shadow="hover"
-                   @click="ifNewcohort">
+                   @click="toNewresult">
 
                 <span class="el-icon-plus"></span>
               </div>
@@ -160,38 +160,38 @@ export default {
       researchId: "",
       name: "",
       generateresultlist: [
-        {
-          cohortname: "队列生成结果1",
-          researchadmin: "Admin",
-          createtime: "2018-12-06",
-          cohortstatus: 1,
+        // {
+        //   cohortname: "队列生成结果1",
+        //   researchadmin: "Admin",
+        //   createtime: "2018-12-06",
+        //   cohortstatus: 1,
 
-        }, {
-          cohortname: "队列生成结果2",
-          researchadmin: "Admin",
-          createtime: "2018-12-08",
-          cohortstatus: 1
+        // }, {
+        //   cohortname: "队列生成结果2",
+        //   researchadmin: "Admin",
+        //   createtime: "2018-12-08",
+        //   cohortstatus: 1
 
-        }, {
-          cohortname: "队列生成结果3",
-          researchadmin: "Admin",
-          createtime: "2018-12-08",
-          cohortstatus: 2
-        }
+        // }, {
+        //   cohortname: "队列生成结果3",
+        //   researchadmin: "Admin",
+        //   createtime: "2018-12-08",
+        //   cohortstatus: 2
+        // }
       ],
       analysisresultlist: [
-        {
-          cohortname: "队列分析结果1",
-          researchadmin: "Admin",
-          createtime: "2018-12-06",
-          cohortstatus: 1,
+        // {
+        //   cohortname: "队列分析结果1",
+        //   researchadmin: "Admin",
+        //   createtime: "2018-12-06",
+        //   cohortstatus: 1,
 
-        }, {
-          cohortname: "队列分析结果2",
-          researchadmin: "Admin",
-          createtime: "2018-12-08",
-          cohortstatus: 2
-        }
+        // }, {
+        //   cohortname: "队列分析结果2",
+        //   researchadmin: "Admin",
+        //   createtime: "2018-12-08",
+        //   cohortstatus: 2
+        // }
       ]
     }
   },
@@ -273,19 +273,9 @@ export default {
       });
     },
     // 新建队列对话框
-    ifNewcohort: function () {
-      this.dialogVisible = true;
-    },
-
-    // 跳转至新建队列
-    toNewcohort: function () {
-      this.createtime = new Date();
+    toNewresult: function () {
       this.$router.push({
         name: '我的研究',
-        params:
-          {
-            "researchId": this.$route.params.researchId,
-          }
       });
     },
 
@@ -304,13 +294,13 @@ export default {
   text-align: center;
   font-size: 105px;
   color: dimgrey;
-  height: 150px;
+  height: 170px;
   cursor: pointer;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   border-radius: 5px;
 }
 .cardBox {
-  height: 150px;
+  height: 170px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   margin-right: 10px;
   padding: 5px;

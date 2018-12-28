@@ -61,9 +61,9 @@ export default new Router({
               }
             },
             {
-              path: "cohortlist",
+              path: "resultlist",
               name: "结果列表",
-              component: () => import("@/components/indiresearch/cohortlist"),
+              component: () => import("@/components/indiresearch/resultlist"),
               meta: {
                 title: "结果列表"
               }

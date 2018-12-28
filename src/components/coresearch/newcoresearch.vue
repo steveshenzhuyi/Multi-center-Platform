@@ -87,58 +87,34 @@
                  class="clearfix">
               <span>团队队列</span>
             </div>
-            <div class="slot-tree">
-              <el-tree ref="SlotMenuList"
-                       class="expand-tree"
-                       v-if="isLoadingTree"
-                       default-expand-all
-                       node-key="id"
-                       draggable
-                       @node-drop="handleDrop"
-                       :allow-drop="allowDrop"
-                       :allow-drag="allowDrag"
-                       :data="collabcohortsets"
-                       :props="defaultProps"
-                       :expand-on-click-node="false">
-                <span class="slot-t-node"
-                      slot-scope="{ node, data }">
-                  <!-- 未编辑状态 -->
-                  <span v-show="!node.isEdit">
-                    <span :class="[data.id > cohort_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
-                    <span class="slot-t-icons">
-                      <!-- 新增按钮 -->
-                      <!--i class="el-icon-plus"
-                         @click="NodeAdd(node, data)"></i-->
-                      <!-- 编辑按钮 -->
-                      <i class="el-icon-edit"
-                         @click="NodeEdit_cohort(node, data)"></i>
-                      <!-- 删除按钮 -->
-                      <i class="el-icon-delete"
-                         @click="NodeDel_cohort(node, data)"></i>
-                    </span>
-                  </span>
-                  <!-- 编辑输入框 -->
-                  <span v-show="node.isEdit">
-                    <el-input class="slot-t-input"
-                              size="mini"
-                              autofocus
-                              v-model="data.label"
-                              :ref="'slotTreeInput_cohort'+data.id"
-                              @blur.stop="NodeBlur(node, data)"
-                              @keyup.enter.native="NodeBlur(node, data)"></el-input>
-                  </span>
-                </span>
-              </el-tree>
+            <div class="expand">
+              <el-button size="mini"
+                         @click="toifcopy2collab">导入队列</el-button>
+              <el-button type="primary"
+                         size="mini"
+                         @click="toCreatecohort">新建队列</el-button>
+              <el-table :data="collabcohortsets"
+                        style="width: 100%"
+                        height="200">
+                <el-table-column prop="NAME"
+                                 label="队列名">
+                </el-table-column>
+                <el-table-column prop="COHORTID"
+                                 label="队列ID">
+                </el-table-column>
+                <el-table-column label="操作"
+                                 width="150">
+                  <template slot-scope="scope">
+                    <el-button type="text"
+                               @click="toCohortwithData(scope.$index)"
+                               size="small">查看队列</el-button>
+                    <el-button type="text"
+                               @click="toCohortAccredit(scope.$index)"
+                               size="small">发起申请</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
             </div>
-            <el-button type="primary"
-                       size="mini"
-                       @click="toCreatecohort">新建</el-button>
-            <el-button type="primary"
-                       size="mini"
-                       @click="ifcopy2collab = true;">导入</el-button>
-            <el-button size="mini"
-                       @click="toCohortAccredit">发起申请</el-button>
-
           </el-card>
         </el-row>
         <!-- 导入个人队列到团队队列/RH -->
@@ -146,31 +122,52 @@
                    :visible.sync="ifcopy2collab"
                    width="30%"
                    :before-close="handleClose">
-          <el-table :data="tableData"
+          <el-table :data="cohortsets2"
                     border
                     style="width: 100%">
-            <el-table-column fixed
-                             prop="date"
-                             label="日期"
-                             width="150">
+            <el-table-column prop="name"
+                             label="队列名">
             </el-table-column>
-            <el-table-column fixed="right"
-                             label="操作"
-                             width="100">
+            <el-table-column prop="id"
+                             label="队列ID">
+            </el-table-column>
+            <el-table-column label="操作">
               <template slot-scope="scope">
-                <el-button @click="handleClick(scope.row)"
+                <el-button @click="tocopy2collab(scope.$index)"
                            type="text"
-                           size="small">查看</el-button>
-                <el-button type="text"
-                           size="small">编辑</el-button>
+                           size="small">导入队列</el-button>
               </template>
             </el-table-column>
           </el-table>
           <span slot="footer"
                 class="dialog-footer">
-            <el-button @click="ifcopy2collab = false;">取 消</el-button>
-            <el-button type="primary"
-                       @click="ifcopy2collab = false;tocopy2collab">确 定</el-button>
+            <el-button @click="ifcopy2collab = false;">关闭</el-button>
+          </span>
+        </el-dialog>
+        <!-- 导入个人队列到团队队列/RH -->
+        <el-dialog title="查看队列"
+                   :visible.sync="ifcohortdetail"
+                   width="30%"
+                   :before-close="handleClose">
+
+          <el-collapse v-model="activeName"
+                       accordion>
+            <el-collapse-item title="医院A（已同意授权）"
+                              name="1">
+              <div>案例数据+统计数据</div>
+            </el-collapse-item>
+            <el-collapse-item title="医院B（未同意授权）"
+                              name="2">
+              <div>案例数据</div>
+            </el-collapse-item>
+            <el-collapse-item title="医院C（未同意授权）"
+                              name="3">
+              <div>案例数据</div>
+            </el-collapse-item>
+          </el-collapse>
+          <span slot="footer"
+                class="dialog-footer">
+            <el-button @click="ifcohortdetail = false;">关闭</el-button>
           </span>
         </el-dialog>
         <!-- 分析模块/RH -->
@@ -556,6 +553,7 @@ import onesample_ttest from './methodform/onesample_ttest.vue'
 import oneway_anova from './methodform/oneway_anova.vue'
 import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
 import svmanalysis from './methodform/svmanalysis.vue'
+import { cpus } from 'os';
 // import firstanalysisVue from './methodform/firstanalysis.vue';
 // import firstanalysis from './methodform/firstanalysis.vue'
 // import bayesiannetworks from './methodform/bayesiannetworks.vue'
@@ -623,6 +621,7 @@ export default {
       isLoadingTree: true,//是否加载节点树
       conceptsets: [],
       cohortsets: [],
+      cohortsets2: [], //待导入的队列
       analysismethods: [],
       defaultProps: {
         children: "children",
@@ -649,6 +648,7 @@ export default {
       inputValue: '',
       ifsave: false,
       ifcopy2collab: false,
+      ifcohortdetail: false,
       personalcohortsets: []
     };
   },
@@ -656,7 +656,7 @@ export default {
     // console.log(this.GLOBAL.token)
     this.getConceptsetsData();
     this.getpersonalcohortsetsData();
-    this.getcohortsetsData();
+    this.getcollabcohortsetsData();
     this.getAnalysismethodsData();
   },
   methods: {
@@ -683,22 +683,26 @@ export default {
         }
       })
         .then((response) => {
+          // console.log(response.data.data.privateCohortStructure)
           this.cohortsets = JSON.parse(response.data.data.privateCohortStructure)
         })
         .catch(function (error) {
           console.log("error", error);
         });
     },
+
     // 获得团队队列（未完）/RH
-    getcohortsetsData() {
+    getcollabcohortsetsData() {
       axios.get('/cohort/initator', {
         params: {
           "token": this.GLOBAL.token,
-          "collaborationId": this.$route.params.collaborationId
+          // "collaborationId": this.$route.params.collaborationId
+          "collaborationId": "3",
         }
       })
         .then((response) => {
-          this.collabcohortsets = JSON.parse(response.data.data)
+          // console.log(response.data.data.cohortList)
+          this.collabcohortsets = response.data.data.cohortList
         })
         .catch(function (error) {
           console.log("error", error);
@@ -791,7 +795,7 @@ export default {
             this.$message.success("新建成功！")
           }
         })
-      console.log(this.concepts)
+      // console.log(this.concepts)
     },
     handleClose(done) {
       this.$confirm("确认关闭？")
@@ -1174,9 +1178,10 @@ export default {
     cohortstatistic(cohortId) {
       console.log(this.$route.params.researchId)
       console.log(cohortId)
+      console.log(this.VarSelection)
       if (cohortId == undefined) { this.$message.warning("请选择统计队列！") }
       else {
-        for (var i = 0; i < this.dynamicTags.length; i++) { console.log(this.dynamicTags[i].featureId) }
+        for (var i = 0; i < this.dynamicTags.length; i++) { console.log(this.dynamicTags[i].id) }
         // 定性！
 
         axios.post('/cohort/statInfo', ({
@@ -1190,13 +1195,13 @@ export default {
             axios.post('/result/createResearch2CohortStatInfo', ({
               "token": this.GLOBAL.token,
               "researchTypeTag": "1",
-              "researchId": this.$route.params.researchId,
+              "researchId": "1",
               "userId": this.GLOBAL.userId,
               "cohortId": "1",
               "featureId": "23"
             }))
               .then(response2 => {
-                if ((response.data.code == 0) && (response2.data.code == 0)) {
+                if ((response.data.code == 0) && ((response2.data.code == 0) || (response2.data.msg == "已存在该研究-队列统计信息对应关系!"))) {
                   this.$message.success("开始统计！")
                   setTimeout(function () {
                     // 基于准备好的dom，初始化echarts实例
@@ -1231,14 +1236,15 @@ export default {
             axios.post('/result/createResearch2CohortStatInfo', ({
               "token": this.GLOBAL.token,
               "researchTypeTag": "1",
-              "researchId": this.$route.params.researchId,
+              "researchId": "1",
               "userId": this.GLOBAL.userId,
               "cohortId": "1",
               "featureId": "18"
             }))
               .then(response2 => {
                 console.log(response2)
-                if ((response.data.code == 0) && (response2.data.code == 0)) {                  this.$message.success("开始统计！")
+                if ((response.data.code == 0) && ((response2.data.code == 0) || (response2.data.msg == "已存在该研究-队列统计信息对应关系!"))) {
+                  this.$message.success("开始统计！")
                   setTimeout(function () {
                     // 基于准备好的dom，初始化echarts实例
                     var myChart = echarts.init(document.getElementById('echartContainer2'));
@@ -1278,34 +1284,13 @@ export default {
     },
     // 队列分析（未完）/RH
     cohortanalysis(cohortId, modelId) {
-      //       axios.post('/result/createResult', ({
-      //   "token": this.GLOBAL.token,
-      //   "researchId": "53",
-      //   "researchTypeTag":1,
-      //   "name": this.newresearchname,
-      //   "target": "aaa",
-      //   "proposal": "aaa",
-      //   "expectedOutcomes": "aaa",
-      //   "dataRange": "aaa",
-      //   "projectSupport": "aaa",
-      //   "redundancy": "qwerty"
-      // }))
-      //   .then(response => {
-      //     if (response.data.code == "0") {
-      //       this.$message.success("新建成功！")
-      //       setTimeout(function () {
-      //         location.reload()
-      //       }, 1000);
-      //     }
-      //   })
-
       console.log("开始分析")
-
       if (cohortId == undefined) {        this.$message.warning("请选择分析队列！")
       } else if (modelId == undefined) { this.$message.warning("请选择计算模型！") } else {
         console.log(cohortId, modelId)
+        this.cohortidnow = cohortId;
+        this.modelidnow = modelId;
         this.$message.success("开始分析！")
-
         // 开始计算
         this.ifsave = true
       }
@@ -1333,35 +1318,64 @@ export default {
       this.inputValue = '';
     },
 
+
+    toifcopy2collab() {
+      for (var i = 0; i < this.cohortsets.length; i++) {
+        if (this.cohortsets[i].children != undefined) {
+          for (var j = 0; j < this.cohortsets[i].children.length; j++) {
+            this.cohortsets2.push({
+              "id": this.cohortsets[i].children[j].id,
+              "name": this.cohortsets[i].children[j].label
+            })
+          }
+        }
+      }
+
+      this.ifcopy2collab = true;
+    },
+
     // 个人队列导入到团队队列（未完）/RH
-    tocopy2collab() {
-      axios.post('/result/createResult', ({
+    tocopy2collab(cohortid) {
+      console.log(this.cohortsets2[cohortid].id)
+      axios.post('/cohort/copy2Collaboration', ({
         "token": this.GLOBAL.token,
-        "cohortId": "4",
+        "cohortId": this.cohortsets2[cohortid].id,
         "collaborationId": "3"
       }))
         .then(response => {
           if (response.data.code == "0") {
             this.$message.success("导入完成！")
+            this.ifcopy2collab = false;
+
           }
         })
     },
-
+    // 显示队列数据/RH
+    toCohortwithData(index) {
+      this.ifcohortdetail = true;
+      console.log(index)
+      console.log(this.collabcohortsets[index].COHORTID)
+    },
 
     // 发出授权申请（未完）/RH
-    toCohortAccredit() {
-      axios.post('/result/createResult', ({
+    toCohortAccredit(index) {
+      console.log(index)
+      axios.post('/collaboration/createCollaborCohortAccredit', ({
         "token": this.GLOBAL.token,
         "collaborationId": "1",
         "userId": this.GLOBAL.userId,
-        "cohortId": "1"
+        "cohortId": this.collabcohortsets[index].COHORTID
       }))
         .then(response => {
           if (response.data.code == "0") {
             this.$message.success("授权申请已发出！")
+          } else if (response.data.msg == "该研究队列无需授权，请直接进行下一步分析") {
+            this.$message.warning("该研究队列无需授权，请直接进行下一步分析！")
           }
         })
     }
+
+
 
 
 
