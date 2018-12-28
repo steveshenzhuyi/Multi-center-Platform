@@ -100,6 +100,7 @@ export default {
           this.cohortdict[this.mainItem.itemId]['layer2SortNo'] = this.mainItem.sortNo
           this.cohortdict[this.mainItem.itemId]['layer1SortNo'] = this.mainItem.id
           this.cohortdict[this.mainItem.itemId]['criteriaTypeCode'] = "1"
+          this.cohortdict[this.mainItem.itemId]['typeSortNo'] = 1
           this.form.formdetail[this.mainItem.itemId] = Object.assign(this.form.formdetail[this.mainItem.itemId], this.cohortdict[this.mainItem.itemId])
           console.log(this.form.formdetail[this.mainItem.itemId])
         }
@@ -109,14 +110,14 @@ export default {
     }
   },
   mounted: function () {
-    this.getQueueDict()
+    this.getCohortDict()
   },
   methods: {
     // ageChange(value) {
     //   console.log(value);
     // },
     //查询队列条件字典
-    getQueueDict() {
+    getCohortDict() {
       axios.get('cohort/dict', {
         params: {
           token: this.GLOBAL.token,
