@@ -1,5 +1,5 @@
 <template>
-  <div class="creat-cohort-vue">
+  <div class="create-cohort-vue">
     <!-- 队列基本信息表单 -->
     <div class="user-fill-info"
          style="margin-top:20px">
@@ -139,7 +139,7 @@ export default {
         //   { type: 'date', required: true, message: '请选择创建时间', trigger: 'change' }
         // ],
       },
-      creatInfo: {},
+      createInfo: {},
       conditiondetails: [],
       importdetails: [],
       maindivs: [{ component: "maincondition", id: 0 }],
@@ -231,10 +231,10 @@ export default {
           return false;
         }
       });
-      this.fulfilCreatInfo(cohortInfo)
-      console.log(this.creatInfo)
+      this.fulfilCreateInfo(cohortInfo)
+      console.log(this.createInfo)
       axios.post('cohort/create',
-        this.creatInfo
+        this.createInfo
       )
         .then((response) => {
           console.log(response)
@@ -256,12 +256,12 @@ export default {
       this.$refs[cohortInfo].resetFields();
     },
     //拼接队列创建条件--rzx
-    fulfilCreatInfo(cohortInfo) {
-      this.creatInfo = {
+    fulfilCreateInfo(cohortInfo) {
+      this.createInfo = {
         token: this.GLOBAL.token,
         detail: []
       }
-      this.creatInfo = Object.assign(this.creatInfo, this.cohortInfo)
+      this.createInfo = Object.assign(this.createInfo, this.cohortInfo)
       // 若id存在则读取子组件form
       for (var i = 0; i < this.condId.length; i++) {
         if (this.condId[i].id !== '') {
@@ -275,7 +275,7 @@ export default {
         }
       }
       console.log(this.importdetails)
-      this.creatInfo['detail'] = this.importdetails
+      this.createInfo['detail'] = this.importdetails
     },
   }
 }
