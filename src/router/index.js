@@ -53,9 +53,9 @@ export default new Router({
               }
             },
             {
-              path: "createqueue",
+              path: "createCohort",
               name: "新建队列",
-              component: () => import("@/components/indiresearch/createqueue"),
+              component: () => import("@/components/indiresearch/createCohort"),
               meta: {
                 title: "新建队列"
               }
