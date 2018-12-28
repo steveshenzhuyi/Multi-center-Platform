@@ -38,10 +38,10 @@ export default new Router({
           children: [
             {
               path: "hisresearch",
-              name: "历史研究",
+              name: "个人研究",
               component: () => import("@/components/indiresearch/hisresearch"),
               meta: {
-                title: "历史研究"
+                title: "个人研究"
               }
             },
             {
@@ -53,17 +53,17 @@ export default new Router({
               }
             },
             {
-              path: "createqueue",
+              path: "createCohort",
               name: "新建队列",
-              component: () => import("@/components/indiresearch/createqueue"),
+              component: () => import("@/components/indiresearch/createCohort"),
               meta: {
                 title: "新建队列"
               }
             },
             {
-              path: "cohortlist",
+              path: "resultlist",
               name: "结果列表",
-              component: () => import("@/components/indiresearch/cohortlist"),
+              component: () => import("@/components/indiresearch/resultlist"),
               meta: {
                 title: "结果列表"
               }

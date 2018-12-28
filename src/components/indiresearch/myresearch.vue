@@ -122,6 +122,10 @@
                   </span>
                 </span>
               </el-tree>
+              <el-button type="primary"
+                         size="mini"
+                         style="float:right;margin-right:20px"
+                         @click="togenerate">生成</el-button>
             </div>
           </el-card>
         </el-row>
@@ -210,17 +214,12 @@
                     </el-option>
                   </el-option-group>
                 </el-select>
-                <!-- <el-autocomplete class="inline-input"
-                                 v-model="state1"
-                                 :fetch-suggestions="querySearch"
-                                 placeholder="请输入内容"
-                                 @select="handleSelect"></el-autocomplete> -->
                 <!-- 变量标签/RH -->
-                <el-tag :key="selectedvariable.featureId"
+                <el-tag :key="selectedvariable.id"
                         v-for="selectedvariable in dynamicTags"
                         closable
                         :disable-transitions="false"
-                        @close="taghandleClose(selectedvariable.name)">
+                        @close="taghandleClose(selectedvariable.id)">
                   {{selectedvariable.name}}
                 </el-tag>
                 <el-input class="input-new-tag"
@@ -550,7 +549,6 @@ export default {
       createConceptVisible2: false,
       NewVarVisible: false,
       NewMethodVisible: false,
-      NewVariable: NewVariable,
       tableData: [{
         quene: '队列A',
         method: 'SVM',
@@ -573,7 +571,9 @@ export default {
       NewMethodVisible: false,
       tabPosition: "left",
       checked: true,
+      // 新增变量弹框 dwx
       VarSelection: [],
+      NewVariable: NewVariable,
       // 增加变量标签初始化/RH
       dynamicTags: [
         // {
@@ -738,21 +738,14 @@ export default {
     },
     toCreatecohort() {
       this.$router.push({
-        path: 'createqueue',
+        path: 'createCohort',
       });
     },
     toNewVariable: function () {
       this.NewVarVisible = true
-      // this.$refs.NewVariable.Initialize()
       setTimeout(() => {
         this.$refs.NewVariable.Initialize();
       })
-      // if (this.$refs['VarForm'] !== undefined) {
-      //   this.VarResetFields()
-      // }
-      // this.GetVariableLayer1()
-      // this.GetVariableSample()
-      // this.GetVariableTable()
     },
     //概念集资源结构编辑函数
     handleAddTop_concept() {
@@ -985,6 +978,7 @@ export default {
     },
     GetVarSelection(val) {
       this.VarSelection = val
+      this.dynamicTags = this.VarSelection
       // console.log(this.VarSelection)
     },
     // handleChange2_2(value) {
@@ -1123,11 +1117,11 @@ export default {
     cohortstatistic(cohortId) {
       console.log(this.$route.params.researchId)
       console.log(cohortId)
+      console.log(this.VarSelection)
       if (cohortId == undefined) { this.$message.warning("请选择统计队列！") }
       else {
-        for (var i = 0; i < this.dynamicTags.length; i++) { console.log(this.dynamicTags[i].featureId) }
+        for (var i = 0; i < this.dynamicTags.length; i++) { console.log(this.dynamicTags[i].id) }
         // 定性！
-
         axios.post('/cohort/statInfo', ({
           "token": this.GLOBAL.token,
           "cohortId": "1",
@@ -1136,36 +1130,37 @@ export default {
         }))
           .then(response => {
             console.log(response)
-            axios.post('/result/createResearch2CohortStatInfo', ({
-              "token": this.GLOBAL.token,
-              "researchTypeTag": "1",
-              "researchId": this.$route.params.researchId,
-              "userId": this.GLOBAL.userId,
-              "cohortId": "1",
-              "featureId": "23"
-            }))
-              .then(response2 => {
-                if ((response.data.code == 0) && (response2.data.code == 0)) {
-                  this.$message.success("开始统计！")
-                  setTimeout(function () {
-                    // 基于准备好的dom，初始化echarts实例
-                    var myChart = echarts.init(document.getElementById('echartContainer1'));
-                    // 绘制图表
-                    myChart.setOption({
-                      title: { text: '队列统计结果' },
-                      tooltip: {},
-                      xAxis: {
-                        data: ["0-1", "1-2", "2-3", "3-4", "4-5"]
-                      },
-                      yAxis: {},
-                      series: [{
-                        type: 'bar',
-                        data: JSON.parse(response.data.data.histogramData)
-                      }]
-                    });
-                  }, 1000);
-                }
-              })
+            if ((response.data.code == 0)) {
+              this.$message.success("开始统计！")
+              setTimeout(function () {
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('echartContainer1'));
+                // 绘制图表
+                myChart.setOption({
+                  title: { text: '队列统计结果' },
+                  tooltip: {},
+                  xAxis: {
+                    data: ["0-1", "1-2", "2-3", "3-4", "4-5"]
+                  },
+                  yAxis: {},
+                  series: [{
+                    type: 'bar',
+                    data: JSON.parse(response.data.data.histogramData)
+                  }]
+                });
+              }, 1000);
+            }
+            // axios.post('/result/createResearch2CohortStatInfo', ({
+            //   "token": this.GLOBAL.token,
+            //   "researchTypeTag": "1",
+            //   "researchId": "1",
+            //   "userId": this.GLOBAL.userId,
+            //   "cohortId": "1",
+            //   "featureId": "23"
+            // }))
+            //   .then(response2 => {
+
+            //   })
           })
         // 定量！
 
@@ -1177,51 +1172,53 @@ export default {
         }))
           .then(response => {
             console.log(response)
-            axios.post('/result/createResearch2CohortStatInfo', ({
-              "token": this.GLOBAL.token,
-              "researchTypeTag": "1",
-              "researchId": this.$route.params.researchId,
-              "userId": this.GLOBAL.userId,
-              "cohortId": "1",
-              "featureId": "18"
-            }))
-              .then(response2 => {
-                console.log(response2)
-                if ((response.data.code == 0) && (response2.data.code == 0)) {                  this.$message.success("开始统计！")
-                  setTimeout(function () {
-                    // 基于准备好的dom，初始化echarts实例
-                    var myChart = echarts.init(document.getElementById('echartContainer2'));
-                    // 绘制图表
-                    myChart.setOption({
-                      title: { text: '队列统计结果' },
-                      tooltip: {
-                        trigger: 'item',
-                        formatter: "{a} <br/>{b} : {c} ({d}%)"
-                      },
-                      series: [
-                        {
-                          type: 'pie',
-                          radius: '55%',
-                          center: ['50%', '50%'],
-                          data: [
-                            { value: JSON.parse(response.data.data.positiveNo), name: '正样本' },
-                            { value: JSON.parse(response.data.data.positiveNo), name: '负样本' },
-                          ].sort(function (a, b) { return a.value - b.value; }),
-                          roseType: 'radius',
-                          label: {
-                            normal: {
-                              textStyle: {
-                                color: 'rgba(0, 0, 0, 1)'
-                              }
-                            }
-                          },
+            if ((response.data.code == 0)) {
+              this.$message.success("开始统计！")
+              setTimeout(function () {
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('echartContainer2'));
+                // 绘制图表
+                myChart.setOption({
+                  title: { text: '队列统计结果' },
+                  tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                  },
+                  series: [
+                    {
+                      type: 'pie',
+                      radius: '55%',
+                      center: ['50%', '50%'],
+                      data: [
+                        { value: JSON.parse(response.data.data.positiveNo), name: '正样本' },
+                        { value: JSON.parse(response.data.data.positiveNo), name: '负样本' },
+                      ].sort(function (a, b) { return a.value - b.value; }),
+                      roseType: 'radius',
+                      label: {
+                        normal: {
+                          textStyle: {
+                            color: 'rgba(0, 0, 0, 1)'
+                          }
                         }
-                      ]
-                    });
-                  }, 1000);
-                }
+                      },
+                    }
+                  ]
+                });
+              }, 1000);
+            }
+            // axios.post('/result/createResearch2CohortStatInfo', ({
+            //   "token": this.GLOBAL.token,
+            //   "researchTypeTag": "1",
+            //   "researchId": "1",
+            //   "userId": this.GLOBAL.userId,
+            //   "cohortId": "1",
+            //   "featureId": "18"
+            // }))
+            //   .then(response2 => {
+            //     console.log(response2)
 
-              })
+
+            //   })
           })
       }
     },
@@ -1278,11 +1275,15 @@ export default {
       let inputValue = this.inputValue;
       if (inputValue) {
         this.dynamicTags.push({
-          "featureId": this.dynamicTags.length - 1,
+          "id": this.dynamicTags.length - 1,
           "name": inputValue        });
       }
       this.inputVisible = false;
       this.inputValue = '';
+    },
+    // 真实队列生成/RH
+    togenerate() {
+      this.$message.success("开始生成！")
     }
 
   },
