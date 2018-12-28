@@ -36,19 +36,7 @@
                     <!-- 未编辑状态 -->
                     <span v-show="!node.isEdit">
                       <span :class="[data.id > concept_maxexpandId ? 'slot-t-node--label' : '']"
-                            @click="dialogVisible = true">{{ node.label }}</span>
-                      <el-dialog title="提示"
-                                 :visible.sync="dialogVisible"
-                                 width="30%"
-                                 :before-close="handleClose">
-                        <span>这是一段信息</span>
-                        <span slot="footer"
-                              class="dialog-footer">
-                          <el-button @click="dialogVisible = false">取 消</el-button>
-                          <el-button type="primary"
-                                     @click="dialogVisible = false">确 定</el-button>
-                        </span>
-                      </el-dialog>
+                            @click="getConceptId(node, data)">{{ node.label }}</span>
                       <span class="slot-t-icons">
                         <!-- 新增按钮 -->
                         <!--i class="el-icon-plus"
@@ -364,7 +352,27 @@
                  @getdata4="getConceptDes"></component>
       <span slot="footer"
             class="dialog-footer">
-        <el-button @click="createConceptVisible = false">取 消</el-button>
+        <el-button @click="loadData()">取 消</el-button>
+        <el-button type="primary"
+                   @click="postConceptData()">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!--编辑概念集 by lqh—-->
+    <el-dialog title="编辑概念集"
+               :visible.sync="createConceptVisible2"
+               width="60%"
+               :before-close="handleClose">
+      <component :is="mycreateconceptset"
+                 :existConceptId="existConceptId"
+                 @getdata="getMultipleSelection"
+                 @getdata1="getExcludeditems"
+                 @getdata2="getChilerenConcepts"
+                 @getdata3="getConceptName"
+                 @getdata4="getConceptDes"></component>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="loadData()">取 消</el-button>
         <el-button type="primary"
                    @click="postConceptData()">确 定</el-button>
       </span>
@@ -513,9 +521,11 @@ export default {
     'svmanalysis': svmanalysis,
     'createconceptset': createconceptset
   },
+  inject: ['reload'],
   data() {
     return {
       activeName: 'summarygenerate',
+      formLabelWidth: "90px",
       summarygeneratevalue: '',
       cohortanalysisvalue: '',
       analysismethodvalue: '',
@@ -531,8 +541,10 @@ export default {
       multipleSelection: [],
       concepts: [],
       concept_exist: false,
+      existConceptId: '',
       researchstatus: this.$route.query.researchstatus,
       createConceptVisible: false,
+      createConceptVisible2: false,
       NewVarVisible: false,
       NewMethodVisible: false,
       tableData: [{
@@ -559,7 +571,18 @@ export default {
       checked: true,
       // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
-      VariableTable: []
+      VariableTable: [],
+      // analysismethods: [{
+      //   'label': '模型文件夹1',
+      //   'children': [
+      //     {
+      //       'label': 'SVM'
+      //     },
+      //     {
+      //       'label': 'RF'
+      //     }
+      //   ]
+      // }]
     };
   },
   mounted() {
@@ -591,6 +614,9 @@ export default {
       })
         .then((response) => {
           this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
+          // this.cohortsets[0].tag = "0"
+          // this.cohortsets[0].children[0].tag = "1"
+          // this.cohortsets[0].children[1].tag = "1"
         })
         .catch(function (error) {
           console.log("error", error);
@@ -604,6 +630,9 @@ export default {
       })
         .then((response) => {
           this.analysismethods = JSON.parse(response.data.data.modelStructure)
+          // this.analysismethods[0].tag = "0"
+          // this.analysismethods[0].children[0].tag = "1"
+          // this.analysismethods[0].children[1].tag = "1"
         })
         .catch(function (error) {
           console.log("error", error);
@@ -629,6 +658,7 @@ export default {
     },
     postConceptData() {
       this.createConceptVisible = false;
+      this.createConceptVisible2 = false;
       this.concepts = [];
       for (var i = 0; i < this.multipleSelection.length; i++) {
         this.concepts.push({
@@ -675,25 +705,29 @@ export default {
       }
       axios.post('/conceptSet/createConceptSet?token=' + this.GLOBAL.token, ({
         "conceptSetName": this.conceptSetName,
-        "conceptSetDes": this.conceptSetDes,
+        "description": this.conceptSetDes,
         "concepts": this.concepts,
       }))
         .then(response => {
           if (response.data.code == "0") {
-            this.$message.success("新建成功！")
+            //this.$message.success("新建成功！")
+            this.reload()
           }
         })
-      console.log(this.concepts)
+      //console.log(this.concepts)
+    },
+    loadData() {
+      this.createConceptVisible = false
+      this.createConceptVisible2 = false
+      this.reload()
     },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(_ => {
           done();
+          this.reload()
         })
         .catch(_ => { });
-    },
-    handleNodeClick(data) {
-      // console.log(data);
     },
     toCreatecohort() {
       this.$router.push({
@@ -757,6 +791,7 @@ export default {
     NodeDel_concept(n, d) {//删除节点
       //console.log(n, d)
       let that = this;
+      console.log(typeof (d.id))
       if (d.children && d.children.length !== 0) {
         this.$message.error("此节点有子级，不可删除！")
         return false;
@@ -769,19 +804,28 @@ export default {
           //console.log(_index)
           _list.splice(_index, 1);
           this.$message.success("删除成功！")
-          axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-            "conceptSetStructure": JSON.stringify(this.conceptsets),
-            "privateCohortStructure": "[]",
-            "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-            "modelStructure": JSON.stringify(this.analysismethods),
-            "featureStructure": "[]",
-            "resultStructure": "[]"
-          }))
+          const conceptSetId = d.id.toString()
+          console.log(typeof (conceptSetId))
+          axios.post('/conceptSet/delete?token=' + this.GLOBAL.token + '&conceptSetId=' + conceptSetId)
             .then(response => {
-              if (response.data.code == "0") {
-                //this.$message.success("编辑成功！")
+              if (response.data.code == 0) {
+                this.$message.success("删除成功！")
+                axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
+                  "conceptSetStructure": JSON.stringify(this.conceptsets),
+                  "privateCohortStructure": "[]",
+                  "collaborationCohortStructure": JSON.stringify(this.cohortsets),
+                  "modelStructure": JSON.stringify(this.analysismethods),
+                  "featureStructure": "[]",
+                  "resultStructure": "[]"
+                }))
+                  .then(response => {
+                    if (response.data.code == "0") {
+                      //this.$message.success("编辑成功！")
+                    }
+                  })
               }
             })
+
         }
         //二次确认
         let ConfirmFun = () => {
@@ -983,7 +1027,6 @@ export default {
           }
         })
     },
-
     allowDrop(draggingNode, dropNode, type) {
       if (dropNode.data.tag.indexOf('1') != -1) {
         return type !== 'inner';
@@ -994,7 +1037,13 @@ export default {
     allowDrag(draggingNode) {
       return draggingNode.data.tag.indexOf('0') === -1;
     },
-
+    getConceptId(n, d) {
+      if (d.tag.indexOf('0') === -1) {
+        this.createConceptVisible2 = true;
+        this.existConceptId = d.id
+        console.log(this.existConceptId)
+      }
+    },
     //以下为切换tab
     handleClick(tab, event) {
       this.checkVue(tab.name);
