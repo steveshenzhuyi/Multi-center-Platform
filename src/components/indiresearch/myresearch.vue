@@ -85,7 +85,7 @@
             <div slot="header"
                  style="height:12px;"
                  class="clearfix">
-              <span>队列</span>
+              <span>个人队列</span>
             </div>
             <el-button size="mini"
                        @click="handleAddTop_cohort">添加新文件夹</el-button>
@@ -249,10 +249,10 @@
                           @keyup.enter.native="handleInputConfirm"
                           @blur="handleInputConfirm">
                 </el-input>
-                <el-button v-else
+                <!-- <el-button v-else
                            class="button-new-tag"
                            size="small"
-                           @click="showInput">+ New Tag</el-button>
+                           @click="showInput">+ New Tag</el-button> -->
 
                 <el-button type="primary"
                            @click="toNewVariable()">新增变量</el-button>
@@ -306,10 +306,22 @@
                  class="clearfix">
               <span>分析结果</span>
             </div>
-            <el-button style="float:right;margin-bottom:5px;margin-top:5px"
+            <ul id="containerlist">
+              <li>
+                <div id="echartContainer1"
+                     style="width:500px; height:500px"></div>
+              </li>
+              <li>
+                <div id="echartContainer2"
+                     style="width:500px; height:500px"></div>
+              </li>
+            </ul>
+            <el-button v-show="ifsave"
+                       style="float:right;margin-bottom:20px;margin-top:480px"
                        type="primary"
                        @click="saveresult=true">保存</el-button>
           </el-card>
+
         </el-row>
       </el-col>
     </el-row>
@@ -330,7 +342,7 @@
             class="dialog-footer">
         <el-button @click="saveresult = false">取 消</el-button>
         <el-button type="primary"
-                   @click="saveresult = false;">确 定</el-button>
+                   @click="saveresult = false;tosaveresult(saveresultname)">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 新建变量 dwx -->
@@ -338,49 +350,10 @@
                :visible.sync="NewVarVisible"
                width="50%"
                :before-close="handleClose">
-      <el-tabs :value="NewVarTabs">
-        <el-tab-pane label="新增变量"
-                     name="NewVariable">
-        </el-tab-pane>
-        <el-tab-pane label="变量列表"
-                     name="VarList">
-          <el-row>
-            <el-col :span="24"
-                    :offset=1>
-              <el-table :data="VariableTable"
-                        style="width:90%"
-                        stripe
-                        border>
-                <el-table-column prop="name"
-                                 label="变量名称"
-                                 min-width="60%"></el-table-column>
-                <el-table-column prop="type"
-                                 label="变量类型"
-                                 min-width="60%"></el-table-column>
-                <el-table-column prop="description"
-                                 label="变量描述"
-                                 min-width="150%"
-                                 show-overflow-tooltip></el-table-column>
-                <el-table-column label="编辑"
-                                 min-width="120%">
-                  <template slot-scope="scope">
-                    <el-button size="mini"
-                               type="primary"
-                               @click="EditVar(scope.$index)">编辑</el-button>
-                    <el-button size="mini"
-                               @click="CancelVar(scope.$index)">删除</el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-col>
-          </el-row>
-        </el-tab-pane>
-      </el-tabs>
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button type="primary"
-                   @click="NewVarVisible = false">确 定</el-button>
-      </span>
+      <component :is="NewVariable"
+                 ref="NewVariable"
+                 @GetNewVarVisiable="GetNewVarVisiable"
+                 @GetVarSelection="GetVarSelection"></component>
     </el-dialog>
 
     <!--新增概念集 by lqh—-->
@@ -402,101 +375,105 @@
       </span>
     </el-dialog>
 
-    <!--顾忆芯  2018/12/13 构建方法，统一了组合框 -->
+    <!--GYX  2018/12/13 构建方法，统一了组合框 -->
+    <div v-if="NewMethodVisible">
+      <el-dialog :visible.sync="NewMethodVisible"
+                 width="50%"
+                 height="80%"
+                 :before-close="handleClose">
 
-    <el-dialog :visible.sync="NewMethodVisible"
-               width="50%"
-               height="80%"
-               :before-close="handleClose">
+        <el-tabs :tab-position="tabPosition"
+                 type="border-card"
+                 v-model="activeMethod1"
+                 @tab-click="handleClick">
 
-      <el-tabs :tab-position="tabPosition"
-               type="border-card"
-               v-model="activeMethod1"
-               @tab-click="handleClick">
+          <el-tab-pane name="A"
+                       label="描述性分析">
 
-        <el-tab-pane name="A"
-                     label="描述性分析">
+            <component :is="methodName1"
+                       :mid="methodID"></component>
 
-          <component :is="methodName"
-                     :mid="methodID"></component>
+          </el-tab-pane>
+          <el-tab-pane name="B"
+                       label="t检验">
+            <el-tabs @tab-click="handleClick2"
+                     v-model="activeMethod2">
+              <el-tab-pane name="a"
+                           label="单样本t检验">
 
-        </el-tab-pane>
-        <el-tab-pane name="B"
-                     label="t检验">
-          <el-tabs @tab-click="handleClick2"
-                   v-model="activeMethod2">
-            <el-tab-pane name="a"
-                         label="单样本t检验">
+                <component :is="methodName2_1"
+                           :mid="methodID"></component>
 
-              <component :is="methodName"
-                         :mid="methodID"></component>
+              </el-tab-pane>
+              <el-tab-pane name="b"
+                           label="独立样本t检验">
 
-            </el-tab-pane>
-            <el-tab-pane name="b"
-                         label="独立样本t检验">
+                <component :is="methodName2_2"
+                           :mid="methodID"></component>
 
-              <component :is="methodName"></component>
+              </el-tab-pane>
+              <el-tab-pane name="c"
+                           label="配对样本t检验">
 
-            </el-tab-pane>
-            <el-tab-pane name="c"
-                         label="配对样本t检验">
+                <component :is="methodName2_3"
+                           :mid="methodID"></component>
 
-              <component :is="methodName"></component>
+              </el-tab-pane>
+            </el-tabs>
+          </el-tab-pane>
+          <el-tab-pane name="C"
+                       label="方差分析">
+            <el-tabs @tab-click="handleClick3"
+                     v-model="activeMethod3">
+              <el-tab-pane name="d"
+                           label="单因素方差分析">
 
-            </el-tab-pane>
-          </el-tabs>
-        </el-tab-pane>
-        <el-tab-pane name="C"
-                     label="方差分析">
-          <el-tabs @tab-click="handleClick3"
-                   v-model="activeMethod3">
-            <el-tab-pane name="d"
-                         label="单因素方差分析">
+                <component :is="methodName3_1"></component>
 
-              <component :is="methodName"></component>
+              </el-tab-pane>
+              <el-tab-pane name="e"
+                           label="多因素方差分析">
 
-            </el-tab-pane>
-            <el-tab-pane name="e"
-                         label="多因素方差分析">
+                <component :is="methodName3_2"></component>
 
-              <component :is="methodName"></component>
+              </el-tab-pane>
+            </el-tabs>
+          </el-tab-pane>
+          <el-tab-pane name="D"
+                       label="线性回归">
 
-            </el-tab-pane>
-          </el-tabs>
-        </el-tab-pane>
-        <el-tab-pane name="D"
-                     label="线性回归">
+            <component :is="methodName4"></component>
 
-          <component :is="methodName"></component>
+          </el-tab-pane>
+          <el-tab-pane name="E"
+                       label="逻辑回归">
 
-        </el-tab-pane>
-        <el-tab-pane name="E"
-                     label="逻辑回归">
+            <component :is="methodName5"></component>
 
-          <component :is="methodName"></component>
+          </el-tab-pane>
+          <el-tab-pane name="F"
+                       label="SVM">
 
-        </el-tab-pane>
-        <el-tab-pane name="F"
-                     label="SVM">
+            <component :is="methodName6"></component>
 
-          <component :is="methodName"></component>
+          </el-tab-pane>
+          <el-tab-pane name="G"
+                       label="贝叶斯网络">
 
-        </el-tab-pane>
-        <el-tab-pane name="G"
-                     label="贝叶斯网络">
+            <component :is="methodName7"></component>
 
-          <component :is="methodName"></component>
+          </el-tab-pane>
+          <el-tab-pane name="H"
+                       label="决策树">
 
-        </el-tab-pane>
-        <el-tab-pane name="H"
-                     label="决策树">
+            <component :is='methodName8'></component>
 
-          <component :is='methodName'></component>
+          </el-tab-pane>
+        </el-tabs>
 
-        </el-tab-pane>
-      </el-tabs>
+      </el-dialog>
 
-    </el-dialog>
+    </div>
     <!--编辑对话框-->
 
   </div>
@@ -504,6 +481,7 @@
 <script>
 
 import axios from 'axios';
+import echarts from 'echarts';
 
 import createconceptset from './createconceptset/createconceptset.vue';
 import draggable from 'vuedraggable';
@@ -520,18 +498,8 @@ import oneway_anova from './methodform/oneway_anova.vue'
 import ttest_paired from './methodform/ttest_paired.vue'
 import svmanalysis from './methodform/svmanalysis.vue'
 
-// import firstanalysisVue from './methodform/firstanalysis.vue';
-// import firstanalysis from './methodform/firstanalysis.vue'
-// import bayesiannetworks from './methodform/bayesiannetworks.vue'
-// import decisiontree from './methodform/decisiontree.vue'
-// import independent_ttest from './methodform/independent_ttest.vue'
-// import linearregression from './methodform/linearregression.vue'
-// import logicregression from './methodform/logicregression.vue'
-// import multifactor_analysis from './methodform/multifactor_analysis.vue'
-// import onesample_ttest from './methodform/onesample_ttest.vue'
-// import oneway_anova from './methodform/oneway_anova.vue'
-// import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
-// import svm from './methodform/svm.vue'
+
+import NewVariable from './newvariable/newvariable.vue'
 
 
 export default {
@@ -547,6 +515,7 @@ export default {
     'oneway_anova': oneway_anova,
     'ttest_paired': ttest_paired,
     'svmanalysis': svmanalysis,
+    'NewVariable': NewVariable,
     'createconceptset': createconceptset
   },
   data() {
@@ -557,7 +526,7 @@ export default {
       cohortanalysisdata: {},
       selectedvariable: [],
       dialogVisible: false,
-      methodName: '',
+
       saveresult: false,
       saveresultname: '',
       mycreateconceptset: createconceptset,
@@ -572,6 +541,7 @@ export default {
       createConceptVisible: false,
       NewVarVisible: false,
       NewMethodVisible: false,
+      NewVariable: NewVariable,
       tableData: [{
         quene: '队列A',
         method: 'SVM',
@@ -599,15 +569,45 @@ export default {
       NewVarTabs: "NewVariable",
       VariableTable: [],
 
-      //GYX 模型一级 二级条件
+      //GYX 模型一级 二级条件  methodname重新命名
+      //methodName: '',
       MethodDetails: '',
       activeMethod1: '',
-      methodName: '',
+      //methodName: '',
       activeMethod2: 'a',
       activeMethod3: 'd',
       // modelID: '',
-      methodID: '',
 
+      methodID: -1,
+      methodName1: '',
+      methodName2_1: '',
+      methodName2_2: '',
+      methodName2_3: '',
+      methodName3_1: '',
+      methodName3_2: '',
+      methodName4: '',
+      methodName5: '',
+      methodName6: '',
+      methodName7: '',
+      methodName8: '',
+
+      VarSelection: [],
+      // 增加变量标签初始化/RH
+      dynamicTags: [
+        // {
+        //   "featureId": 1,
+        //   "name": "性别"
+        // },
+        // {
+        //   "featureId": 2,
+        //   "name": "年龄"
+        // },
+      ],
+      inputVisible: false,
+      inputValue: '',
+      ifsave: false,
+      cohortidnow: "",
+      modelidnow: "",
     };
   },
   mounted() {
@@ -638,7 +638,7 @@ export default {
         }
       })
         .then((response) => {
-          this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
+          this.cohortsets = JSON.parse(response.data.data.privateCohortStructure)
           this.cohortsets[0].tag = '0'
           this.cohortsets[0].children[0].tag = '1'
           this.cohortsets[0].children[1].tag = '1'
@@ -756,7 +756,16 @@ export default {
     },
     toNewVariable: function () {
       this.NewVarVisible = true
-      this.getVariableTable()
+      // this.$refs.NewVariable.Initialize()
+      setTimeout(() => {
+        this.$refs.NewVariable.Initialize();
+      })
+      // if (this.$refs['VarForm'] !== undefined) {
+      //   this.VarResetFields()
+      // }
+      // this.GetVariableLayer1()
+      // this.GetVariableSample()
+      // this.GetVariableTable()
     },
     //概念集资源结构编辑函数
     handleAddTop_concept() {
@@ -973,39 +982,44 @@ export default {
         d.id > this.non_method_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-
-    // 新增变量弹框 dwx
-    getVariableTable() {
-      axios.get('/feature/getList', {
-        params: {
-          "token": this.GLOBAL.token
-        }
-      })
-        .then((response) => {
-          this.VariableTable = response.data.data
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+    // ------新增变量弹框 dwx------
+    GetNewVarVisiable(val) {
+      this.NewVarVisible = val
     },
-
-    CancelVar(index) {
-      axios.post('/feature/deleteFeature', {
-        "token": this.GLOBAL.token,
-        "featureId": this.VariableTable[index].featureId
-      })
-        .then(response => {
-          if (response.data.code == "0") {
-            this.$alert('删除成功！', '提示', { confirmButtonText: '确定' });
-            this.getVariableTable()
-          }
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+    GetVarSelection(val) {
+      this.VarSelection = val
+      // console.log(this.VarSelection)
     },
-    EditVar(index) {
-
+    // handleChange2_2(value) {
+    //   console.log(value);
+    // },
+    // handleChange2_3(value) {
+    //   console.log(value);
+    // },
+    // handleChange3_1(value) {
+    //   console.log(value);
+    // },
+    // handleChange3_2(value) {
+    //   console.log(value);
+    // },
+    //队列拖拽所需
+    handleDragStart(node, ev) {
+      console.log('drag start', node);
+    },
+    handleDragEnter(draggingNode, dropNode, ev) {
+      console.log('tree drag enter: ', dropNode.label);
+    },
+    handleDragLeave(draggingNode, dropNode, ev) {
+      console.log('tree drag leave: ', dropNode.label);
+    },
+    handleDragOver(draggingNode, dropNode, ev) {
+      console.log('tree drag over: ', dropNode.label);
+    },
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
+      console.log('tree drag end: ', dropNode && dropNode.label, dropType);
+    },
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      console.log('tree drop: ', dropNode.label, dropType);
     },
     //队列拖拽所需
     handleDrop(draggingNode, dropNode, dropType, ev) {
@@ -1036,8 +1050,10 @@ export default {
     //GYX打开新建方法按钮，自动加载描述统计
     NewMethod: function () {
       this.NewMethodVisible = true;
-      this.activeMethod1 = 'A',
-        this.methodName = mstj
+      this.activeMethod1 = 'A';
+      this.methodName1 = mstj;
+      this.methodID = -1;
+
     },
 
     //以下为切换tab GYX 新建模型切换tab
@@ -1047,12 +1063,12 @@ export default {
         //t检验默认单样本
         case 'B':
           this.activeMethod2 = "a";
-          this.methodName = ttest_one;
+          this.methodName2_1 = ttest_one;
           break;
         //方差默认单因素
         case 'C':
           this.activeMethod3 = "d";
-          this.methodName = oneway_anova;
+          this.methodName3_1 = oneway_anova;
           break;
         default:
           break;
@@ -1071,47 +1087,47 @@ export default {
       switch (name) {
         case "A":
           // console.log('描述统计');
-          this.methodName = mstj;
+          this.methodName1 = mstj;
           break;
         case "a":
           //console.log('单样本t检验');
-          this.methodName = ttest_one;
+          this.methodName2_1 = ttest_one;
           break;
         case "b":
           // console.log('独立样本t检验');
-          this.methodName = ttest_independent;
+          this.methodName2_2 = ttest_independent;
           break;
         case "c":
           //console.log('配对样本t检验');
-          this.methodName = ttest_paired;
+          this.methodName2_3 = ttest_paired;
           break;
         case "d":
           //console.log('单因素方差');
-          this.methodName = oneway_anova;
+          this.methodName3_1 = oneway_anova;
           break;
         case "e":
           //console.log('多因素方差');
-          this.methodName = multifactor_analysis;
+          this.methodName3_2 = multifactor_analysis;
           break;
         case 'D':
           //console.log('线性回归');
-          this.methodName = linearregression;
+          this.methodName4 = linearregression;
           break;
         case 'E':
           //console.log('逻辑回归');
-          this.methodName = logicregression;
+          this.methodName5 = logicregression;
           break;
         case 'F':
           //console.log("SVM")
-          this.methodName = svmanalysis;
+          this.methodName6 = svmanalysis;
           break;
         case "G":
           //console.log('贝叶斯');
-          this.methodName = bayesiannetworks;
+          this.methodName7 = bayesiannetworks;
           break;
         case "H":
           //console.log('决策树');
-          this.methodName = decisiontree;
+          this.methodName8 = decisiontree;
           break;
         default:
           break;
@@ -1119,14 +1135,23 @@ export default {
     },
 
     // GYX  编辑分析方法
-    // 获得方法ID
+    // 获得方法的ID
     editMethod(n, d) {
       // 获得了ID,在这里直接对methodID赋值，同时获得ID一级条件二级条件
+      if (d.tag.indexOf('0') === -1) {
 
-      this.getMethodDetails(d.id);
-      this.methodID = d.id;
-      this.NewMethodVisible = true;
+
+        this.methodID = d.id;
+        this.getMethodDetails(d.id);
+        this.NewMethodVisible = true;
+        // setTimeout(() => {
+        //   this.$refs.mstj.Initialize();
+        // })
+        console.log('获得id'); console.log(this.methodID)
+
+      }
     },
+    //GYX 根据ID 获得一级二级条件
     getMethodDetails(t) {
       axios.get('/model/getDetail', {
         params: {
@@ -1142,8 +1167,6 @@ export default {
             var d = this.MethodDetails.modelTypeLayer2Code
             var a = parseInt(c)
             var b = parseInt(d)
-            this.NewMethodVisible = true
-            console.log(a, b)
             this.chooseVue(a, b)
           }
         })
@@ -1155,12 +1178,12 @@ export default {
     },
     //根据一级条件二级条件切换Vue
     chooseVue(a, b) {
-      console.log('选择一级条件')
+      console.log('选tab')
       switch (a) {
         case 1:
           //console.log(this.methodID);
           this.activeMethod1 = 'A'
-          this.methodName = mstj;
+          this.methodName1 = mstj;
           break;
         case 2:
           this.activeMethod1 = 'B'
@@ -1172,24 +1195,23 @@ export default {
           break;
         case 4:
           this.activeMethod1 = 'D'
-          this.methodName = linearregression;
+          this.methodName4 = linearregression;
           break;
         case 5:
           this.activeMethod1 = 'E'
-          this.methodName = logicregression;
+          this.methodName5 = logicregression;
           break;
         case 6:
           this.activeMethod1 = 'F'
-          this.methodName = svmanalysis;
+          this.methodName6 = svmanalysis;
           break;
         case 7:
           this.activeMethod1 = 'G'
-          this.methodName = bayesiannetworks;
+          this.methodName7 = bayesiannetworks;
           break;
-
         case 8:
           this.activeMethod1 = 'H'
-          this.methodName = decisiontree;
+          this.methodName8 = decisiontree;
           break;
         default:
           break;
@@ -1204,16 +1226,16 @@ export default {
         case 1:
 
           this.activeMethod2 = "a";
-
-          this.methodName = ttest_one;
+          //单样本t检验
+          this.methodName2_1 = ttest_one;
           break;
         case 2:
           this.activeMethod2 = "b";
-          this.methodName = ttest_independent;
+          this.methodName2_2 = ttest_independent;
           break;
         case 3:
           this.activeMethod2 = "c";
-          this.methodName = ttest_paired;
+          this.methodName2_3 = ttest_paired;
           break;
         default:
           break;
@@ -1223,20 +1245,54 @@ export default {
       switch (b) {
         case 1:
           this.activeMethod3 = "d";
-          this.methodName = oneway_anova;
+          this.methodName3_1 = oneway_anova;
 
           break;
         case 2:
           this.activeMethod3 = "e";
-          this.methodName = multifactor_analysis;
+          this.methodName3_2 = multifactor_analysis;
           break;
         default:
           break;
       }
-
+    },
+    // 队列分析（未完）/RH
+    cohortanalysis(cohortId, modelId) {
+      console.log("开始分析")
+      if (cohortId == undefined) {        this.$message.warning("请选择分析队列！")
+      } else if (modelId == undefined) { this.$message.warning("请选择计算模型！") } else {
+        console.log(cohortId, modelId)
+        this.cohortidnow = cohortId;
+        this.modelidnow = modelId;
+        this.$message.success("开始分析！")
+        // 开始计算
+        this.ifsave = true
+      }
     },
 
-
+    tosaveresult(saveresultname) {
+      axios.post('/result/createResult', ({
+        "token": this.GLOBAL.token,
+        "researchTypeTag": "1",
+        "researchId": this.$route.params.researchId,
+        "name": saveresultname,
+        "description": "test",
+        "userId": this.GLOBAL.userId,
+        "cohortId": this.cohortidnow,
+        "cohortVersion": "1",
+        "modelId": this.modelidnow,
+        "modelVersion": "1",
+        "modelTypeLayer1Code": "1",
+        "modelTypeLayer2Code": "1",
+        "resultTemplateVersion": "1",
+        "organizationCode": this.GLOBAL.ORGANIZATIONCODE
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("保存成功")
+          }
+        })
+    },
     // 删除变量/RH
     taghandleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
@@ -1333,5 +1389,10 @@ export default {
   width: 90px;
   margin-left: 10px;
   vertical-align: bottom;
+}
+#containerlist li {
+  display: block;
+  float: left;
+  margin: 5px;
 }
 </style>

@@ -100,6 +100,9 @@ export default {
               this.loginresult = true;
               this.tips = "登录成功";
               this.GLOBAL.token = response.data.token;
+              this.GLOBAL.USERID = response.data.USERID;
+              this.GLOBAL.DEPARTMENTCODE = response.data.DEPARTMENTCODE;
+              this.GLOBAL.ORGANIZATIONCODE = response.data.ORGANIZATIONCODE;
               this.$router.push({ path: "/home" });
               // 登录失败：用户名不存在/用户名存在但密码错误
             } else if (response.data.msg == "不正确的用户名和密码") {

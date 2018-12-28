@@ -11,7 +11,7 @@
           <el-step title="3 多中心运算"></el-step>
           <el-step title="4 成果讨论"></el-step>
           <el-step title="5 资格审核"></el-step>
-        </el-steps>>
+        </el-steps>
       </el-col>
     </el-row>
     <el-row :gutter="20"

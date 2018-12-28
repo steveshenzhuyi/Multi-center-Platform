@@ -113,7 +113,11 @@
         <el-col :span="4">
           <el-row style="margin-top: 30%;margin-left:25%;margin-right:25% ">
             <el-button type="primary"
+                       v-if="isnew"
                        @click="save">确定</el-button>
+            <el-button type="primary"
+                       v-else
+                       @click="edit">编辑</el-button>
           </el-row>
           <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
             <el-button type="primary"
@@ -165,47 +169,180 @@
 </template>
 <script>
 import axios from 'axios';
+import { parse } from 'semver';
 export default {
+  props: ['mid'],
   data() {
     return {
+      VarTable: [],
+      isnew: true,
+      MethodDetails: '',
+
+
       idshow1: false,
       idshow2: false,
       idshow3: false,
-      currentRow2: [],
+
       currentRow1: [],
+      currentRow2: [],
       currentRow3: [],
       ttest_2Form: {
         percent: 95,
         tchoose: 3,
         shifou: true,
+        methodname: '',
       },
 
       Varlist: [],
       Chosenlist1: [],
       Chosenlist2: [],
-      //Varlist: [{ "name": "变量1", "featureId": 12 }, { "name": "变量2", "featureId": 9 }, { "name": "变量3", "featureId": 11 }, { "name": "变量4", "featureId": 7 }],
+
       index1: -1,
+      //feature表
+      List1: [],
+
 
     }
   },
   mounted() {
     this.getVariableTable();
+    this.getModleID();
   },
   methods: {
+    //获取变量列表 存在VarTable里
     getVariableTable() {
+
       axios.get('/feature/getList', {
         params: {
           "token": this.GLOBAL.token
         }
       })
         .then((response) => {
-          this.Varlist = response.data.data;
-          // this.Varlist.featureId = response.data.data.featureId
+          var cashdata = [];
+          cashdata = response.data.data;
+          // this.Varlist=response.data.data;
+          //变量列表存储
+          for (var i = 0; i < cashdata.length; i++) {
+            var a = cashdata[i].name
+            var b = parseInt(cashdata[i].featureId)
+            this.VarTable.push({ "name": a, "featureId": b })
+          }
+
         })
         .catch(function (error) {
           console.log("error", error);
         });
     },
+    //获取模型id与编辑相关  获得就编辑  没有就是新建
+
+    getModleID() {
+      if (this.mid != -1) {
+
+        axios.get('/model/getDetail', {
+          params: {
+            "token": this.GLOBAL.token,
+            "modelId": this.mid
+          }
+        })
+          .then(response => {
+            if (response.data.code == "0") {
+              this.MethodDetails = response.data.data
+
+              this.ttest_2Form.methodname = this.MethodDetails.name;
+
+
+              this.ttest_2Form.percent = JSON.parse(this.MethodDetails.data.data1);
+
+              this.ttest_2Form.tchoose = JSON.parse(this.MethodDetails.data.data2);
+              this.ttest_2Form.shifou = JSON.parse(this.MethodDetails.data.data3);
+
+              this.isnew = false;
+              var todolist = (this.MethodDetails.feature);
+              //console.log(todolist);
+              var datax = this.dataconverse(todolist);
+              var c1 = datax[0];
+              // console.log(c1);
+              var c2 = datax[1];
+              // console.log(c2);
+              var dt1 = this.VarTable;
+              var dt2 = this.VarTable;
+              var dt3 = this.VarTable;
+              this.Chosenlist1 = dt1.filter(function (item) {
+                return item.featureId == c1;
+                //this.Chosenlist.push(item)
+              });
+              //console.log(this.Chosenlist1)
+              this.Chosenlist2 = dt2.filter(function (item) {
+                return item.featureId == c2;
+                //this.Chosenlist.push(item)
+              })
+              //console.log(this.Chosenlist2)
+              this.Varlist = dt3.filter(function (item) {
+                return item.featureId != c2 && item.featureId != c1;
+                //this.Chosenlist.push(item)
+              })
+
+
+
+
+
+
+              //这边解析数组
+
+
+            }
+          })
+          .catch(function (error) {
+            console.log("error", error);
+          });
+
+      }
+      else {
+        if (this.VarTable != null) {
+          this.Varlist = this.VarTable;
+          // console.log('打印页面变量表')
+          // console.log(this.Varlist)
+
+        }
+
+      }
+
+
+    },
+    //数据转换
+    dataconverse(t) {
+      // console.log('现在开始数据转换')
+      // console.log(t)
+      var da = '';
+      var db = '';
+      //var dc = [];
+
+
+      for (var i = 0; i < t.length; i++) {
+        var a = parseInt(t[i].featureId);
+        var b = parseInt(t[i].featureType);
+        if (b == 1) {
+          // da.push(a);
+          // dc.push(a)
+          da = a
+
+        } else {
+          //db.push(a);
+          // dc.push(a)
+          db = a
+
+
+        }
+
+
+      }
+      // console.log(da)
+      // console.log(db)
+      // console.log(dc)
+      return [da, db]
+    },
+
+
 
     tableRowClassName({ row, rowIndex }) {
       row.index = rowIndex;
@@ -305,6 +442,119 @@ export default {
 
     },
     save: function () {
+      //因为独立样本t检验的检验变量和分组变量都是一个 只要判断分组变量和检验变量是否为空就行
+      //featureType 1是检验变量  featureType2是分组变量
+      //console.log(this.Chosenlist1)
+      for (var i = 0; i < this.Chosenlist1.length; i++) {
+        // console.log(this.Chosenlist[i].featureId)
+
+        var f = { 'sortNo': i + 1, 'featureId': this.Chosenlist1[i].featureId, 'featureType': 1 }
+        this.List1.push(f);
+
+
+      }
+      //console.log(this.Chosenlist2)
+      for (var t = 0; t < this.Chosenlist2.length; t++) {
+        // console.log(this.Chosenlist[i].featureId)
+
+        var f = { 'sortNo': t + 1, 'featureId': this.Chosenlist2[t].featureId, 'featureType': 2 }
+        this.List1.push(f);
+
+
+      }
+      //console.log(this.List1)
+
+
+      axios.post('/model/create', {
+        "token": this.GLOBAL.token,
+        //"name": JSON.stringify(this.mstjForm.methodname),
+        "name": this.ttest_2Form.methodname,
+        "modelTypeLayer1Code": 2,
+        "modelTypeLayer2Code": 2,
+        "data": {
+
+          "data1": JSON.stringify(this.ttest_2Form.percent),
+          "data2": JSON.stringify(this.ttest_2Form.tchoose),
+          "data3": JSON.stringify(this.ttest_2Form.shifou),
+
+        },
+
+        "feature": this.List1
+
+        //percent: 95,
+        // tchoose: 3,
+        // shifou: true,
+
+
+
+      })
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('创建成功');
+            console.log(response.data.id)
+            // this.getVariableTable()
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+
+
+
+
+    },
+    edit: function () {
+      //因为独立样本t检验的检验变量和分组变量都是一个 只要判断分组变量和检验变量是否为空就行
+      //featureType 1是检验变量  featureType2是分组变量
+      //console.log(this.Chosenlist1)
+      for (var i = 0; i < this.Chosenlist1.length; i++) {
+        // console.log(this.Chosenlist[i].featureId)
+
+        var f = { 'sortNo': i + 1, 'featureId': this.Chosenlist1[i].featureId, 'featureType': 1 }
+        this.List1.push(f);
+
+
+      }
+      //console.log(this.Chosenlist2)
+      for (var t = 0; t < this.Chosenlist2.length; t++) {
+        // console.log(this.Chosenlist[i].featureId)
+
+        var f = { 'sortNo': t + 1, 'featureId': this.Chosenlist2[t].featureId, 'featureType': 2 }
+        this.List1.push(f);
+
+
+      }
+      //console.log(this.List1)
+
+
+      axios.post('/model/edit', {
+        "token": this.GLOBAL.token,
+        //"name": JSON.stringify(this.mstjForm.methodname),
+        "modelId": this.mid,
+        "name": this.ttest_2Form.methodname,
+        "modelTypeLayer1Code": 2,
+        "modelTypeLayer2Code": 2,
+        "data": {
+
+          "data1": JSON.stringify(this.ttest_2Form.percent),
+          "data2": JSON.stringify(this.ttest_2Form.tchoose),
+          "data3": JSON.stringify(this.ttest_2Form.shifou),
+        },
+
+        "feature": this.List1
+
+      })
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('编辑成功');
+            console.log(response.data.data.modelId)
+
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+
 
     },
     cancel: function () {

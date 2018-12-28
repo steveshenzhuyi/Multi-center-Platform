@@ -80,7 +80,11 @@
         <el-col :span="4">
           <el-row style="margin-top: 30%;margin-left:25%;margin-right:25% ">
             <el-button type="primary"
+                       v-if="isnew"
                        @click="save">确定</el-button>
+            <el-button type="primary"
+                       v-else
+                       @click="edit">编辑</el-button>
           </el-row>
           <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
             <el-button type="primary"
@@ -224,6 +228,9 @@ export default {
   props: ['mid'],
   data() {
     return {
+      //后端传入的变量表
+      VarTable: [],
+      isnew: true,
       MethodDetails: '',
       idshow: false,
       idshow2: false,
@@ -248,25 +255,53 @@ export default {
     }
   },
   mounted() {
-    // console.log(this.GLOBAL.token)
+
+    //先获取变量列表
     this.getVariableTable();
     this.getModleID();
+    //根据是否传入modleid判断是新建还是编辑
+
 
   },
+  watch: {
+    mid: function (newValue, oldValue) {
+      console.log(oldValue) // 旧的值
+      console.log(newValue) // 新的值
+    }
+  },
+  // created() {
+  //   // this.getModleID();
+  //   // this.getVariableTable();
+  //   this.getVariableTable();
+  //   this.getModleID();
+  // },
 
 
 
   methods: {
 
+
+    //新建方法时获取变量
     getVariableTable() {
+
       axios.get('/feature/getList', {
         params: {
           "token": this.GLOBAL.token
         }
       })
         .then((response) => {
-          this.Varlist = response.data.data;
-          // this.Varlist.featureId = response.data.data.featureId
+          var cashdata = [];
+          cashdata = response.data.data;
+          // this.Varlist=response.data.data;
+          //变量列表存储
+          for (var i = 0; i < cashdata.length; i++) {
+            var a = cashdata[i].name
+            var b = parseInt(cashdata[i].featureId)
+            this.VarTable.push({ "name": a, "featureId": b })
+          }
+          // console.log('打印变量表')
+          // console.log(this.VarTable)
+
         })
         .catch(function (error) {
           console.log("error", error);
@@ -275,7 +310,8 @@ export default {
 
     //获取修改的模型ID
     getModleID() {
-      if (this.mid) {
+      if (this.mid != -1) {
+
         axios.get('/model/getDetail', {
           params: {
             "token": this.GLOBAL.token,
@@ -285,8 +321,22 @@ export default {
           .then(response => {
             if (response.data.code == "0") {
               this.MethodDetails = response.data.data
-              var t = this.MethodDetails.name;
-              console.log(t)
+              this.mstjForm.methodname = this.MethodDetails.name;
+
+
+              this.mstjForm.quantile = JSON.parse(this.MethodDetails.data.data1);
+              //console.log(this.mstjForm.quantile);
+              this.mstjForm.centraltendency = JSON.parse(this.MethodDetails.data.data2);
+              this.mstjForm.discretetrend = JSON.parse(this.MethodDetails.data.data3);
+              this.mstjForm.distribution = JSON.parse(this.MethodDetails.data.data4);
+              this.mstjForm.chart = JSON.parse(this.MethodDetails.data.data5);
+              this.mstjForm.num1 = JSON.parse(this.MethodDetails.data.data6);
+              this.isnew = false
+              var todolist = this.MethodDetails.feature;
+              console.log(todolist);
+              this.checklist(todolist);
+              //这边解析数组
+
 
             }
           })
@@ -295,9 +345,52 @@ export default {
           });
 
       }
+      else {
+        if (this.VarTable != null) {
+          this.Varlist = this.VarTable;
+          // console.log('打印页面变量表')
+          // console.log(this.Varlist)
+
+        }
+
+      }
 
 
     },
+    checklist(t) {
+      if (t.length != 0) {
+        var choosenId = parseInt(t[0].featureId);//获得选中的变量id
+
+        // console.log(choosenId);
+        // console.log(this.VarTable.length)
+        var data1 = this.VarTable;
+        this.Chosenlist = data1.filter(function (item) {
+          return item.featureId == choosenId;
+
+
+          //this.Chosenlist.push(item)
+        })
+        var data2 = this.VarTable;
+        var t = this.remove(this.VarTable, choosenId);
+        data2.splice(t, 1)
+        this.Varlist = data2
+
+
+
+      }
+    },
+    //返回索引
+    remove(arr, cd) {
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i].featureId == cd) return i;
+      }
+      return -1;
+
+
+    },
+
+
+
     tableRowClassName({ row, rowIndex }) {
       row.index = rowIndex
 
@@ -347,14 +440,25 @@ export default {
 
     save: function () {
 
-      //console.log(this.Chosenlist.length);
-      for (var i = 0; i < this.Chosenlist.length; i++) {
+      // console.log(this.Chosenlist)
+      // if (this.Chosenlist.length != 0) {
 
-        var f = { "sortNo": i + 1, "featureId": this.Chosenlist[i].featureId, "featureType": 1 }
+      //   this.List1.push({ 'sortNo': 1, 'featureID': this.Chosenlist[0].featureID, 'featureType': 1 })
+      // }
+      // console.log(this.List1)
+
+      // 只有一个变量直接写也成吧
+
+
+      for (var i = 0; i < this.Chosenlist.length; i++) {
+        // console.log(this.Chosenlist[i].featureId)
+
+        var f = { 'sortNo': i + 1, 'featureId': this.Chosenlist[i].featureId, 'featureType': 1 }
         this.List1.push(f);
 
 
       }
+      console.log(this.List1)
 
 
       axios.post('/model/create', {
@@ -372,7 +476,7 @@ export default {
           "data6": JSON.stringify(this.mstjForm.num1),
         },
 
-        "feature": this.List1,
+        "feature": this.List1
 
 
 
@@ -390,6 +494,57 @@ export default {
           console.log("error", error);
         });
 
+
+
+
+    },
+    //编辑
+    edit: function () {
+
+      for (var i = 0; i < this.Chosenlist.length; i++) {
+        // console.log(this.Chosenlist[i].featureId)
+
+        var f = { 'sortNo': i + 1, 'featureId': this.Chosenlist[i].featureId, 'featureType': 1 }
+        this.List1.push(f);
+
+
+      }
+      console.log(this.List1)
+
+
+      axios.post('/model/edit', {
+        "token": this.GLOBAL.token,
+
+        "modelId": this.mid,
+        "name": this.mstjForm.methodname,
+        "modelTypeLayer1Code": 1,
+        "modelTypeLayer2Code": 1,
+        "data": {
+          "data1": JSON.stringify(this.mstjForm.quantile),
+          "data2": JSON.stringify(this.mstjForm.centraltendency),
+          "data3": JSON.stringify(this.mstjForm.discretetrend),
+          "data4": JSON.stringify(this.mstjForm.distribution),
+          "data5": JSON.stringify(this.mstjForm.chart),
+          "data6": JSON.stringify(this.mstjForm.num1),
+        },
+
+        "feature": this.List1
+
+
+
+
+
+      })
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('修改成功');
+            console.log(response.data.data.modelId)
+            // this.getVariableTable()
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
 
 
 
