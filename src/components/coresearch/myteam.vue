@@ -33,41 +33,45 @@
       </el-col>
       <el-col :span="12">
         <el-row style="margin-top:10px;margin-bottom:10px">
-          <el-steps :active="2"
+          <el-steps :active=CollaborState
                     align-center>
             <el-step title="1 研究开始"
                      style="cursor:pointer"
-                     @click.native="to1()"></el-step>
+                     @click.native="goJoinTeam()"></el-step>
             <el-step title="2 团队建立"
                      style="cursor:pointer"
-                     @click.native="to2()"></el-step>
+                     @click.native="goNewTeam()"></el-step>
             <el-step title="3 多中心运算"
                      style="cursor:pointer"
-                     @click.native="to3()"></el-step>
-            <el-step title="4 成果讨论"></el-step>
-            <el-step title="5 资格审核"></el-step>
+                     @click.native="goCoResearch()"></el-step>
+            <el-step title="4 成果讨论"
+                     style="cursor:pointer"
+                     @click.native="goResult()"></el-step>
+            <el-step title="5 资格审核"
+                     style="cursor:pointer"
+                     @click.native="goQualification()"></el-step>
           </el-steps>
         </el-row>
         <el-row>
           <el-card>
 
             <el-row style="margin-top:20px;margin-bottom:10px">
-              <div>项目名称：{{detail[0][0].NAME}}</div>
+              <div>项目名称：{{detail.collaborInfo.NAME}}</div>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="8">
-                <div>项目发起人：{{Initiator[0].DOCTORNAME}}</div>
+                <div>项目发起人：{{Initiator[0].MEMBERNAME}}</div>
               </el-col>
               <el-col :span="16">
                 <div>发起人单位：{{Initiator[0].ORGANIZATIONNAME}}</div>
               </el-col>
             </el-row>
-            <div v-if=" detail[1].length > 0">
-              <el-row v-for="people in detail[1]"
+            <div v-if=" detail.collaborMemberList.length > 0">
+              <el-row v-for="people in detail.collaborMemberList"
                       :key="people.USERID"
                       style="margin-top:10px;margin-bottom:10px">
                 <el-col :span="8">
-                  <div>项目参与人：{{people.DOCTORNAME}}</div>
+                  <div>项目参与人：{{people.MEMBERNAME}}</div>
                 </el-col>
                 <el-col :span="16">
                   <div>参与人单位：{{people.ORGANIZATIONNAME}}</div>
@@ -77,22 +81,22 @@
 
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="24">
-                <div>项目发起日期：{{detail[0][0].CREATEDATE}}</div>
+                <div>项目发起日期：{{detail.collaborInfo.CREATEDATE}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="24">
-                <div>项目简介：{{detail[0][0].TARGET}}</div>
+                <div>项目简介：{{detail.collaborInfo.TARGET}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="24">
-                <div>成果分配方案：{{detail[0][0].OUTCOMEDISTRIBUTION}}</div>
+                <div>成果分配方案：{{detail.collaborInfo.OUTCOMEDISTRIBUTION}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="24">
-                <div>项目进度：{{detail[0][0].COLLABORATIONSTATENAME}}</div>
+                <div>项目进度：{{detail.collaborInfo.COLLABORATIONSTATENAME}}</div>
               </el-col>
             </el-row>
             <!-- <el-row style="margin-top:10px;margin-bottom:10px">
@@ -123,7 +127,35 @@ export default {
   data() {
     return {
       list: [],
-      detail: [],
+      detail: {
+        collaborInfo: {
+          COLLABORATIONSTATENAM: "",
+          COLLABORATIONSTATECODE: "",
+          NAME: "",
+          CREATEDATE: "",
+          TARGET: "",
+          PROPOSAL: "",
+          EXPECTEDOUTCOMES: "",
+          OUTCOMEDISTRIBUTION: ""
+        },
+        collaborMemberList: [
+          {
+            ORGANIZATIONNAME: "",
+            ORGANIZATIONCODE: "",
+            MEMBERNAME: "",
+            SORTNO: 1,
+            USERID: "",
+            INITIATORTAG: "",
+            PARTICIPATIONSTATE: "",
+            NAME: "",
+            CREATEDATE: "",
+            TARGET: "",
+            PROPOSAL: "",
+            EXPECTEDOUTCOMES: "",
+            OUTCOMEDISTRIBUTION: ""
+          }
+        ]
+      },
       participant: [],
       team: [{
         id: -1,
@@ -142,21 +174,35 @@ export default {
   },
   computed: {
     Initiator: function () {
-      //console.log("datail", this.detail[1].length)
-      for (var i = 0; i < this.detail[1].length; i++) {
-        //console.log(this.detail[1][i].INITIATORTAG)
-        if (this.detail[1][i].INITIATORTAG == "1   ") {
-          console.log(this.detail[1][i].INITIATORTAG)
-          return this.detail[1].splice(i, 1)
-        }
+      return this.detail.collaborMemberList.splice(0, 1)
+      // console.log("datail", this.detail[1].length)
+      // for (var i = 0; i < this.detail.collaborMemberList.length; i++) {
+      //   /console.log(this.detail[1][i].INITIATORTAG)
+      //   if (this.detail.collaborMemberList[i].INITIATORTAG == 1) {
+      //     /console.log(this.detail[1][i].INITIATORTAG)
+      //     return this.detail.collaborMemberList.splice(i, 1)
+      //   }
+      // }
+      // console.log("mistake")
+    },
+    CollaborState: function () {
+      //console.log("state", this.detail.collaborInfo.COLLABORATIONSTATECODE)
+      if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 0 || this.detail.collaborInfo.COLLABORATIONSTATECODE == 1) {
+        return 1
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 2 || this.detail.collaborInfo.COLLABORATIONSTATECODE == 3) {
+        return 2
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 4) {
+        return 3
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 5) {
+        return 4
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 6) {
+        return 5
       }
-      console.log("mistake")
-
-
     }
   },
   mounted() {
     this.getMyCollaborList()
+
     console.log("token", this.GLOBAL.token)
 
   },
@@ -165,16 +211,16 @@ export default {
       axios.get('collaboration/getMyCollaborList', {
         params: {
           token: this.GLOBAL.token,
-          collaborationStateCode: "0,1,2,3,4,5,6"
+          collaborationStateCode: "0,1,2,3,4,5,6",
         }
       })
         .then((response) => {
-          if (response.data.msg == "success!") {
+          if (response.data.code == 0) {
             //console.log("success")
             this.list = response.data.data
-            //console.log("data", this.data)
+            //console.log("data", this.list)
             for (var i = 0; i < this.list.length; i++) {
-              if (this.list[i].COLLABORATIONSTATECODE != "6                   ") {
+              if (this.list[i].COLLABORATIONSTATECODE != 6) {
                 this.team[0].children.push({
                   label: this.list[i].NAME,
                   id: this.list[i].COLLABORATIONID
@@ -187,24 +233,25 @@ export default {
                 })
               }
             }
-            axios.get('collaboration/CollaborInfo', {
-              params: {
-                token: this.GLOBAL.token,
-                collaborationId: 12
-              }
-            })
-              .then((response) => {
-                if (response.data.msg == "success!") {
-                  //console.log("success")
+            this.getCollaborInfo(this.list[0].COLLABORATIONID)
+            // axios.get('collaboration/CollaborInfo', {
+            //   params: {
+            //     token: this.GLOBAL.token,
+            //     collaborationId: 12
+            //   }
+            // })
+            //   .then((response) => {
+            //     if (response.data.msg == "success!") {
+            //       //console.log("success")
 
 
-                  this.detail = response.data.data
-                  console.log("detail", this.detail)
-                }
-              })
-              .catch(function (error) {
-                console.log("error", error);
-              });
+            //       this.detail = response.data.data
+            //       console.log("detail", this.detail)
+            //     }
+            //   })
+            //   .catch(function (error) {
+            //     console.log("error", error);
+            //   });
           }
         })
         .catch(function (error) {
@@ -219,7 +266,7 @@ export default {
         }
       })
         .then((response) => {
-          if (response.data.msg == "success!") {
+          if (response.data.code == 0) {
             //console.log("success")
 
             console.log("data", response.data.data)
@@ -232,15 +279,19 @@ export default {
         });
     },
     handleNodeClick(data) {
+      console.log(data)
       if (data.id > 0) {
         this.getCollaborInfo(data.id)
         //this.detail[3][0].NAME = "agags"
-        console.log("length", this.detail[2].length)
+        //console.log("length", this.detail[2].length)
       }
 
     },
     goNewResearch() {
       this.$router.push({ path: 'newresearch' })
+    },
+    goJoinTeam() {
+      this.$router.push({ path: 'jointeam' })
     },
     goNewTeam() {
       console.log(this.researchDetail)
@@ -248,23 +299,34 @@ export default {
         path: 'newteam',
         query:
           {
-            collaborationId: 47
+            collaborationId: 49
           }
       });
     },
-
-    goJoinTeam() {
-      this.$router.push({ path: 'jointeam' })
+    goCoResearch() {
+      this.$router.push({
+        path: 'newcoresearch'
+      })
     },
-    to1() {
-      this.$router.push({ path: 'result' })
+    goResult() {
+      this.$router.push({
+        path: 'result',
+        query:
+          {
+            collaborationId: 49
+          }
+      })
     },
-    to2() {
-      this.$router.push({ path: 'qualification' })
-    },
-    to3() {
-      this.$router.push({ path: 'newcoresearch' })
+    goQualification() {
+      this.$router.push({
+        path: 'qualification',
+        query:
+          {
+            collaborationId: 49
+          }
+      })
     }
+
   }
 };
 </script>

@@ -62,10 +62,10 @@ export default new Router({
             },
             {
               path: "cohortlist",
-              name: "队列列表",
+              name: "结果列表",
               component: () => import("@/components/indiresearch/cohortlist"),
               meta: {
-                title: "队列列表"
+                title: "结果列表"
               }
             }
           ]
