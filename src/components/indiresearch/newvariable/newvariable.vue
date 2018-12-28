@@ -286,7 +286,7 @@ export default {
   },
   methods: {
     Initialize() {
-      console.log('ini')
+      // console.log('ini')
       // if (this.$refs['VarForm'] !== undefined) {
       //   this.VarResetFields()
       // }
@@ -354,10 +354,10 @@ export default {
           this.VarForm.data4 = response.data.data.data4 || ""
           this.VarForm.data5 = response.data.data.data5 || ""
           this.VarForm.data6 = response.data.data.data6 || ""
-          console.log(this.VarForm.data4)
+          // console.log(this.VarForm.data4)
           this.VarCheckLayer2(0)
-          console.log("1111")
-          console.log(this.VarForm.data4)
+          // console.log("1111")
+          // console.log(this.VarForm.data4)
         })
         .catch(function (error) {
           console.log("error", error);
@@ -483,7 +483,7 @@ export default {
           })
             .then(response => {
               if (response.data.code == "0") {
-                console.log(this.VarForm)
+                // console.log(this.VarForm)
                 this.$alert('新建变量成功！', '提示', { confirmButtonText: '确定' });
                 this.GetVariableTable()
                 this.NewVarTabs = 'VarList'
@@ -524,7 +524,7 @@ export default {
             .then(response => {
               if (response.data.code == "0") {
                 this.VarResetFields()
-                console.log(this.VarForm)
+                // console.log(this.VarForm)
                 this.$alert('编辑变量成功！', '提示', { confirmButtonText: '确定' });
                 this.GetVariableTable()
                 this.NewVarTabs = 'VarList'
