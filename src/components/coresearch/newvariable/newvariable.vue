@@ -49,11 +49,20 @@
                              :value="val.criteriaSampleCode"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="概念集"
+              <!-- <el-form-item label="概念集"
                             prop="data1"
                             style="width:50%">
                 <el-input v-model="VarForm.data1"
                           v-on:click.native="ConceptSetsVisible = true">
+                </el-input>
+              </el-form-item> -->
+              <el-form-item label="概念集"
+                            prop="data1">
+                <el-cascader expand-trigger="hover"
+                             :options="ConceptSets"
+                             v-model="VarForm.data1"
+                             @change="handleChange">
+                </el-cascader>
                 </el-input>
               </el-form-item>
               <el-form-item label="变量描述"
@@ -175,7 +184,7 @@
       </el-tab-pane>
     </el-tabs>
     <!-- 选择概念集的弹窗 -->
-    <el-dialog title="选择概念集"
+    <!-- <el-dialog title="选择概念集"
                :visible.sync="ConceptSetsVisible"
                width="30%"
                append-to-body>
@@ -188,12 +197,13 @@
         <el-button type="primary"
                    @click="ComfirmVarConceptSets()">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import { isArray } from 'util';
 export default {
   data() {
     var VarValidateData3 = (rule, value, callback) => {
@@ -277,7 +287,7 @@ export default {
       VariableSample: [],
       VariableLayer2Visible: false,
       VariableLayer2: [],
-      ConceptSetsVisible: false,
+      ConceptSets: [],
       VarConceptSets: "",
       VariableData5Visible: false,
       VariableData6Visible: false,
@@ -287,11 +297,12 @@ export default {
   methods: {
     Initialize() {
       // console.log('ini')
-      // if (this.$refs['VarForm'] !== undefined) {
-      //   this.VarResetFields()
-      // }
+      if (this.$refs['VarForm'] !== undefined) {
+        this.VarResetFields()
+      }
       this.GetVariableLayer1()
       this.GetVariableSample()
+      this.GetConceptSets()
       this.GetVariableTable()
     },
     // 变量列表
@@ -348,13 +359,13 @@ export default {
           this.VarForm.layer2Code = response.data.data.layer2Name
           this.VarForm.sampleCode = response.data.data.sampleCode
           this.VarForm.description = response.data.data.description
-          this.VarForm.data1 = response.data.data.data1 || ""
+          this.VarForm.data1 = [69]
           this.VarForm.data2 = response.data.data.data2 || ""
           this.VarForm.data3 = response.data.data.data3 || ""
           this.VarForm.data4 = response.data.data.data4 || ""
           this.VarForm.data5 = response.data.data.data5 || ""
           this.VarForm.data6 = response.data.data.data6 || ""
-          // console.log(this.VarForm.data4)
+          // console.log("receive " + this.VarForm.data1 + typeof this.VarForm.data1)
           this.VarCheckLayer2(0)
           // console.log("1111")
           // console.log(this.VarForm.data4)
@@ -426,9 +437,34 @@ export default {
           console.log("error", error);
         });
     },
-    ComfirmVarConceptSets() {
-      this.VarForm.data1 = this.VarConceptSets
-      this.ConceptSetsVisible = false
+    // ComfirmVarConceptSets() {
+    //   this.VarForm.data1 = this.VarConceptSets
+    //   this.ConceptSetsVisible = false
+    // },
+    GetConceptSets() {
+      console.log("get")
+      axios.get('/structure/getStructure', {
+        params: {
+          "token": this.GLOBAL.token
+        }
+      })
+        .then((response) => {
+          this.ConceptSets = JSON.parse(response.data.data.conceptSetStructure)
+          this.ConceptSets = this.myreplace(this.ConceptSets)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+    myreplace(arr) {
+      arr.forEach(item => {
+        item.value = item.id
+        delete item.id
+        if (item.children) {
+          item.children = this.myreplace(item.children)
+        }
+      });
+      return arr
     },
     VarCheckData23456(flag) {
       if (flag) {
@@ -483,7 +519,7 @@ export default {
           })
             .then(response => {
               if (response.data.code == "0") {
-                // console.log(this.VarForm)
+                // console.log("send " + this.VarForm.data1 + typeof this.VarForm.data1)
                 this.$alert('新建变量成功！', '提示', { confirmButtonText: '确定' });
                 this.GetVariableTable()
                 this.NewVarTabs = 'VarList'
@@ -523,8 +559,8 @@ export default {
           })
             .then(response => {
               if (response.data.code == "0") {
+                // console.log("send " + this.VarForm.data1 + typeof this.VarForm.data1)
                 this.VarResetFields()
-                // console.log(this.VarForm)
                 this.$alert('编辑变量成功！', '提示', { confirmButtonText: '确定' });
                 this.GetVariableTable()
                 this.NewVarTabs = 'VarList'
@@ -551,11 +587,12 @@ export default {
       this.VarForm.data4 = ""
       this.VariableLayer2Visible = false
       this.VariableData234Visible = false
-      this.VariableData56Visible = false
+      this.VariableData5Visible = false
+      this.VariableData6Visible = false
     },
     PassNewVarVisible() {
       this.$emit('GetNewVarVisiable', false)
-    }
+    },
   }
 }
 </script>
