@@ -1,89 +1,101 @@
 <template>
   <div>
-    <el-row>模型名称：<el-input v-model="mstjForm.methodname"></el-input>
-    </el-row>
 
-    <el-row>
-      <el-col :span="20">
-        <el-row :gutter="10">
-          <el-col :span="10">
-            <fieldset style=" min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-              <el-table :data="Varlist"
-                        ref="singleTable"
-                        max-height="200"
-                        tooltip-effect="dark"
-                        @current-change="handleCurrentChange1">
-                <!-- <el-table-column type="selection"
+    <el-form :model="mstjForm"
+             ref="mstjForm"
+             label-width="100px"
+             class="demo-mstjForm">
+
+      <el-row style="margin-top:10px;margin-bottom:10px">
+        模型名称: &nbsp;<el-input v-model="mstjForm.methodname"
+                  size="mini"
+                  style="width:200px;"></el-input>
+      </el-row>
+      <el-row>
+        <el-col :span="20">
+          <el-row :gutter="10">
+            <el-col :span="10">
+              <fieldset style=" min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+                <el-table :data="Varlist"
+                          ref="singleTable"
+                          max-height="200"
+                          tooltip-effect="dark"
+                          :row-class-name="tableRowClassName"
+                          @row-click="getRowdetail1"
+                          @current-change="handleCurrentChange1">
+                  <!-- <el-table-column type="selection"
                                  width="55">
                 </el-table-column> -->
 
-                <el-table-column prop="name">
-                </el-table-column>
-                <el-table-column prop="featureId"
-                                 v-if="idshow">
+                  <el-table-column prop="name">
+                  </el-table-column>
+                  <el-table-column prop="featureId"
+                                   v-if="idshow">
 
-                </el-table-column>
+                  </el-table-column>
 
-              </el-table>
-            </fieldset>
-          </el-col>
-          <el-col :span="4">
-            <div style="margin-top: 40%; text-align:center;">
-              <!-- 右移 -->
-              <el-button type="info"
-                         @click="rightshift"
-                         icon="icon el-icon-d-arrow-right"></el-button>
+                </el-table>
+              </fieldset>
+            </el-col>
+            <el-col :span="4">
+              <div style="margin-top: 40%; text-align:center;">
+                <!-- 右移 -->
+                <el-button type="info"
+                           @click="rightshift"
+                           icon="icon el-icon-d-arrow-right"></el-button>
 
-            </div>
-            <!-- 左移 -->
-            <div style="margin-top: 30%; text-align:center;">
-              <el-button type="info"
-                         @click="leftshift"
-                         icon="icon el-icon-d-arrow-left"></el-button>
+              </div>
+              <!-- 左移 -->
+              <div style="margin-top: 30%; text-align:center;">
+                <el-button type="info"
+                           @click="leftshift"
+                           icon="icon el-icon-d-arrow-left"></el-button>
 
-            </div>
-          </el-col>
-          <el-col :span="10">
-            <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-              <el-table :data="Chosenlist"
-                        max-height="200"
-                        ref="singleTable"
-                        tooltip-effect="dark"
-                        @current-change="handleCurrentChange2">
-                <!-- <el-table-column type="selection"
+              </div>
+            </el-col>
+            <el-col :span="10">
+              <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+                <el-table :data="Chosenlist"
+                          max-height="200"
+                          ref="singleTable"
+                          tooltip-effect="dark"
+                          @current-change="handleCurrentChange2">
+                  <!-- <el-table-column type="selection"
                                  width="55">
                 </el-table-column> -->
-                <el-table-column prop="name"
-                                 label="目标变量">
-                </el-table-column>
-                <el-table-column prop="featureId"
-                                 v-if="idshow2">
+                  <el-table-column prop="name"
+                                   label="目标变量">
+                  </el-table-column>
+                  <el-table-column prop="featureId"
+                                   v-if="idshow2">
 
-                </el-table-column>
+                  </el-table-column>
 
-              </el-table>
-            </fieldset>
-          </el-col>
-        </el-row>
-      </el-col>
+                </el-table>
+              </fieldset>
+            </el-col>
+          </el-row>
+        </el-col>
 
-      <el-col :span="4">
-        <el-row style="margin-top: 30%;margin-left:25%;margin-right:25% ">
-          <el-button type="primary"
-                     @click="save">确定</el-button>
-        </el-row>
-        <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
-          <el-button type="primary"
-                     @click="cancel">取消</el-button>
-        </el-row>
-        <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
-          <el-button type="primary"
-                     @click="help">帮助</el-button>
-        </el-row>
-      </el-col>
-    </el-row>
+        <el-col :span="4">
+          <el-row style="margin-top: 30%;margin-left:25%;margin-right:25% ">
+            <el-button type="primary"
+                       @click="save">确定</el-button>
+          </el-row>
+          <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
+            <el-button type="primary"
+                       @click="cancel">取消</el-button>
+          </el-row>
+          <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
+            <el-button type="primary"
+                       @click="help">帮助</el-button>
+          </el-row>
+        </el-col>
+      </el-row>
+
+      <!-- 
     <el-form ref="form"
-             :model="mstjForm">
+             :model="mstjForm"> -->
       <el-row :gutter="20"
               style="margin-top:10px;margin-bottom:10px">
         <el-col :span="16">
@@ -205,22 +217,19 @@
   </div>
 </template>
 <script>
+import Vue from 'vue';
 import axios from 'axios';
+
 export default {
+  props: ['mid'],
   data() {
     return {
-
-      // Varlist: [
-      //   { variable: "变量1" }, { variable: "变量2" }, { variable: "变量3" }, { variable: "变量4" }, { variable: "变量5" }]
-      // ,
+      MethodDetails: '',
       idshow: false,
       idshow2: false,
       Varlist: [],
       Chosenlist: [],
-      // multipleSelection1: [],
-      // multipleSelection2: [],
-      // handleCurrentChange2:[],
-      // handleCurrentChange1:[],
+
       currentRow2: [],
       currentRow1: [],
       mstjForm: {
@@ -235,15 +244,20 @@ export default {
       },
 
       List1: [],
-
+      index1: -1,
     }
   },
   mounted() {
     // console.log(this.GLOBAL.token)
     this.getVariableTable();
+    this.getModleID();
 
   },
+
+
+
   methods: {
+
     getVariableTable() {
       axios.get('/feature/getList', {
         params: {
@@ -258,16 +272,61 @@ export default {
           console.log("error", error);
         });
     },
+
+    //获取修改的模型ID
+    getModleID() {
+      if (this.mid) {
+        axios.get('/model/getDetail', {
+          params: {
+            "token": this.GLOBAL.token,
+            "modelId": this.mid
+          }
+        })
+          .then(response => {
+            if (response.data.code == "0") {
+              this.MethodDetails = response.data.data
+              var t = this.MethodDetails.name;
+              console.log(t)
+
+            }
+          })
+          .catch(function (error) {
+            console.log("error", error);
+          });
+
+      }
+
+
+    },
+    tableRowClassName({ row, rowIndex }) {
+      row.index = rowIndex
+
+
+
+    },
+    getRowdetail1(row, event, column) {
+
+      this.index1 = row.index;
+      this.currentRow1 = row;
+
+
+    },
+
     rightshift: function () {
       // var t = this.Chosenlist.length;
-      if (this.Chosenlist.length < 1) {
-        this.Chosenlist.push(this.currentRow1);
-        this.Varlist.splice(this.currentRow1, 1);
-      }
-      else {
+      if (this.index1 != -1) {
+        if (this.Chosenlist.length < 1) {
+          this.Chosenlist.push(this.currentRow1);
+          this.Varlist.splice(this.index1, 1);
+          this.index1 = -1;
+        }
+        else {
 
-        this.$message('只能选择一个目标变量');
+          this.$message('只能选择一个目标变量');
 
+        }
+      } else {
+        this.$alert("请选择变量")
       }
 
     },
@@ -279,7 +338,7 @@ export default {
     },
     handleCurrentChange1(val) {
 
-      this.currentRow1 = val;
+      // this.currentRow1 = val;
       //console.log(this.currentRow1.featureId);
     },
     handleCurrentChange2(val) {

@@ -154,7 +154,7 @@
                          @click="handleAddTop_method">添加新文件夹</el-button>
               <el-button type="primary"
                          size="mini"
-                         @click="NewMethodVisible=true">新建方法</el-button>
+                         @click="NewMethod">新建方法</el-button>
               <div class="slot-tree">
                 <el-tree ref="SlotMenuList"
                          class="expand-tree"
@@ -168,13 +168,14 @@
                          :data="analysismethods"
                          :props="defaultProps"
                          :expand-on-click-node="false">
+
                   <span class="slot-t-node"
                         slot-scope="{ node, data }">
                     <!-- 未编辑状态 -->
                     <span v-show="!node.isEdit">
-                      <!--GYX 鼠标点击名字  打开编辑页面 -->
+
                       <span :class="[data.id > method_maxexpandId ? 'slot-t-node--label' : '']"
-                            @click="editModule(node,data)">{{ node.label }}</span>
+                            @click="editMethod(node,data)">{{ node.label }}</span>
                       <span class="slot-t-icons">
                         <!-- 新增按钮 -->
                         <!--i class="el-icon-plus"
@@ -193,11 +194,12 @@
                                 size="mini"
                                 autofocus
                                 v-model="data.label"
-                                :ref="'slotTreeInput_method'+data.id"
+                                :ref="'slotTreeInput_cohort'+data.id"
                                 @blur.stop="NodeBlur(node, data)"
                                 @keyup.enter.native="NodeBlur(node, data)"></el-input>
                     </span>
                   </span>
+
                 </el-tree>
               </div>
             </div>
@@ -317,7 +319,7 @@
         <el-tab-pane label="变量列表"
                      name="VarList">
           <el-row>
-            <el-col :span=24
+            <el-col :span="24"
                     :offset=1>
               <el-table :data="VariableTable"
                         style="width:90%"
@@ -389,33 +391,32 @@
         <el-tab-pane name="A"
                      label="描述性分析">
 
-          <div id="1">
-            <component :is="methodName"></component>
-          </div>
+          <component :is="methodName"
+                     :mid="methodID"></component>
 
         </el-tab-pane>
-        <el-tab-pane name="B "
+        <el-tab-pane name="B"
                      label="t检验">
           <el-tabs @tab-click="handleClick2"
                    v-model="activeMethod2">
             <el-tab-pane name="a"
                          label="单样本t检验">
-              <div id="2-1">
-                <component :is="methodName"></component>
-              </div>
+
+              <component :is="methodName"
+                         :mid="methodID"></component>
+
             </el-tab-pane>
             <el-tab-pane name="b"
                          label="独立样本t检验">
-              <div id="2-2">
-                <component :is="methodName"></component>
-              </div>
+
+              <component :is="methodName"></component>
 
             </el-tab-pane>
             <el-tab-pane name="c"
                          label="配对样本t检验">
-              <div id="2-3">
-                <component :is="methodName"></component>
-              </div>
+
+              <component :is="methodName"></component>
+
             </el-tab-pane>
           </el-tabs>
         </el-tab-pane>
@@ -425,51 +426,52 @@
                    v-model="activeMethod3">
             <el-tab-pane name="d"
                          label="单因素方差分析">
-              <div id="3-1">
-                <component :is="methodName"></component>
-              </div>
+
+              <component :is="methodName"></component>
+
             </el-tab-pane>
             <el-tab-pane name="e"
                          label="多因素方差分析">
-              <div id="3-2">
-                <component :is="methodName"></component>
-              </div>
+
+              <component :is="methodName"></component>
+
             </el-tab-pane>
           </el-tabs>
         </el-tab-pane>
         <el-tab-pane name="D"
                      label="线性回归">
-          <div id="4">
-            <component :is="methodName"></component>
-          </div>
+
+          <component :is="methodName"></component>
+
         </el-tab-pane>
         <el-tab-pane name="E"
                      label="逻辑回归">
-          <div id="5">
-            <component :is="methodName"></component>
-          </div>
+
+          <component :is="methodName"></component>
+
         </el-tab-pane>
         <el-tab-pane name="F"
                      label="SVM">
-          <div id="6">
-            <component :is="methodName"></component>
-          </div>
+
+          <component :is="methodName"></component>
+
         </el-tab-pane>
         <el-tab-pane name="G"
                      label="贝叶斯网络">
-          <div id="7">
-            <component :is="methodName"></component>
-          </div>
+
+          <component :is="methodName"></component>
+
         </el-tab-pane>
         <el-tab-pane name="H"
                      label="决策树">
-          <div id="8">
-            <component :is='methodName'></component>
-          </div>
+
+          <component :is='methodName'></component>
+
         </el-tab-pane>
       </el-tabs>
 
     </el-dialog>
+    <!--编辑对话框-->
 
   </div>
 </template>
@@ -480,37 +482,38 @@ import axios from 'axios';
 import createconceptset from './createconceptset/createconceptset.vue';
 import draggable from 'vuedraggable';
 import Vue from 'vue';
-import firstanalysis from './methodform/firstanalysis.vue'
+import mstj from './methodform/mstj.vue'
 import bayesiannetworks from './methodform/bayesiannetworks.vue'
 import decisiontree from './methodform/decisiontree.vue'
-import independent_ttest from './methodform/independent_ttest.vue'
+import ttest_independent from './methodform/ttest_independent.vue'
 import linearregression from './methodform/linearregression.vue'
 import logicregression from './methodform/logicregression.vue'
 import multifactor_analysis from './methodform/multifactor_analysis.vue'
-import onesample_ttest from './methodform/onesample_ttest.vue'
+import ttest_one from './methodform/ttest_one.vue'
 import oneway_anova from './methodform/oneway_anova.vue'
-import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
+import ttest_paired from './methodform/ttest_paired.vue'
 import svmanalysis from './methodform/svmanalysis.vue'
 
 
 
 export default {
   components: {
-    'firstanalysis': firstanalysis,
+    'mstj': mstj,
     'bayesiannetworks': bayesiannetworks,
     'decisiontree': decisiontree,
-    'independent_ttest': independent_ttest,
+    'ttest_independent': ttest_independent,
     'linearregression': linearregression,
     'logicregression': logicregression,
     'multifactor_analysis': multifactor_analysis,
-    'onesample_ttest': onesample_ttest,
+    'ttest_one': ttest_one,
     'oneway_anova': oneway_anova,
-    'pairedsample_ttest': pairedsample_ttest,
+    'ttest_paired': ttest_paired,
     'svmanalysis': svmanalysis,
     'createconceptset': createconceptset
   },
   data() {
     return {
+
       activeName: 'summarygenerate',
       summarygeneratevalue: '',
       cohortanalysisvalue: '',
@@ -536,6 +539,7 @@ export default {
         method: 'SVM',
       }],
       // 概念集假数据/RH
+      formLabelWidth: '90px',
       concept_maxexpandId: 3,//新增节点开始id
       non_concept_maxexpandId: 3,//新增节点开始id(不更改)
       cohort_maxexpandId: 3,//新增节点开始id
@@ -556,22 +560,16 @@ export default {
       // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
       VariableTable: [],
-      // analysismethods: [{
-      //   'label': '模型文件夹1',
-      //   'children': [
-      //     {
-      //       'label': 'SVM'
-      //     },
-      //     {
-      //       'label': 'RF'
-      //     }
-      //   ]
-      // }]
+
       //GYX 模型一级 二级条件
       MethodDetails: '',
-      activeMethod1: 'A',
+      activeMethod1: '',
+      methodName: '',
       activeMethod2: 'a',
       activeMethod3: 'd',
+      // modelID: '',
+      methodID: '',
+
     };
   },
   mounted() {
@@ -997,12 +995,30 @@ export default {
     allowDrag(draggingNode) {
       return draggingNode.data.tag.indexOf('0') === -1;
     },
-
-
-
+    //GYX打开新建方法按钮，自动加载描述统计
+    NewMethod: function () {
+      this.NewMethodVisible = true;
+      this.activeMethod1 = 'A',
+        this.methodName = mstj
+    },
 
     //以下为切换tab GYX 新建模型切换tab
+    //默认进去描述统计
     handleClick(tab, event) {
+      switch (tab.name) {
+        //t检验默认单样本
+        case 'B':
+          this.activeMethod2 = "a";
+          this.methodName = ttest_one;
+          break;
+        //方差默认单因素
+        case 'C':
+          this.activeMethod3 = "d";
+          this.methodName = oneway_anova;
+          break;
+        default:
+          break;
+      }
       this.checkVue(tab.name);
     },
     handleClick2(tab, event) {
@@ -1015,102 +1031,81 @@ export default {
     },
     checkVue(name) {
       switch (name) {
-        // case 'first':
-        //   console.log('第一');
-        //   // this.methodName='firstanalysis';
-        //   break;
         case "A":
-          console.log('描述统计');
-          this.methodName = firstanalysis;
+          // console.log('描述统计');
+          this.methodName = mstj;
           break;
         case "a":
-          console.log('单样本t检验');
-          this.methodName = onesample_ttest;
+          //console.log('单样本t检验');
+          this.methodName = ttest_one;
           break;
         case "b":
-          console.log('独立样本t检验');
-          this.methodName = independent_ttest;
+          // console.log('独立样本t检验');
+          this.methodName = ttest_independent;
           break;
         case "c":
-          console.log('配对样本t检验');
-          this.methodName = pairedsample_ttest;
+          //console.log('配对样本t检验');
+          this.methodName = ttest_paired;
           break;
         case "d":
-          console.log('单因素方差');
+          //console.log('单因素方差');
           this.methodName = oneway_anova;
-
           break;
         case "e":
-          console.log('多因素方差');
+          //console.log('多因素方差');
           this.methodName = multifactor_analysis;
           break;
         case 'D':
-          console.log('线性回归');
+          //console.log('线性回归');
           this.methodName = linearregression;
           break;
         case 'E':
-          console.log('逻辑回归');
+          //console.log('逻辑回归');
           this.methodName = logicregression;
           break;
         case 'F':
-          console.log("SVM")
+          //console.log("SVM")
           this.methodName = svmanalysis;
           break;
         case "G":
-          console.log('贝叶斯');
+          //console.log('贝叶斯');
           this.methodName = bayesiannetworks;
           break;
         case "H":
-          console.log('决策树');
+          //console.log('决策树');
           this.methodName = decisiontree;
           break;
-
         default:
           break;
       }
     },
 
-    //GYX  编辑分析方法
-    //获得方法ID
-    editModule(n, d) {
-      // 获得了ID
-      console.log(d.id)
+    // GYX  编辑分析方法
+    // 获得方法ID
+    editMethod(n, d) {
+      // 获得了ID,在这里直接对methodID赋值，同时获得ID一级条件二级条件
 
-      this.getMethodDetails(d.id)
-
-
-      // console.log('ok')
-      // this.NewMethodVisible = true;
-
+      this.getMethodDetails(d.id);
+      this.methodID = d.id;
+      this.NewMethodVisible = true;
     },
     getMethodDetails(t) {
-      console.log(t)
       axios.get('/model/getDetail', {
         params: {
           "token": this.GLOBAL.token,
           "modelId": t
         }
       })
-        // .then((response) => {
-
-        //   this.MethodDetails = JSON.parse(response.data.data)
-
-        //   var a = this.MethodDetails.modelTypeLayer1Code
-        //   var b = this.MethodDetails.modelTypeLayer2Code
-        //   console.log(a, b)
-
-        // })
         .then(response => {
           if (response.data.code == "0") {
-            this.$alert('获取成功');
+            console.log('获取一级二级条件成功')
             this.MethodDetails = response.data.data
             var c = this.MethodDetails.modelTypeLayer1Code
             var d = this.MethodDetails.modelTypeLayer2Code
-
             var a = parseInt(c)
             var b = parseInt(d)
-
             this.NewMethodVisible = true
+            console.log(a, b)
             this.chooseVue(a, b)
           }
         })
@@ -1120,35 +1115,42 @@ export default {
 
 
     },
+    //根据一级条件二级条件切换Vue
     chooseVue(a, b) {
-      console.log('进入vue')
-      console.log(a, b)
+      console.log('选择一级条件')
       switch (a) {
         case 1:
-          this.methodName = firstanalysis;
+          //console.log(this.methodID);
+          this.activeMethod1 = 'A'
+          this.methodName = mstj;
           break;
         case 2:
+          this.activeMethod1 = 'B'
           this.chooseVue1(b);
-
-
-
           break;
         case 3:
+          this.activeMethod1 = 'C'
           this.chooseVue2(b);
           break;
         case 4:
+          this.activeMethod1 = 'D'
           this.methodName = linearregression;
           break;
         case 5:
+          this.activeMethod1 = 'E'
           this.methodName = logicregression;
           break;
         case 6:
+          this.activeMethod1 = 'F'
           this.methodName = svmanalysis;
           break;
         case 7:
+          this.activeMethod1 = 'G'
           this.methodName = bayesiannetworks;
           break;
+
         case 8:
+          this.activeMethod1 = 'H'
           this.methodName = decisiontree;
           break;
         default:
@@ -1159,22 +1161,21 @@ export default {
     },
     chooseVue1(b) {
       console.log('进入t检验选择')
+
       switch (b) {
         case 1:
-          console.log('单样本t检验')
-          this.activeMethod1 = "B";
-          console.log("第一步");
+
           this.activeMethod2 = "a";
-          console.log("第二步");
-          this.methodName = onesample_ttest;
 
+          this.methodName = ttest_one;
           break;
-
         case 2:
-          this.methodName = independent_ttest;
+          this.activeMethod2 = "b";
+          this.methodName = ttest_independent;
           break;
         case 3:
-          this.methodName = pairedsample_ttest;
+          this.activeMethod2 = "c";
+          this.methodName = ttest_paired;
           break;
         default:
           break;
@@ -1183,10 +1184,12 @@ export default {
     chooseVue2(b) {
       switch (b) {
         case 1:
+          this.activeMethod3 = "d";
           this.methodName = oneway_anova;
 
           break;
         case 2:
+          this.activeMethod3 = "e";
           this.methodName = multifactor_analysis;
           break;
         default:
