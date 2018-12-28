@@ -1247,6 +1247,7 @@ export default {
           break;
         default:
           break;
+      }    },
     // 队列统计（未完）/RH
     cohortstatistic(cohortId) {
       console.log(this.$route.params.researchId)
