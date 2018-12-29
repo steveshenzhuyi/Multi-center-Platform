@@ -85,59 +85,91 @@
             <div slot="header"
                  style="height:12px;"
                  class="clearfix">
-              <span>队列</span>
+              <span>团队队列</span>
             </div>
-            <el-button size="mini"
-                       @click="handleAddTop_cohort">添加新文件夹</el-button>
-            <el-button type="primary"
-                       size="mini"
-                       @click="toCreatecohort">新建队列</el-button>
-            <div class="slot-tree">
-              <el-tree ref="SlotMenuList"
-                       class="expand-tree"
-                       v-if="isLoadingTree"
-                       default-expand-all
-                       node-key="id"
-                       draggable
-                       @node-drop="handleDrop"
-                       :allow-drop="allowDrop"
-                       :allow-drag="allowDrag"
-                       :data="cohortsets"
-                       :props="defaultProps"
-                       :expand-on-click-node="false">
-                <span class="slot-t-node"
-                      slot-scope="{ node, data }">
-                  <!-- 未编辑状态 -->
-                  <span v-show="!node.isEdit">
-                    <span :class="[data.id > cohort_maxexpandId ? 'slot-t-node--label' : '']">{{ node.label }}</span>
-                    <span class="slot-t-icons">
-                      <!-- 新增按钮 -->
-                      <!--i class="el-icon-plus"
-                         @click="NodeAdd(node, data)"></i-->
-                      <!-- 编辑按钮 -->
-                      <i class="el-icon-edit"
-                         @click="NodeEdit_cohort(node, data)"></i>
-                      <!-- 删除按钮 -->
-                      <i class="el-icon-delete"
-                         @click="NodeDel_cohort(node, data)"></i>
-                    </span>
-                  </span>
-                  <!-- 编辑输入框 -->
-                  <span v-show="node.isEdit">
-                    <el-input class="slot-t-input"
-                              size="mini"
-                              autofocus
-                              v-model="data.label"
-                              :ref="'slotTreeInput_cohort'+data.id"
-                              @blur.stop="NodeBlur(node, data)"
-                              @keyup.enter.native="NodeBlur(node, data)"></el-input>
-                  </span>
-                </span>
-              </el-tree>
+            <div class="expand">
+              <el-button size="mini"
+                         @click="toifcopy2collab">导入队列</el-button>
+              <el-button type="primary"
+                         size="mini"
+                         @click="toCreatecohort">新建队列</el-button>
+              <el-table :data="collabcohortsets"
+                        style="width: 100%"
+                        height="200">
+                <el-table-column prop="NAME"
+                                 label="队列名">
+                </el-table-column>
+                <el-table-column prop="COHORTID"
+                                 label="队列ID">
+                </el-table-column>
+                <el-table-column label="操作"
+                                 width="150">
+                  <template slot-scope="scope">
+                    <el-button type="text"
+                               @click="toCohortwithData(scope.$index)"
+                               size="small">查看队列</el-button>
+                    <el-button type="text"
+                               @click="toCohortAccredit(scope.$index)"
+                               size="small">发起申请</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
             </div>
           </el-card>
         </el-row>
+        <!-- 导入个人队列到团队队列/RH -->
+        <el-dialog title="队列导入"
+                   :visible.sync="ifcopy2collab"
+                   width="30%"
+                   :before-close="handleClose">
+          <el-table :data="cohortsets2"
+                    border
+                    style="width: 100%">
+            <el-table-column prop="name"
+                             label="队列名">
+            </el-table-column>
+            <el-table-column prop="id"
+                             label="队列ID">
+            </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button @click="tocopy2collab(scope.$index)"
+                           type="text"
+                           size="small">导入队列</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <span slot="footer"
+                class="dialog-footer">
+            <el-button @click="ifcopy2collab = false;">关闭</el-button>
+          </span>
+        </el-dialog>
+        <!-- 导入个人队列到团队队列/RH -->
+        <el-dialog title="查看队列"
+                   :visible.sync="ifcohortdetail"
+                   width="30%"
+                   :before-close="handleClose">
 
+          <el-collapse v-model="activeName"
+                       accordion>
+            <el-collapse-item title="医院A（已同意授权）"
+                              name="1">
+              <div>案例数据+统计数据</div>
+            </el-collapse-item>
+            <el-collapse-item title="医院B（未同意授权）"
+                              name="2">
+              <div>案例数据</div>
+            </el-collapse-item>
+            <el-collapse-item title="医院C（未同意授权）"
+                              name="3">
+              <div>案例数据</div>
+            </el-collapse-item>
+          </el-collapse>
+          <span slot="footer"
+                class="dialog-footer">
+            <el-button @click="ifcohortdetail = false;">关闭</el-button>
+          </span>
+        </el-dialog>
         <!-- 分析模块/RH -->
         <el-row>
           <el-card class="box-card"
@@ -208,63 +240,88 @@
                    style="height:100%">
             <el-tabs v-model="activeName"
                      style="margin-top:-10px">
-              <el-tab-pane label="队列生成"
-                           name="summarygenerate">
-                <el-select v-model="summarygeneratevalue"
+              <el-tab-pane label="队列统计"
+                           name="cohortstatistic">
+                <el-select v-model="cohortstatisticdata.cohortId"
                            placeholder="请选择">
                   <el-option-group v-for="cohort in cohortsets"
-                                   :key="cohort.label"
+                                   :key="cohort.id"
                                    :label="cohort.label">
                     <el-option v-for="item in cohort.children"
-                               :key="item.label"
+                               :key="item.id"
                                :label="item.label"
-                               :value="item.label">
+                               :value="item.id">
                     </el-option>
                   </el-option-group>
                 </el-select>
+                <!-- <el-autocomplete class="inline-input"
+                                 v-model="state1"
+                                 :fetch-suggestions="querySearch"
+                                 placeholder="请输入内容"
+                                 @select="handleSelect"></el-autocomplete> -->
+                <!-- 变量标签/RH -->
+                <el-tag :key="selectedvariable.featureId"
+                        v-for="selectedvariable in dynamicTags"
+                        closable
+                        :disable-transitions="false"
+                        @close="taghandleClose(selectedvariable.name)">
+                  {{selectedvariable.name}}
+                </el-tag>
+                <el-input class="input-new-tag"
+                          v-if="inputVisible"
+                          v-model="inputValue"
+                          ref="saveTagInput"
+                          size="small"
+                          @keyup.enter.native="handleInputConfirm"
+                          @blur="handleInputConfirm">
+                </el-input>
+                <!-- <el-button v-else
+                           class="button-new-tag"
+                           size="small"
+                           @click="showInput">+ New Tag</el-button> -->
+
                 <el-button type="primary"
                            @click="toNewVariable()">新增变量</el-button>
                 <el-button style="float:right;margin-bottom:5px;margin-top:5px"
                            type="primary"
-                           @click="summarygenerate">生成</el-button>
+                           @click="cohortstatistic(cohortstatisticdata.cohortId)">统计</el-button>
               </el-tab-pane>
               <el-tab-pane label="队列分析"
                            name="cohortanalysis">
-                <el-select v-model="cohortanalysisvalue"
+                <el-select v-model="cohortanalysisdata.cohortId"
                            placeholder="请选择">
                   <el-option-group v-for="cohort in cohortsets"
-                                   :key="cohort.label"
+                                   :key="cohort.id"
                                    :label="cohort.label">
                     <el-option v-for="item in cohort.children"
-                               :key="item.label"
+                               :key="item.id"
                                :label="item.label"
-                               :value="item.label">
+                               :value="item.id">
                     </el-option>
                   </el-option-group>
                 </el-select>
-                <el-select v-model="analysismethodvalue"
+                <el-select v-model="cohortanalysisdata.modelId"
                            placeholder="请选择">
                   <el-option-group v-for="method in analysismethods"
-                                   :key="method.label"
+                                   :key="method.id"
                                    :label="method.label">
                     <el-option v-for="item in method.children"
-                               :key="item.label"
+                               :key="item.id"
                                :label="item.label"
-                               :value="item.label">
+                               :value="item.id">
                     </el-option>
                   </el-option-group>
                 </el-select>
 
                 <el-button style="float:right;margin-bottom:5px;margin-top:5px"
                            type="primary"
-                           @click="cohortanalysis">分析</el-button>
+                           @click="cohortanalysis(cohortanalysisdata.cohortId,cohortanalysisdata.modelId)">分析</el-button>
 
               </el-tab-pane>
             </el-tabs>
           </el-card>
 
         </el-row>
-
         <!-- 分析结果模块/RH -->
         <el-row>
           <el-card class="box-card"
@@ -274,10 +331,22 @@
                  class="clearfix">
               <span>分析结果</span>
             </div>
-            <el-button style="float:right;margin-bottom:5px;margin-top:5px"
+            <ul id="containerlist">
+              <li>
+                <div id="echartContainer1"
+                     style="width:500px; height:500px"></div>
+              </li>
+              <li>
+                <div id="echartContainer2"
+                     style="width:500px; height:500px"></div>
+              </li>
+            </ul>
+            <el-button v-show="ifsave"
+                       style="float:right;margin-bottom:20px;margin-top:480px"
                        type="primary"
                        @click="saveresult=true">保存</el-button>
           </el-card>
+
         </el-row>
       </el-col>
     </el-row>
@@ -306,49 +375,10 @@
                :visible.sync="NewVarVisible"
                width="50%"
                :before-close="handleClose">
-      <el-tabs :value="NewVarTabs">
-        <el-tab-pane label="新增变量"
-                     name="NewVariable">
-        </el-tab-pane>
-        <el-tab-pane label="变量列表"
-                     name="VarList">
-          <el-row>
-            <el-col :span=24
-                    :offset=1>
-              <el-table :data="VariableTable"
-                        style="width:90%"
-                        stripe
-                        border>
-                <el-table-column prop="name"
-                                 label="变量名称"
-                                 min-width="60%"></el-table-column>
-                <el-table-column prop="type"
-                                 label="变量类型"
-                                 min-width="60%"></el-table-column>
-                <el-table-column prop="description"
-                                 label="变量描述"
-                                 min-width="150%"
-                                 show-overflow-tooltip></el-table-column>
-                <el-table-column label="编辑"
-                                 min-width="120%">
-                  <template slot-scope="scope">
-                    <el-button size="mini"
-                               type="primary"
-                               @click="EditVar(scope.$index)">编辑</el-button>
-                    <el-button size="mini"
-                               @click="CancelVar(scope.$index)">删除</el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-col>
-          </el-row>
-        </el-tab-pane>
-      </el-tabs>
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button type="primary"
-                   @click="NewVarVisible = false">确 定</el-button>
-      </span>
+      <component :is="NewVariable"
+                 ref="NewVariable"
+                 @GetNewVarVisiable="GetNewVarVisiable"
+                 @GetVarSelection="GetVarSelection"></component>
     </el-dialog>
 
     <!--新增概念集 by lqh—-->
@@ -469,6 +499,8 @@
 <script>
 
 import axios from 'axios';
+import echarts from 'echarts';
+
 
 import createconceptset from './createconceptset/createconceptset.vue';
 import draggable from 'vuedraggable';
@@ -484,6 +516,7 @@ import onesample_ttest from './methodform/onesample_ttest.vue'
 import oneway_anova from './methodform/oneway_anova.vue'
 import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
 import svmanalysis from './methodform/svmanalysis.vue'
+import { cpus } from 'os';
 // import firstanalysisVue from './methodform/firstanalysis.vue';
 // import firstanalysis from './methodform/firstanalysis.vue'
 // import bayesiannetworks from './methodform/bayesiannetworks.vue'
@@ -496,7 +529,7 @@ import svmanalysis from './methodform/svmanalysis.vue'
 // import oneway_anova from './methodform/oneway_anova.vue'
 // import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
 // import svm from './methodform/svm.vue'
-
+import NewVariable from './newvariable/newvariable.vue'
 
 export default {
   components: {
@@ -511,20 +544,23 @@ export default {
     'oneway_anova': oneway_anova,
     'pairedsample_ttest': pairedsample_ttest,
     'svmanalysis': svmanalysis,
+    'NewVariable': NewVariable,
     'createconceptset': createconceptset
   },
   data() {
     return {
-      activeName: 'summarygenerate',
-      summarygeneratevalue: '',
-      cohortanalysisvalue: '',
-      analysismethodvalue: '',
+      activeName: 'cohortstatistic',
+      formLabelWidth: "90px",
+      cohortstatisticdata: {},
+      cohortanalysisdata: {},
+      selectedvariable: [],
       dialogVisible: false,
       methodName: '',
       saveresult: false,
       saveresultname: '',
       mycreateconceptset: createconceptset,
       conceptSetName: '',
+      collabcohortsets: [],
       conceptSetDes: '',
       Excludeditems: [],
       ChilerenConcepts: [],
@@ -549,6 +585,7 @@ export default {
       isLoadingTree: true,//是否加载节点树
       conceptsets: [],
       cohortsets: [],
+      cohortsets2: [], //待导入的队列
       analysismethods: [],
       defaultProps: {
         children: "children",
@@ -558,14 +595,32 @@ export default {
       tabPosition: "left",
       checked: true,
       // 新增变量弹框 dwx
-      NewVarTabs: "NewVariable",
-      VariableTable: []
+      VarSelection: [],
+      NewVariable: NewVariable,
+      // 增加变量标签初始化/RH
+      dynamicTags: [
+        // {
+        //   "featureId": 1,
+        //   "name": "性别"
+        // },
+        // {
+        //   "featureId": 2,
+        //   "name": "年龄"
+        // },
+      ],
+      inputVisible: false,
+      inputValue: '',
+      ifsave: false,
+      ifcopy2collab: false,
+      ifcohortdetail: false,
+      personalcohortsets: []
     };
   },
   mounted() {
     // console.log(this.GLOBAL.token)
     this.getConceptsetsData();
-    this.getcohortsetsData();
+    this.getpersonalcohortsetsData();
+    this.getcollabcohortsetsData();
     this.getAnalysismethodsData();
   },
   methods: {
@@ -583,14 +638,35 @@ export default {
           console.log("error", error);
         });
     },
-    getcohortsetsData() {
+
+    // 获得个人队列/RH
+    getpersonalcohortsetsData() {
       axios.get('/structure/getStructure', {
         params: {
           "token": this.GLOBAL.token
         }
       })
         .then((response) => {
-          this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
+          // console.log(response.data.data.privateCohortStructure)
+          this.cohortsets = JSON.parse(response.data.data.privateCohortStructure)
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+
+    // 获得团队队列（未完）/RH
+    getcollabcohortsetsData() {
+      axios.get('/cohort/initator', {
+        params: {
+          "token": this.GLOBAL.token,
+          // "collaborationId": this.$route.params.collaborationId
+          "collaborationId": "3",
+        }
+      })
+        .then((response) => {
+          // console.log(response.data.data.cohortList)
+          this.collabcohortsets = response.data.data.cohortList
         })
         .catch(function (error) {
           console.log("error", error);
@@ -683,7 +759,7 @@ export default {
             this.$message.success("新建成功！")
           }
         })
-      console.log(this.concepts)
+      // console.log(this.concepts)
     },
     handleClose(done) {
       this.$confirm("确认关闭？")
@@ -697,12 +773,14 @@ export default {
     },
     toCreatecohort() {
       this.$router.push({
-        path: 'createqueue',
+        path: 'createCohort',
       });
     },
     toNewVariable: function () {
       this.NewVarVisible = true
-      this.getVariableTable()
+      setTimeout(() => {
+        this.$refs.NewVariable.Initialize();
+      })
     },
     //概念集资源结构编辑函数
     handleAddTop_concept() {
@@ -935,37 +1013,13 @@ export default {
 
 
     // 新增变量弹框 dwx
-    getVariableTable() {
-      axios.get('/feature/getList', {
-        params: {
-          "token": this.GLOBAL.token
-        }
-      })
-        .then((response) => {
-          this.VariableTable = response.data.data
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+    GetNewVarVisiable(val) {
+      this.NewVarVisible = val
     },
-
-    CancelVar(index) {
-      axios.post('/feature/deleteFeature', {
-        "token": this.GLOBAL.token,
-        "featureId": this.VariableTable[index].featureId
-      })
-        .then(response => {
-          if (response.data.code == "0") {
-            this.$alert('删除成功！', '提示', { confirmButtonText: '确定' });
-            this.getVariableTable()
-          }
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
-    },
-    EditVar(index) {
-
+    GetVarSelection(val) {
+      this.VarSelection = val
+      this.dynamicTags = this.VarSelection
+      // console.log(this.VarSelection)
     },
     //队列拖拽所需
     handleDrop(draggingNode, dropNode, dropType, ev) {
@@ -1062,12 +1116,235 @@ export default {
           break;
       }
     },
-    cohortanalysis() {
+    // 队列统计（未完）/RH
+    cohortstatistic(cohortId) {
+      console.log(this.$route.params.researchId)
+      console.log(cohortId)
+      console.log(this.VarSelection)
+      if (cohortId == undefined) { this.$message.warning("请选择统计队列！") }
+      else {
+        for (var i = 0; i < this.dynamicTags.length; i++) { console.log(this.dynamicTags[i].id) }
+        // 定性！
+        axios.post('/cohort/statInfo', ({
+          "token": this.GLOBAL.token,
+          "cohortId": "1",
+          "organizationCode": "1",
+          "featureId": "23"
+        }))
+          .then(response => {
+            console.log(response)
+            if ((response.data.code == 0)) {
+              this.$message.success("开始统计！")
+              setTimeout(function () {
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('echartContainer1'));
+                // 绘制图表
+                myChart.setOption({
+                  title: { text: '队列统计结果' },
+                  tooltip: {},
+                  xAxis: {
+                    data: ["0-1", "1-2", "2-3", "3-4", "4-5"]
+                  },
+                  yAxis: {},
+                  series: [{
+                    type: 'bar',
+                    data: JSON.parse(response.data.data.histogramData)
+                  }]
+                });
+              }, 1000);
+            }
+            // axios.post('/result/createResearch2CohortStatInfo', ({
+            //   "token": this.GLOBAL.token,
+            //   "researchTypeTag": "1",
+            //   "researchId": "1",
+            //   "userId": this.GLOBAL.userId,
+            //   "cohortId": "1",
+            //   "featureId": "23"
+            // }))
+            //   .then(response2 => {
+
+            //   })
+          })
+        // 定量！
+
+        axios.post('/cohort/statInfo', ({
+          "token": this.GLOBAL.token,
+          "cohortId": "1",
+          "organizationCode": "1",
+          "featureId": "18"
+        }))
+          .then(response => {
+            console.log(response)
+            if ((response.data.code == 0)) {
+              this.$message.success("开始统计！")
+              setTimeout(function () {
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('echartContainer2'));
+                // 绘制图表
+                myChart.setOption({
+                  title: { text: '队列统计结果' },
+                  tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                  },
+                  series: [
+                    {
+                      type: 'pie',
+                      radius: '55%',
+                      center: ['50%', '50%'],
+                      data: [
+                        { value: JSON.parse(response.data.data.positiveNo), name: '正样本' },
+                        { value: JSON.parse(response.data.data.positiveNo), name: '负样本' },
+                      ].sort(function (a, b) { return a.value - b.value; }),
+                      roseType: 'radius',
+                      label: {
+                        normal: {
+                          textStyle: {
+                            color: 'rgba(0, 0, 0, 1)'
+                          }
+                        }
+                      },
+                    }
+                  ]
+                });
+              }, 1000);
+            }
+            // axios.post('/result/createResearch2CohortStatInfo', ({
+            //   "token": this.GLOBAL.token,
+            //   "researchTypeTag": "1",
+            //   "researchId": "1",
+            //   "userId": this.GLOBAL.userId,
+            //   "cohortId": "1",
+            //   "featureId": "18"
+            // }))
+            //   .then(response2 => {
+            //     console.log(response2)
+
+
+            //   })
+          })
+      }
+    },
+    // 队列分析（未完）/RH
+    cohortanalysis(cohortId, modelId) {
       console.log("开始分析")
+      if (cohortId == undefined) {        this.$message.warning("请选择分析队列！")
+      } else if (modelId == undefined) { this.$message.warning("请选择计算模型！") } else {
+        console.log(cohortId, modelId)
+        this.cohortidnow = cohortId;
+        this.modelidnow = modelId;
+        this.$message.success("开始分析！")
+        // 开始计算
+        this.ifsave = true
+      }
     },
-    summarygenerate() {
-      console.log("开始生成")
+
+    tosaveresult(saveresultname) {
+      axios.post('/result/createResult', ({
+        "token": this.GLOBAL.token,
+        "researchTypeTag": "1",
+        "researchId": this.$route.params.researchId,
+        "name": saveresultname,
+        "description": "test",
+        "userId": this.GLOBAL.userId,
+        "cohortId": this.cohortidnow,
+        "cohortVersion": "1",
+        "modelId": this.modelidnow,
+        "modelVersion": "1",
+        "modelTypeLayer1Code": "1",
+        "modelTypeLayer2Code": "1",
+        "resultTemplateVersion": "1",
+        "organizationCode": this.GLOBAL.ORGANIZATIONCODE
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("保存成功")
+          }
+        })
     },
+    // 删除变量/RH
+    taghandleClose(tag) {
+      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+    },
+    //新增变量（显示输入框）/RH
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+    // 新增变量（确定新增）/RH
+    handleInputConfirm() {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        this.dynamicTags.push({
+          "featureId": this.dynamicTags.length - 1,
+          "name": inputValue        });
+      }
+      this.inputVisible = false;
+      this.inputValue = '';
+    },
+
+
+    toifcopy2collab() {
+      for (var i = 0; i < this.cohortsets.length; i++) {
+        if (this.cohortsets[i].children != undefined) {
+          for (var j = 0; j < this.cohortsets[i].children.length; j++) {
+            this.cohortsets2.push({
+              "id": this.cohortsets[i].children[j].id,
+              "name": this.cohortsets[i].children[j].label
+            })
+          }
+        }
+      }
+
+      this.ifcopy2collab = true;
+    },
+
+    // 个人队列导入到团队队列（未完）/RH
+    tocopy2collab(cohortid) {
+      console.log(this.cohortsets2[cohortid].id)
+      axios.post('/cohort/copy2Collaboration', ({
+        "token": this.GLOBAL.token,
+        "cohortId": this.cohortsets2[cohortid].id,
+        "collaborationId": "3"
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("导入完成！")
+            this.ifcopy2collab = false;
+
+          }
+        })
+    },
+    // 显示队列数据/RH
+    toCohortwithData(index) {
+      this.ifcohortdetail = true;
+      console.log(index)
+      console.log(this.collabcohortsets[index].COHORTID)
+    },
+
+    // 发出授权申请（未完）/RH
+    toCohortAccredit(index) {
+      console.log(index)
+      axios.post('/collaboration/createCollaborCohortAccredit', ({
+        "token": this.GLOBAL.token,
+        "collaborationId": "1",
+        "userId": this.GLOBAL.userId,
+        "cohortId": this.collabcohortsets[index].COHORTID
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("授权申请已发出！")
+          } else if (response.data.msg == "该研究队列无需授权，请直接进行下一步分析") {
+            this.$message.warning("该研究队列无需授权，请直接进行下一步分析！")
+          }
+        })
+    }
+
+
+
+
 
   },
   components: {
@@ -1127,5 +1404,10 @@ export default {
   padding: 0 10px;
   background-color: #428bca;
   color: #fffffb;
+}
+#containerlist li {
+  display: block;
+  float: left;
+  margin: 5px;
 }
 </style>

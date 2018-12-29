@@ -1,19 +1,19 @@
 <template>
   <div style="margin-left:10px;margin-right:10px">
     <el-tabs v-model="activeName">
-      <el-tab-pane label="队列生成结果"
+      <el-tab-pane label="队列统计结果"
                    name="summarygenerateresult">
         <ul id="cohortlist">
           <li>
             <el-tooltip class="item"
                         effect="dark"
-                        content="新建队列"
+                        content="新建"
                         placement="right-start">
 
               <div id="newcohort"
                    class="cardBox"
                    shadow="hover"
-                   @click="ifNewcohort">
+                   @click="toNewresult">
 
                 <span class="el-icon-plus"></span>
               </div>
@@ -63,23 +63,23 @@
           <li>
             <el-tooltip class="item"
                         effect="dark"
-                        content="新建队列"
+                        content="新建"
                         placement="right-start">
 
               <div id="newcohort"
                    class="cardBox"
                    shadow="hover"
-                   @click="ifNewcohort">
+                   @click="toNewresult">
 
                 <span class="el-icon-plus"></span>
               </div>
             </el-tooltip>
           </li>
 
-          <li v-for="cohort in analysisresultlist">
+          <li v-for="result in analysisresultlist">
             <div class="cardBox">
               <div class="headerBox">
-                <span style="font-size:20px; font-weight:bold">{{cohort.cohortname}}</span>
+                <span style="font-size:20px; font-weight:bold">{{result.NAME}}</span>
                 <el-dropdown style="float: right; padding: 3px 0"
                              trigger="click">
                   <span class="el-icon-more">
@@ -97,11 +97,11 @@
                      @click="toMycohort"
                      style="position:absolute;">
                   <div class="flex-container">
-                    {{'计算时间 ' }}<span style="float: right; ">{{cohort.createtime}}</span>
+                    {{'结果ID ' }}<span style="float: right; ">{{result.RESULTID}}</span>
                   </div>
                   <div class="flex-container">
                     {{'研究者 ' }}
-                    <span style="float: right; ">{{cohort.researchadmin }}</span>
+                    <span style="float: right; ">{{name}}</span>
                   </div>
                   <!-- <div class="flex-container">
                 {{'研究状态 ' }}
@@ -142,6 +142,7 @@
 <script>
 // import wait from '../../assets/等待审核.png'
 // import end from '../../assets/已结束.png'
+import axios from 'axios';
 
 export default {
   data() {
@@ -156,39 +157,41 @@ export default {
       newcohortname: "",
       formLabelWidth: '90px',
       createtime: "",
+      researchId: "",
+      name: "",
       generateresultlist: [
-        {
-          cohortname: "队列生成结果1",
-          researchadmin: "Admin",
-          createtime: "2018-12-06",
-          cohortstatus: 1,
+        // {
+        //   cohortname: "队列生成结果1",
+        //   researchadmin: "Admin",
+        //   createtime: "2018-12-06",
+        //   cohortstatus: 1,
 
-        }, {
-          cohortname: "队列生成结果2",
-          researchadmin: "Admin",
-          createtime: "2018-12-08",
-          cohortstatus: 1
+        // }, {
+        //   cohortname: "队列生成结果2",
+        //   researchadmin: "Admin",
+        //   createtime: "2018-12-08",
+        //   cohortstatus: 1
 
-        }, {
-          cohortname: "队列生成结果3",
-          researchadmin: "Admin",
-          createtime: "2018-12-08",
-          cohortstatus: 2
-        }
+        // }, {
+        //   cohortname: "队列生成结果3",
+        //   researchadmin: "Admin",
+        //   createtime: "2018-12-08",
+        //   cohortstatus: 2
+        // }
       ],
       analysisresultlist: [
-        {
-          cohortname: "队列分析结果1",
-          researchadmin: "Admin",
-          createtime: "2018-12-06",
-          cohortstatus: 1,
+        // {
+        //   cohortname: "队列分析结果1",
+        //   researchadmin: "Admin",
+        //   createtime: "2018-12-06",
+        //   cohortstatus: 1,
 
-        }, {
-          cohortname: "队列分析结果2",
-          researchadmin: "Admin",
-          createtime: "2018-12-08",
-          cohortstatus: 2
-        }
+        // }, {
+        //   cohortname: "队列分析结果2",
+        //   researchadmin: "Admin",
+        //   createtime: "2018-12-08",
+        //   cohortstatus: 2
+        // }
       ]
     }
   },
@@ -206,7 +209,50 @@ export default {
       }
     }
   },
+  mounted() {
+    this.getStatInfoList();
+    this.getResearchResultList();
+    this.name = this.GLOBAL.NAME
+  },
   methods: {
+    // 获取队列统计信息列表/RH
+    getStatInfoList() {
+      axios.get('/result/getStatInfoList', {
+        params: {
+          "token": this.GLOBAL.token,
+          "researchTypeTag": "1",
+          "researchId": this.$route.params.researchId,
+        }
+      })
+        .then((response) => {
+          // console.log(response)
+          this.generateresultlist = response.data.data
+
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+
+    // 获取研究对应分析结果列表/RH
+    getResearchResultList() {
+      axios.get('/result/getResearchResultList', {
+        params: {
+          "token": this.GLOBAL.token,
+          "researchTypeTag": "1",
+          "researchId": this.$route.params.researchId,
+        }
+      })
+        .then((response) => {
+          // console.log(response)
+          this.analysisresultlist = response.data.data
+
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
+
     // 关闭对话框
     handleClose(done) {
       this.$confirm("确认关闭？")
@@ -218,28 +264,18 @@ export default {
     // 跳转至对应研究页面
     toMycohort: function () {
       this.$router.replace({
-        path: "myresearch",
-        query:
+        name: "我的研究",
+        params:
           {
+            "researchId": this.$route.params.researchId,
             cohortid: ""
           }
       });
     },
-    // 新建研究对话框
-    ifNewcohort: function () {
-      this.dialogVisible = true;
-    },
-
-    // 跳转至新建队列
-    toNewcohort: function () {
-      this.createtime = new Date();
+    // 新建队列对话框
+    toNewresult: function () {
       this.$router.push({
-        path: 'myresearch',
-        query:
-          {
-            researchId: this.$route.params.researchId,
-            cohortId: 1
-          }
+        name: '我的研究',
       });
     },
 
@@ -258,13 +294,13 @@ export default {
   text-align: center;
   font-size: 105px;
   color: dimgrey;
-  height: 150px;
+  height: 170px;
   cursor: pointer;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   border-radius: 5px;
 }
 .cardBox {
-  height: 150px;
+  height: 170px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   margin-right: 10px;
   padding: 5px;

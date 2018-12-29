@@ -2,16 +2,14 @@
   <div>
     <el-row style="margin-top:30px;margin-bottom:10px">
       <el-col :span="24">
-        <el-steps :active="1"
+        <el-steps :active="CollaborState"
                   align-center>
-          <el-step title="1 研究开始"
-                   @click.native="to1()"></el-step>
-          <el-step title="2 团队建立"
-                   @click.native="to2()"></el-step>
+          <el-step title="1 研究开始"></el-step>
+          <el-step title="2 团队建立"></el-step>
           <el-step title="3 多中心运算"></el-step>
           <el-step title="4 成果讨论"></el-step>
           <el-step title="5 资格审核"></el-step>
-        </el-steps>>
+        </el-steps>
       </el-col>
     </el-row>
     <el-row :gutter="20"
@@ -158,6 +156,20 @@ export default {
     // },
     Initiator: function () {
       return this.detail.collaborMemberList.splice(0, 1)
+    },
+    CollaborState: function () {
+      //console.log("state", this.detail.collaborInfo.COLLABORATIONSTATECODE)
+      if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 0 || this.detail.collaborInfo.COLLABORATIONSTATECODE == 1) {
+        return 1
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 2 || this.detail.collaborInfo.COLLABORATIONSTATECODE == 3) {
+        return 2
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 4) {
+        return 3
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 5) {
+        return 4
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 6) {
+        return 5
+      }
     }
   },
   mounted() {
@@ -168,7 +180,7 @@ export default {
   methods: {
 
     getCollaborInfo(COLLABORATIONID) {
-      axios.get('collaboration/CollaborInfo', {
+      axios.get('collaboration/collaborInfo', {
         params: {
           token: this.GLOBAL.token,
           collaborationId: COLLABORATIONID
@@ -227,13 +239,13 @@ export default {
 
     },
     goResult() {
-      this.$router.push({
-        path: 'result',
-        query:
-          {
-            collaborationId: this.$route.query.collaborationId
-          }
-      });
+      // this.$router.push({
+      //   path: 'result',
+      //   query:
+      //     {
+      //       collaborationId: this.$route.query.collaborationId
+      //     }
+      // });
       axios.post('/collaboration/createCollaboration', {
         "token": this.GLOBAL.token,
         "collaborationId": this.$route.query.collaborationId,
@@ -243,13 +255,13 @@ export default {
 
           if (response.data.code == 0) {
             console.log("newteamsuccess")
-            // this.$router.push({
-            //   path: 'result',
-            //   params:
-            //     {
-            //       collaborationId: this.$route.query.collaborationId
-            //     }
-            // });
+            this.$router.push({
+              path: 'result',
+              query:
+                {
+                  collaborationId: this.$route.query.collaborationId
+                }
+            });
           }
         })
         .catch(function (error) {

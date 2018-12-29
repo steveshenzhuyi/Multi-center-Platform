@@ -9,7 +9,9 @@ import axios from "axios";
 import global_ from "./components/Global";
 import "../settings.js";
 import "element-ui/lib/theme-chalk/index.css";
+import echarts from "echarts";
 
+Vue.prototype.$echarts = echarts;
 // axios 配置
 axios.defaults.timeout = 5000;
 axios.defaults.headers.post["Content-Type"] =

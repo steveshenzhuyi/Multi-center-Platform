@@ -85,7 +85,7 @@
             <div slot="header"
                  style="height:12px;"
                  class="clearfix">
-              <span>队列</span>
+              <span>个人队列</span>
             </div>
             <el-button size="mini"
                        @click="handleAddTop_cohort">添加新文件夹</el-button>
@@ -134,6 +134,10 @@
                   </span>
                 </span>
               </el-tree>
+              <el-button type="primary"
+                         size="mini"
+                         style="float:right;margin-right:20px"
+                         @click="togenerate">生成</el-button>
             </div>
           </el-card>
         </el-row>
@@ -222,17 +226,12 @@
                     </el-option>
                   </el-option-group>
                 </el-select>
-                <!-- <el-autocomplete class="inline-input"
-                                 v-model="state1"
-                                 :fetch-suggestions="querySearch"
-                                 placeholder="请输入内容"
-                                 @select="handleSelect"></el-autocomplete> -->
                 <!-- 变量标签/RH -->
-                <el-tag :key="selectedvariable.featureId"
+                <el-tag :key="selectedvariable.id"
                         v-for="selectedvariable in dynamicTags"
                         closable
                         :disable-transitions="false"
-                        @close="taghandleClose(selectedvariable.name)">
+                        @close="taghandleClose(selectedvariable.id)">
                   {{selectedvariable.name}}
                 </el-tag>
                 <el-input class="input-new-tag"
@@ -243,10 +242,10 @@
                           @keyup.enter.native="handleInputConfirm"
                           @blur="handleInputConfirm">
                 </el-input>
-                <el-button v-else
+                <!-- <el-button v-else
                            class="button-new-tag"
                            size="small"
-                           @click="showInput">+ New Tag</el-button>
+                           @click="showInput">+ New Tag</el-button> -->
 
                 <el-button type="primary"
                            @click="toNewVariable()">新增变量</el-button>
@@ -300,10 +299,22 @@
                  class="clearfix">
               <span>分析结果</span>
             </div>
-            <el-button style="float:right;margin-bottom:5px;margin-top:5px"
+            <ul id="containerlist">
+              <li>
+                <div id="echartContainer1"
+                     style="width:500px; height:500px"></div>
+              </li>
+              <li>
+                <div id="echartContainer2"
+                     style="width:500px; height:500px"></div>
+              </li>
+            </ul>
+            <el-button v-show="ifsave"
+                       style="float:right;margin-bottom:20px;margin-top:480px"
                        type="primary"
                        @click="saveresult=true">保存</el-button>
           </el-card>
+
         </el-row>
       </el-col>
     </el-row>
@@ -324,7 +335,7 @@
             class="dialog-footer">
         <el-button @click="saveresult = false">取 消</el-button>
         <el-button type="primary"
-                   @click="saveresult = false;">确 定</el-button>
+                   @click="saveresult = false;tosaveresult(saveresultname)">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 新建变量 dwx -->
@@ -332,49 +343,10 @@
                :visible.sync="NewVarVisible"
                width="50%"
                :before-close="handleClose">
-      <el-tabs :value="NewVarTabs">
-        <el-tab-pane label="新增变量"
-                     name="NewVariable">
-        </el-tab-pane>
-        <el-tab-pane label="变量列表"
-                     name="VarList">
-          <el-row>
-            <el-col :span=24
-                    :offset=1>
-              <el-table :data="VariableTable"
-                        style="width:90%"
-                        stripe
-                        border>
-                <el-table-column prop="name"
-                                 label="变量名称"
-                                 min-width="60%"></el-table-column>
-                <el-table-column prop="type"
-                                 label="变量类型"
-                                 min-width="60%"></el-table-column>
-                <el-table-column prop="description"
-                                 label="变量描述"
-                                 min-width="150%"
-                                 show-overflow-tooltip></el-table-column>
-                <el-table-column label="编辑"
-                                 min-width="120%">
-                  <template slot-scope="scope">
-                    <el-button size="mini"
-                               type="primary"
-                               @click="EditVar(scope.$index)">编辑</el-button>
-                    <el-button size="mini"
-                               @click="CancelVar(scope.$index)">删除</el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-col>
-          </el-row>
-        </el-tab-pane>
-      </el-tabs>
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button type="primary"
-                   @click="NewVarVisible = false">确 定</el-button>
-      </span>
+      <component :is="NewVariable"
+                 ref="NewVariable"
+                 @GetNewVarVisiable="GetNewVarVisiable"
+                 @GetVarSelection="GetVarSelection"></component>
     </el-dialog>
 
     <!--新增概念集 by lqh—-->
@@ -495,6 +467,7 @@
 <script>
 
 import axios from 'axios';
+import echarts from 'echarts';
 
 import createconceptset from './createconceptset/createconceptset.vue';
 import draggable from 'vuedraggable';
@@ -523,6 +496,7 @@ import svmanalysis from './methodform/svmanalysis.vue'
 // import oneway_anova from './methodform/oneway_anova.vue'
 // import pairedsample_ttest from './methodform/pairedsample_ttest.vue'
 // import svm from './methodform/svm.vue'
+import NewVariable from './newvariable/newvariable.vue'
 
 
 export default {
@@ -538,6 +512,7 @@ export default {
     'oneway_anova': oneway_anova,
     'pairedsample_ttest': pairedsample_ttest,
     'svmanalysis': svmanalysis,
+    'NewVariable': NewVariable,
     'createconceptset': createconceptset
   },
   data() {
@@ -586,32 +561,24 @@ export default {
       tabPosition: "left",
       checked: true,
       // 新增变量弹框 dwx
-      NewVarTabs: "NewVariable",
-      VariableTable: [],
+      VarSelection: [],
+      NewVariable: NewVariable,
       // 增加变量标签初始化/RH
       dynamicTags: [
-        {
-          "featureId": 1,
-          "name": "性别"
-        },
-        {
-          "featureId": 2,
-          "name": "年龄"
-        },
+        // {
+        //   "featureId": 1,
+        //   "name": "性别"
+        // },
+        // {
+        //   "featureId": 2,
+        //   "name": "年龄"
+        // },
       ],
       inputVisible: false,
-      inputValue: ''
-      // analysismethods: [{
-      //   'label': '模型文件夹1',
-      //   'children': [
-      //     {
-      //       'label': 'SVM'
-      //     },
-      //     {
-      //       'label': 'RF'
-      //     }
-      //   ]
-      // }]
+      inputValue: '',
+      ifsave: false,
+      cohortidnow: "",
+      modelidnow: "",
     };
   },
   mounted() {
@@ -642,7 +609,7 @@ export default {
         }
       })
         .then((response) => {
-          this.cohortsets = JSON.parse(response.data.data.collaborationCohortStructure)
+          this.cohortsets = JSON.parse(response.data.data.privateCohortStructure)
           this.cohortsets[0].tag = '0'
           this.cohortsets[0].children[0].tag = '1'
           this.cohortsets[0].children[1].tag = '1'
@@ -755,12 +722,14 @@ export default {
     },
     toCreatecohort() {
       this.$router.push({
-        path: 'createqueue',
+        path: 'createCohort',
       });
     },
     toNewVariable: function () {
       this.NewVarVisible = true
-      this.getVariableTable()
+      setTimeout(() => {
+        this.$refs.NewVariable.Initialize();
+      })
     },
     //概念集资源结构编辑函数
     handleAddTop_concept() {
@@ -977,6 +946,15 @@ export default {
         d.id > this.non_method_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
+    // ------新增变量弹框 dwx------
+    GetNewVarVisiable(val) {
+      this.NewVarVisible = val
+    },
+    GetVarSelection(val) {
+      this.VarSelection = val
+      this.dynamicTags = this.VarSelection
+      // console.log(this.VarSelection)
+    },
     // handleChange2_2(value) {
     //   console.log(value);
     // },
@@ -989,41 +967,24 @@ export default {
     // handleChange3_2(value) {
     //   console.log(value);
     // },
-    // 新增变量弹框
-
-
-    // 新增变量弹框 dwx
-    getVariableTable() {
-      axios.get('/feature/getList', {
-        params: {
-          "token": this.GLOBAL.token
-        }
-      })
-        .then((response) => {
-          this.VariableTable = response.data.data
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+    //队列拖拽所需
+    handleDragStart(node, ev) {
+      console.log('drag start', node);
     },
-
-    CancelVar(index) {
-      axios.post('/feature/deleteFeature', {
-        "token": this.GLOBAL.token,
-        "featureId": this.VariableTable[index].featureId
-      })
-        .then(response => {
-          if (response.data.code == "0") {
-            this.$alert('删除成功！', '提示', { confirmButtonText: '确定' });
-            this.getVariableTable()
-          }
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+    handleDragEnter(draggingNode, dropNode, ev) {
+      console.log('tree drag enter: ', dropNode.label);
     },
-    EditVar(index) {
-
+    handleDragLeave(draggingNode, dropNode, ev) {
+      console.log('tree drag leave: ', dropNode.label);
+    },
+    handleDragOver(draggingNode, dropNode, ev) {
+      console.log('tree drag over: ', dropNode.label);
+    },
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
+      console.log('tree drag end: ', dropNode && dropNode.label, dropType);
+    },
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      console.log('tree drop: ', dropNode.label, dropType);
     },
     //队列拖拽所需
     handleDrop(draggingNode, dropNode, dropType, ev) {
@@ -1120,51 +1081,152 @@ export default {
       }
     },
 
-    // 队列统计/RH
+    // 队列统计（未完）/RH
     cohortstatistic(cohortId) {
+      console.log(this.$route.params.researchId)
       console.log(cohortId)
+      console.log(this.VarSelection)
       if (cohortId == undefined) { this.$message.warning("请选择统计队列！") }
       else {
-        for (var i = 0; i < this.dynamicTags.length; i++) { console.log(this.dynamicTags[i].featureId) }
-        this.$message.success("开始分析！")
-        console.log("开始统计")
+        for (var i = 0; i < this.dynamicTags.length; i++) { console.log(this.dynamicTags[i].id) }
+        // 定性！
+        axios.post('/cohort/statInfo', ({
+          "token": this.GLOBAL.token,
+          "cohortId": "1",
+          "organizationCode": "1",
+          "featureId": "23"
+        }))
+          .then(response => {
+            console.log(response)
+            if ((response.data.code == 0)) {
+              this.$message.success("开始统计！")
+              setTimeout(function () {
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('echartContainer1'));
+                // 绘制图表
+                myChart.setOption({
+                  title: { text: '队列统计结果' },
+                  tooltip: {},
+                  xAxis: {
+                    data: ["0-1", "1-2", "2-3", "3-4", "4-5"]
+                  },
+                  yAxis: {},
+                  series: [{
+                    type: 'bar',
+                    data: JSON.parse(response.data.data.histogramData)
+                  }]
+                });
+              }, 1000);
+            }
+            // axios.post('/result/createResearch2CohortStatInfo', ({
+            //   "token": this.GLOBAL.token,
+            //   "researchTypeTag": "1",
+            //   "researchId": "1",
+            //   "userId": this.GLOBAL.userId,
+            //   "cohortId": "1",
+            //   "featureId": "23"
+            // }))
+            //   .then(response2 => {
+
+            //   })
+          })
+        // 定量！
+
+        axios.post('/cohort/statInfo', ({
+          "token": this.GLOBAL.token,
+          "cohortId": "1",
+          "organizationCode": "1",
+          "featureId": "18"
+        }))
+          .then(response => {
+            console.log(response)
+            if ((response.data.code == 0)) {
+              this.$message.success("开始统计！")
+              setTimeout(function () {
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('echartContainer2'));
+                // 绘制图表
+                myChart.setOption({
+                  title: { text: '队列统计结果' },
+                  tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                  },
+                  series: [
+                    {
+                      type: 'pie',
+                      radius: '55%',
+                      center: ['50%', '50%'],
+                      data: [
+                        { value: JSON.parse(response.data.data.positiveNo), name: '正样本' },
+                        { value: JSON.parse(response.data.data.positiveNo), name: '负样本' },
+                      ].sort(function (a, b) { return a.value - b.value; }),
+                      roseType: 'radius',
+                      label: {
+                        normal: {
+                          textStyle: {
+                            color: 'rgba(0, 0, 0, 1)'
+                          }
+                        }
+                      },
+                    }
+                  ]
+                });
+              }, 1000);
+            }
+            // axios.post('/result/createResearch2CohortStatInfo', ({
+            //   "token": this.GLOBAL.token,
+            //   "researchTypeTag": "1",
+            //   "researchId": "1",
+            //   "userId": this.GLOBAL.userId,
+            //   "cohortId": "1",
+            //   "featureId": "18"
+            // }))
+            //   .then(response2 => {
+            //     console.log(response2)
+
+
+            //   })
+          })
       }
     },
-    // 队列分析/RH
+    // 队列分析（未完）/RH
     cohortanalysis(cohortId, modelId) {
-      //       axios.post('/result/createResult', ({
-      //   "token": this.GLOBAL.token,
-      //   "researchId": "53",
-      //   "researchTypeTag":1,
-      //   "name": this.newresearchname,
-      //   "target": "aaa",
-      //   "proposal": "aaa",
-      //   "expectedOutcomes": "aaa",
-      //   "dataRange": "aaa",
-      //   "projectSupport": "aaa",
-      //   "redundancy": "qwerty"
-      // }))
-      //   .then(response => {
-      //     if (response.data.code == "0") {
-      //       this.$message.success("新建成功！")
-      //       setTimeout(function () {
-      //         location.reload()
-      //       }, 1000);
-      //     }
-      //   })
-
-      console.log("开始统计")
-      if (cohortId == undefined) {        this.$message.warning("请选择统计队列！")
+      console.log("开始分析")
+      if (cohortId == undefined) {        this.$message.warning("请选择分析队列！")
       } else if (modelId == undefined) { this.$message.warning("请选择计算模型！") } else {
         console.log(cohortId, modelId)
-        this.$message.success("开始统计！")
-        //开始计算
+        this.cohortidnow = cohortId;
+        this.modelidnow = modelId;
+        this.$message.success("开始分析！")
+        // 开始计算
+        this.ifsave = true
       }
-
-
     },
 
-
+    tosaveresult(saveresultname) {
+      axios.post('/result/createResult', ({
+        "token": this.GLOBAL.token,
+        "researchTypeTag": "1",
+        "researchId": this.$route.params.researchId,
+        "name": saveresultname,
+        "description": "test",
+        "userId": this.GLOBAL.userId,
+        "cohortId": this.cohortidnow,
+        "cohortVersion": "1",
+        "modelId": this.modelidnow,
+        "modelVersion": "1",
+        "modelTypeLayer1Code": "1",
+        "modelTypeLayer2Code": "1",
+        "resultTemplateVersion": "1",
+        "organizationCode": this.GLOBAL.ORGANIZATIONCODE
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$message.success("保存成功")
+          }
+        })
+    },
     // 删除变量/RH
     taghandleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
@@ -1181,11 +1243,15 @@ export default {
       let inputValue = this.inputValue;
       if (inputValue) {
         this.dynamicTags.push({
-          "featureId": this.dynamicTags.length - 1,
+          "id": this.dynamicTags.length - 1,
           "name": inputValue        });
       }
       this.inputVisible = false;
       this.inputValue = '';
+    },
+    // 真实队列生成/RH
+    togenerate() {
+      this.$message.success("开始生成！")
     }
 
   },
@@ -1261,5 +1327,10 @@ export default {
   width: 90px;
   margin-left: 10px;
   vertical-align: bottom;
+}
+#containerlist li {
+  display: block;
+  float: left;
+  margin: 5px;
 }
 </style>
