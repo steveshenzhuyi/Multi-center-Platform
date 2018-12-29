@@ -189,10 +189,10 @@
 <script>
 import axios from 'axios';
 export default {
+  props: ['existConceptId'],
   data() {
     return {
       //新增概念集假数据
-      searchConcepts: [],
       activeName: 'first',
       multipleSelection: [],
       multipleSelection2: [],
@@ -214,6 +214,12 @@ export default {
         SetName: [
           { required: true, message: '请输入概念名称', trigger: 'blur' }
         ]
+      },
+      props: {
+        existConceptId: {
+          type: String,
+          required: true
+        }
       },
       // tableAll: [
       //   {
@@ -247,38 +253,140 @@ export default {
       //     ChilerenConcept: "1862084082#1"
       //   }
       // ],
+      firstTableAll: [],
       tableAll: [],
-      tableChecked: []
+      tableChecked: [],
+      conceptsLength: 0
     }
   },
+
   mounted() {
-    for (let i = 0; i < this.tableAll.length; i++) {
-      this.Excludeditems[i] = this.tableAll[i].Except
-      this.ChilerenConcepts[i] = this.tableAll[i].ChilerenConcept
+    //console.log(this.existConceptId);
+
+    if (this.existConceptId) {
+      axios.get('/conceptSet/getConceptSetDetail', {
+        params: {
+          "token": this.GLOBAL.token,
+          "conceptSetId": this.existConceptId
+        }
+      })
+        .then((response) => {
+          this.NewConceptSets.SetName = response.data.data.conceptSetName
+          if (response.data.data.description != 'null') {
+            this.NewConceptSets.SetDescription = response.data.data.description
+          }
+          const concepts = response.data.data.concepts
+          this.conceptsLength = concepts.length
+          for (var i = 0; i < concepts.length; i++) {
+            var CONCEPTCODE = parseInt(response.data.data.concepts[i].CONCEPTCODE)
+            var CHILDTAG = parseInt(response.data.data.concepts[i].CHILDTAG)
+            var EXCLUDETAG = parseInt(response.data.data.concepts[i].EXCLUDETAG)
+            this.tableAll.push({
+              subject: CONCEPTCODE.toString(),
+              label: '',
+              domain: '',
+              class: '',
+              voc: '',
+              std: '',
+              Except: CONCEPTCODE.toString(),
+              ChilerenConcept: CONCEPTCODE.toString()
+            })
+            // axios.get('/knowledgeGraph/queryConceptID', {
+            //   params: {
+            //     "token": this.GLOBAL.token,
+            //     "query": CONCEPTCODE
+            //   },
+            //   timeout: 1000 * 60 * 3
+            // }
+            // )
+            //   .then((response) => {
+            //     const searchConcepts = response.data.results.bindings
+            //     this.tableAll.push({
+            //       subject: CONCEPTCODE.toString(),
+            //       label: searchConcepts[0].label.value,
+            //       domain: searchConcepts[0].domain.value,
+            //       class: searchConcepts[0].class.value,
+            //       voc: searchConcepts[0].voc.value,
+            //       std: Object.getOwnPropertyNames(searchConcepts[0]).length > 5 ? searchConcepts[0].std.value : '',
+            //       Except: CONCEPTCODE.toString(),
+            //       ChilerenConcept: CONCEPTCODE.toString()
+            //     })
+            //   })
+            //   .catch(function (error) {
+            //     console.log("error", error);
+            //   });
+            if (CHILDTAG == 1) {
+              this.checkedChilerenConcepts.push(CONCEPTCODE.toString())
+            }
+            if (EXCLUDETAG == 1) {
+              this.checkedExcludeditems.push(CONCEPTCODE.toString())
+            }
+            if (CHILDTAG == 0 && EXCLUDETAG == 0) {
+              console.log(111)
+              this.$nextTick(function () {
+                this.$refs.multipleTable.toggleRowSelection(this.tableAll[i], true);
+              })
+            }
+          }
+          //this.firstTableAll = this.tableAll
+          for (let i = 0; i < this.tableAll.length; i++) {
+            this.Excludeditems[i] = this.tableAll[i].Except
+            this.ChilerenConcepts[i] = this.tableAll[i].ChilerenConcept
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
     }
+
+  },
+  updated() {
+    //var rows = this.firstTableAll
+    this.$nextTick(function () {
+      for (var i = 0; i < this.conceptsLength; i++) {
+        this.$refs.multipleTable.toggleRowSelection(this.tableAll[i], true);
+      }
+      //this.$options.methods.NameInputBlur();
+      //this.$options.methods.DesInputBlur();
+    })
+    //this.$options.methods.NameInputBlur();
+    //this.$options.methods.DesInputBlur();
   },
   methods: {
     getSearchData() {
+      //console.log(this.existConceptId);
       const InputConceptName = this.InputConceptName;
       axios.get('/knowledgeGraph/queryConcept', {
         params: {
           "token": this.GLOBAL.token,
           "query": InputConceptName
-        }
+        },
+        timeout: 1000 * 60 * 2
       })
         .then((response) => {
-          this.searchConcepts = response.data.data.results.bindings
-          for (var i = 0; i < this.searchConcepts.length; i++) {
-            this.tableAll.push({
-              subject: this.searchConcepts[i].subject.value.split('#')[1],
-              label: this.searchConcepts[i].label.value,
-              domain: this.searchConcepts[i].domain.value.split('#')[1],
-              class: this.searchConcepts[i].class.value.split('#')[1],
-              voc: this.searchConcepts[i].voc.value.split('#')[1],
-              std: Object.getOwnPropertyNames(this.searchConcepts[i]).length > 5 ? this.searchConcepts[i].std : '',
-              Except: this.searchConcepts[i].subject.value.split('#')[1],
-              ChilerenConcept: this.searchConcepts[i].subject.value.split('#')[1]
-            })
+          const searchConcepts = response.data.data.results.bindings
+          for (var i = 0; i < searchConcepts.length; i++) {
+            var concept_exist = false;
+            var a = []
+            a = searchConcepts[i].subject.value.split('#')
+            for (var j = 0; j < this.tableAll.length; j++) {
+              if (a[1].indexOf(this.tableAll[j].subject) != -1) {
+                concept_exist = true;
+                //this.tableChecked[j].excludeTag = "1"
+              }
+            }
+            if (!concept_exist) {
+              this.tableAll.push({
+                subject: a[1],
+                label: searchConcepts[i].label.value,
+                domain: searchConcepts[i].domain.value,
+                class: searchConcepts[i].class.value,
+                voc: searchConcepts[i].voc.value,
+                std: Object.getOwnPropertyNames(searchConcepts[i]).length > 5 ? searchConcepts[i].std.value : '',
+                Except: a[1],
+                ChilerenConcept: a[1]
+              })
+            }
           }
           for (let i = 0; i < this.tableAll.length; i++) {
             this.Excludeditems[i] = this.tableAll[i].Except
@@ -290,6 +398,9 @@ export default {
         });
     },
     handleClick(tab, event) {
+      // this.firstTableAll.forEach(row => {
+      //   this.$refs.multipleTable.toggleRowSelection(row, true);
+      // });
       this.tableChecked = [];
       for (var i = 0; i < this.multipleSelection.length; i++) {
         this.tableChecked.push({
@@ -343,8 +454,10 @@ export default {
     //新增概念集所需
     NameInputBlur() {
       this.$emit('getdata3', this.NewConceptSets.SetName);
+      this.$emit('getdata4', this.NewConceptSets.SetDescription);
     },
     DesInputBlur() {
+      this.$emit('getdata3', this.NewConceptSets.SetName);
       this.$emit('getdata4', this.NewConceptSets.SetDescription);
     },
     handleClose(done) {
@@ -360,6 +473,8 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
       this.$emit('getdata', this.multipleSelection);
+      this.$emit('getdata3', this.NewConceptSets.SetName);
+      this.$emit('getdata4', this.NewConceptSets.SetDescription);
     },
     handleCheckAllExcludeditemsChange(val) {
       this.checkedExcludeditems = val ? this.Excludeditems : [];
@@ -369,6 +484,8 @@ export default {
     },
     handleCheckedExcludeditemsChange(value) {
       this.$emit('getdata1', this.checkedExcludeditems);
+      this.$emit('getdata3', this.NewConceptSets.SetName);
+      this.$emit('getdata4', this.NewConceptSets.SetDescription);
       this.checkedExcludeditems = value;
       let checkedCount = value.length;
       this.checkAll1 = checkedCount === this.Excludeditems.length;
@@ -378,10 +495,14 @@ export default {
     handleCheckAllChilerenConceptsChange(val) {
       this.checkedChilerenConcepts = val ? this.ChilerenConcepts : [];
       this.$emit('getdata2', this.checkedChilerenConcepts);
+      this.$emit('getdata3', this.NewConceptSets.SetName);
+      this.$emit('getdata4', this.NewConceptSets.SetDescription);
       this.isIndeterminate2 = false;
     },
     handleCheckedChilerenConceptsChange(value) {
       this.$emit('getdata2', this.checkedChilerenConcepts);
+      this.$emit('getdata3', this.NewConceptSets.SetName);
+      this.$emit('getdata4', this.NewConceptSets.SetDescription);
       let checkedCount = value.length;
       this.checkAll2 = checkedCount === this.ChilerenConcepts.length;
       this.isIndeterminate2 =

@@ -28,7 +28,6 @@
     <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
       <el-input-number v-model="num3_1"
                        controls-position="right"
-                       @change="handleChange3_1"
                        :min="0"
                        :max="100"></el-input-number>%
     </el-row>
@@ -66,11 +65,6 @@
             </el-checkbox-group>
           </fieldset>
         </form>
-        <!-- <form>
-                          <fieldset class="groupbox-boarder">
-                            <legend class="one-of-groupbox-boarder"></legend>
-                          </fieldset>
-                        </form> -->
 
       </el-col>
       <el-col :span="12">
@@ -133,7 +127,9 @@ export default {
       }],
     }
   },
-  methods: {}
+  methods: {
+
+  }
 }
 </script>
 
