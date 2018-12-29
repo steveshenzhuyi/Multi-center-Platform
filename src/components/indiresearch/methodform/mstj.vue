@@ -333,7 +333,7 @@ export default {
               this.mstjForm.num1 = JSON.parse(this.MethodDetails.data.data6);
               this.isnew = false
               var todolist = this.MethodDetails.feature;
-              console.log(todolist);
+              //console.log(todolist);
               this.checklist(todolist);
               //这边解析数组
 
@@ -348,8 +348,7 @@ export default {
       else {
         if (this.VarTable != null) {
           this.Varlist = this.VarTable;
-          // console.log('打印页面变量表')
-          // console.log(this.Varlist)
+
 
         }
 
@@ -360,13 +359,9 @@ export default {
     checklist(t) {
       if (t.length != 0) {
         var choosenId = parseInt(t[0].featureId);//获得选中的变量id
-
-        // console.log(choosenId);
-        // console.log(this.VarTable.length)
         var data1 = this.VarTable;
         this.Chosenlist = data1.filter(function (item) {
           return item.featureId == choosenId;
-
 
           //this.Chosenlist.push(item)
         })
