@@ -1006,8 +1006,8 @@ export default {
       this.NewVarVisible = val
     },
     GetVarSelection(val) {
-      console.log(val)
-      console.log(this.dynamicTags)
+      // console.log(val)
+      // console.log(this.dynamicTags)
       if (this.dynamicTags.length == 0) {
         this.dynamicTags = val
       } else {
@@ -1438,7 +1438,6 @@ export default {
     taghandleClose(tag) {
       for (var i = 0; i < this.dynamicTags.length; i++) {
         if (this.dynamicTags[i].id == tag) {
-          console.log(i)
           this.dynamicTags.splice(i, 1);
         }
       }
