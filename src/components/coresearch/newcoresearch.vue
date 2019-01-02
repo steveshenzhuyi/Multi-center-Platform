@@ -997,18 +997,6 @@ export default {
         d.id > this.non_method_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-    // handleChange2_2(value) {
-    //   console.log(value);
-    // },
-    // handleChange2_3(value) {
-    //   console.log(value);
-    // },
-    // handleChange3_1(value) {
-    //   console.log(value);
-    // },
-    // handleChange3_2(value) {
-    //   console.log(value);
-    // },
     // 新增变量弹框
 
 
@@ -1017,9 +1005,21 @@ export default {
       this.NewVarVisible = val
     },
     GetVarSelection(val) {
-      this.VarSelection = val
-      this.dynamicTags = this.VarSelection
-      // console.log(this.VarSelection)
+      console.log(val)
+      console.log(this.dynamicTags)
+      if (this.dynamicTags.length == 0) {
+        this.dynamicTags = val
+      } else {
+        for (var i = 0; i < val.length; i++) {
+          var ifvalexist = false
+          this.dynamicTags.forEach(item => {
+            if ((item.name == val[i].name) && (item.id == val[i].id)) {
+              ifvalexist = true
+            }
+          })
+          if (!ifvalexist) { this.dynamicTags.push(val[i]) }
+        }
+      }
     },
     //队列拖拽所需
     handleDrop(draggingNode, dropNode, dropType, ev) {
@@ -1134,36 +1134,37 @@ export default {
           .then(response => {
             console.log(response)
             if ((response.data.code == 0)) {
-              this.$message.success("开始统计！")
-              setTimeout(function () {
-                // 基于准备好的dom，初始化echarts实例
-                var myChart = echarts.init(document.getElementById('echartContainer1'));
-                // 绘制图表
-                myChart.setOption({
-                  title: { text: '队列统计结果' },
-                  tooltip: {},
-                  xAxis: {
-                    data: ["0-1", "1-2", "2-3", "3-4", "4-5"]
-                  },
-                  yAxis: {},
-                  series: [{
-                    type: 'bar',
-                    data: JSON.parse(response.data.data.histogramData)
-                  }]
-                });
-              }, 1000);
+              axios.post('/result/createResearch2CohortStatInfo', ({
+                "token": this.GLOBAL.token,
+                "researchTypeTag": "1",
+                "researchId": "1",
+                "userId": this.GLOBAL.userId,
+                "cohortId": "1",
+                "featureId": "23"
+              }))
+                .then(response2 => {
+                  if ((response2.data.code == 0) || (response2.data.msg == "已存在该研究-队列统计信息对应关系!")) {
+                    this.$message.success("开始统计！")
+                    setTimeout(function () {
+                      // 基于准备好的dom，初始化echarts实例
+                      var myChart = echarts.init(document.getElementById('echartContainer1'));
+                      // 绘制图表
+                      myChart.setOption({
+                        title: { text: '队列统计结果' },
+                        tooltip: {},
+                        xAxis: {
+                          data: ["0-1", "1-2", "2-3", "3-4", "4-5"]
+                        },
+                        yAxis: {},
+                        series: [{
+                          type: 'bar',
+                          data: JSON.parse(response.data.data.histogramData)
+                        }]
+                      });
+                    }, 1000);
+                  }
+                })
             }
-            // axios.post('/result/createResearch2CohortStatInfo', ({
-            //   "token": this.GLOBAL.token,
-            //   "researchTypeTag": "1",
-            //   "researchId": "1",
-            //   "userId": this.GLOBAL.userId,
-            //   "cohortId": "1",
-            //   "featureId": "23"
-            // }))
-            //   .then(response2 => {
-
-            //   })
           })
         // 定量！
 
@@ -1176,52 +1177,52 @@ export default {
           .then(response => {
             console.log(response)
             if ((response.data.code == 0)) {
-              this.$message.success("开始统计！")
-              setTimeout(function () {
-                // 基于准备好的dom，初始化echarts实例
-                var myChart = echarts.init(document.getElementById('echartContainer2'));
-                // 绘制图表
-                myChart.setOption({
-                  title: { text: '队列统计结果' },
-                  tooltip: {
-                    trigger: 'item',
-                    formatter: "{a} <br/>{b} : {c} ({d}%)"
-                  },
-                  series: [
-                    {
-                      type: 'pie',
-                      radius: '55%',
-                      center: ['50%', '50%'],
-                      data: [
-                        { value: JSON.parse(response.data.data.positiveNo), name: '正样本' },
-                        { value: JSON.parse(response.data.data.positiveNo), name: '负样本' },
-                      ].sort(function (a, b) { return a.value - b.value; }),
-                      roseType: 'radius',
-                      label: {
-                        normal: {
-                          textStyle: {
-                            color: 'rgba(0, 0, 0, 1)'
+              axios.post('/result/createResearch2CohortStatInfo', ({
+                "token": this.GLOBAL.token,
+                "researchTypeTag": "1",
+                "researchId": "1",
+                "userId": this.GLOBAL.userId,
+                "cohortId": "1",
+                "featureId": "18"
+              }))
+                .then(response2 => {
+                  console.log(response2)
+                  if ((response2.data.code == 0) || (response2.data.msg == "已存在该研究-队列统计信息对应关系!")) {
+                    this.$message.success("开始统计！")
+                    setTimeout(function () {
+                      // 基于准备好的dom，初始化echarts实例
+                      var myChart = echarts.init(document.getElementById('echartContainer2'));
+                      // 绘制图表
+                      myChart.setOption({
+                        title: { text: '队列统计结果' },
+                        tooltip: {
+                          trigger: 'item',
+                          formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        series: [
+                          {
+                            type: 'pie',
+                            radius: '55%',
+                            center: ['50%', '50%'],
+                            data: [
+                              { value: JSON.parse(response.data.data.positiveNo), name: '正样本' },
+                              { value: JSON.parse(response.data.data.positiveNo), name: '负样本' },
+                            ].sort(function (a, b) { return a.value - b.value; }),
+                            roseType: 'radius',
+                            label: {
+                              normal: {
+                                textStyle: {
+                                  color: 'rgba(0, 0, 0, 1)'
+                                }
+                              }
+                            },
                           }
-                        }
-                      },
-                    }
-                  ]
-                });
-              }, 1000);
+                        ]
+                      });
+                    }, 1000);
+                  }
+                })
             }
-            // axios.post('/result/createResearch2CohortStatInfo', ({
-            //   "token": this.GLOBAL.token,
-            //   "researchTypeTag": "1",
-            //   "researchId": "1",
-            //   "userId": this.GLOBAL.userId,
-            //   "cohortId": "1",
-            //   "featureId": "18"
-            // }))
-            //   .then(response2 => {
-            //     console.log(response2)
-
-
-            //   })
           })
       }
     },
@@ -1264,7 +1265,12 @@ export default {
     },
     // 删除变量/RH
     taghandleClose(tag) {
-      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+      for (var i = 0; i < this.dynamicTags.length; i++) {
+        if (this.dynamicTags[i].id == tag) {
+          console.log(i)
+          this.dynamicTags.splice(i, 1);
+        }
+      }
     },
     //新增变量（显示输入框）/RH
     showInput() {
