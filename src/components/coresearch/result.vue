@@ -194,7 +194,7 @@ export default {
             if (response.data.msg == "成功修改成果信息") {
               this.$message.success("成功！");
               console.log("deletesuccess")
-              this.getCollaborInfo(this.$route.query.collaborationId)
+              //this.getCollaborInfo(this.$route.query.collaborationId)
             } else {
               this.$message.error("失败！");
             }

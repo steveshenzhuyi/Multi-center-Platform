@@ -27,7 +27,6 @@
                              :value="item.value">
                   </el-option>
                 </el-select>
-                <el-checkbox v-model="check7">fit prior</el-checkbox>
 
               </el-row>
             </fieldset>
@@ -43,6 +42,7 @@
                           v-model="input7_1"
                           size="mini"
                           style="width:100px;"></el-input>
+                <el-checkbox v-model="check7">fit prior</el-checkbox>
 
               </el-row>
               <el-row tyle="margin-top:10px;margin-bottom:10px">

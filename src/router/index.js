@@ -38,10 +38,10 @@ export default new Router({
           children: [
             {
               path: "hisresearch",
-              name: "历史研究",
+              name: "个人研究",
               component: () => import("@/components/indiresearch/hisresearch"),
               meta: {
-                title: "历史研究"
+                title: "个人研究"
               }
             },
             {
@@ -61,9 +61,9 @@ export default new Router({
               }
             },
             {
-              path: "cohortlist",
+              path: "resultlist",
               name: "结果列表",
-              component: () => import("@/components/indiresearch/cohortlist"),
+              component: () => import("@/components/indiresearch/resultlist"),
               meta: {
                 title: "结果列表"
               }
