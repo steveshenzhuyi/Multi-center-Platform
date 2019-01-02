@@ -728,7 +728,7 @@ export default {
     },
     toNewVariable: function () {
       this.NewVarVisible = true
-      setTimeout(() => {
+      this.$nextTick(() => {
         this.$refs.NewVariable.Initialize();
       })
     },
