@@ -149,7 +149,7 @@ export default {
     },
     // 跳转至对应研究页面
     toMyresearch: function (researchid) {
-      console.log(researchid)
+      // console.log(researchid)
       this.$router.push({
         name: "结果列表",
         params:
