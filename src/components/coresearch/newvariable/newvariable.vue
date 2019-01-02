@@ -2,7 +2,7 @@
   <div>
     <el-tabs v-model="NewVarTabs">
       <!-- 新增变量 -->
-      <el-tab-pane label="新增变量"
+      <el-tab-pane :label="Tab1Label"
                    name="NewVariable">
         </br>
         <el-row>
@@ -60,8 +60,7 @@
                             prop="data1">
                 <el-cascader expand-trigger="hover"
                              :options="ConceptSets"
-                             v-model="VarForm.data1"
-                             @change="handleChange">
+                             v-model="VarForm.data1">
                 </el-cascader>
                 </el-input>
               </el-form-item>
@@ -84,34 +83,32 @@
               </el-form-item>
               <el-form-item v-if="VariableData5Visible"
                             prop="data5">
-                <el-input-number v-model="VarForm.data5"
-                                 size="mini"
-                                 controls-position="right"
-                                 :min="0"
-                                 :max='100'></el-input-number>
+                <input type="number"
+                       v-model="VarForm.data5"
+                       min="0"
+                       max="100">
               </el-form-item>
               <el-form-item v-if="VariableData6Visible"
                             prop="data6">
-                <el-input-number v-model="VarForm.data6"
-                                 size="mini"
-                                 controls-position="right"
-                                 :min="0"
-                                 :max='100'></el-input-number>
+                <input type="number"
+                       v-model="VarForm.data6"
+                       min="0"
+                       max="100">
               </el-form-item>
               <el-form-item v-if="VariableData234Visible"
                             prop="data3">
                 <span style="font-size: 8px">（&nbsp;&nbsp;出现时间&nbsp;</span>
-                <el-input-number v-model="VarForm.data2"
-                                 size="mini"
-                                 controls-position="right"
-                                 :min="0"
-                                 :max='VarForm.data3==""?36500:VarForm.data3'></el-input-number>&nbsp;-
-                <el-input-number v-model="VarForm.data3"
-                                 size="mini"
-                                 controls-position="right"
-                                 :min='VarForm.data2==""?0:VarForm.data2'
-                                 :max="36500"></el-input-number><span style="font-size: 8px">&nbsp;&nbsp;天&nbsp;&nbsp;&nbsp;</span>
-                <el-checkbox v-model="VarForm.data4"><span style="font-size: 8px">不在其之间</span></el-checkbox>&nbsp;&nbsp;）
+                <input type="number"
+                       v-model="VarForm.data2"
+                       min="0"
+                       max="36500">&nbsp;-
+                <input type="number"
+                       v-model="VarForm.data3"
+                       min="0"
+                       max="36500"></el-input-number><span style="font-size: 8px">
+                  &nbsp;&nbsp;天&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <input type="checkbox"
+                       v-model="VarForm.data4"> <span style="font-size: 8px">不在其之间</span></el-checkbox>&nbsp;&nbsp;）
               </el-form-item>
             </el-form>
           </el-col>
@@ -179,6 +176,7 @@
                   :offset=1>
             <el-button type="primary"
                        @click="ConfirmVarSelect()">确定</el-button>
+            <el-button @click="CancelDialog()">取消</el-button>
           </el-col>
         </el-row>
       </el-tab-pane>
@@ -203,11 +201,10 @@
 
 <script>
 import axios from 'axios'
-import { isArray } from 'util';
 export default {
   data() {
     var VarValidateData3 = (rule, value, callback) => {
-      if (value < this.VarForm.data2) {
+      if ((value < this.VarForm.data2) || ((value == "") !== (this.VarForm.data2 == "")) || (this.VarForm.data4 && (value == ""))) {
         callback(new Error('请确认时间正确'))
       }
       else {
@@ -215,7 +212,7 @@ export default {
       }
     };
     var VarValidateData5 = (rule, value, callback) => {
-      if (this.VariableData5Visible && value == "") {
+      if (this.VariableData5Visible && value === "") {
         callback(new Error('请输入数字'))
       }
       else {
@@ -223,7 +220,7 @@ export default {
       }
     };
     var VarValidateData6 = (rule, value, callback) => {
-      if (this.VariableData6Visible && value == "") {
+      if (this.VariableData6Visible && value === "") {
         callback(new Error('请输入数字'))
       }
       else {
@@ -232,6 +229,7 @@ export default {
     };
     return {
       NewVarTabs: "NewVariable",
+      Tab1Label: "新增变量",
       // 变量列表
       VariableTable: [],
       EditVarId: "",
@@ -244,7 +242,7 @@ export default {
         layer2Code: "",
         sampleCode: "",
         description: "",
-        data1: "",  // 诊断 概念集
+        data1: [],  // 诊断 概念集
         data2: "",  // 出现时间 前一个数字
         data3: "",  // 出现时间 后一个数字
         data4: "",  // 是否“不在其之间”，是为1
@@ -297,7 +295,7 @@ export default {
   methods: {
     Initialize() {
       // console.log('ini')
-      if (this.$refs['VarForm'] !== undefined) {
+      if (this.$refs['VarForm']) {
         this.VarResetFields()
       }
       this.GetVariableLayer1()
@@ -314,14 +312,10 @@ export default {
       })
         .then((response) => {
           this.VariableTable = response.data.data
-          for (var i = 0; i < this.VariableTable.length; i++) {
-            if (this.VariableTable[i].type == 1) {
-              this.VariableTable[i].type = '定性'
-            }
-            else if (this.VariableTable[i].type == 2) {
-              this.VariableTable[i].type = '定量'
-            }
-          }
+          this.VariableTable.forEach(item => {
+            item.description = item.description || ""
+            item.type = item.type == 1 ? '定性' : '定量'
+          })
         })
         .catch(function (error) {
           console.log("error", error);
@@ -345,6 +339,7 @@ export default {
     EditVar(index) {
       this.VarResetFields()
       this.EditVarId = this.VariableTable[index].featureId
+      this.Tab1Label = "编辑变量"
       this.NewVarTabs = "NewVariable"
       axios.get('/feature/getDetail', {
         params: {
@@ -359,16 +354,13 @@ export default {
           this.VarForm.layer2Code = response.data.data.layer2Name
           this.VarForm.sampleCode = response.data.data.sampleCode
           this.VarForm.description = response.data.data.description
-          this.VarForm.data1 = [69]
+          this.VarForm.data1 = response.data.data.data1
           this.VarForm.data2 = response.data.data.data2 || ""
           this.VarForm.data3 = response.data.data.data3 || ""
           this.VarForm.data4 = response.data.data.data4 || ""
           this.VarForm.data5 = response.data.data.data5 || ""
           this.VarForm.data6 = response.data.data.data6 || ""
-          // console.log("receive " + this.VarForm.data1 + typeof this.VarForm.data1)
           this.VarCheckLayer2(0)
-          // console.log("1111")
-          // console.log(this.VarForm.data4)
         })
         .catch(function (error) {
           console.log("error", error);
@@ -378,10 +370,12 @@ export default {
       this.MultiSelection = val
     },
     ConfirmVarSelect() {
-      var res = []
-      for (var i = 0; i < this.MultiSelection.length; i++) {
-        res.push({ 'id': this.MultiSelection[i].featureId, 'name': this.MultiSelection[i].name })
-      }
+      var res = this.MultiSelection.map(item => {
+        return {
+          'id': item.featureId,
+          'name': item.name
+        }
+      })
       this.$emit('GetVarSelection', res)
       this.CancelDialog()
     },
@@ -412,35 +406,6 @@ export default {
           console.log("error", error);
         });
     },
-    VarCheckLayer2(flag) {
-      if (this.VarForm.layer1Code != "" && this.VarForm.typeCode != "") {
-        if (flag) {
-          this.VarForm.layer2Code = ""
-        }
-        this.GetVariableLayer2()
-        this.VarCheckData23456(flag)
-        this.VariableLayer2Visible = true
-      }
-    },
-    GetVariableLayer2() {
-      axios.get('/feature/criteriaDict', {
-        params: {
-          "token": this.GLOBAL.token,
-          "criteriaLayer1Code": this.VarForm.layer1Code,
-          "criteriaTypeCode": this.VarForm.typeCode
-        }
-      })
-        .then((response) => {
-          this.VariableLayer2 = response.data.data
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
-    },
-    // ComfirmVarConceptSets() {
-    //   this.VarForm.data1 = this.VarConceptSets
-    //   this.ConceptSetsVisible = false
-    // },
     GetConceptSets() {
       console.log("get")
       axios.get('/structure/getStructure', {
@@ -465,6 +430,32 @@ export default {
         }
       });
       return arr
+    },
+    // ComfirmVarConceptSets() {
+    //   this.VarForm.data1 = this.VarConceptSets
+    //   this.ConceptSetsVisible = false
+    // },
+    VarCheckLayer2(flag) {
+      if (this.VarForm.layer1Code != "" && this.VarForm.typeCode != "") {
+        if (flag) {
+          this.VarForm.layer2Code = ""
+        }
+        axios.get('/feature/criteriaDict', {
+          params: {
+            "token": this.GLOBAL.token,
+            "criteriaLayer1Code": this.VarForm.layer1Code,
+            "criteriaTypeCode": this.VarForm.typeCode
+          }
+        })
+          .then((response) => {
+            this.VariableLayer2 = response.data.data
+            this.VarCheckData23456(flag)
+          })
+          .catch(function (error) {
+            console.log("error", error);
+          });
+        this.VariableLayer2Visible = true
+      }
     },
     VarCheckData23456(flag) {
       if (flag) {
@@ -492,7 +483,7 @@ export default {
         this.VariableData6Visible = false
       }
       // data234
-      if (this.VarForm.layer2Code > this.VariableLayer2.length - 4 && this.VarForm.typeCode == 2 && this.VarForm.layer2Code != "") {
+      if (parseInt(this.VarForm.layer2Code) > this.VariableLayer2.length - 4 && this.VarForm.typeCode == 2) {
         this.VariableData234Visible = true
       }
       else {
@@ -515,12 +506,12 @@ export default {
             "data3": this.VarForm.data3,
             "data4": this.VarForm.data4,
             "data5": this.VarForm.data5,
-            "data6": this.VarForm.data6
+            "data6": this.VarForm.data6,
           })
             .then(response => {
               if (response.data.code == "0") {
-                // console.log("send " + this.VarForm.data1 + typeof this.VarForm.data1)
                 this.$alert('新建变量成功！', '提示', { confirmButtonText: '确定' });
+                this.VarResetFields()
                 this.GetVariableTable()
                 this.NewVarTabs = 'VarList'
               }
@@ -533,10 +524,6 @@ export default {
           console.log('error submit!!')
         }
       })
-    },
-    CancelDialog() {
-      this.VarResetFields()
-      this.PassNewVarVisible()
     },
     SubmitEditVariable() {
       this.$refs['VarForm'].validate((valid) => {
@@ -559,10 +546,14 @@ export default {
           })
             .then(response => {
               if (response.data.code == "0") {
-                // console.log("send " + this.VarForm.data1 + typeof this.VarForm.data1)
+                console.log(typeof this.VarForm.data2)
+                console.log(this.VarForm.data2)
+                console.log(typeof this.VarForm.data3)
+                console.log(this.VarForm.data3)
                 this.VarResetFields()
                 this.$alert('编辑变量成功！', '提示', { confirmButtonText: '确定' });
                 this.GetVariableTable()
+                this.Tab1Label = "新增变量"
                 this.NewVarTabs = 'VarList'
               }
             })
@@ -575,13 +566,18 @@ export default {
         }
       })
     },
+    CancelDialog() {
+      this.VarResetFields()
+      this.PassNewVarVisible()
+    },
     CancelEditVariable() {
       this.VarResetFields()
-      this.EditVarId = ""
+      this.Tab1Label = "新增变量"
       this.NewVarTabs = "VarList"
     },
     VarResetFields() {
       this.$refs['VarForm'].resetFields()
+      this.VarForm.data1 = []
       this.VarForm.data2 = ""
       this.VarForm.data3 = ""
       this.VarForm.data4 = ""
@@ -589,6 +585,7 @@ export default {
       this.VariableData234Visible = false
       this.VariableData5Visible = false
       this.VariableData6Visible = false
+      this.EditVarId = ""
     },
     PassNewVarVisible() {
       this.$emit('GetNewVarVisiable', false)
