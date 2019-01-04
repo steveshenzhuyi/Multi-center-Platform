@@ -64,7 +64,7 @@
       </el-col>
       <el-col :span="1"></el-col>
     </el-row>
-    <el-row type="flex"
+    <!-- <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="2">
@@ -88,8 +88,8 @@
 
       </el-col>
       <el-col :span="1"></el-col>
-    </el-row>
-    <!-- <el-row v-for="(n,index) in number"
+    </el-row> -->
+    <el-row v-for="(n,index) in number"
             :key="index"
             type="flex"
             justify="center"
@@ -99,7 +99,7 @@
       </el-col>
       <el-col :span="3">
         <el-select size="small"
-                   v-model="select2"
+                   v-model="select2[index]"
                    placeholder="请选择">
           <el-option v-for="item in orgdep"
                      :key="item.value"
@@ -110,9 +110,9 @@
       </el-col>
       <el-col :span="3">
         <el-select size="small"
-                   v-model="select3"
+                   v-model="select3[index]"
                    placeholder="请选择">
-          <el-option v-for="item in orgdep[select2].children"
+          <el-option v-for="item in showDepartment(select2[index])"
                      :key="item.value"
                      :label="item.label"
                      :value="item.value">
@@ -123,17 +123,17 @@
         <div>
           <el-input size="small"
                     placeholder="姓名"
-                    v-model="researchDetail.partiName">
+                    v-model="name[index]">
 
           </el-input>
         </div>
       </el-col>
       <el-col :span="1"><i v-if="n == number"
            class="el-icon-plus"
-           @click="number++"></i><i v-if="n == number"
+           @click="number++"></i><i v-if="(n == number)&& (number > 1)"
            class="el-icon-delete"
-           @click="number--"></i></el-col>
-    </el-row> -->
+           @click="number--;select2.pop();select3.pop();name.pop();"></i></el-col>
+    </el-row>
     <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
@@ -223,27 +223,22 @@ export default {
       select1: [],
       select2: [],
       select3: [],
-      orgdep: [{
-        value: "",
-        label: "",
-        children: []
-      }, {
-        value: "",
-        label: "",
-        children: []
-      }],
+      name: [],
+      orgdep: [],
       organization: [],
+      department: [],
       researchDetail: {
-        name: '',
-        target: '',
-        proposal: '',
-        expectedOutcomes: '',
-        outcomeDistribution: '',
-        dataRange: '',
-        projectSupport: '',
-        organizationCode: '',
-        departmentCode: '',
-        partiName: ''
+        name: "",
+        target: "",
+        proposal: "",
+        expectedOutcomes: "",
+        outcomeDistribution: "",
+        dataRange: "",
+        projectSupport: "",
+        organizationCode: "",
+        departmentCode: "",
+        partiName: "",
+        partiOrgList: []
       }
     }
   },
@@ -251,9 +246,14 @@ export default {
     this.getOrgAndDep()
 
   },
+  computed: {
+
+  },
   methods: {
     showProtocol() {
       console.log(this.select1)
+      console.log(this.select2)
+      console.log(this.select3)
       this.$alert('协议内容', '协议', {
         confirmButtonText: '确定',
         callback: action => {
@@ -275,30 +275,27 @@ export default {
           if (response.data.code == 0) {
             this.organization = response.data.data
             console.log("org", this.organization)
-            // this.orgdep[0].value = this.organization[0]['organizationCode'.toUpperCase()]
-            // this.orgdep[0].label = this.organization[0]['name'.toUpperCase()]
             for (var i = 0; i < this.organization.length; i++) {
-              this.orgdep[i].value = this.organization[i]['organizationCode'.toUpperCase()]
-              this.orgdep[i].label = this.organization[i]['name'.toUpperCase()]
-              // this.orgdep.push({
-              //   value: this.organization[i]['organizationCode'.toUpperCase()],
-              //   label: this.organization[i]['name'.toUpperCase()],
-              //   children: []
-              // })
+              this.orgdep.push({
+                value: this.organization[i]['organizationCode'.toUpperCase()],
+                label: this.organization[i]['name'.toUpperCase()],
+                children: []
+              })
+              console.log("i", i)
+              this.getDep(i)
             }
-            this.getDep()
           }
         })
         .catch(function (error) {
           console.log("error", error);
         })
     },
-    getDep() {
-      //for (var n = 0; n < this.organization.length; n++) {
+    getDep(i) {
+
       axios.get('/collaboration/department', {
         params: {
           token: this.GLOBAL.token,
-          organizationCode: this.organization[0]['organizationCode'.toUpperCase()]
+          organizationCode: this.organization[i]['organizationCode'.toUpperCase()]
         }
       })
         .then((response) => {
@@ -306,9 +303,8 @@ export default {
           if (response.data.code == 0) {
             this.department = response.data.data
             console.log("dep", this.department)
-
             for (var j = 0; j < this.department.length; j++) {
-              this.orgdep[0].children.push({
+              this.orgdep[i].children.push({
                 "value": this.department[j]['departmentCode'.toUpperCase()],
                 "label": this.department[j]['name'.toUpperCase()]
               })
@@ -320,12 +316,33 @@ export default {
         .catch(function (error) {
           console.log("error", error);
         });
-      //}
+
       console.log("orgdep", this.orgdep)
 
     },
+    showDepartment(ORGANIZATIONCODE) {
+      if (ORGANIZATIONCODE == null) {
+        return null
+      } else {
+        //console.log(this.orgdep[parseInt(ORGANIZATIONCODE)])
+        return this.orgdep[parseInt(ORGANIZATIONCODE)].children
+      }
+    },
     goNewTeam() {
-      console.log(this.researchDetail)
+      this.select2.map((e, i) => {
+        if (this.name[i] == null || this.name[i] == "") {
+          this.researchDetail.partiOrgList.push(
+            [this.select2[i], this.select3[i]]
+          )
+        } else {
+          this.researchDetail.partiOrgList.push(
+            [this.select2[i], this.select3[i], this.name[i]]
+          )
+        }
+      })
+      console.log(this.researchDetail.partiOrgList)
+
+
       // this.$router.push({
       //   path: 'newteam',
       //   query:
@@ -343,26 +360,45 @@ export default {
         "dataRange": this.researchDetail.dataRange,
         "projectSupport": this.researchDetail.projectSupport,
         "redundancy": "qwerty",
-        "organizationCode": this.select1[0],
-        "departmentCode": this.select1[1],
-        "partiName": this.researchDetail.partiName
+        // "organizationCode": this.select1[0],
+        // "departmentCode": this.select1[1],
+        // "partiName": this.researchDetail.partiName
+        "partiOrgList": this.researchDetail.partiOrgList
       })
         .then((response) => {
+          console.log("code", response.data.status)
+          if (response.data.code == 0) {
 
-          if (response.data.msg == "成功插入协同状态数据!") {
-            this.$router.push({
-              path: 'newteam',
-              params:
-                {
-                  collaborationId: response.data.data
-                }
-            });
+            // this.$router.push({
+            //   path: 'newteam',
+            //   params:
+            //     {
+            //       collaborationId: response.data.data
+            //     }
+            // });
+
           }
         })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+        .catch(error => {
+          console.log("error", error.response);
+          if (error.response.data.msg == "协同成员单位列表有重复") {
+            this.$alert('协同成员单位列表有重复', '', {
+              confirmButtonText: '确定'
+            });
+          } else if (error.response.data.msg == "不存在该用户") {
+            this.$alert('不存在该用户', '', {
+              confirmButtonText: '确定'
+            });
+          } else {
+            this.$alert('信息填写不完整', '', {
+              confirmButtonText: '确定'
+            });
+          }
+          this.researchDetail.partiOrgList = []
+          //console.log("list", this.researchDetail.partiOrgList)
 
+
+        })
     }
   }
 }
