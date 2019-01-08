@@ -278,51 +278,53 @@ export default {
           const concepts = response.data.data.concepts
           this.conceptsLength = concepts.length
           for (var i = 0; i < concepts.length; i++) {
-            var CONCEPTCODE = parseInt(response.data.data.concepts[i].CONCEPTCODE)
-            var CHILDTAG = parseInt(response.data.data.concepts[i].CHILDTAG)
-            var EXCLUDETAG = parseInt(response.data.data.concepts[i].EXCLUDETAG)
-            this.tableAll.push({
-              subject: CONCEPTCODE.toString(),
-              label: '',
-              domain: '',
-              class: '',
-              voc: '',
-              std: '',
-              Except: CONCEPTCODE.toString(),
-              ChilerenConcept: CONCEPTCODE.toString()
-            })
-            // axios.get('/knowledgeGraph/queryConceptID', {
-            //   params: {
-            //     "token": this.GLOBAL.token,
-            //     "query": CONCEPTCODE
-            //   },
-            //   timeout: 1000 * 60 * 3
-            // }
-            // )
-            //   .then((response) => {
-            //     const searchConcepts = response.data.results.bindings
-            //     this.tableAll.push({
-            //       subject: CONCEPTCODE.toString(),
-            //       label: searchConcepts[0].label.value,
-            //       domain: searchConcepts[0].domain.value,
-            //       class: searchConcepts[0].class.value,
-            //       voc: searchConcepts[0].voc.value,
-            //       std: Object.getOwnPropertyNames(searchConcepts[0]).length > 5 ? searchConcepts[0].std.value : '',
-            //       Except: CONCEPTCODE.toString(),
-            //       ChilerenConcept: CONCEPTCODE.toString()
-            //     })
+            const conceptCode = parseInt(response.data.data.concepts[i].conceptCode)
+            const childTag = parseInt(response.data.data.concepts[i].childTag)
+            const excludeTag = parseInt(response.data.data.concepts[i].excludeTag)
+            //   this.tableAll.push({
+            //     subject: conceptCode.toString(),
+            //     label: '',
+            //     domain: '',
+            //     class: '',
+            //     voc: '',
+            //     std: '',
+            //     Except: conceptCode.toString(),
+            //     ChilerenConcept: conceptCode.toString()
             //   })
-            //   .catch(function (error) {
-            //     console.log("error", error);
-            //   });
-            if (CHILDTAG == 1) {
-              this.checkedChilerenConcepts.push(CONCEPTCODE.toString())
+
+            axios.get('/knowledgeGraph/queryConceptID', {
+              params: {
+                "token": this.GLOBAL.token,
+                "query": conceptCode
+              },
+              //timeout: 1000 * 60 * 3
+            })
+              .then((response) => {
+                console.log(conceptCode)
+                const searchConcepts = response.data.data.results.bindings
+                this.tableAll.push({
+                  subject: conceptCode.toString(),
+                  label: searchConcepts[0].label.value,
+                  domain: searchConcepts[0].domain.value,
+                  class: searchConcepts[0].class.value,
+                  voc: searchConcepts[0].voc.value,
+                  std: Object.getOwnPropertyNames(searchConcepts[0]).length > 5 ? searchConcepts[0].std.value : '',
+                  Except: conceptCode.toString(),
+                  ChilerenConcept: conceptCode.toString()
+                })
+              })
+              .catch(function (error) {
+                console.log("error", error);
+              });
+            if (childTag == 1) {
+              console.log(childTag)
+              this.checkedChilerenConcepts.push(conceptCode.toString())
             }
-            if (EXCLUDETAG == 1) {
-              this.checkedExcludeditems.push(CONCEPTCODE.toString())
+            if (excludeTag == 1) {
+              this.checkedExcludeditems.push(conceptCode.toString())
             }
-            if (CHILDTAG == 0 && EXCLUDETAG == 0) {
-              console.log(111)
+            if (childTag == 0 && excludeTag == 0) {
+              //console.log(111)
               this.$nextTick(function () {
                 this.$refs.multipleTable.toggleRowSelection(this.tableAll[i], true);
               })
@@ -341,16 +343,11 @@ export default {
 
   },
   updated() {
-    //var rows = this.firstTableAll
     this.$nextTick(function () {
       for (var i = 0; i < this.conceptsLength; i++) {
         this.$refs.multipleTable.toggleRowSelection(this.tableAll[i], true);
       }
-      //this.$options.methods.NameInputBlur();
-      //this.$options.methods.DesInputBlur();
     })
-    //this.$options.methods.NameInputBlur();
-    //this.$options.methods.DesInputBlur();
   },
   methods: {
     getSearchData() {
@@ -509,23 +506,6 @@ export default {
         checkedCount > 0 && checkedCount < this.ChilerenConcepts.length;
     },
   },
-  // computed: {
-  //   // 新增概念集中实现搜索功能
-  //   SearchResult() {
-  //     const InputConceptName = this.InputConceptName;
-  //     if (InputConceptName) {
-  //       return this.tableAll.filter(data => {
-  //         return Object.keys(data).some(key => {
-  //           return String(data[key]).indexOf(InputConceptName) > -1;
-  //         });
-  //       });
-  //     }
-  //     return this.tableAll;
-  //   },
-  //   options() {
-  //     return this.$store.state.options;
-  //   }
-  // },
 }
 </script>
 >

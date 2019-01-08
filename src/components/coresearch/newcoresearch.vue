@@ -353,9 +353,9 @@
       </el-form>
       <span slot="footer"
             class="dialog-footer">
-        <el-button @click="saveresult = false">取 消</el-button>
+        <el-button @click="loadData()">取 消</el-button>
         <el-button type="primary"
-                   @click="saveresult = false;">确 定</el-button>
+                   @click="createConceptset()">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 新建变量 dwx -->
@@ -384,7 +384,7 @@
             class="dialog-footer">
         <el-button @click="loadData()">取 消</el-button>
         <el-button type="primary"
-                   @click="postConceptData()">确 定</el-button>
+                   @click="editConceptSet()">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -764,6 +764,10 @@ export default {
           });
         }
       }
+      //console.log(this.concepts)
+    },
+    createConceptset() {
+      this.$options.methods.postConceptData.bind(this)()
       axios.post('/conceptSet/createConceptSet?token=' + this.GLOBAL.token, ({
         "conceptSetName": this.conceptSetName,
         "description": this.conceptSetDes,
@@ -775,7 +779,22 @@ export default {
             this.reload()
           }
         })
-      //console.log(this.concepts)
+    },
+    editConceptSet() {
+      this.$options.methods.postConceptData.bind(this)()
+      axios.post('/conceptSet/update', ({
+        "token": this.GLOBAL.token,
+        "conceptSetId": this.existConceptId,
+        "conceptSetName": this.conceptSetName,
+        "description": this.conceptSetDes,
+        "concepts": this.concepts,
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            //this.$message.success("新建成功！")
+            this.reload()
+          }
+        })
     },
     loadData() {
       this.createConceptVisible = false
@@ -802,13 +821,7 @@ export default {
       })
     },
     //概念集资源结构编辑函数
-    handleAddTop_concept() {
-      this.conceptsets.push({
-        id: ++this.concept_maxexpandId,
-        label: '新增文件夹',
-        children: [],
-        tag: "0"
-      });
+    postStructure() {
       axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": JSON.stringify(this.cohortsets),
@@ -823,24 +836,21 @@ export default {
           }
         })
     },
+    handleAddTop_concept() {
+      this.conceptsets.push({
+        id: ++this.concept_maxexpandId,
+        label: '新增文件夹',
+        children: [],
+        tag: "0"
+      });
+      this.$options.methods.postStructure.bind(this)()
+    },
     NodeBlur(n, d) {//输入框失焦
       //console.log(n, d)
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
       }
-      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-        "conceptSetStructure": JSON.stringify(this.conceptsets),
-        "privateCohortStructure": JSON.stringify(this.cohortsets),
-        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-        "modelStructure": JSON.stringify(this.analysismethods),
-        "featureStructure": "[]",
-        "resultStructure": "[]"
-      }))
-        .then(response => {
-          if (response.data.code == "0") {
-            this.$message.success("编辑成功！")
-          }
-        })
+      this.$options.methods.postStructure.bind(this)()
     },
     NodeEdit_concept(n, d) {//编辑节点
       //console.log(n, d)
@@ -873,19 +883,7 @@ export default {
             .then(response => {
               if (response.data.code == 0) {
                 this.$message.success("删除成功！")
-                axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-                  "conceptSetStructure": JSON.stringify(this.conceptsets),
-                  "privateCohortStructure": JSON.stringify(this.cohortsets),
-                  "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-                  "modelStructure": JSON.stringify(this.analysismethods),
-                  "featureStructure": "[]",
-                  "resultStructure": "[]"
-                }))
-                  .then(response => {
-                    if (response.data.code == "0") {
-                      //this.$message.success("编辑成功！")
-                    }
-                  })
+                this.$options.methods.postStructure.bind(this)()
               }
             })
 
@@ -937,19 +935,7 @@ export default {
           console.log(_index)
           _list.splice(_index, 1);
           this.$message.success("删除成功！")
-          axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-            "conceptSetStructure": JSON.stringify(this.conceptsets),
-            "privateCohortStructure": JSON.stringify(this.cohortsets),
-            "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-            "modelStructure": JSON.stringify(this.analysismethods),
-            "featureStructure": "[]",
-            "resultStructure": "[]"
-          }))
-            .then(response => {
-              if (response.data.code == "0") {
-                //this.$message.success("编辑成功！")
-              }
-            })
+          this.$options.methods.postStructure.bind(this)()
         }
         //二次确认
         let ConfirmFun = () => {
@@ -998,19 +984,7 @@ export default {
           console.log(_index)
           _list.splice(_index, 1);
           this.$message.success("删除成功！")
-          axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-            "conceptSetStructure": JSON.stringify(this.conceptsets),
-            "privateCohortStructure": JSON.stringify(this.cohortsets),
-            "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-            "modelStructure": JSON.stringify(this.analysismethods),
-            "featureStructure": "[]",
-            "resultStructure": "[]"
-          }))
-            .then(response => {
-              if (response.data.code == "0") {
-                //this.$message.success("成功！")
-              }
-            })
+          this.$options.methods.postStructure.bind(this)()
         }
         //二次确认
         let ConfirmFun = () => {
@@ -1052,19 +1026,7 @@ export default {
     },
     //队列拖拽所需
     handleDrop(draggingNode, dropNode, dropType, ev) {
-      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-        "conceptSetStructure": JSON.stringify(this.conceptsets),
-        "privateCohortStructure": JSON.stringify(this.cohortsets),
-        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-        "modelStructure": JSON.stringify(this.analysismethods),
-        "featureStructure": "[]",
-        "resultStructure": "[]"
-      }))
-        .then(response => {
-          if (response.data.code == "0") {
-            //this.$message.success("编辑成功！")
-          }
-        })
+      this.$options.methods.postStructure.bind(this)()
     },
     allowDrop(draggingNode, dropNode, type) {
       if (dropNode.data.tag.indexOf('1') != -1) {
