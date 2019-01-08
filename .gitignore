@@ -1,5 +1,4 @@
 package-lock.json
-package.json
 settings.js
 .DS_Store
 node_modules/
@@ -11,4 +10,3 @@ test/unit/coverage
 test/e2e/reports
 selenium-debug.log
 .vscode/settings.json
-.gitignore
