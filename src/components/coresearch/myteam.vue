@@ -351,4 +351,4 @@ export default {
 .box-card.el-tree > .el-tree-node {
   display: inline-block;
 }
-</style>
+</style>  

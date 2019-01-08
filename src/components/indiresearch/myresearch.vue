@@ -1442,24 +1442,6 @@ export default {
         }
       }
     },
-    //新增变量（显示输入框）/RH
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-    // 新增变量（确定新增）/RH
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.dynamicTags.push({
-          "id": this.dynamicTags.length - 1,
-          "name": inputValue        });
-      }
-      this.inputVisible = false;
-      this.inputValue = '';
-    },
     // 真实队列生成/RH
     togenerate() {
       this.$message.success("开始生成！")

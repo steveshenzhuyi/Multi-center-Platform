@@ -248,11 +248,11 @@
                                  placeholder="请输入内容"
                                  @select="handleSelect"></el-autocomplete> -->
                 <!-- 变量标签/RH -->
-                <el-tag :key="selectedvariable.featureId"
+                <el-tag :key="selectedvariable.id"
                         v-for="selectedvariable in dynamicTags"
                         closable
                         :disable-transitions="false"
-                        @close="taghandleClose(selectedvariable.name)">
+                        @close="taghandleClose(selectedvariable.id)">
                   {{selectedvariable.name}}
                 </el-tag>
                 <el-input class="input-new-tag"
@@ -1304,26 +1304,6 @@ export default {
         }
       }
     },
-    //新增变量（显示输入框）/RH
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-    // 新增变量（确定新增）/RH
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.dynamicTags.push({
-          "featureId": this.dynamicTags.length - 1,
-          "name": inputValue        });
-      }
-      this.inputVisible = false;
-      this.inputValue = '';
-    },
-
-
     toifcopy2collab() {
       for (var i = 0; i < this.cohortsets.length; i++) {
         if (this.cohortsets[i].children != undefined) {
