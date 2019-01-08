@@ -185,8 +185,7 @@ export default {
 
 
       },
-      Varlist: []
-      ,
+      Varlist: [],
       Chosenlist1: [],
       Chosenlist2: [],
       //可选变量表的指针
