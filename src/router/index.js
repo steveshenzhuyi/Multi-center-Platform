@@ -37,11 +37,11 @@ export default new Router({
           component: indiresearch,
           children: [
             {
-              path: "hisresearch",
-              name: "个人研究",
-              component: () => import("@/components/indiresearch/hisresearch"),
+              path: "newresearch",
+              name: "新建个人研究",
+              component: () => import("@/components/indiresearch/newResearch"),
               meta: {
-                title: "个人研究"
+                title: "新建个人研究"
               }
             },
             {
@@ -53,7 +53,7 @@ export default new Router({
               }
             },
             {
-              path: "createCohort",
+              path: "createcohort",
               name: "新建队列",
               component: () => import("@/components/indiresearch/createCohort"),
               meta: {

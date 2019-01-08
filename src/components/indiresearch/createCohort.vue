@@ -1,5 +1,13 @@
 <template>
   <div class="create-cohort-vue">
+    <el-steps :active="1"
+              style="padding-top:5px;padding-left:10px;padding-right:10px">
+      <el-step title="研究开始"></el-step>
+      <el-step title="队列生成"></el-step>
+      <el-step title="变量生成"></el-step>
+      <el-step title="模型选择"></el-step>
+      <el-step title="结果分析"></el-step>
+    </el-steps>
     <!-- 队列基本信息表单 -->
     <div class="user-fill-info"
          style="margin-top:20px">
