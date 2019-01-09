@@ -1006,8 +1006,8 @@ export default {
       this.NewVarVisible = val
     },
     GetVarSelection(val) {
-      console.log(val)
-      console.log(this.dynamicTags)
+      // console.log(val)
+      // console.log(this.dynamicTags)
       if (this.dynamicTags.length == 0) {
         this.dynamicTags = val
       } else {
@@ -1438,28 +1438,9 @@ export default {
     taghandleClose(tag) {
       for (var i = 0; i < this.dynamicTags.length; i++) {
         if (this.dynamicTags[i].id == tag) {
-          console.log(i)
           this.dynamicTags.splice(i, 1);
         }
       }
-    },
-    //新增变量（显示输入框）/RH
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-    // 新增变量（确定新增）/RH
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.dynamicTags.push({
-          "id": this.dynamicTags.length - 1,
-          "name": inputValue        });
-      }
-      this.inputVisible = false;
-      this.inputValue = '';
     },
     // 真实队列生成/RH
     togenerate() {

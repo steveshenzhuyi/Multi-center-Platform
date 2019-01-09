@@ -23,7 +23,7 @@
           <li v-for="cohort in generateresultlist">
             <div class="cardBox">
               <div class="headerBox">
-                <span style="font-size:20px; font-weight:bold">{{cohort.cohortname}}</span>
+                <span style="font-size:20px; font-weight:bold">{{cohort.NAME}}</span>
                 <el-dropdown style="float: right; padding: 3px 0"
                              trigger="click">
                   <span class="el-icon-more">
@@ -41,11 +41,14 @@
                      @click="toMycohort"
                      style="position:absolute;">
                   <div class="flex-container">
-                    {{'计算时间 ' }}<span style="float: right; ">{{cohort.createtime}}</span>
+                    {{'队列ID ' }}<span style="float: right; ">{{cohort.COHORTID}}</span>
+                  </div>
+                  <div class="flex-container">
+                    {{'变量ID ' }}<span style="float: right; ">{{cohort.FEATUREID}}</span>
                   </div>
                   <div class="flex-container">
                     {{'研究者 ' }}
-                    <span style="float: right; ">{{cohort.researchadmin }}</span>
+                    <span style="float: right; ">{{userId}}</span>
                   </div>
                   <!-- <div class="flex-container">
                 {{'研究状态 ' }}
@@ -101,7 +104,7 @@
                   </div>
                   <div class="flex-container">
                     {{'研究者 ' }}
-                    <span style="float: right; ">{{name}}</span>
+                    <span style="float: right; ">{{userId}}</span>
                   </div>
                   <!-- <div class="flex-container">
                 {{'研究状态 ' }}
@@ -159,6 +162,7 @@ export default {
       createtime: "",
       researchId: "",
       name: "",
+      userId: this.GLOBAL.userId,
       generateresultlist: [
         // {
         //   cohortname: "队列生成结果1",
