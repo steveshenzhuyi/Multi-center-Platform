@@ -2,11 +2,11 @@
   <div>
     <el-steps :active="0"
               style="padding-top:10px;padding-left:10px;padding-right:10px">
-      <el-step title="研究开始"></el-step>
-      <el-step title="队列生成"></el-step>
-      <el-step title="变量生成"></el-step>
-      <el-step title="模型选择"></el-step>
-      <el-step title="结果分析"></el-step>
+      <el-step title="1 研究开始"></el-step>
+      <el-step title="2 队列生成"></el-step>
+      <el-step title="3 变量生成"></el-step>
+      <el-step title="4 模型选择"></el-step>
+      <el-step title="5 结果分析"></el-step>
     </el-steps>
     <el-form ref="newresearch"
              :model="newresearch"
@@ -38,9 +38,9 @@
       确认后将跳转至新建队列页面。
       <span slot="footer"
             class="dialog-footer">
-        <el-button @click="ifnew = false">取 消</el-button>
         <el-button type="primary"
                    @click="dialogVisible = false;tonewresearch(newresearch)">确 定</el-button>
+        <el-button @click="ifnew = false">取 消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -85,7 +85,6 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
-
   }
 }
 </script>
