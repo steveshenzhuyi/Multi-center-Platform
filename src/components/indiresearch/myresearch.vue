@@ -358,7 +358,7 @@
             class="dialog-footer">
         <el-button @click="loadData()">取 消</el-button>
         <el-button type="primary"
-                   @click="postConceptData()">确 定</el-button>
+                   @click="createConceptset()">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -378,7 +378,7 @@
             class="dialog-footer">
         <el-button @click="loadData()">取 消</el-button>
         <el-button type="primary"
-                   @click="postConceptData()">确 定</el-button>
+                   @click="editConceptSet()">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -398,7 +398,7 @@
                        label="描述性分析">
 
             <component :is="methodName1"
-                       :mid="methodID"></component>
+                       :mid="methodID1"></component>
 
           </el-tab-pane>
           <el-tab-pane name="B"
@@ -409,21 +409,21 @@
                            label="单样本t检验">
 
                 <component :is="methodName2_1"
-                           :mid="methodID"></component>
+                           :mid="methodID2_1"></component>
 
               </el-tab-pane>
               <el-tab-pane name="b"
                            label="独立样本t检验">
 
                 <component :is="methodName2_2"
-                           :mid="methodID"></component>
+                           :mid="methodID2_2"></component>
 
               </el-tab-pane>
               <el-tab-pane name="c"
                            label="配对样本t检验">
 
                 <component :is="methodName2_3"
-                           :mid="methodID"></component>
+                           :mid="methodID2_3"></component>
 
               </el-tab-pane>
             </el-tabs>
@@ -435,13 +435,15 @@
               <el-tab-pane name="d"
                            label="单因素方差分析">
 
-                <component :is="methodName3_1"></component>
+                <component :is="methodName3_1"
+                           :mid="methodID3_1"></component>
 
               </el-tab-pane>
               <el-tab-pane name="e"
                            label="多因素方差分析">
 
-                <component :is="methodName3_2"></component>
+                <component :is="methodName3_2"
+                           :mid="methodID3_2"></component>
 
               </el-tab-pane>
             </el-tabs>
@@ -449,31 +451,36 @@
           <el-tab-pane name="D"
                        label="线性回归">
 
-            <component :is="methodName4"></component>
+            <component :is="methodName4"
+                       :mid="methodID4"></component>
 
           </el-tab-pane>
           <el-tab-pane name="E"
                        label="逻辑回归">
 
-            <component :is="methodName5"></component>
+            <component :is="methodName5"
+                       :mid="methodID5"></component>
 
           </el-tab-pane>
           <el-tab-pane name="F"
                        label="SVM">
 
-            <component :is="methodName6"></component>
+            <component :is="methodName6"
+                       :mid="methodID6"></component>
 
           </el-tab-pane>
           <el-tab-pane name="G"
                        label="贝叶斯网络">
 
-            <component :is="methodName7"></component>
+            <component :is="methodName7"
+                       :mid="methodID7"></component>
 
           </el-tab-pane>
           <el-tab-pane name="H"
                        label="决策树">
 
-            <component :is='methodName8'></component>
+            <component :is='methodName8'
+                       :mid="methodID8"></component>
 
           </el-tab-pane>
         </el-tabs>
@@ -583,12 +590,23 @@ export default {
       //methodName: '',
       MethodDetails: '',
       activeMethod1: '',
-      //methodName: '',
+
       activeMethod2: 'a',
       activeMethod3: 'd',
       // modelID: '',
 
-      methodID: -1,
+      methodID1: -1,
+      methodID2_1: -1,
+      methodID2_2: -1,
+      methodID2_3: -1,
+      methodID3_1: -1,
+      methodID3_2: -1,
+      methodID4: -1,
+      methodID5: -1,
+      methodID6: -1,
+      methodID7: -1,
+      methodID8: -1,
+
       methodName1: '',
       methodName2_1: '',
       methodName2_2: '',
@@ -739,6 +757,10 @@ export default {
           });
         }
       }
+      //console.log(this.concepts)
+    },
+    createConceptset() {
+      this.$options.methods.postConceptData.bind(this)()
       axios.post('/conceptSet/createConceptSet?token=' + this.GLOBAL.token, ({
         "conceptSetName": this.conceptSetName,
         "description": this.conceptSetDes,
@@ -750,7 +772,22 @@ export default {
             this.reload()
           }
         })
-      //console.log(this.concepts)
+    },
+    editConceptSet() {
+      this.$options.methods.postConceptData.bind(this)()
+      axios.post('/conceptSet/update', ({
+        "token": this.GLOBAL.token,
+        "conceptSetId": this.existConceptId,
+        "conceptSetName": this.conceptSetName,
+        "description": this.conceptSetDes,
+        "concepts": this.concepts,
+      }))
+        .then(response => {
+          if (response.data.code == "0") {
+            //this.$message.success("新建成功！")
+            this.reload()
+          }
+        })
     },
     loadData() {
       this.createConceptVisible = false
@@ -777,13 +814,7 @@ export default {
       })
     },
     //概念集资源结构编辑函数
-    handleAddTop_concept() {
-      this.conceptsets.push({
-        id: ++this.concept_maxexpandId,
-        label: '新增文件夹',
-        children: [],
-        tag: "0"
-      });
+    postStructure() {
       axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
         "conceptSetStructure": JSON.stringify(this.conceptsets),
         "privateCohortStructure": JSON.stringify(this.cohortsets),
@@ -798,24 +829,21 @@ export default {
           }
         })
     },
+    handleAddTop_concept() {
+      this.conceptsets.push({
+        id: ++this.concept_maxexpandId,
+        label: '新增文件夹',
+        children: [],
+        tag: "0"
+      });
+      this.$options.methods.postStructure.bind(this)()
+    },
     NodeBlur(n, d) {//输入框失焦
       //console.log(n, d)
       if (n.isEdit) {
         this.$set(n, 'isEdit', false)
       }
-      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-        "conceptSetStructure": JSON.stringify(this.conceptsets),
-        "privateCohortStructure": JSON.stringify(this.cohortsets),
-        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-        "modelStructure": JSON.stringify(this.analysismethods),
-        "featureStructure": "[]",
-        "resultStructure": "[]"
-      }))
-        .then(response => {
-          if (response.data.code == "0") {
-            this.$message.success("编辑成功！")
-          }
-        })
+      this.$options.methods.postStructure.bind(this)()
     },
     NodeEdit_concept(n, d) {//编辑节点
       //console.log(n, d)
@@ -848,19 +876,7 @@ export default {
             .then(response => {
               if (response.data.code == 0) {
                 this.$message.success("删除成功！")
-                axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-                  "conceptSetStructure": JSON.stringify(this.conceptsets),
-                  "privateCohortStructure": JSON.stringify(this.cohortsets),
-                  "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-                  "modelStructure": JSON.stringify(this.analysismethods),
-                  "featureStructure": "[]",
-                  "resultStructure": "[]"
-                }))
-                  .then(response => {
-                    if (response.data.code == "0") {
-                      //this.$message.success("编辑成功！")
-                    }
-                  })
+                this.$options.methods.postStructure.bind(this)()
               }
             })
 
@@ -912,19 +928,7 @@ export default {
           console.log(_index)
           _list.splice(_index, 1);
           this.$message.success("删除成功！")
-          axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-            "conceptSetStructure": JSON.stringify(this.conceptsets),
-            "privateCohortStructure": JSON.stringify(this.cohortsets),
-            "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-            "modelStructure": JSON.stringify(this.analysismethods),
-            "featureStructure": "[]",
-            "resultStructure": "[]"
-          }))
-            .then(response => {
-              if (response.data.code == "0") {
-                //this.$message.success("编辑成功！")
-              }
-            })
+          this.$options.methods.postStructure.bind(this)()
         }
         //二次确认
         let ConfirmFun = () => {
@@ -973,19 +977,7 @@ export default {
           console.log(_index)
           _list.splice(_index, 1);
           this.$message.success("删除成功！")
-          axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-            "conceptSetStructure": JSON.stringify(this.conceptsets),
-            "privateCohortStructure": JSON.stringify(this.cohortsets),
-            "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-            "modelStructure": JSON.stringify(this.analysismethods),
-            "featureStructure": "[]",
-            "resultStructure": "[]"
-          }))
-            .then(response => {
-              if (response.data.code == "0") {
-                //this.$message.success("成功！")
-              }
-            })
+          this.$options.methods.postStructure.bind(this)()
         }
         //二次确认
         let ConfirmFun = () => {
@@ -1006,8 +998,8 @@ export default {
       this.NewVarVisible = val
     },
     GetVarSelection(val) {
-      console.log(val)
-      console.log(this.dynamicTags)
+      // console.log(val)
+      // console.log(this.dynamicTags)
       if (this.dynamicTags.length == 0) {
         this.dynamicTags = val
       } else {
@@ -1044,19 +1036,7 @@ export default {
     },
     //队列拖拽所需
     handleDrop(draggingNode, dropNode, dropType, ev) {
-      axios.post('/structure/updateStructure?token=' + this.GLOBAL.token, ({
-        "conceptSetStructure": JSON.stringify(this.conceptsets),
-        "privateCohortStructure": JSON.stringify(this.cohortsets),
-        "collaborationCohortStructure": JSON.stringify(this.cohortsets),
-        "modelStructure": JSON.stringify(this.analysismethods),
-        "featureStructure": "[]",
-        "resultStructure": "[]"
-      }))
-        .then(response => {
-          if (response.data.code == "0") {
-            //this.$message.success("编辑成功！")
-          }
-        })
+      this.$options.methods.postStructure.bind(this)()
     },
     allowDrop(draggingNode, dropNode, type) {
       if (dropNode.data.tag.indexOf('1') != -1) {
@@ -1173,13 +1153,13 @@ export default {
       if (d.tag.indexOf('0') === -1) {
 
 
-        this.methodID = d.id;
+
         this.getMethodDetails(d.id);
         this.NewMethodVisible = true;
         // setTimeout(() => {
         //   this.$refs.mstj.Initialize();
         // })
-        console.log('获得id'); console.log(this.methodID)
+        console.log('获得id');
 
       }
     },
@@ -1199,7 +1179,7 @@ export default {
             var d = this.MethodDetails.modelTypeLayer2Code
             var a = parseInt(c)
             var b = parseInt(d)
-            this.chooseVue(a, b)
+            this.chooseVue(a, b, t)
           }
         })
         .catch(function (error) {
@@ -1209,40 +1189,46 @@ export default {
 
     },
     //根据一级条件二级条件切换Vue
-    chooseVue(a, b) {
+    chooseVue(a, b, t) {
       console.log('选tab')
       switch (a) {
         case 1:
           //console.log(this.methodID);
           this.activeMethod1 = 'A'
+          this.methodID1 = t;
           this.methodName1 = mstj;
           break;
         case 2:
           this.activeMethod1 = 'B'
-          this.chooseVue1(b);
+          this.chooseVue1(b, t);
           break;
         case 3:
           this.activeMethod1 = 'C'
-          this.chooseVue2(b);
+          this.chooseVue2(b, t);
           break;
         case 4:
           this.activeMethod1 = 'D'
+          this.methodID4 = t;
           this.methodName4 = linearregression;
           break;
         case 5:
           this.activeMethod1 = 'E'
+          this.methodID5 = t;
           this.methodName5 = logicregression;
           break;
         case 6:
           this.activeMethod1 = 'F'
+          this.methodID6 = t;
           this.methodName6 = svmanalysis;
           break;
         case 7:
           this.activeMethod1 = 'G'
+          this.methodID7 = t;
           this.methodName7 = bayesiannetworks;
           break;
         case 8:
           this.activeMethod1 = 'H'
+          this.methodID8 = t;
           this.methodName8 = decisiontree;
           break;
         default:
@@ -1251,37 +1237,41 @@ export default {
       }
 
     },
-    chooseVue1(b) {
+    chooseVue1(b, t) {
       console.log('进入t检验选择')
 
       switch (b) {
         case 1:
-
           this.activeMethod2 = "a";
           //单样本t检验
+          this.methodID2_1 = t;
           this.methodName2_1 = ttest_one;
           break;
         case 2:
           this.activeMethod2 = "b";
+          this.methodID2_2 = t;
           this.methodName2_2 = ttest_independent;
           break;
         case 3:
           this.activeMethod2 = "c";
+          this.methodID2_3 = t;
           this.methodName2_3 = ttest_paired;
           break;
         default:
           break;
       }
     },
-    chooseVue2(b) {
+    chooseVue2(b, t) {
       switch (b) {
         case 1:
           this.activeMethod3 = "d";
+          this.methodID3_1 = t;
           this.methodName3_1 = oneway_anova;
 
           break;
         case 2:
           this.activeMethod3 = "e";
+          this.methodID3_2 = t;
           this.methodName3_2 = multifactor_analysis;
           break;
         default:
@@ -1438,28 +1428,9 @@ export default {
     taghandleClose(tag) {
       for (var i = 0; i < this.dynamicTags.length; i++) {
         if (this.dynamicTags[i].id == tag) {
-          console.log(i)
           this.dynamicTags.splice(i, 1);
         }
       }
-    },
-    //新增变量（显示输入框）/RH
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-    // 新增变量（确定新增）/RH
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.dynamicTags.push({
-          "id": this.dynamicTags.length - 1,
-          "name": inputValue        });
-      }
-      this.inputVisible = false;
-      this.inputValue = '';
     },
     // 真实队列生成/RH
     togenerate() {
