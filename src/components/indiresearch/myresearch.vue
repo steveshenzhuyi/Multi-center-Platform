@@ -493,10 +493,8 @@
   </div>
 </template>
 <script>
-
 import axios from 'axios';
 import echarts from 'echarts';
-
 import createconceptset from './createconceptset/createconceptset.vue';
 import draggable from 'vuedraggable';
 import Vue from 'vue';
@@ -511,12 +509,8 @@ import ttest_one from './methodform/ttest_one.vue'
 import oneway_anova from './methodform/oneway_anova.vue'
 import ttest_paired from './methodform/ttest_paired.vue'
 import svmanalysis from './methodform/svmanalysis.vue'
-
-
 import NewVariable from './newvariable/newvariable.vue'
 import { inspect } from 'util';
-
-
 export default {
   components: {
     'mstj': mstj,
@@ -542,7 +536,6 @@ export default {
       cohortanalysisdata: {},
       selectedvariable: [],
       dialogVisible: false,
-
       saveresult: false,
       saveresultname: '',
       mycreateconceptset: createconceptset,
@@ -585,16 +578,13 @@ export default {
       // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
       VariableTable: [],
-
       //GYX 模型一级 二级条件  methodname重新命名
       //methodName: '',
       MethodDetails: '',
       activeMethod1: '',
-
       activeMethod2: 'a',
       activeMethod3: 'd',
       // modelID: '',
-
       methodID1: -1,
       methodID2_1: -1,
       methodID2_2: -1,
@@ -606,7 +596,6 @@ export default {
       methodID6: -1,
       methodID7: -1,
       methodID8: -1,
-
       methodName1: '',
       methodName2_1: '',
       methodName2_2: '',
@@ -618,7 +607,6 @@ export default {
       methodName6: '',
       methodName7: '',
       methodName8: '',
-
       VarSelection: [],
       NewVariable: NewVariable,
       // 增加变量标签初始化/RH
@@ -879,7 +867,6 @@ export default {
                 this.$options.methods.postStructure.bind(this)()
               }
             })
-
         }
         //二次确认
         let ConfirmFun = () => {
@@ -944,7 +931,6 @@ export default {
         d.id > this.non_cohort_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
-
     //模型方法资源结构编辑函数
     handleAddTop_method() {
       this.analysismethods.push({
@@ -1014,7 +1000,6 @@ export default {
         }
       }
     },
-
     //队列拖拽所需
     handleDragStart(node, ev) {
       console.log('drag start', node);
@@ -1048,19 +1033,15 @@ export default {
     allowDrag(draggingNode) {
       return draggingNode.data.tag.indexOf('0') === -1;
     },
-
     //GYX打开新建方法按钮，自动加载描述统计
     NewMethod: function () {
       this.NewMethodVisible = true;
       this.activeMethod1 = 'A';
       this.methodName1 = mstj;
       this.methodID = -1;
-
     },
-
     //以下为切换tab GYX 新建模型切换tab
     //默认进去描述统计
-
     getConceptId(n, d) {
       if (d.tag.indexOf('0') === -1) {
         this.createConceptVisible2 = true;
@@ -1069,7 +1050,6 @@ export default {
       }
     },
     //以下为切换tab
-
     handleClick(tab, event) {
       switch (tab.name) {
         //t检验默认单样本
@@ -1088,11 +1068,9 @@ export default {
       this.checkVue(tab.name);
     },
     handleClick2(tab, event) {
-
       this.checkVue(tab.name);
     },
     handleClick3(tab, event) {
-
       this.checkVue(tab.name);
     },
     checkVue(name) {
@@ -1145,22 +1123,17 @@ export default {
           break;
       }
     },
-
     // GYX  编辑分析方法
     // 获得方法的ID
     editMethod(n, d) {
       // 获得了ID,在这里直接对methodID赋值，同时获得ID一级条件二级条件
       if (d.tag.indexOf('0') === -1) {
-
-
-
         this.getMethodDetails(d.id);
         this.NewMethodVisible = true;
         // setTimeout(() => {
         //   this.$refs.mstj.Initialize();
         // })
         console.log('获得id');
-
       }
     },
     //GYX 根据ID 获得一级二级条件
@@ -1185,8 +1158,6 @@ export default {
         .catch(function (error) {
           console.log("error", error);
         });
-
-
     },
     //根据一级条件二级条件切换Vue
     chooseVue(a, b, t) {
@@ -1233,13 +1204,10 @@ export default {
           break;
         default:
           break;
-
       }
-
     },
     chooseVue1(b, t) {
       console.log('进入t检验选择')
-
       switch (b) {
         case 1:
           this.activeMethod2 = "a";
@@ -1267,7 +1235,6 @@ export default {
           this.activeMethod3 = "d";
           this.methodID3_1 = t;
           this.methodName3_1 = oneway_anova;
-
           break;
         case 2:
           this.activeMethod3 = "e";
@@ -1328,7 +1295,6 @@ export default {
             }
           })
         // 定量！
-
         axios.post('/cohort/statInfo', ({
           "token": this.GLOBAL.token,
           "cohortId": "1",
@@ -1400,7 +1366,6 @@ export default {
         this.ifsave = true
       }
     },
-
     tosaveresult(saveresultname) {
       axios.post('/result/createResult', ({
         "token": this.GLOBAL.token,
@@ -1436,7 +1401,6 @@ export default {
     togenerate() {
       this.$message.success("开始生成！")
     }
-
   },
   components: {
     draggable
