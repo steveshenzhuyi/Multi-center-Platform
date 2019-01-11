@@ -39,34 +39,33 @@ export default new Router({
             {
               path: "newresearch",
               name: "新建个人研究",
-              component: () => import("@/components/indiresearch/newResearch"),
-              meta: {
-                title: "新建个人研究"
-              }
-            },
-            {
-              path: "myresearch",
-              name: "我的研究",
-              component: () => import("@/components/indiresearch/myresearch"),
-              meta: {
-                title: "我的研究"
-              }
+              component: () => import("@/components/indiresearch/newResearch")
             },
             {
               path: "createcohort",
               name: "新建队列",
-              component: () => import("@/components/indiresearch/createCohort"),
-              meta: {
-                title: "新建队列"
-              }
+              component: () => import("@/components/indiresearch/createCohort")
             },
             {
-              path: "resultlist",
-              name: "结果列表",
-              component: () => import("@/components/indiresearch/resultlist"),
-              meta: {
-                title: "结果列表"
-              }
+              path: "researchlist",
+              name: "研究列表",
+              component: () => import("@/components/indiresearch/researchList")
+            },
+            {
+              path: "newvariable",
+              name: "变量生成",
+              component: () => import("@/components/indiresearch/newVariable")
+            },
+            {
+              path: "selectmodel",
+              name: "模型选择",
+              component: () => import("@/components/indiresearch/selectModel")
+            },
+            {
+              path: "analysisresult",
+              name: "结果分析",
+              component: () =>
+                import("@/components/indiresearch/analysisResult")
             }
           ]
         },
