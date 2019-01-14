@@ -248,11 +248,11 @@
                                  placeholder="请输入内容"
                                  @select="handleSelect"></el-autocomplete> -->
                 <!-- 变量标签/RH -->
-                <el-tag :key="selectedvariable.featureId"
+                <el-tag :key="selectedvariable.id"
                         v-for="selectedvariable in dynamicTags"
                         closable
                         :disable-transitions="false"
-                        @close="taghandleClose(selectedvariable.name)">
+                        @close="taghandleClose(selectedvariable.id)">
                   {{selectedvariable.name}}
                 </el-tag>
                 <el-input class="input-new-tag"
@@ -671,8 +671,7 @@ export default {
       axios.get('/cohort/initator', {
         params: {
           "token": this.GLOBAL.token,
-          // "collaborationId": this.$route.params.collaborationId
-          "collaborationId": "3",
+          "collaborationId": this.$route.query.collaborationId
         }
       })
         .then((response) => {
@@ -1008,8 +1007,8 @@ export default {
       this.NewVarVisible = val
     },
     GetVarSelection(val) {
-      console.log(val)
-      console.log(this.dynamicTags)
+      // console.log(val)
+      // console.log(this.dynamicTags)
       if (this.dynamicTags.length == 0) {
         this.dynamicTags = val
       } else {
@@ -1263,31 +1262,10 @@ export default {
     taghandleClose(tag) {
       for (var i = 0; i < this.dynamicTags.length; i++) {
         if (this.dynamicTags[i].id == tag) {
-          console.log(i)
           this.dynamicTags.splice(i, 1);
         }
       }
     },
-    //新增变量（显示输入框）/RH
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-    // 新增变量（确定新增）/RH
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.dynamicTags.push({
-          "featureId": this.dynamicTags.length - 1,
-          "name": inputValue        });
-      }
-      this.inputVisible = false;
-      this.inputValue = '';
-    },
-
-
     toifcopy2collab() {
       for (var i = 0; i < this.cohortsets.length; i++) {
         if (this.cohortsets[i].children != undefined) {
@@ -1309,7 +1287,7 @@ export default {
       axios.post('/cohort/copy2Collaboration', ({
         "token": this.GLOBAL.token,
         "cohortId": this.cohortsets2[cohortid].id,
-        "collaborationId": "3"
+        "collaborationId": this.$route.query.collaborationId
       }))
         .then(response => {
           if (response.data.code == "0") {
@@ -1331,7 +1309,7 @@ export default {
       console.log(index)
       axios.post('/collaboration/createCollaborCohortAccredit', ({
         "token": this.GLOBAL.token,
-        "collaborationId": "1",
+        "collaborationId": this.$route.query.collaborationId,
         "userId": this.GLOBAL.userId,
         "cohortId": this.collabcohortsets[index].COHORTID
       }))

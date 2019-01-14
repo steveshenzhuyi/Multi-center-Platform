@@ -300,7 +300,7 @@ export default {
         path: 'newteam',
         query:
           {
-            collaborationId: this.collaborationId
+            collaborationId: Number(this.collaborationId)
           }
       });
     },
@@ -309,7 +309,7 @@ export default {
         path: 'newcoresearch',
         query:
           {
-            collaborationId: this.collaborationId
+            collaborationId: Number(this.collaborationId)
           }
       })
     },
@@ -318,7 +318,7 @@ export default {
         path: 'result',
         query:
           {
-            collaborationId: this.collaborationId
+            collaborationId: Number(this.collaborationId)
           }
       })
     },
@@ -327,7 +327,7 @@ export default {
         path: 'qualification',
         query:
           {
-            collaborationId: this.collaborationId
+            collaborationId: Number(this.collaborationId)
           }
       })
     }
@@ -351,4 +351,4 @@ export default {
 .box-card.el-tree > .el-tree-node {
   display: inline-block;
 }
-</style>
+</style>  

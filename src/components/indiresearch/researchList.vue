@@ -10,7 +10,7 @@
           <div id="newresearch"
                class="cardBox"
                shadow="hover"
-               @click="dialogVisible=true">
+               @click="toMyresearch()">
 
             <span class="el-icon-plus"></span>
           </div>
@@ -53,34 +53,12 @@
         </div>
       </li>
     </ul>
-    <el-dialog title="新建研究"
-               :visible.sync="dialogVisible"
-               width="30%"
-               :before-close="handleClose">
-      <el-form>
-        <el-form-item label="研究名称："
-                      :label-width="formLabelWidth">
-          <el-input placeholder="请输入研究名称"
-                    v-model="newresearchname"
-                    clearable>
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="dialogVisible = false;toNewresearch()">确 定</el-button>
-      </span>
-    </el-dialog>
-
   </div>
 </template>
 <script>
 // import wait from '../../assets/等待审核.png'
 // import end from '../../assets/已结束.png'
 import axios from 'axios';
-
 export default {
   data() {
     return {
@@ -119,10 +97,8 @@ export default {
   },
   mounted() {
     this.getpersonalResearch();
-
   },
   methods: {
-
     getpersonalResearch() {
       axios.get('/personalResearch/getMyResearchList', {
         params: {
@@ -132,13 +108,11 @@ export default {
         .then((response) => {
           // console.log(response)
           this.researchlist = response.data.data
-
         })
         .catch(function (error) {
           console.log("error", error);
         });
     },
-
     // 关闭对话框
     handleClose(done) {
       this.$confirm("确认关闭？")
@@ -149,13 +123,8 @@ export default {
     },
     // 跳转至对应研究页面
     toMyresearch: function (researchid) {
-      // console.log(researchid)
       this.$router.push({
-        name: "结果列表",
-        params:
-          {
-            "researchId": researchid
-          }
+        name: "新建个人研究",
       });
     },
     // 跳转至新建研究
@@ -179,10 +148,7 @@ export default {
             }, 1000);
           }
         })
-
-
     },
-
   },
 };
 </script>
@@ -192,7 +158,6 @@ export default {
   float: left;
   margin: 5px;
 }
-
 #newresearch {
   vertical-align: middle;
   text-align: center;
@@ -212,14 +177,12 @@ export default {
   border-radius: 5px;
   width: 300px;
 }
-
 .headerBox {
   padding: 15px;
 }
 .el-icon-more {
   cursor: pointer;
 }
-
 .bodyBox {
   padding: 15px;
   cursor: pointer;
@@ -231,13 +194,11 @@ export default {
   width: 98px;
   padding-left: 101px;
 }
-
 .flex-container {
   padding-top: 5px;
   padding-bottom: 5px;
   border-bottom: 1px #000000 dotted;
 }
-
 .div-relative {
   position: relative;
 }
