@@ -1,47 +1,38 @@
 <template>
-  <div class="main-condition-detail">
+  <div class="main-condition-detail"
+       v-model="importdetail">
     <div class="condition-code">
       <span v-if="id !=0">或</span><span>满足</span>
     </div>
     <el-form ref="siftingform"
              :model="siftingform"
-             label-width="100px"
-             :inline="true"
              class="siftingform">
-      <el-select v-model="siftingform.condtype"
+      <el-select v-model="siftingform.primarycond"
                  placeholder="请选择"
-                 @change="selectType"
+                 @change="selectPrimary"
                  style="padding-bottom:10px">
-        <el-option v-for="item in condtypes"
-                   :key="item.sortNo"
-                   :label="item.name"
-                   :value="item.sortNo">
+        <el-option v-for="primarycond in primaryconds"
+                   :key="primarycond.index"
+                   :label="primarycond.name"
+                   :value="primarycond.sortNo">
+        </el-option>
+      </el-select>
+      <el-select v-model="siftingform.secondcond"
+                 placeholder="请选择"
+                 @change="selectSecondary"
+                 style="padding-bottom:10px">
+        <el-option v-for="secondcond in secondconds"
+                   :key="secondcond.index"
+                   :label="secondcond.name"
+                   :value="secondcond.sortNo">
         </el-option>
       </el-select>
     </el-form>
-    <div class="droparea">
-      <draggable :options="{group:groupName}"
-                 @add="getsort"
-                 @update="getsortupdate"
-                 class="drag-main-condition">
-        <div class="drag-cover"></div>
-      </draggable>
-      <div class="limit-condition"
-           slot="footer"
-           style="display: block;">
-        <div><span>在主要事件发生日期之前，至少有</span>
-          <label><input class="PriorDays num-input"
-                   type="number"
-                   min="0"></label><span>天的记录，且该条件发生后，至少有</span>
-          <label><input class="PostDays num-input"
-                   type="number"
-                   min="0"></label>
-          <span>天的记录。</span></div>
-        <div>设定样本<select class="PrimaryLimitSelect">
-            <option value="earliest">最早</option>
-            <option value="latest">最晚</option>
-          </select>发生的主要条件记录，为该样本优先纳入队列的条件记录。</div>
-      </div>
+    <div>
+      <component :is="formName"
+                 :mainCondId="mainCondId"
+                 ref="formName"
+                 @bindData="bindData"></component>
     </div>
   </div>
 </template>
@@ -49,73 +40,108 @@
 import draggable from 'vuedraggable'
 import Vue from 'vue'
 import axios from 'axios'
+import diagnoseForm from '../conditionForm/diagnoseform.vue'
+import marForm from '../conditionForm/marform.vue'
+import operatingForm from '../conditionForm/operatingform.vue'
+import medicalForm from '../conditionForm/medicalform.vue'
+import deathRecordsForm from '../conditionForm/deathRecordsform.vue'
 
 export default {
   components: {
     draggable,
+    'diagnoseForm': diagnoseForm,
+    'marForm': marForm,
+    'operatingForm': operatingForm,
+    'medicalForm': medicalForm,
+    'deathRecordsForm': deathRecordsForm,
   },
   props: ['id'],
   data() {
     return {
-      condtypes: [],
+      primaryconds: [],
+      secondconds: [],
       siftingform: {
-        condtype: '',
+        primarycond: '',
+        secondcond: '',
       },
-      groupName: 'diagnose',  //拖拽group名
-      itemId: '', //被拖拽元素的id
+      formName: '', //加载的表单
+      mainCondId: { primarycond: '', id: '', secondcond: '' },//主要条件div对应的条件类型、id序号
+      importdetail: [],
     }
   },
   mounted: function () {
     this.getCohortDict()
-    if (this.id === 0) {
-      this.siftingform.condtype = 1
-    }
   },
   methods: {
-    //读取字典表一级条件作为下拉选项
-    getCohortDict() {
+    //读取字典表
+    getCohortDict(criteriaLayer1Code) {
       axios.get('cohort/dict', {
         params: {
           token: this.GLOBAL.token,
+          criteriaLayer1Code: criteriaLayer1Code
         }
-      })
-        .then((response) => {
-          this.condtypes = response.data.data
-          // console.log(this.condtypes);
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+      }).then((response) => {
+        if (criteriaLayer1Code == undefined) {
+          this.primaryconds = response.data.data
+        }
+        else {
+          this.secondconds = response.data.data
+        }
+      }).catch(function (error) {
+        console.log("error", error);
+      });
     },
     //选择一级条件
-    selectType(condtype) {
-      this.$emit('selectType', condtype, this.id)
-      switch (condtype) {
-        case 1: this.groupName = 'diagnose';
+    selectPrimary(primarycond) {
+      this.mainCondId.primarycond = primarycond
+      this.mainCondId.id = this.id
+      console.log(this.mainCondId)
+      axios.get('cohort/dict', {
+        params: {
+          token: this.GLOBAL.token,
+          criteriaLayer1Code: primarycond
+        }
+      }).then((response) => {
+        this.secondconds = response.data.data
+      }).catch(function (error) {
+        console.log("error", error);
+      });
+      switch (primarycond) {
+        case 1: this.formName = 'diagnoseForm';
           break;
-        case 2: this.groupName = 'mar';
+        case 2: this.formName = 'marForm';
           break;
-        case 3: this.groupName = 'operating';
+        case 3: this.formName = 'operatingForm';
           break;
-        case 4: this.groupName = 'medical';
+        case 4: this.formName = 'medicalForm';
           break;
-        case 5: this.groupName = 'deathRecords';
+        case 5: this.formName = 'deathRecordsForm';
           break;
         default:
           break;
       }
     },
-    //得到初始序号--rzx
-    getsort(evt) {
-      this.itemId = evt.item.getAttribute("id")
-      this.$emit('getSortNo', this.itemId, evt.newIndex, this.id, this.groupName)
+    //选择二级条件
+    selectSecondary(secondcond) {
+      this.mainCondId.secondcond = secondcond
     },
-    //更新拖拽后序号--rzx
-    getsortupdate(evt) {
-      this.itemId = evt.item.getAttribute("id")
-      this.$emit('getSortNo', this.itemId, evt.newIndex, this.id, this.groupName)
-    },
-  }
+    //监测表单数据改变
+    bindData() {
+      // console.log(this.$refs.formName.form)
+      this.importdetail = this.$refs.formName.form.formdetail
+      console.log(this.importdetail)
+    }
+  },
+  // //得到初始序号--rzx
+  // getsort(evt) {
+  //   this.itemId = evt.item.getAttribute("id")
+  //   this.$emit('getSortNo', this.itemId, evt.newIndex, this.id, this.formName)
+  // },
+  // //更新拖拽后序号--rzx
+  // getsortupdate(evt) {
+  //   this.itemId = evt.item.getAttribute("id")
+  //   this.$emit('getSortNo', this.itemId, evt.newIndex, this.id, this.formName)
+  // },
 }
 </script>
 
