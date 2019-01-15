@@ -3,14 +3,6 @@ import Router from "vue-router";
 import Login from "@/components/Login";
 import Home from "@/components/Home";
 import data from "@/components/data/data";
-import coresearch from "@/components/coresearch/coresearch";
-import indiresearch from "@/components/indiresearch/indiresearch";
-import knowledgegraph from "@/components/knowledgegraph/knowledgegraph";
-import dataimport from "@/components/dataimport/dataimport";
-import personalpage from "@/components/admincenter/personalpage";
-import resourcestatus from "@/components/admincenter/resourcestatus";
-import authoritycontrol from "@/components/admincenter/authoritycontrol";
-import thirdparty from "@/components/thirdparty/thirdparty";
 
 Vue.use(Router);
 
@@ -34,7 +26,7 @@ export default new Router({
         {
           path: "/indiresearch",
           name: "个人研究",
-          component: indiresearch,
+          component: () => import("@/components/indiresearch/indiresearch"),
           children: [
             {
               path: "newresearch",
@@ -72,7 +64,7 @@ export default new Router({
         {
           path: "/coresearch",
           name: "协同研究",
-          component: coresearch,
+          component: () => import("@/components/coresearch/coresearch"),
           children: [
             {
               path: "myteam",
@@ -135,32 +127,37 @@ export default new Router({
         {
           path: "/knowledgegraph",
           name: "知识图谱",
-          component: knowledgegraph
+          component: () => import("@/components/knowledgegraph/knowledgegraph")
         },
         {
           path: "/dataimport",
           name: "数据导入",
-          component: dataimport
+          component: () => import("@/components/dataimport/dataimport")
         },
         {
           path: "/personalpage",
           name: "个人主页",
-          component: personalpage
+          component: () => import("@/components/personalpage")
         },
         {
-          path: "/resourcestatus",
-          name: "资源状态",
-          component: resourcestatus
+          path: "/usermanage",
+          name: "用户管理",
+          component: () => import("@/components/admincenter/usermanage")
         },
         {
-          path: "/authoritycontrol",
+          path: "/authoritymanage",
           name: "权限控制",
-          component: authoritycontrol
+          component: () => import("@/components/admincenter/authoritymanage")
         },
         {
           path: "/thirdparty",
           name: "第三方数据使用",
-          component: thirdparty
+          component: () => import("@/components/thirdparty/thirdparty")
+        },
+        {
+          path: "/nodemanage",
+          name: "节点管理",
+          component: () => import("@/components/nodemanage/nodemanage")
         }
       ]
     }
