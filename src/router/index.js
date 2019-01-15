@@ -75,17 +75,25 @@ export default new Router({
           component: coresearch,
           children: [
             {
-              path: "myteam",
+              path: "teamlist",
               name: "我的团队",
-              component: () => import("@/components/coresearch/myteam"),
+              component: () => import("@/components/coresearch/teamList"),
               meta: {
                 title: "我的团队"
               }
             },
             {
+              path: "myteam",
+              name: "团队详情",
+              component: () => import("@/components/coresearch/myTeam"),
+              meta: {
+                title: "团队详情"
+              }
+            },
+            {
               path: "newresearch",
               name: "新建研究",
-              component: () => import("@/components/coresearch/newresearch"),
+              component: () => import("@/components/coresearch/newResearch"),
               meta: {
                 title: "新建研究"
               }
@@ -93,7 +101,7 @@ export default new Router({
             {
               path: "jointeam",
               name: "加入团队",
-              component: () => import("@/components/coresearch/jointeam"),
+              component: () => import("@/components/coresearch/joinTeam"),
               meta: {
                 title: "加入团队"
               }
@@ -101,7 +109,7 @@ export default new Router({
             {
               path: "newteam",
               name: "构建团队",
-              component: () => import("@/components/coresearch/newteam"),
+              component: () => import("@/components/coresearch/newTeam"),
               meta: {
                 title: "构建团队"
               }
@@ -125,7 +133,7 @@ export default new Router({
             {
               path: "newcoresearch",
               name: "新建团队研究",
-              component: () => import("@/components/coresearch/newcoresearch"),
+              component: () => import("@/components/coresearch/newCoresearch"),
               meta: {
                 title: "新建团队研究"
               }

@@ -15,7 +15,7 @@
     <el-row :gutter="20"
             type="flex"
             justify="center">
-      <el-col :span="5">
+      <!-- <el-col :span="5">
         <el-row>
           <el-card class="box-card">
             <div>邀请码</div>
@@ -35,8 +35,8 @@
           </el-col>
         </el-row>
 
-      </el-col>
-      <el-col :span="15">
+      </el-col> -->
+      <el-col :span="20">
         <el-row>
           <el-card class="box-card">
             <div slot="header"
@@ -55,6 +55,61 @@
                 <div>项目发起日期：{{detail.collaborInfo.CREATEDATE}}</div>
               </el-col>
             </el-row>
+            <div v-if="1">
+              <el-row v-for="(n,index) in number"
+                      :key="index"
+                      type="flex"
+                      justify="center"
+                      style="margin-top:10px;margin-bottom:10px">
+                <el-col :span="1"><i v-if="n == number"
+                     class="el-icon-plus"
+                     @click="number++"></i><i v-if="(n == number)&& (number > 1)"
+                     class="el-icon-delete"
+                     @click="number--;select2.pop();select3.pop();name.pop();"></i></el-col>
+                <el-col :span="5">
+                  <div>邀请成员</div>
+                </el-col>
+                <el-col :span="6">
+                  <el-select size="small"
+                             v-model="select2[index]"
+                             placeholder="单位">
+                    <el-option v-for="item in orgdep"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-col>
+                <el-col :span="6">
+                  <el-select size="small"
+                             v-model="select3[index]"
+                             placeholder="科室">
+                    <el-option v-for="item in showDepartment(select2[index])"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-col>
+                <el-col :span="6">
+                  <div>
+                    <el-input size="small"
+                              placeholder="姓名"
+                              v-model="name[index]">
+
+                    </el-input>
+                  </div>
+                </el-col>
+
+              </el-row>
+              <el-row style="margin-top:10px;margin-bottom:30px"
+                      type="flex"
+                      justify="center">
+                <el-button type="primary"
+                           @click="inviteMember()">发出邀请</el-button>
+              </el-row>
+            </div>
+
             <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="7"
                       :offset="1">
@@ -69,12 +124,13 @@
               <el-row v-for="people in detail.collaborMemberList"
                       :key="people.USERID"
                       style="margin-top:10px;margin-bottom:10px">
-                <el-col :span="1">
+                <!-- <el-col :span="1">
                   <i class="el-icon-delete"
                      style="cursor:pointer"
                      @click="deleteParticipation(people.USERID)"></i>
-                </el-col>
-                <el-col :span="7">
+                </el-col> -->
+                <el-col :span="7"
+                        :offset="1">
                   <div>项目参与人：{{people.MEMBERNAME}}</div>
                 </el-col>
                 <el-col :span="7"
@@ -94,15 +150,14 @@
     <el-row type="flex"
             justify="center"
             style="margin-top:10px;margin-bottom:10px">
-      <el-col :span="5"
+      <!-- <el-col :span="5"
               :offset="7">
         <el-button type="primary">生成</el-button>
-      </el-col>
-      <el-col :span="12"
-              :offset="7">
-        <el-button type="primary"
-                   @click="goResult()">构建团队</el-button>
-      </el-col>
+      </el-col> -->
+
+      <el-button type="primary"
+                 @click="goResult()">构建团队</el-button>
+
     </el-row>
 
   </div>
@@ -113,6 +168,14 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      number: 1,
+      select1: [],
+      select2: [],
+      select3: [],
+      name: [],
+      orgdep: [],
+      organization: [],
+      department: [],
       detail: {
         collaborInfo: {
           COLLABORATIONSTATENAM: "",
@@ -175,6 +238,7 @@ export default {
   mounted() {
     console.log("collaborationId", this.$route.query.collaborationId)
     this.getCollaborInfo(this.$route.query.collaborationId)
+    this.getOrgAndDep()
 
   },
   methods: {
@@ -238,6 +302,77 @@ export default {
       });
 
     },
+    getOrgAndDep() {
+      axios.get('/collaboration/organization', {
+        params: {
+          token: this.GLOBAL.token
+        }
+      })
+        .then((response) => {
+
+          if (response.data.code == 0) {
+            this.organization = response.data.data
+            console.log("org", this.organization)
+            for (var i = 0; i < this.organization.length; i++) {
+              this.orgdep.push({
+                value: this.organization[i]['organizationCode'.toUpperCase()],
+                label: this.organization[i]['name'.toUpperCase()],
+                children: []
+              })
+              console.log("i", i)
+              this.getDep(i)
+            }
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        })
+    },
+    getDep(i) {
+
+      axios.get('/collaboration/department', {
+        params: {
+          token: this.GLOBAL.token,
+          organizationCode: this.organization[i]['organizationCode'.toUpperCase()]
+        }
+      })
+        .then((response) => {
+
+          if (response.data.code == 0) {
+            this.department = response.data.data
+            console.log("dep", this.department)
+            for (var j = 0; j < this.department.length; j++) {
+              this.orgdep[i].children.push({
+                "value": this.department[j]['departmentCode'.toUpperCase()],
+                "label": this.department[j]['name'.toUpperCase()]
+              })
+            }
+          }
+
+
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+
+      console.log("orgdep", this.orgdep)
+
+    },
+    showDepartment(ORGANIZATIONCODE) {
+      if (ORGANIZATIONCODE == null) {
+        return null
+      } else {
+        //console.log(this.orgdep[parseInt(ORGANIZATIONCODE)])
+        return this.orgdep[parseInt(ORGANIZATIONCODE)].children
+      }
+    },
+    inviteMember() {
+      this.number = 1
+      this.select1 = []
+      this.select2 = []
+      this.select3 = []
+      this.name = []
+    },
     goResult() {
       // this.$router.push({
       //   path: 'result',
@@ -273,7 +408,7 @@ export default {
 };
 </script>
 <style>
-.box-card {
+/* .box-card {
   height: 400px;
-}
+} */
 </style>

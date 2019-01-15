@@ -1,10 +1,20 @@
 <template>
   <div>
+    <el-row style="margin-top:30px;margin-bottom:10px">
+      <el-steps :active="3"
+                align-center>
+        <el-step title="1 研究开始"></el-step>
+        <el-step title="2 团队建立"></el-step>
+        <el-step title="3 多中心运算"></el-step>
+        <el-step title="4 成果讨论"></el-step>
+        <el-step title="5 资格审核"></el-step>
+      </el-steps>
+    </el-row>
     <el-row :gutter="20"
             type="flex"
             justify="center"
-            style="margin-top:30px;margin-bottom:10px">
-      <el-col :span="8">
+            style="margin-top:10px;margin-bottom:10px">
+      <el-col :span="6">
         <el-row>
           <el-card>
             <div class="box-card">
