@@ -141,7 +141,8 @@
                       style="width:90%"
                       stripe
                       border
-                      @selection-change="HandleSelectionChange">
+                      @selection-change="HandleSelectionChange"
+                      max-height="500">
               <el-table-column type="selection"
                                width="35">
               </el-table-column>
@@ -546,10 +547,6 @@ export default {
           })
             .then(response => {
               if (response.data.code == "0") {
-                console.log(typeof this.VarForm.data2)
-                console.log(this.VarForm.data2)
-                console.log(typeof this.VarForm.data3)
-                console.log(this.VarForm.data3)
                 this.VarResetFields()
                 this.$alert('编辑变量成功！', '提示', { confirmButtonText: '确定' });
                 this.GetVariableTable()

@@ -6,6 +6,7 @@ const userId = "1886818             "
 const DEPARTMENTCODE = "0                   "
 const ORGANIZATIONCODE = "1                   "
 const NAME = "茹医生"
+
 export default {
   token,
   userId,
