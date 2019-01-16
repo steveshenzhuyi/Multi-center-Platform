@@ -40,7 +40,11 @@
         <el-menu-item index="authoritymanage">权限管理</el-menu-item>
       </el-submenu>
       <el-menu-item index="thirdparty">第三方数据使用</el-menu-item>
-      <el-menu-item index="nodemanage">节点管理</el-menu-item>
+      <el-submenu index="nodemanage">
+        <template slot="title">节点管理</template>
+        <el-menu-item index="nodemanage/node">节点状态</el-menu-item>
+        <el-menu-item index="nodemanage/operation">操作查询</el-menu-item>
+      </el-submenu>
     </el-menu>
 
     <el-dialog title="登出"

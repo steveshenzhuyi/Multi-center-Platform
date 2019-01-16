@@ -190,13 +190,31 @@ export default new Router({
               meta: {
                 title: "加入团队"
               }
-            },
+            }
           ]
         },
         {
           path: "/nodemanage",
           name: "节点管理",
-          component: () => import("@/components/nodemanage/nodemanage")
+          component: () => import("@/components/nodemanage/nodemanage"),
+          children: [
+            {
+              path: "node",
+              name: "节点状态",
+              component: () => import("@/components/nodemanage/node"),
+              meta: {
+                title: "节点状态"
+              }
+            },
+            {
+              path: "operation",
+              name: "操作查询",
+              component: () => import("@/components/nodemanage/operation"),
+              meta: {
+                title: "操作查询"
+              }
+            }
+          ]
         }
       ]
     }
