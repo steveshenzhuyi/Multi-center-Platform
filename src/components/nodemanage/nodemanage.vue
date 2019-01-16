@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>节点管理</p>
+    <router-view></router-view>
   </div>
 </template>
 <script>
