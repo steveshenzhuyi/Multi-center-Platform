@@ -1,10 +1,10 @@
 <template>
   <div>
 
-    <el-row :gutter="20"
+    <!-- <el-row :gutter="20"
             type="flex"
             justify="center"
-            style="margin-top:10px;margin-bottom:10px">
+            style="margin-top:10px;margin-bottom:10px"> 
       <el-col :span="7"
               style="margin-top:30px;margin-bottom:10px">
         <el-row>
@@ -30,95 +30,99 @@
                        @click="goJoinTeam()">加入团队</el-button>
           </el-col>
         </el-row>
-      </el-col>
-      <el-col :span="12">
-        <el-row style="margin-top:10px;margin-bottom:10px">
-          <el-steps :active=CollaborState
-                    align-center>
-            <el-step title="1 研究开始"
-                     style="cursor:pointer"
-                     @click.native="goJoinTeam()"></el-step>
-            <el-step title="2 团队建立"
-                     style="cursor:pointer"
-                     @click.native="goNewTeam()"></el-step>
-            <el-step title="3 多中心运算"
-                     style="cursor:pointer"
-                     @click.native="goCoResearch()"></el-step>
-            <el-step title="4 成果讨论"
-                     style="cursor:pointer"
-                     @click.native="goResult()"></el-step>
-            <el-step title="5 资格审核"
-                     style="cursor:pointer"
-                     @click.native="goQualification()"></el-step>
-          </el-steps>
-        </el-row>
-        <el-row>
-          <el-card>
+      </el-col> -->
 
-            <el-row style="margin-top:20px;margin-bottom:10px">
-              <div>项目名称：{{detail.collaborInfo['name'.toUpperCase()]}}</div>
-            </el-row>
-            <el-row style="margin-top:10px;margin-bottom:10px">
+    <el-row style="margin-top:30px;margin-bottom:10px">
+      <el-steps :active="CollaborState"
+                align-center>
+        <el-step title="1 研究开始"
+                 style="cursor:pointer"
+                 @click.native="goJoinTeam()"></el-step>
+        <el-step title="2 团队建立"
+                 style="cursor:pointer"
+                 @click.native="goNewTeam()"></el-step>
+        <el-step title="3 多中心运算"
+                 style="cursor:pointer"
+                 @click.native="goCoResearch()"></el-step>
+        <el-step title="4 成果讨论"
+                 style="cursor:pointer"
+                 @click.native="goResult()"></el-step>
+        <el-step title="5 资格审核"
+                 style="cursor:pointer"
+                 @click.native="goQualification()"></el-step>
+      </el-steps>
+    </el-row>
+    <el-row type="flex"
+            justify="center"
+            style="margin-top:10px;margin-bottom:10px">
+      <el-col :span="20">
+        <el-card>
+
+          <el-row style="margin-top:20px;margin-bottom:10px">
+            <div>项目名称：{{detail.collaborInfo['name'.toUpperCase()]}}</div>
+          </el-row>
+          <el-row style="margin-top:10px;margin-bottom:10px">
+            <el-col :span="8">
+              <div>项目发起人：{{Initiator[0]['MEMBERNAME']}}</div>
+            </el-col>
+            <el-col :span="16">
+              <div>发起人单位：{{Initiator[0].ORGANIZATIONNAME}}</div>
+            </el-col>
+          </el-row>
+          <div v-if=" detail.collaborMemberList.length > 0">
+            <el-row v-for="people in detail.collaborMemberList"
+                    :key="people.USERID"
+                    style="margin-top:10px;margin-bottom:10px">
               <el-col :span="8">
-                <div>项目发起人：{{Initiator[0]['MEMBERNAME']}}</div>
+                <div>项目参与人：{{people.MEMBERNAME}}</div>
               </el-col>
               <el-col :span="16">
-                <div>发起人单位：{{Initiator[0].ORGANIZATIONNAME}}</div>
+                <div>参与人单位：{{people.ORGANIZATIONNAME}}</div>
               </el-col>
             </el-row>
-            <div v-if=" detail.collaborMemberList.length > 0">
-              <el-row v-for="people in detail.collaborMemberList"
-                      :key="people.USERID"
-                      style="margin-top:10px;margin-bottom:10px">
-                <el-col :span="8">
-                  <div>项目参与人：{{people.MEMBERNAME}}</div>
-                </el-col>
-                <el-col :span="16">
-                  <div>参与人单位：{{people.ORGANIZATIONNAME}}</div>
-                </el-col>
-              </el-row>
-            </div>
+          </div>
 
-            <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col :span="24">
-                <div>项目发起日期：{{detail.collaborInfo.CREATEDATE}}</div>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col :span="24">
-                <div>项目简介：{{detail.collaborInfo.TARGET}}</div>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col :span="24">
-                <div>成果分配方案：{{detail.collaborInfo.OUTCOMEDISTRIBUTION}}</div>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top:10px;margin-bottom:10px">
-              <el-col :span="24">
-                <div>项目进度：{{detail.collaborInfo.COLLABORATIONSTATENAME}}</div>
-              </el-col>
-            </el-row>
-            <!-- <el-row style="margin-top:10px;margin-bottom:10px">
+          <el-row style="margin-top:10px;margin-bottom:10px">
+            <el-col :span="24">
+              <div>项目发起日期：{{detail.collaborInfo.CREATEDATE}}</div>
+            </el-col>
+          </el-row>
+          <el-row style="margin-top:10px;margin-bottom:10px">
+            <el-col :span="24">
+              <div>研究目的：{{detail.collaborInfo.TARGET}}</div>
+            </el-col>
+          </el-row>
+          <el-row style="margin-top:10px;margin-bottom:10px">
+            <el-col :span="24">
+              <div>成果分配方案：{{detail.collaborInfo.OUTCOMEDISTRIBUTION}}</div>
+            </el-col>
+          </el-row>
+          <el-row style="margin-top:10px;margin-bottom:10px">
+            <el-col :span="24">
+              <div>项目进度：{{detail.collaborInfo.COLLABORATIONSTATENAME}}</div>
+            </el-col>
+          </el-row>
+          <!-- <el-row style="margin-top:10px;margin-bottom:10px">
               <el-col :span="24">
                 <div>研究有效期：{{detail[3][0].NAME}}</div>
               </el-col>
             </el-row> -->
-            <el-row type="flex"
-                    justify="center"
-                    style="margin-top:30px;margin-bottom:10px">
-              <el-col :span="12">
-                <el-button type="primary"
-                           @click="goNewTeam()">继续研究</el-button>
-              </el-col>
-              <el-col :span="12">
-                <el-button type="primary">退出团队</el-button>
-              </el-col>
-            </el-row>
-          </el-card>
-        </el-row>
+          <el-row type="flex"
+                  justify="center"
+                  style="margin-top:30px;margin-bottom:10px">
+            <el-col :span="12">
+              <el-button type="primary"
+                         @click="goNewTeam()">继续研究</el-button>
+            </el-col>
+            <el-col :span="12">
+              <el-button type="primary">退出团队</el-button>
+            </el-col>
+          </el-row>
+        </el-card>
       </el-col>
     </el-row>
+
+    <!-- </el-row> -->
   </div>
 </template>
 <script>
@@ -202,8 +206,8 @@ export default {
     }
   },
   mounted() {
-    this.getMyCollaborList()
-
+    //this.getMyCollaborList()
+    this.getCollaborInfo(this.$route.query.collaborationId)
     console.log("token", this.GLOBAL.token)
 
   },

@@ -16,11 +16,13 @@
                     id="1">
         <el-date-picker v-model="form.formdetail[1].data1"
                         type="date"
+                        value-format="yyyy-MM-dd"
                         placeholder="选择日期">
         </el-date-picker>
         <span class="line"> — </span>
         <el-date-picker v-model="form.formdetail[1].data2"
                         type="date"
+                        value-format="yyyy-MM-dd"
                         placeholder="选择日期">
         </el-date-picker>
         <!-- <el-checkbox v-model="operatingform.datechecked"
@@ -65,7 +67,7 @@ export default {
   components: {
     draggable,
   },
-  props: ['conditionFormId', 'mainItem'],
+  props: ['mainItem'],
   data() {
     return {
       form: {
@@ -94,9 +96,6 @@ export default {
   },
   // 监听条件表单被拖拽到所对应的div的序号变化
   watch: {
-    conditionFormId() {
-      this.form.id = this.conditionFormId
-    },
     mainItem: {
       handler() {
         if (this.mainItem.groupName == 'operating') {
