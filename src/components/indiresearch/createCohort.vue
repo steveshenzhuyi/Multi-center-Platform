@@ -21,30 +21,77 @@
     <!-- 队列基本信息表单 -->
     <div class="user-fill-info"
          style="margin-top:20px">
-      <el-form :model="cohortInfo"
-               :rules="rules"
-               ref="cohortInfo"
-               label-width="110px"
-               label-position="left"
-               class="cohort-Info">
-        <el-form-item label="队列名称"
-                      prop="name">
-          <el-col :span="11">
-            <el-input v-model="cohortInfo.name"
-                      placeholder="请输入队列名称"></el-input>
-          </el-col>
-        </el-form-item>
-        <el-form-item label="队列描述">
-          <el-col :span="11">
-            <el-input type="textarea"
-                      v-model="cohortInfo.description"
-                      placeholder="请输入队列描述"></el-input>
-          </el-col>
-        </el-form-item>
-      </el-form>
+      <el-row :gutter="20">
+        <el-col :span="11">
+          <el-form :model="cohortInfo"
+                   :rules="rules"
+                   ref="cohortInfo"
+                   label-width="110px"
+                   label-position="left"
+                   class="cohort-Info">
+            <el-form-item label="队列名称"
+                          prop="name">
+              <el-input v-model="cohortInfo.name"
+                        placeholder="请输入队列名称"></el-input>
+            </el-form-item>
+            <el-form-item label="队列描述">
+              <el-input type="textarea"
+                        v-model="cohortInfo.description"
+                        placeholder="请输入队列描述"></el-input>
+            </el-form-item>
+          </el-form>
+        </el-col>
+        <el-col :span="5"
+                :offset="5">
+          <el-card shadow="hover">
+            该队列入组人数xxx人
+          </el-card>
+        </el-col>
+        <el-col :span="3">
+          <el-button type="primary"
+                     style="float:right;"
+                     @click="toCohortLibrary">队列库</el-button>
+          <!-- 队列库弹框 -->
+          <el-dialog title="队列库列表"
+                     :visible.sync="viewCohortLibrary"
+                     width="70%"
+                     :before-close="handleClose">
+            <el-table :data="cohortLib"
+                      style="width: 100%"
+                      height="250">
+              <el-table-column label="队列名称"
+                               width="100">
+              </el-table-column>
+              <el-table-column label="队列描述"
+                               width="180">
+              </el-table-column>
+              <el-table-column label="创建时间">
+              </el-table-column>
+              <el-table-column label="入组人数">
+              </el-table-column>
+              <el-table-column label="操作">
+                <el-button type="text"
+                           size="small">导入</el-button>
+                <el-button type="text"
+                           size="small">查看</el-button>
+                <el-button type="text"
+                           size="small">编辑</el-button>
+                <el-button type="text"
+                           size="small">删除</el-button>
+              </el-table-column>
+            </el-table>
+            <span slot="footer"
+                  class="dialog-footer">
+              <el-button @click="viewCohortLibrary = false">取 消</el-button>
+              <el-button type="primary"
+                         @click="viewCohortLibrary = false">确 定</el-button>
+            </span>
+          </el-dialog>
+        </el-col>
+      </el-row>
     </div>
-    <el-row :gutter="20">
-      <el-col :span="18">
+    <el-row>
+      <el-col :span="24">
         <div class="conditon-info"
              style="margin-left:10px">
           <!-- 主要条件 -->
@@ -56,14 +103,29 @@
                        v-for="(maindiv,index) in maindivs"
                        :id="maindiv.id"
                        :key="index"
-                       @selectType="choosetype"
-                       @getSortNo="getSortNo"
-                       @insertID="insertID"></component>
+                       ref="mainCom">
+            </component>
             <div class=main-condition-detail>
               <span style="padding-left:50%"
                     @click="addMajor('maincondition')">
                 <img src="../../assets/plus.png">
               </span>
+            </div>
+            <div class="limit-condition"
+                 slot="footer"
+                 style="display: block;">
+              <div><span>在主要事件发生日期之前，至少有</span>
+                <label><input class="PriorDays num-input"
+                         type="number"
+                         min="0"></label><span>天的记录，且该条件发生后，至少有</span>
+                <label><input class="PostDays num-input"
+                         type="number"
+                         min="0"></label>
+                <span>天的记录。</span></div>
+              <div>设定样本<select class="PrimaryLimitSelect">
+                  <option value="earliest">最早</option>
+                  <option value="latest">最晚</option>
+                </select>发生的主要条件记录，为该样本优先纳入队列的条件记录。</div>
             </div>
           </div>
           <!-- 次要条件 -->
@@ -86,7 +148,8 @@
             <component :is="minordiv.component"
                        v-for="(minordiv,index) in minordivs"
                        :id="minordiv.id"
-                       :key="index"></component>
+                       :key="index">
+            </component>
             <div class=secondary-condition-detail>
               <span style="padding-left:50%"
                     @click="addMinor('minorcondition')">
@@ -95,23 +158,18 @@
             </div>
           </div>
           <div>
-            <el-button style="float:right;margin-top:10px"
-                       @click="resetForm('cohortInfo')">取消</el-button>
+            <!-- <el-button style="float:right;margin-top:10px"
+                       @click="resetForm('cohortInfo')">取消</el-button> -->
             <el-button type="primary"
                        style="float:right;margin-right:5px;margin-top:10px"
-                       @click="submitForm('cohortInfo')">保存</el-button>
+                       @click="submitForm('cohortInfo')">生成</el-button>
           </div>
-        </div>
-      </el-col>
-      <!-- 这里开始加入组件 -->
-      <el-col :span="6">
-        <div id="sifting-condition-item"
-             class="sifting-cohort-content">
-          <!-- 下拉选择显示右侧二级条件 -->
-          <component :is="comName"
-                     :conditionFormId="conditionFormId"
-                     :mainItem="mainItem"
-                     ref="mainCondName"></component>
+          <div>
+            <el-button type="primary"
+                       style="clear:both;float:right;margin-right:5px;margin-top:10px"
+                       :disabled="nextstep"
+                       @click="addtoCohortLibrary">下一步</el-button>
+          </div>
         </div>
       </el-col>
     </el-row>
@@ -122,29 +180,17 @@
 import draggable from 'vuedraggable'
 import Vue from 'vue'
 import axios from 'axios'
-import diagnoseForm from './conditionForm/diagnoseform.vue'
-import marForm from './conditionForm/marform.vue'
-import operatingForm from './conditionForm/operatingform.vue'
-import medicalForm from './conditionForm/medicalform.vue'
-import deathRecordsForm from './conditionForm/deathRecordsform.vue'
 import maincondition from './conditionDiv/mainCondition.vue'
 import minorcondition from './conditionDiv/minorCondition.vue'
 
 export default {
   components: {
-    'diagnoseForm': diagnoseForm,
-    'marForm': marForm,
-    'operatingForm': operatingForm,
-    'medicalForm': medicalForm,
-    'deathRecordsForm': deathRecordsForm,
     draggable,
     'maincondition': maincondition,
     'minorcondition': minorcondition,
   },
   data() {
     return {
-      limitvalue: '',
-      comName: 'diagnoseForm', //右侧加载的组件
       cohortInfo: {
         name: '',
         description: ''
@@ -159,111 +205,90 @@ export default {
         // ],
       },
       createInfo: {},
-      conditiondetails: [],
       importdetails: [],
       maindivs: [{ component: "maincondition", id: 0 }],
       maindivCount: 0,
-      mainItem: { itemId: '', sortNo: 0, id: 0, groupName: '' },
-      condId: [{ cond: 'diagnoseForm', id: 0 },
-      { cond: 'marForm', id: '' },
-      { cond: 'operatingForm', id: '' },
-      { cond: 'medicalForm', id: '' },
-      { cond: 'deathRecordsForm', id: '' },],
-      lastcondId: 0, //保存上一次condtype id结果
-      mainCondName: '',
       minordivs: [{ component: "minorcondition", id: 0 }],
       minordivCount: 0,
-      conditionFormId: '',
       cohortId: '',
+      nextstep: true,
+      viewCohortLibrary: false,
+      cohortLib: [],//队列库列表
+      limitvalue: '',
     }
   },
+  // mounted: function () {
+  //   this.getCohortDetail()
+  // },
   methods: {
-    //新增主要条件
+    //新增主要条件--rzx
     addMajor(component) {
       this.maindivCount = this.maindivCount + 1
       this.maindivs.push({
         'component': component,
         'id': this.maindivCount
       })
-      this.condId[0]['id'] = this.maindivCount
-      console.log(this.maindivs)
+      // console.log(this.maindivs)
       console.log(this.maindivCount)
     },
-    //新增次要条件
+    //新增次要条件--rzx
     addMinor(component) {
       this.minordivCount = this.minordivCount + 1
       this.minordivs.push({
         'component': component,
         'id': this.minordivCount
       })
-      console.log(this.minordivs)
+      // console.log(this.minordivs)
       console.log(this.minordivCount)
     },
-    //选择一级条件
-    choosetype(condtype, id) {
-      console.log(condtype, id)
-      for (var i = 0; i < this.condId.length; i++) {
-        if (this.condId[i].id == this.lastcondId) {
-          this.condId[i].id = ''
+    //拼接队列创建条件--rzx
+    fulfilCreateInfo(cohortInfo) {
+      this.createInfo = {
+        token: this.GLOBAL.token,
+        detail: []
+      }
+      this.createInfo = Object.assign(this.createInfo, this.cohortInfo)
+      // 读取每个div的form
+      this.importdetails = []
+      for (var i = 0; i < this.maindivs.length; i++) {
+        // 删除不需要的属性
+        for (var j = 0; j < this.$refs.mainCom[i].importdetail.length; j++) {
+          if (this.$refs.mainCom[i].importdetail[j].layer1SortNo != undefined) {
+            this.importdetails.push(this.$refs.mainCom[i].importdetail[j])
+          }
         }
       }
-      switch (condtype) {
-        case '1': this.comName = 'diagnoseForm';
-          this.condId[0]['id'] = id
-          break;
-        case '2': this.comName = 'marForm';
-          this.condId[1]['id'] = id
-          break;
-        case '3': this.comName = 'operatingForm';
-          this.condId[2]['id'] = id
-          break;
-        case '4': this.comName = 'medicalForm';
-          this.condId[3]['id'] = id
-          break;
-        case '5': this.comName = 'deathRecordsForm';
-          this.condId[4]['id'] = id
-          break;
-        default:
-          break;
-      }
-      this.lastcondId = id
+      // console.log(this.importdetails)
+      this.createInfo.detail = this.importdetails
+      console.log(this.createInfo)
     },
-    // 条件表单插入DIV的id区别位置
-    insertID(id) {
-      console.log(id)
-      this.conditionFormId = id
-    },
-    //得到每个item的sortno和在字典中的序号
-    getSortNo(itemId, newIndex, id, groupName) {
-      this.mainItem.itemId = itemId
-      this.mainItem.sortNo = newIndex
-      this.mainItem.id = id
-      this.mainItem.groupName = groupName
-      console.log(this.mainItem)
+    //生成队列--rzx
+    createCohort() {
+      axios.post('cohort/create',
+        this.createInfo
+      )
+        .then((response) => {
+          console.log(response)
+          if (response.data.msg == '新建成功') {
+            this.cohortId = response.data.id
+            this.nextstep = false
+            this.$message({
+              message: '队列新建成功！',
+              type: 'success',
+              duration: 1000
+            });
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
     },
     submitForm(cohortInfo) {
-      //表单验证--rzx
+      //表单验证
       this.$refs[cohortInfo].validate((valid) => {
         if (valid) {
           this.fulfilCreateInfo(cohortInfo)
-          console.log(this.createInfo)
-          axios.post('cohort/create',
-            this.createInfo
-          )
-            .then((response) => {
-              console.log(response)
-              if (response.data.msg == '新建成功') {
-                this.cohortId = response.data.id
-                this.$message({
-                  message: '队列新建成功！',
-                  type: 'success',
-                  duration: 1000
-                });
-              }
-            })
-            .catch(function (error) {
-              console.log("error", error);
-            });
+          this.createCohort()
         } else {
           this.$message({
             message: '请输入队列名称',
@@ -274,32 +299,45 @@ export default {
         }
       });
     },
+    //是否加入队列库--rzx
+    addtoCohortLibrary() {
+      this.$confirm('是否存入队列库?', '提示', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '保存成功!',
+          duration: 1000
+        });
+      }).catch(() => {
+        // this.$message({
+        //   type: 'info',
+        //   message: '已取消删除'
+        // });
+      });
+    },
+    //队列库弹窗--rzx
+    toCohortLibrary() {
+      this.viewCohortLibrary = true
+      // this.$nextTick(() => {
+      //   this.$refs.NewVariable.Initialize();
+      // })
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => { });
+    },
+
     //重置表单
-    resetForm(cohortInfo) {
-      this.$refs[cohortInfo].resetFields();
-    },
-    //拼接队列创建条件--rzx
-    fulfilCreateInfo(cohortInfo) {
-      this.createInfo = {
-        token: this.GLOBAL.token,
-        detail: []
-      }
-      this.createInfo = Object.assign(this.createInfo, this.cohortInfo)
-      // 若id存在则读取子组件form
-      for (var i = 0; i < this.condId.length; i++) {
-        if (this.condId[i].id !== '') {
-          this.mainCondName = this.condId[i].cond
-          // 去掉未拖拽出来的条件
-          for (var j = 0; j < this.$refs.mainCondName.form.formdetail.length; j++) {
-            if (this.$refs.mainCondName.form.formdetail[j]['layer2SortNo'] !== undefined) {
-              this.importdetails.push(this.$refs.mainCondName.form.formdetail[j])
-            }
-          }
-        }
-      }
-      console.log(this.importdetails)
-      this.createInfo['detail'] = this.importdetails
-    },
+    // resetForm(cohortInfo) {
+    //   this.$refs[cohortInfo].resetFields();
+    // },
     // 进度条跳转 RH
     gonewResearch() {
       this.$router.push({
@@ -386,14 +424,19 @@ input.num-input {
   /* background-color: rgba(216, 216, 216, 0.18); */
   position: absolute;
 }
-.sifting-cohort-content {
+/* 右侧 */
+/* .sifting-cohort-content {
   background: linear-gradient(to bottom, #eaeaea, #f9f9f9);
   border-radius: 5px;
   padding: 10px 0 0 10px;
   display: block;
-}
+} */
 .line {
   color: #606266;
+}
+.active {
+  background-color: rgba(229, 246, 252, 0.767);
+  border-color: rgb(84, 145, 214);
 }
 </style>
 <style>
