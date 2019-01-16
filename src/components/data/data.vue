@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <p>数据总览</p>
-    </div>
+  <div>
+    <p>数据总览</p>
+  </div>
 </template>
 <script>
 </script>
