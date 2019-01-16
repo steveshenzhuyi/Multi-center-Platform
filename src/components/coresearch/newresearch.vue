@@ -1,5 +1,16 @@
 <template>
   <div>
+
+    <el-row style="margin-top:30px;margin-bottom:10px">
+      <el-steps :active="0"
+                align-center>
+        <el-step title="1 研究开始"></el-step>
+        <el-step title="2 团队建立"></el-step>
+        <el-step title="3 多中心运算"></el-step>
+        <el-step title="4 成果讨论"></el-step>
+        <el-step title="5 资格审核"></el-step>
+      </el-steps>
+    </el-row>
     <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
@@ -27,22 +38,6 @@
           <el-input size="small"
                     placeholder="空白等待输入"
                     v-model="researchDetail.target">
-          </el-input>
-        </div>
-      </el-col>
-      <el-col :span="1"></el-col>
-    </el-row>
-    <el-row type="flex"
-            justify="center"
-            style="margin-top:30px;margin-bottom:10px">
-      <el-col :span="2">
-        <div>研究方法</div>
-      </el-col>
-      <el-col :span="10">
-        <div>
-          <el-input size="small"
-                    placeholder="空白等待输入"
-                    v-model="researchDetail.proposal">
           </el-input>
         </div>
       </el-col>
@@ -89,7 +84,7 @@
       </el-col>
       <el-col :span="1"></el-col>
     </el-row> -->
-    <el-row v-for="(n,index) in number"
+    <!-- <el-row v-for="(n,index) in number"
             :key="index"
             type="flex"
             justify="center"
@@ -133,7 +128,62 @@
            @click="number++"></i><i v-if="(n == number)&& (number > 1)"
            class="el-icon-delete"
            @click="number--;select2.pop();select3.pop();name.pop();"></i></el-col>
+    </el-row> -->
+    <el-row type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
+        <div>研究方案</div>
+      </el-col>
+      <el-col :span="11">
+        <el-row>
+          <el-col :span="16">
+            <el-button style="small"
+                       type="text"
+                       @click="dialogVisible = true">{{method.name}}</el-button>
+            <el-dialog :visible.sync="dialogVisible">
+              <el-table :data="methodList"
+                        @row-dblclick="choseMethod">
+                <el-table-column property="name"
+                                 label="方案名称"
+                                 width="100"></el-table-column>
+                <el-table-column property="cohortName"
+                                 label="队列名称"
+                                 width="100"></el-table-column>
+                <el-table-column property="cohortDes"
+                                 label="队列描述"></el-table-column>
+                <el-table-column property="patientCount"
+                                 label="本单位入组人数"
+                                 width="150"></el-table-column>
+                <el-table-column property="feature"
+                                 label="变量"></el-table-column>
+                <el-table-column property="model"
+                                 label="模型"></el-table-column>
+              </el-table>
+            </el-dialog>
+          </el-col>
+
+          <el-col :span="2"><i v-if="showDetail && chosenMethod"
+               class="el-icon-arrow-down"
+               @click="showDetail = false"></i><i v-if="(!showDetail) && chosenMethod"
+               class="el-icon-arrow-right"
+               @click="showDetail = true"></i></el-col>
+        </el-row>
+        <div v-if="showDetail && chosenMethod">
+          <el-row style="margin-top:10px;margin-bottom:10px">
+            {{method.cohortName}}
+          </el-row>
+          <el-row style="margin-top:10px;margin-bottom:10px">
+            {{method.feature}}
+          </el-row>
+          <el-row style="margin-top:10px;margin-bottom:10px">
+            {{method.model}}
+          </el-row>
+        </div>
+      </el-col>
+
     </el-row>
+
     <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
@@ -150,7 +200,7 @@
       </el-col>
       <el-col :span="1"></el-col>
     </el-row>
-    <el-row type="flex"
+    <!-- <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="2">
@@ -165,7 +215,7 @@
         </div>
       </el-col>
       <el-col :span="1"></el-col>
-    </el-row>
+    </el-row> -->
     <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
@@ -218,6 +268,32 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      dialogVisible: false,
+      showDetail: true,
+      chosenMethod: false,
+      method: {
+        name: "请选择研究方案",
+        cohortName: "",
+        cohortDes: "",
+        patientCount: "",
+        feature: "",
+        model: ""
+      },
+      methodList: [{
+        name: "研究方案一",
+        cohortName: "队列一",
+        cohortDes: "描述一",
+        patientCount: "入组人数",
+        feature: "变量一",
+        model: "模型一"
+      }, {
+        name: "研究方案二",
+        cohortName: "队列二",
+        cohortDes: "描述二",
+        patientCount: "入组人数",
+        feature: "变量二",
+        model: "模型二"
+      }],
       checked: false,
       number: 1,
       select1: [],
@@ -243,13 +319,22 @@ export default {
     }
   },
   mounted() {
-    this.getOrgAndDep()
+    //this.getOrgAndDep()
 
   },
   computed: {
 
   },
   methods: {
+    choseMethod(row) {
+      this.method.name = row.name
+      this.method.cohortName = row.cohortName
+      this.method.feature = row.feature
+      this.method.model = row.model
+      //console.log(row)
+      this.dialogVisible = false
+      this.chosenMethod = true
+    },
     showProtocol() {
       console.log(this.select1)
       console.log(this.select2)

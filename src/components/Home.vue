@@ -31,7 +31,7 @@
              style="padding-left:30px;width: 100%;  min-width: 823px;">
       <el-menu-item index="data">数据总览</el-menu-item>
       <el-menu-item index="indiresearch/researchList">个人研究</el-menu-item>
-      <el-menu-item index="coresearch/myteam">协同研究</el-menu-item>
+      <el-menu-item index="coresearch/teamList">协同研究</el-menu-item>
       <el-menu-item index="knowledgegraph">知识图谱</el-menu-item>
       <el-menu-item index="dataimport">数据导入</el-menu-item>
       <el-submenu index="6">
