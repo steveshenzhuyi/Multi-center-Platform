@@ -35,7 +35,7 @@
                  style="position:absolute;"
                  :src="imgUrl"> -->
             <div class="bodyBox"
-                 @click="toMyresearch(research.RESEARCHID)"
+                 @click="goByStatus(research.RESEARCHID,research.RESEARCHSTATECODE)"
                  style="position:absolute;">
               <div class="flex-container">
                 {{'项目创建时间 ' }}<span style="float: right; ">{{research.CREATEDATE}}</span>
@@ -71,23 +71,67 @@ export default {
       newresearchname: "",
       formLabelWidth: '90px',
       createtime: "",
-      researchlist: [
+      researchlist: [{
+        "NAME": "研究1",
+        "RESEARCHSTATECODE": "0                   ",
+        "RESEARCHID": "1                  ",
+        "CREATEDATE": "2019-1-15",
+        "USERID": "Admin"
+      },
+      {
+        "NAME": "研究2",
+        "RESEARCHSTATECODE": "1                   ",
+        "RESEARCHID": "2                  ",
+        "CREATEDATE": "2019-1-15",
+        "USERID": "Admin"
+      },
+      {
+        "NAME": "研究3",
+        "RESEARCHSTATECODE": "2                   ",
+        "RESEARCHID": "3                  ",
+        "CREATEDATE": "2019-1-15",
+        "USERID": "Admin"
+      },
+      {
+        "NAME": "研究4",
+        "RESEARCHSTATECODE": "3                   ",
+        "RESEARCHID": "4                  ",
+        "CREATEDATE": "2019-1-15",
+        "USERID": "Admin"
+      },
+      {
+        "NAME": "研究5",
+        "RESEARCHSTATECODE": "4                   ",
+        "RESEARCHID": "5                  ",
+        "CREATEDATE": "2019-1-15",
+        "USERID": "Admin"
+      },
+      {
+        "NAME": "研究6",
+        "RESEARCHSTATECODE": "4                   ",
+        "RESEARCHID": "6                 ",
+        "CREATEDATE": "2019-1-15",
+        "USERID": "Admin"
+      }
       ]
     }
   },
   filters: {
     researchstatusfilter: function (input) {
-      switch (input) {
+      switch (Number(input)) {
         case 0:
-          return '个人研究构建完成';
+          return '队列生成中';
           break;
         case 1:
-          return '研究成果构建中';
+          return '变量生成中';
           break;
         case 2:
-          return '资格审核中';
+          return '模型选择中';
           break;
         case 3:
+          return '结果分析中';
+          break;
+        case 4:
           return '研究完成';
           break;
         default:
@@ -96,7 +140,7 @@ export default {
     }
   },
   mounted() {
-    this.getpersonalResearch();
+    // this.getpersonalResearch();
   },
   methods: {
     getpersonalResearch() {
@@ -122,10 +166,68 @@ export default {
         .catch(_ => { });
     },
     // 跳转至对应研究页面
-    toMyresearch: function (researchid) {
-      this.$router.push({
-        name: "新建个人研究",
-      });
+    goByStatus(RESEARCHID, RESEARCHSTATECODE) {
+      var status = Number(RESEARCHSTATECODE)
+      var id = Number(RESEARCHID)
+      switch (status) {
+        case 0:
+          this.$router.push({
+            path: 'createcohort',
+            query:
+              {
+                RESEARCHID: id
+              }
+          });
+          break;
+        case 1:
+          this.$router.push({
+            path: 'newvariable',
+            query:
+              {
+                RESEARCHID: id
+              }
+          });
+          break;
+        case 2:
+          this.$router.push({
+            path: 'selectmodel',
+            query:
+              {
+                RESEARCHID: id
+              }
+          });
+          break;
+        case 3:
+          this.$router.push({
+            path: 'analysisresult',
+            query:
+              {
+                RESEARCHID: id
+              }
+          });
+          break;
+        case 4:
+          this.$router.push({
+            path: 'analysisresult',
+            query:
+              {
+                RESEARCHID: id
+              }
+          });
+          break;
+        default:
+
+          this.$message('研究状态不正确！');
+
+          // this.$router.push({
+          //   path: 'myteam',
+          //   query:
+          //     {
+          //       RESEARCHID: id
+          //     }
+          // });
+          break;
+      }
     },
     // 跳转至新建研究
     toNewresearch: function () {
