@@ -5,7 +5,7 @@
       <!-- 图片+团队 -->
       <el-col :span=5
               :offset=1>
-        <div><img src="../../assets/AdminInfo/UserPhoto.png"
+        <div><img src="../assets/AdminInfo/UserPhoto.png"
                style="width:100%; height:auto; padding:0; margin:0"></div>
         <br>
         <br>
@@ -98,6 +98,6 @@ export default {
 </script>
 
 <style>
-@import "../../assets/AdminInfo/css_admin/css_admin.css";
-@import "../../assets/AdminInfo/css_admin/myIcon/iconfont.css";
+@import "../assets/AdminInfo/css_admin/css_admin.css";
+@import "../assets/AdminInfo/css_admin/myIcon/iconfont.css";
 </style>

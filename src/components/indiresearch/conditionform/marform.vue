@@ -22,11 +22,13 @@
                     id="3">
         <el-date-picker v-model="form.formdetail[3].data1"
                         type="date"
+                        value-format="yyyy-MM-dd"
                         placeholder="选择日期">
         </el-date-picker>
         <span class="line"> — </span>
         <el-date-picker v-model="form.formdetail[3].data2"
                         type="date"
+                        value-format="yyyy-MM-dd"
                         placeholder="选择日期">
         </el-date-picker>
         <!-- <el-checkbox v-model="marform.datechecked"
@@ -85,7 +87,7 @@ export default {
   components: {
     draggable,
   },
-  props: ['conditionFormId', 'mainItem'],
+  props: ['mainItem'],
   data() {
     return {
       form: {
@@ -122,12 +124,9 @@ export default {
   },
   // 监听条件表单被拖拽到所对应的div的序号变化
   watch: {
-    conditionFormId() {
-      this.form.id = this.conditionFormId
-    },
     mainItem: {
       handler() {
-        if (this.mainItem.groupName == 'diagnose') {
+        if (this.mainItem.groupName == 'mar') {
           this.cohortdict[this.mainItem.itemId]['layer2SortNo'] = this.mainItem.sortNo
           this.cohortdict[this.mainItem.itemId]['layer1SortNo'] = this.mainItem.id
           this.cohortdict[this.mainItem.itemId]['criteriaTypeCode'] = "1"
