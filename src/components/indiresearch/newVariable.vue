@@ -73,6 +73,7 @@
         <el-button type="primary"
                    @click=""
                    round
+                   @click="goselectModel()"
                    style="width:120px">下一步<i class="el-icon-d-arrow-right el-icon--right"></i></el-button>
       </el-col>
     </el-row>
