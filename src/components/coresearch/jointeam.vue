@@ -4,16 +4,99 @@
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="2">
-        <div>团队id</div>
+        <div>研究名称</div>
       </el-col>
       <el-col :span="10">
-        <el-input size="small"
-                  placeholder="空白等待输入"
-                  v-model="team.collaborationId">
-        </el-input>
+        <div>
+          researchDetail.name
+        </div>
       </el-col>
       <el-col :span="1"></el-col>
     </el-row>
+    <el-row type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
+        <div>研究目标</div>
+      </el-col>
+      <el-col :span="10">
+        <div>
+          researchDetail.target
+        </div>
+      </el-col>
+      <el-col :span="1"></el-col>
+    </el-row>
+    <el-row type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
+        <div>数据范围</div>
+      </el-col>
+      <el-col :span="10">
+        <div>
+          researchDetail.dataRange
+        </div>
+      </el-col>
+      <el-col :span="1"></el-col>
+    </el-row>
+    <el-row type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
+        <div>预期成果</div>
+      </el-col>
+      <el-col :span="10">
+        <div>
+          researchDetail.expectedOutcomes
+        </div>
+      </el-col>
+      <el-col :span="1"></el-col>
+    </el-row>
+    <el-row type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
+        <div>项目支持</div>
+      </el-col>
+      <el-col :span="10">
+        <div>
+          researchDetail.projectSupport
+        </div>
+      </el-col>
+      <el-col :span="1"></el-col>
+    </el-row>
+
+    <el-row type="flex"
+            justify="center"
+            style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="2">
+        <div>研究方案</div>
+      </el-col>
+      <el-col :span="11">
+        <el-row>
+          <el-col :span="16">研究方案一</el-col>
+
+          <el-col :span="2"><i v-if="showDetail"
+               class="el-icon-arrow-down"
+               @click="showDetail = false"></i><i v-if="!showDetail"
+               class="el-icon-arrow-right"
+               @click="showDetail = true"></i></el-col>
+        </el-row>
+        <div v-if="showDetail">
+          <el-row style="margin-top:10px;margin-bottom:10px">
+            队列条件 + 入组人数
+          </el-row>
+          <el-row style="margin-top:10px;margin-bottom:10px">
+            变量名称 + 描述
+          </el-row>
+          <el-row style="margin-top:10px;margin-bottom:10px">
+            所选模型 + 参数
+          </el-row>
+        </div>
+      </el-col>
+
+    </el-row>
+
     <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
@@ -42,7 +125,7 @@
                    @click="addParticipation(2)">拒绝加入</el-button>
       </el-col>
     </el-row>
-    <el-row type="flex"
+    <!-- <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="2">
@@ -118,7 +201,7 @@
         <el-button type="primary"
                    @click="updateCollaborCohortAccredit(2)">拒绝授权</el-button>
       </el-col>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 
@@ -129,6 +212,7 @@ export default {
   data() {
     return {
       checked: false,
+      showDetail: true,
       team: { collaborationId: '' },
       cohort: {
         collaborationId: '',

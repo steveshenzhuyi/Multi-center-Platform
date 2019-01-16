@@ -398,7 +398,7 @@
                        label="描述性分析">
 
             <component :is="methodName1"
-                       :mid="methodID1"></component>
+                       :mid="methodID"></component>
 
           </el-tab-pane>
           <el-tab-pane name="B"
@@ -409,21 +409,21 @@
                            label="单样本t检验">
 
                 <component :is="methodName2_1"
-                           :mid="methodID2_1"></component>
+                           :mid="methodID"></component>
 
               </el-tab-pane>
               <el-tab-pane name="b"
                            label="独立样本t检验">
 
                 <component :is="methodName2_2"
-                           :mid="methodID2_2"></component>
+                           :mid="methodID"></component>
 
               </el-tab-pane>
               <el-tab-pane name="c"
                            label="配对样本t检验">
 
                 <component :is="methodName2_3"
-                           :mid="methodID2_3"></component>
+                           :mid="methodID"></component>
 
               </el-tab-pane>
             </el-tabs>
@@ -435,15 +435,13 @@
               <el-tab-pane name="d"
                            label="单因素方差分析">
 
-                <component :is="methodName3_1"
-                           :mid="methodID3_1"></component>
+                <component :is="methodName3_1"></component>
 
               </el-tab-pane>
               <el-tab-pane name="e"
                            label="多因素方差分析">
 
-                <component :is="methodName3_2"
-                           :mid="methodID3_2"></component>
+                <component :is="methodName3_2"></component>
 
               </el-tab-pane>
             </el-tabs>
@@ -451,36 +449,31 @@
           <el-tab-pane name="D"
                        label="线性回归">
 
-            <component :is="methodName4"
-                       :mid="methodID4"></component>
+            <component :is="methodName4"></component>
 
           </el-tab-pane>
           <el-tab-pane name="E"
                        label="逻辑回归">
 
-            <component :is="methodName5"
-                       :mid="methodID5"></component>
+            <component :is="methodName5"></component>
 
           </el-tab-pane>
           <el-tab-pane name="F"
                        label="SVM">
 
-            <component :is="methodName6"
-                       :mid="methodID6"></component>
+            <component :is="methodName6"></component>
 
           </el-tab-pane>
           <el-tab-pane name="G"
                        label="贝叶斯网络">
 
-            <component :is="methodName7"
-                       :mid="methodID7"></component>
+            <component :is="methodName7"></component>
 
           </el-tab-pane>
           <el-tab-pane name="H"
                        label="决策树">
 
-            <component :is='methodName8'
-                       :mid="methodID8"></component>
+            <component :is='methodName8'></component>
 
           </el-tab-pane>
         </el-tabs>
@@ -493,8 +486,10 @@
   </div>
 </template>
 <script>
+
 import axios from 'axios';
 import echarts from 'echarts';
+
 import createconceptset from './createconceptset/createconceptset.vue';
 import draggable from 'vuedraggable';
 import Vue from 'vue';
@@ -509,8 +504,12 @@ import ttest_one from './methodform/ttest_one.vue'
 import oneway_anova from './methodform/oneway_anova.vue'
 import ttest_paired from './methodform/ttest_paired.vue'
 import svmanalysis from './methodform/svmanalysis.vue'
+
+
 import NewVariable from './newvariable/newvariable.vue'
 import { inspect } from 'util';
+
+
 export default {
   components: {
     'mstj': mstj,
@@ -536,6 +535,7 @@ export default {
       cohortanalysisdata: {},
       selectedvariable: [],
       dialogVisible: false,
+
       saveresult: false,
       saveresultname: '',
       mycreateconceptset: createconceptset,
@@ -578,24 +578,17 @@ export default {
       // 新增变量弹框 dwx
       NewVarTabs: "NewVariable",
       VariableTable: [],
+
       //GYX 模型一级 二级条件  methodname重新命名
       //methodName: '',
       MethodDetails: '',
       activeMethod1: '',
+      //methodName: '',
       activeMethod2: 'a',
       activeMethod3: 'd',
       // modelID: '',
-      methodID1: -1,
-      methodID2_1: -1,
-      methodID2_2: -1,
-      methodID2_3: -1,
-      methodID3_1: -1,
-      methodID3_2: -1,
-      methodID4: -1,
-      methodID5: -1,
-      methodID6: -1,
-      methodID7: -1,
-      methodID8: -1,
+
+      methodID: -1,
       methodName1: '',
       methodName2_1: '',
       methodName2_2: '',
@@ -607,6 +600,7 @@ export default {
       methodName6: '',
       methodName7: '',
       methodName8: '',
+
       VarSelection: [],
       NewVariable: NewVariable,
       // 增加变量标签初始化/RH
@@ -867,6 +861,7 @@ export default {
                 this.$options.methods.postStructure.bind(this)()
               }
             })
+
         }
         //二次确认
         let ConfirmFun = () => {
@@ -931,6 +926,7 @@ export default {
         d.id > this.non_cohort_maxexpandId ? DelFun() : ConfirmFun()
       }
     },
+
     //模型方法资源结构编辑函数
     handleAddTop_method() {
       this.analysismethods.push({
@@ -984,8 +980,8 @@ export default {
       this.NewVarVisible = val
     },
     GetVarSelection(val) {
-      // console.log(val)
-      // console.log(this.dynamicTags)
+      console.log(val)
+      console.log(this.dynamicTags)
       if (this.dynamicTags.length == 0) {
         this.dynamicTags = val
       } else {
@@ -1000,6 +996,7 @@ export default {
         }
       }
     },
+
     //队列拖拽所需
     handleDragStart(node, ev) {
       console.log('drag start', node);
@@ -1033,15 +1030,19 @@ export default {
     allowDrag(draggingNode) {
       return draggingNode.data.tag.indexOf('0') === -1;
     },
+
     //GYX打开新建方法按钮，自动加载描述统计
     NewMethod: function () {
       this.NewMethodVisible = true;
       this.activeMethod1 = 'A';
       this.methodName1 = mstj;
       this.methodID = -1;
+
     },
+
     //以下为切换tab GYX 新建模型切换tab
     //默认进去描述统计
+
     getConceptId(n, d) {
       if (d.tag.indexOf('0') === -1) {
         this.createConceptVisible2 = true;
@@ -1050,6 +1051,7 @@ export default {
       }
     },
     //以下为切换tab
+
     handleClick(tab, event) {
       switch (tab.name) {
         //t检验默认单样本
@@ -1068,9 +1070,11 @@ export default {
       this.checkVue(tab.name);
     },
     handleClick2(tab, event) {
+
       this.checkVue(tab.name);
     },
     handleClick3(tab, event) {
+
       this.checkVue(tab.name);
     },
     checkVue(name) {
@@ -1123,17 +1127,22 @@ export default {
           break;
       }
     },
+
     // GYX  编辑分析方法
     // 获得方法的ID
     editMethod(n, d) {
       // 获得了ID,在这里直接对methodID赋值，同时获得ID一级条件二级条件
       if (d.tag.indexOf('0') === -1) {
+
+
+        this.methodID = d.id;
         this.getMethodDetails(d.id);
         this.NewMethodVisible = true;
         // setTimeout(() => {
         //   this.$refs.mstj.Initialize();
         // })
-        console.log('获得id');
+        console.log('获得id'); console.log(this.methodID)
+
       }
     },
     //GYX 根据ID 获得一级二级条件
@@ -1152,93 +1161,89 @@ export default {
             var d = this.MethodDetails.modelTypeLayer2Code
             var a = parseInt(c)
             var b = parseInt(d)
-            this.chooseVue(a, b, t)
+            this.chooseVue(a, b)
           }
         })
         .catch(function (error) {
           console.log("error", error);
         });
+
+
     },
     //根据一级条件二级条件切换Vue
-    chooseVue(a, b, t) {
+    chooseVue(a, b) {
       console.log('选tab')
       switch (a) {
         case 1:
           //console.log(this.methodID);
           this.activeMethod1 = 'A'
-          this.methodID1 = t;
           this.methodName1 = mstj;
           break;
         case 2:
           this.activeMethod1 = 'B'
-          this.chooseVue1(b, t);
+          this.chooseVue1(b);
           break;
         case 3:
           this.activeMethod1 = 'C'
-          this.chooseVue2(b, t);
+          this.chooseVue2(b);
           break;
         case 4:
           this.activeMethod1 = 'D'
-          this.methodID4 = t;
           this.methodName4 = linearregression;
           break;
         case 5:
           this.activeMethod1 = 'E'
-          this.methodID5 = t;
           this.methodName5 = logicregression;
           break;
         case 6:
           this.activeMethod1 = 'F'
-          this.methodID6 = t;
           this.methodName6 = svmanalysis;
           break;
         case 7:
           this.activeMethod1 = 'G'
-          this.methodID7 = t;
           this.methodName7 = bayesiannetworks;
           break;
         case 8:
           this.activeMethod1 = 'H'
-          this.methodID8 = t;
           this.methodName8 = decisiontree;
           break;
         default:
           break;
+
       }
+
     },
-    chooseVue1(b, t) {
+    chooseVue1(b) {
       console.log('进入t检验选择')
+
       switch (b) {
         case 1:
+
           this.activeMethod2 = "a";
           //单样本t检验
-          this.methodID2_1 = t;
           this.methodName2_1 = ttest_one;
           break;
         case 2:
           this.activeMethod2 = "b";
-          this.methodID2_2 = t;
           this.methodName2_2 = ttest_independent;
           break;
         case 3:
           this.activeMethod2 = "c";
-          this.methodID2_3 = t;
           this.methodName2_3 = ttest_paired;
           break;
         default:
           break;
       }
     },
-    chooseVue2(b, t) {
+    chooseVue2(b) {
       switch (b) {
         case 1:
           this.activeMethod3 = "d";
-          this.methodID3_1 = t;
           this.methodName3_1 = oneway_anova;
+
           break;
         case 2:
           this.activeMethod3 = "e";
-          this.methodID3_2 = t;
           this.methodName3_2 = multifactor_analysis;
           break;
         default:
@@ -1295,6 +1300,7 @@ export default {
             }
           })
         // 定量！
+
         axios.post('/cohort/statInfo', ({
           "token": this.GLOBAL.token,
           "cohortId": "1",
@@ -1366,6 +1372,7 @@ export default {
         this.ifsave = true
       }
     },
+
     tosaveresult(saveresultname) {
       axios.post('/result/createResult', ({
         "token": this.GLOBAL.token,
@@ -1393,14 +1400,34 @@ export default {
     taghandleClose(tag) {
       for (var i = 0; i < this.dynamicTags.length; i++) {
         if (this.dynamicTags[i].id == tag) {
+          console.log(i)
           this.dynamicTags.splice(i, 1);
         }
       }
+    },
+    //新增变量（显示输入框）/RH
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+    // 新增变量（确定新增）/RH
+    handleInputConfirm() {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        this.dynamicTags.push({
+          "id": this.dynamicTags.length - 1,
+          "name": inputValue        });
+      }
+      this.inputVisible = false;
+      this.inputValue = '';
     },
     // 真实队列生成/RH
     togenerate() {
       this.$message.success("开始生成！")
     }
+
   },
   components: {
     draggable

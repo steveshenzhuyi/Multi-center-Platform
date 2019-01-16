@@ -9,12 +9,11 @@
                    trigger="click"
                    @command="handleCommand">
         <span class="el-dropdown-link"
-              style="color:white;  cursor: pointer;
-">
+              style="color:white;  cursor: pointer;">
           <i class="iconfont icon-yonghuicon"></i> Admin<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="toInfo">个人信息</el-dropdown-item>
+          <el-dropdown-item command="toPersonalpage">个人信息</el-dropdown-item>
           <el-dropdown-item command="toMsg">消息中心</el-dropdown-item>
           <el-dropdown-item command="toLogout">登出</el-dropdown-item>
         </el-dropdown-menu>
@@ -29,21 +28,23 @@
              background-color="#545c64"
              text-color="#fff"
              active-text-color="#2d8cf0"
-             style="  width: 100%;  min-width: 823px;">
-      <el-menu-item index="data">
-      </el-menu-item>
+             style="padding-left:30px;width: 100%;  min-width: 823px;">
       <el-menu-item index="data">数据总览</el-menu-item>
       <el-menu-item index="indiresearch/researchList">个人研究</el-menu-item>
-      <el-menu-item index="coresearch/myteam">协同研究</el-menu-item>
+      <el-menu-item index="coresearch/teamList">协同研究</el-menu-item>
       <el-menu-item index="knowledgegraph">知识图谱</el-menu-item>
       <el-menu-item index="dataimport">数据导入</el-menu-item>
       <el-submenu index="6">
         <template slot="title">管理中心</template>
-        <el-menu-item index="personalpage">个人主页</el-menu-item>
-        <el-menu-item index="resourcestatus">资源状态</el-menu-item>
-        <el-menu-item index="authoritycontrol">权限控制</el-menu-item>
+        <el-menu-item index="usermanage">用户管理</el-menu-item>
+        <el-menu-item index="authoritymanage">权限管理</el-menu-item>
       </el-submenu>
       <el-menu-item index="thirdparty">第三方数据使用</el-menu-item>
+      <el-submenu index="nodemanage">
+        <template slot="title">节点管理</template>
+        <el-menu-item index="nodemanage/node">节点状态</el-menu-item>
+        <el-menu-item index="nodemanage/operation">操作查询</el-menu-item>
+      </el-submenu>
     </el-menu>
 
     <el-dialog title="登出"
@@ -66,12 +67,14 @@ export default {
   data() {
     return { dialogVisible: false };
   },
+
   computed: {
     activeIndex() {
       return this.$route.path.replace("/", "");
     }
   },
   methods: {
+
     // 页面跳转/RH
     handleSelect(key, keyPath) {
       // console.log(this);
@@ -79,7 +82,11 @@ export default {
       this.$router.push({ path: "/" + key });
     },
     handleCommand(command) {
-      if (command == 'toLogout') { this.dialogVisible = true }
+      if (command == 'toLogout') { this.dialogVisible = true } else if (command == "toPersonalpage") {
+        this.$router.push({
+          name: '个人主页',
+        });
+      }
     },
     toLogout() {
       this.GLOBAL.token = "";

@@ -1,14 +1,9 @@
 <template>
-  <div class="main-container">
+  <div>
     <router-view></router-view>
   </div>
 </template>
 <script>
-
-export default {
-  name: 'thirdparty',
-
-}
 </script>
 <style>
 </style>
