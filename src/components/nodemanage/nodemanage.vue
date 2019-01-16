@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <p>资源状态</p>
-    </div>
+  <div>
+    <p>节点管理</p>
+  </div>
 </template>
 <script>
 </script>

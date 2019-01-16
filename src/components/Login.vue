@@ -81,7 +81,7 @@ export default {
       this.loginresult = false;
       // 手机号有效性判断
       var phoneReg = /^1[34578]\d{9}$/.test(this.loginForm.username)
-      if ((this.loginForm.username == '123') && (this.loginForm.password == '123')) { this.$router.push({ path: "/home" }); }
+      if ((this.loginForm.username == '123') && (this.loginForm.password == '123')) { this.$router.push({ name: "数据总览" }); }
       if (!phoneReg) {
         this.loginresult = true;
         this.tips = "请输入正确的手机号";      }
@@ -103,10 +103,9 @@ export default {
               this.GLOBAL.USERID = response.data.USERID;
               this.GLOBAL.DEPARTMENTCODE = response.data.DEPARTMENTCODE;
               this.GLOBAL.ORGANIZATIONCODE = response.data.ORGANIZATIONCODE;
-              this.$router.push({ path: "/home" });
+              this.$router.push({ name: "数据总览" });
               // 登录失败：用户名不存在/用户名存在但密码错误
             } else if (response.data.msg == "不正确的用户名和密码") {
-              console.log(12)
               this.loginresult = true;
               this.tips = "不正确的用户名和密码";
             }
