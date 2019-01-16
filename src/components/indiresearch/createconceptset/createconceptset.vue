@@ -29,6 +29,7 @@
                         class="form-inline">
             <el-input type="text"
                       v-model="NewConceptSets.SetName"
+                      :disabled="ifnotEdit"
                       auto-complete="off"
                       placeholder="请输入集合名称"
                       class="form-control"
@@ -210,16 +211,11 @@ export default {
         SetName: "",
         SetDescription: ""
       },
+      ifnotEdit: false,
       rules: {
         SetName: [
           { required: true, message: '请输入概念名称', trigger: 'blur' }
         ]
-      },
-      props: {
-        existConceptId: {
-          type: String,
-          required: true
-        }
       },
       // tableAll: [
       //   {
@@ -253,10 +249,10 @@ export default {
       //     ChilerenConcept: "1862084082#1"
       //   }
       // ],
-      firstTableAll: [],
       tableAll: [],
       tableChecked: [],
-      conceptsLength: 0
+      conceptsLength: 0,
+      conceptIdList: '',
     }
   },
 
@@ -264,6 +260,7 @@ export default {
     //console.log(this.existConceptId);
 
     if (this.existConceptId) {
+      this.ifnotEdit = true
       axios.get('/conceptSet/getConceptSetDetail', {
         params: {
           "token": this.GLOBAL.token,
@@ -281,41 +278,12 @@ export default {
             const conceptCode = parseInt(response.data.data.concepts[i].conceptCode)
             const childTag = parseInt(response.data.data.concepts[i].childTag)
             const excludeTag = parseInt(response.data.data.concepts[i].excludeTag)
-            //   this.tableAll.push({
-            //     subject: conceptCode.toString(),
-            //     label: '',
-            //     domain: '',
-            //     class: '',
-            //     voc: '',
-            //     std: '',
-            //     Except: conceptCode.toString(),
-            //     ChilerenConcept: conceptCode.toString()
-            //   })
-
-            axios.get('/knowledgeGraph/queryConceptID', {
-              params: {
-                "token": this.GLOBAL.token,
-                "query": conceptCode
-              },
-              //timeout: 1000 * 60 * 3
-            })
-              .then((response) => {
-                console.log(conceptCode)
-                const searchConcepts = response.data.data.results.bindings
-                this.tableAll.push({
-                  subject: conceptCode.toString(),
-                  label: searchConcepts[0].label.value,
-                  domain: searchConcepts[0].domain.value,
-                  class: searchConcepts[0].class.value,
-                  voc: searchConcepts[0].voc.value,
-                  std: Object.getOwnPropertyNames(searchConcepts[0]).length > 5 ? searchConcepts[0].std.value : '',
-                  Except: conceptCode.toString(),
-                  ChilerenConcept: conceptCode.toString()
-                })
-              })
-              .catch(function (error) {
-                console.log("error", error);
-              });
+            if (i == 0) {
+              this.conceptIdList = conceptCode
+            }
+            else {
+              this.conceptIdList += ',' + conceptCode
+            }
             if (childTag == 1) {
               console.log(childTag)
               this.checkedChilerenConcepts.push(conceptCode.toString())
@@ -330,7 +298,33 @@ export default {
               })
             }
           }
-          //this.firstTableAll = this.tableAll
+          axios.get('/knowledgeGraph/queryConceptID', {
+            params: {
+              "token": this.GLOBAL.token,
+              "query": this.conceptIdList
+            },
+            //timeout: 1000 * 60 * 3
+          })
+            .then((response) => {
+              //console.log(conceptCode)
+              const searchConcepts = response.data.data.results.bindings
+              for (var i = 0; i < searchConcepts.length; i++) {
+                this.tableAll.push({
+                  subject: searchConcepts[i].subject.value.split("#")[1],
+                  label: searchConcepts[i].label.value,
+                  domain: searchConcepts[i].domain.value,
+                  class: searchConcepts[i].class.value,
+                  voc: searchConcepts[i].voc.value,
+                  std: Object.getOwnPropertyNames(searchConcepts[i]).length > 5 ? searchConcepts[i].std.value : '',
+                  Except: searchConcepts[i].subject.value.split("#")[1],
+                  ChilerenConcept: searchConcepts[i].subject.value.split("#")[1]
+                })
+              }
+            })
+            .catch(function (error) {
+              console.log("error", error);
+            });
+          //console.log(this.conceptIdList)
           for (let i = 0; i < this.tableAll.length; i++) {
             this.Excludeditems[i] = this.tableAll[i].Except
             this.ChilerenConcepts[i] = this.tableAll[i].ChilerenConcept
@@ -395,9 +389,6 @@ export default {
         });
     },
     handleClick(tab, event) {
-      // this.firstTableAll.forEach(row => {
-      //   this.$refs.multipleTable.toggleRowSelection(row, true);
-      // });
       this.tableChecked = [];
       for (var i = 0; i < this.multipleSelection.length; i++) {
         this.tableChecked.push({
