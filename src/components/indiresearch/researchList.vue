@@ -10,7 +10,7 @@
           <div id="newresearch"
                class="cardBox"
                shadow="hover"
-               @click="toMyresearch()">
+               @click="tonewResearch()">
 
             <span class="el-icon-plus"></span>
           </div>
@@ -230,27 +230,13 @@ export default {
       }
     },
     // 跳转至新建研究
-    toNewresearch: function () {
-      this.createtime = new Date();
-      axios.post('/personalResearch/createResearch', ({
-        "token": this.GLOBAL.token,
-        "name": this.newresearchname,
-        "target": "aaa",
-        "proposal": "aaa",
-        "expectedOutcomes": "aaa",
-        "dataRange": "aaa",
-        "projectSupport": "aaa",
-        "redundancy": "qwerty"
-      }))
-        .then(response => {
-          if (response.data.code == "0") {
-            this.$message.success("新建成功！")
-            setTimeout(function () {
-              location.reload()
-            }, 1000);
-          }
-        })
-    },
+    tonewResearch: function () {
+      this.$router.push({
+        path: 'newResearch',
+
+      });
+    }
+
   },
 };
 </script>
