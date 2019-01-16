@@ -105,7 +105,7 @@
 
       </el-col>
       <el-col :span="4">
-        <el-row style="margin-top: 30%;margin-left:25%;margin-right:25% ">
+        <el-row style="margin-top: 30%; ">
           <el-button type="primary"
                      v-if="isnew"
                      @click="save">确定</el-button>
@@ -113,11 +113,11 @@
                      v-else
                      @click="edit">编辑</el-button>
         </el-row>
-        <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
+        <el-row style="margin-top: 15%;">
           <el-button type="primary"
                      @click="cancel">取消</el-button>
         </el-row>
-        <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
+        <el-row style="margin-top: 15%;">
           <el-button type="primary"
                      @click="help">帮助</el-button>
         </el-row>

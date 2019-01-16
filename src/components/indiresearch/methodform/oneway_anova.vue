@@ -1,192 +1,193 @@
 <template>
   <div>
+    <el-form>
+      <el-row style="margin-top:10px;margin-bottom:10px">
+        模型名称: &nbsp;<el-input v-model="anova_1Form.methodname"
+                  size="mini"
+                  style="width:200px;"></el-input>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="20">
 
-    <el-row style="margin-top:10px;margin-bottom:10px">
-      模型名称: &nbsp;<el-input v-model="anova_1Form.methodname"
-                size="mini"
-                style="width:200px;"></el-input>
-    </el-row>
-    <el-row :gutter="20">
-      <el-col :span="20">
+          <el-row :gutter="10">
+            <el-col :span="10">
+              <fieldset style=" min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+                <el-table :data="Varlist"
+                          ref="singleTable"
+                          max-height="200"
+                          tooltip-effect="dark"
+                          highlight-current-row
+                          :row-class-name="tableRowClassName"
+                          @row-click="getRowdetail1">
 
-        <el-row :gutter="10">
-          <el-col :span="10">
-            <fieldset style=" min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-              <el-table :data="Varlist"
-                        ref="singleTable"
-                        max-height="200"
-                        tooltip-effect="dark"
-                        highlight-current-row
-                        :row-class-name="tableRowClassName"
-                        @row-click="getRowdetail1">
+                  <el-table-column prop="name">
+                  </el-table-column>
+                  <el-table-column prop="featureId"
+                                   v-if="idshow1">
 
-                <el-table-column prop="name">
-                </el-table-column>
-                <el-table-column prop="featureId"
-                                 v-if="idshow1">
+                  </el-table-column>
 
-                </el-table-column>
+                </el-table>
+              </fieldset>
+            </el-col>
 
-              </el-table>
-            </fieldset>
-          </el-col>
+            <el-col :span="4">
 
-          <el-col :span="4">
+              <div style="margin-top: 40%; text-align:center;">
+                <!-- 右移 -->
+                <el-button type="info"
+                           @click="rightshift"
+                           icon="icon el-icon-d-arrow-right"></el-button>
 
-            <div style="margin-top: 40%; text-align:center;">
-              <!-- 右移 -->
-              <el-button type="info"
-                         @click="rightshift"
-                         icon="icon el-icon-d-arrow-right"></el-button>
+              </div>
+              <!-- 左移 -->
+              <div style="margin-top: 30%; text-align:center;">
+                <el-button type="info"
+                           @click="leftshift"
+                           icon="icon el-icon-d-arrow-left"></el-button>
 
-            </div>
-            <!-- 左移 -->
-            <div style="margin-top: 30%; text-align:center;">
-              <el-button type="info"
-                         @click="leftshift"
-                         icon="icon el-icon-d-arrow-left"></el-button>
+              </div>
 
-            </div>
+              <div style="margin-top:60%; text-align:center;">
+                <!-- 右移 -->
+                <el-button type="info"
+                           @click="rightshift2"
+                           icon="icon el-icon-d-arrow-right"></el-button>
 
-            <div style="margin-top:60%; text-align:center;">
-              <!-- 右移 -->
-              <el-button type="info"
-                         @click="rightshift2"
-                         icon="icon el-icon-d-arrow-right"></el-button>
+              </div>
+              <!-- 左移 -->
+              <div style="margin-top: 30%; text-align:center;">
+                <el-button type="info"
+                           @click="leftshift2"
+                           icon="icon el-icon-d-arrow-left"></el-button>
 
-            </div>
-            <!-- 左移 -->
-            <div style="margin-top: 30%; text-align:center;">
-              <el-button type="info"
-                         @click="leftshift2"
-                         icon="icon el-icon-d-arrow-left"></el-button>
+              </div>
 
-            </div>
+            </el-col>
+            <el-col :span="10">
+              <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+                <el-table :data="Chosenlist1"
+                          max-height="200"
+                          ref="singleTable"
+                          tooltip-effect="dark"
+                          @row-click="getRowdetail2">
 
-          </el-col>
-          <el-col :span="10">
-            <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-              <el-table :data="Chosenlist1"
-                        max-height="200"
-                        ref="singleTable"
-                        tooltip-effect="dark"
-                        @row-click="getRowdetail2">
+                  <el-table-column prop="name"
+                                   label="因变量">
+                  </el-table-column>
+                  <el-table-column prop="featureId"
+                                   v-if="idshow2">
 
-                <el-table-column prop="name"
-                                 label="因变量">
-                </el-table-column>
-                <el-table-column prop="featureId"
-                                 v-if="idshow2">
+                  </el-table-column>
 
-                </el-table-column>
+                </el-table>
+              </fieldset>
+              <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+                <el-table :data="Chosenlist2"
+                          max-height="200"
+                          ref="singleTable"
+                          tooltip-effect="dark"
+                          @row-click="getRowdetail3">
 
-              </el-table>
-            </fieldset>
-            <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-              <el-table :data="Chosenlist2"
-                        max-height="200"
-                        ref="singleTable"
-                        tooltip-effect="dark"
-                        @row-click="getRowdetail3">
+                  <el-table-column prop="name"
+                                   label="自变量">
+                  </el-table-column>
+                  <el-table-column prop="featureId"
+                                   v-if="idshow3">
 
-                <el-table-column prop="name"
-                                 label="自变量">
-                </el-table-column>
-                <el-table-column prop="featureId"
-                                 v-if="idshow3">
+                  </el-table-column>
 
-                </el-table-column>
-
-              </el-table>
-            </fieldset>
-          </el-col>
-        </el-row>
-
-      </el-col>
-      <el-col :span="4">
-        <el-row style="margin-top: 30%;margin-left:25%;margin-right:25% ">
-          <el-button type="primary"
-                     v-if="isnew"
-                     @click="save">确定</el-button>
-          <el-button type="primary"
-                     v-else
-                     @click="edit">编辑</el-button>
-        </el-row>
-        <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
-          <el-button type="primary"
-                     @click="cancel">取消</el-button>
-        </el-row>
-        <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
-          <el-button type="primary"
-                     @click="help">帮助</el-button>
-        </el-row>
-      </el-col>
-    </el-row>
-
-    <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
-      <el-input-number v-model="anova_1Form.percent"
-                       controls-position="right"
-                       :min="0"
-                       :max="100"></el-input-number>%
-    </el-row>
-    <el-row :gutter="20">
-      <el-col :span="12">
-
-        <fieldset class="groupbox-boarder">
-          <legend class="one-of-groupbox-boarder">分析选项</legend>
-          <el-row>
-            方差分析类型：
-            <el-select v-model="anova_1Form.analysistype"
-                       size="mini">
-              <el-option v-for="item in options3_1"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
-            </el-select>
-
+                </el-table>
+              </fieldset>
+            </el-col>
           </el-row>
-          <el-checkbox-group v-model="anova_1Form.test">
 
-            <el-row>
-              <el-checkbox :label="1">levene方差齐性检验</el-checkbox>
-            </el-row>
-            <el-row>
-              <el-checkbox :label="2">正态性检验</el-checkbox>
-            </el-row>
-            <el-row>
-              <el-checkbox :label="3">因素间交互作用检验</el-checkbox>
-            </el-row>
-            <el-row>
-              <el-checkbox :label="4">tukey检验</el-checkbox>
-            </el-row>
-          </el-checkbox-group>
-        </fieldset>
+        </el-col>
+        <el-col :span="4">
+          <el-row style="margin-top: 30%; ">
+            <el-button type="primary"
+                       v-if="isnew"
+                       @click="save">确定</el-button>
+            <el-button type="primary"
+                       v-else
+                       @click="edit">编辑</el-button>
+          </el-row>
+          <el-row style="margin-top: 15%; ">
+            <el-button type="primary"
+                       @click="cancel">取消</el-button>
+          </el-row>
+          <el-row style="margin-top: 15%; ">
+            <el-button type="primary"
+                       @click="help">帮助</el-button>
+          </el-row>
+        </el-col>
+      </el-row>
 
-      </el-col>
-      <el-col :span="12">
+      <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
+        <el-input-number v-model="anova_1Form.percent"
+                         controls-position="right"
+                         :min="0"
+                         :max="100"></el-input-number>%
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
 
-        <fieldset class="groupbox-boarder">
-          <legend class="one-of-groupbox-boarder">输出选项</legend>
-          <el-checkbox-group v-model="anova_1Form.output">
+          <fieldset class="groupbox-boarder">
+            <legend class="one-of-groupbox-boarder">分析选项</legend>
+            <el-row>
+              方差分析类型：
+              <el-select v-model="anova_1Form.analysistype"
+                         size="mini">
+                <el-option v-for="item in options3_1"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value">
+                </el-option>
+              </el-select>
 
-            <el-row>
-              <el-checkbox :label="1">方差分析结果</el-checkbox>
             </el-row>
-            <el-row>
-              <el-checkbox :label="2">回归结果</el-checkbox>
-            </el-row>
-            <el-row>
-              <el-checkbox :label="3">eta平方</el-checkbox>
-            </el-row>
-            <el-row>
-              <el-checkbox :label="4">omega平方</el-checkbox>
-            </el-row>
-          </el-checkbox-group>
-        </fieldset>
+            <el-checkbox-group v-model="anova_1Form.test">
 
-      </el-col>
-    </el-row>
+              <el-row>
+                <el-checkbox :label="1">levene方差齐性检验</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="2">正态性检验</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="3">因素间交互作用检验</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="4">tukey检验</el-checkbox>
+              </el-row>
+            </el-checkbox-group>
+          </fieldset>
+
+        </el-col>
+        <el-col :span="12">
+
+          <fieldset class="groupbox-boarder">
+            <legend class="one-of-groupbox-boarder">输出选项</legend>
+            <el-checkbox-group v-model="anova_1Form.output">
+
+              <el-row>
+                <el-checkbox :label="1">方差分析结果</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="2">回归结果</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="3">eta平方</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="4">omega平方</el-checkbox>
+              </el-row>
+            </el-checkbox-group>
+          </fieldset>
+
+        </el-col>
+      </el-row>
+    </el-form>
   </div>
 </template>
 <script>
