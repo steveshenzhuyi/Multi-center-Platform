@@ -14,7 +14,8 @@
         <i class="el-icon-close"
            @click=changevisible(0)></i>&nbsp;
         <el-form-item label="手术操作集合">
-          <el-input v-model="form.formdetail[0].data1"></el-input>
+          <el-input v-model="form.formdetail[0].data1"
+                    @focus="getConceptsetList"></el-input>
           <!-- <el-checkbox v-model="operatingform.collectionchecked"
                      class="except">不在其之间</el-checkbox> -->
         </el-form-item>
@@ -92,19 +93,39 @@
       </div>
       <!-- </draggable> -->
     </el-form>
+    <!-- 选择概念集的弹窗 -->
+    <el-dialog title="概念集列表"
+               :visible.sync="conceptSetListVisible"
+               width="60%"
+               :before-close="handleClose"
+               append-to-body>
+      <span slot="footer"
+            class="dialog-footer">
+        <component :is="myconceptsetList"
+                   @getConceptSetId="selectConceptSetId"
+                   @getVisible="selectVisible"></component>
+        <el-button @click="conceptSetListVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="conceptSetListVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 // import draggable from 'vuedraggable'
 import axios from 'axios'
+import conceptsetList from '../conceptsetList.vue'
 export default {
   components: {
+    'conceptsetList': conceptsetList
     // draggable,
   },
   props: ['mainCondId', 'minorCondId', 'viewdetail'],
   data() {
     return {
+      myconceptsetList: conceptsetList,
+      conceptSetListVisible: false,
       form: {
         id: '',
         formdetail: [{
@@ -235,6 +256,25 @@ export default {
         })
         // console.log(this.form.formdetail)
       }
+    },
+    //---概念集列表---
+    getConceptsetList() {
+      this.conceptSetListVisible = true
+      console.log(this.conceptSetListVisible)
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => { });
+    },
+    selectConceptSetId(val) {
+      this.form.formdetail[0].data1 = val
+    },
+    selectVisible(val) {
+      this.conceptSetListVisible = val
+      console.log(this.conceptSetListVisible)
     }
   }
 }

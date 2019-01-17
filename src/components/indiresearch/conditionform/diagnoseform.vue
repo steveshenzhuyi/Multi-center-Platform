@@ -219,6 +219,7 @@ export default {
         // console.log(this.form.formdetail)
       }
     },
+    //---概念集列表---
     getConceptsetList() {
       this.conceptSetListVisible = true
       console.log(this.conceptSetListVisible)
