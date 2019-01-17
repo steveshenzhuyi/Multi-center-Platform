@@ -15,7 +15,8 @@
            @click=changevisible(0)></i>&nbsp;
         <el-form-item label="诊断编码集合">
           <el-col :span="11">
-            <el-input v-model="form.formdetail[0].data1"></el-input>
+            <el-input v-model="form.formdetail[0].data1"
+                      @focus="getConceptsetList"></el-input>
             <!-- <el-checkbox v-model="form.codechecked"
   class="except">不在其之间</el-checkbox> -->
           </el-col>
@@ -86,19 +87,38 @@
       </el-form-item> -->
       <!-- </draggable> -->
     </el-form>
+    <el-dialog title="概念集列表"
+               :visible.sync="ConceptsetListVisible"
+               width="60%"
+               :before-close="handleClose"
+               append-to-body>
+      <span slot="footer"
+            class="dialog-footer">
+        <component :is="myconceptsetList"
+                   @getConceptSetId="selectConceptSetId"
+                   @getVisible="selectVisible"></component>
+        <el-button @click="ConceptsetListVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="ConceptsetListVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import conceptsetList from '../conceptsetList.vue'
 import draggable from 'vuedraggable'
 import axios from 'axios'
 export default {
   components: {
     draggable,
+    'conceptsetList': conceptsetList
   },
   props: ['mainCondId'],
   data() {
     return {
+      myconceptsetList: conceptsetList,
+      ConceptsetListVisible: false,
       form: {
         id: '',
         formdetail: [
@@ -176,6 +196,24 @@ export default {
     changevisible(showindex) {
       this.visible[showindex].show = false
       this.form.formdetail[showindex] = this.initialform[showindex];
+    },
+    getConceptsetList() {
+      this.ConceptsetListVisible = true
+      console.log(this.ConceptsetListVisible)
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => { });
+    },
+    selectConceptSetId(val) {
+      this.form.formdetail[0].data1 = val
+    },
+    selectVisible(val) {
+      this.ConceptsetListVisible = val
+      console.log(this.ConceptsetListVisible)
     }
   }
 }
