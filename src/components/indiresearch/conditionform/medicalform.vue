@@ -1,189 +1,367 @@
 <template>
-  <el-form ref="form"
-           :model="form"
-           size="mini"
-           :inline="true"
-           class="medical">
-    <draggable :options="{group:'medical'}">
-      <el-form-item label="医学检测集合"
-                    id="0">
-        <el-input v-model="form.formdetail[0].data1"></el-input>
-        <!-- <el-checkbox v-model="medicalform.medicalSetchecked"
+  <div>
+    <el-form ref="form"
+             :model="form"
+             label-width="110px"
+             label-position="left"
+             :inline="true"
+             size="mini"
+             class="medical">
+      <!-- <draggable :options="{group:'medical'}"> -->
+      <div class="form-item"
+           v-if="visible[0].show">
+        <i class="el-icon-close"
+           @click=changevisible(0)></i>&nbsp;
+        <el-form-item label="医学检测集合">
+          <el-input v-model="form.formdetail[0].data1"></el-input>
+          <!-- <el-checkbox v-model="medicalform.medicalSetchecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="检测结果"
-                    id="2">
-        <el-input v-model="form.formdetail[2].data1"></el-input>
-      </el-form-item>
-      <el-form-item label="检测值操作符"
-                    id="3">
-        <el-input v-model="form.formdetail[3].data1"></el-input>
-      </el-form-item>
-      <el-form-item label="检测值单位"
-                    id="4">
-        <el-input v-model="form.formdetail[4].data1"></el-input>
-      </el-form-item>
-      <el-form-item label="性别"
-                    id="5">
-        <el-input v-model="form.formdetail[5].data1"></el-input>
-      </el-form-item>
-      <el-checkbox id="6"
-                   v-model="form.formdetail[6].data1">首次出现</el-checkbox>
-      <el-form-item label="检测日期"
-                    id="7">
-        <el-date-picker v-model="form.formdetail[7].data1"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="选择日期">
-        </el-date-picker>
-        <span class="line"> — </span>
-        <el-date-picker v-model="form.formdetail[7].data2"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="选择日期">
-        </el-date-picker>
-        <!-- <el-checkbox v-model="medicalform.datechecked"
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[1].show">
+        <i class="el-icon-close"
+           @click=changevisible(1)></i>&nbsp;
+        <el-form-item label="检测日期">
+          <el-date-picker v-model="form.formdetail[1].data1"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="选择日期">
+          </el-date-picker>
+          <span class="line"> — </span>
+          <el-date-picker v-model="form.formdetail[1].data2"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="选择日期">
+          </el-date-picker>
+          <!-- <el-checkbox v-model="medicalform.datechecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="检测年龄"
-                    id="8">
-        <el-input-number v-model="form.formdetail[8].data1"
-                         controls-position="right"></el-input-number> <span class="line"> — </span>
-        <el-input-number v-model="form.formdetail[8].data2"
-                         controls-position="right"></el-input-number>
-        <!-- <el-checkbox v-model="medicalform.agechecked"
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[2].show">
+        <i class="el-icon-close"
+           @click=changevisible(2)></i>&nbsp;
+        <el-form-item label="检测年龄">
+          <el-input-number v-model="form.formdetail[2].data1"
+                           controls-position="right"></el-input-number> <span class="line"> — </span>
+          <el-input-number v-model="form.formdetail[2].data2"
+                           controls-position="right"></el-input-number>
+          <!-- <el-checkbox v-model="medicalform.agechecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="所需结果"
-                    id="9">
-        <el-input v-model="form.formdetail[9].data1"></el-input>
-        <span class="line"> — </span>
-        <el-input v-model="form.formdetail[9].data2"></el-input>
-        <!-- <el-checkbox v-model="medicalform.desiredResultchecked"
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[3].show">
+        <i class="el-icon-close"
+           @click=changevisible(3)></i>&nbsp;
+        <el-form-item label="所需结果">
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[3].data1"></el-input>
+          </el-col>
+          <el-col :span="2"
+                  :offset="1">
+            <span class="line"> — </span>
+          </el-col>
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[3].data2"></el-input>
+            <!-- <el-checkbox v-model="medicalform.desiredResultchecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="检测类型"
-                    id="10">
-        <el-input v-model="form.formdetail[10].data1"></el-input>
-      </el-form-item>
-      <el-form-item label="记录来源"
-                    id="11">
-        <el-input v-model="form.formdetail[11].data1"></el-input>
-      </el-form-item>
-      <el-form-item label="结果下限范围"
-                    id="12">
-        <el-input v-model="form.formdetail[12].data1"></el-input>
-        <span class="line"> — </span>
-        <el-input v-model="form.formdetail[12].data2"></el-input>
-        <!-- <el-checkbox v-model="medicalform.lowerLimitchecked"
+          </el-col>
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[4].show">
+        <i class="el-icon-close"
+           @click=changevisible(4)></i>&nbsp;
+        <el-form-item label="检测类型">
+          <el-input v-model="form.formdetail[4].data1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="form-item first-time"
+           v-if="visible[5].show">
+        <i class="el-icon-close"
+           @click=changevisible(5)></i>&nbsp;
+        <el-form-item label="记录来源">
+          <el-input v-model="form.formdetail[5].data1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[6].show">
+        <i class="el-icon-close"
+           @click=changevisible(6)></i>&nbsp;
+        <el-form-item label="结果下限范围">
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[6].data1"></el-input>
+          </el-col>
+          <el-col :span="2"
+                  :offset="1">
+            <span class="line"> — </span>
+          </el-col>
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[6].data2"></el-input>
+          </el-col>
+          <!-- <el-checkbox v-model="medicalform.lowerLimitchecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="结果下限百分比"
-                    id="13">
-        <el-input v-model="form.formdetail[13].data1"></el-input>
-        <span class="line"> — </span>
-        <el-input v-model="form.formdetail[13].data2"></el-input>
-        <!-- <el-checkbox v-model="medicalform.lowerPctchecked"
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[7].show">
+        <i class="el-icon-close"
+           @click=changevisible(7)></i>&nbsp;
+        <el-form-item label="结果下限百分比">
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[7].data1"></el-input>
+          </el-col>
+          <el-col :span="2"
+                  :offset="1">
+            <span class="line"> — </span>
+          </el-col>
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[7].data2"></el-input>
+          </el-col>
+          <!-- <el-checkbox v-model="medicalform.lowerPctchecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="结果上限范围"
-                    id="14">
-        <el-input v-model="form.formdetail[14].data1"></el-input>
-        <span class="line"> — </span>
-        <el-input v-model="form.formdetail[14].data2"></el-input>
-        <!-- <el-checkbox v-model="medicalform.upperLimitchecked"
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[8].show">
+        <i class="el-icon-close"
+           @click=changevisible(8)></i>&nbsp;
+        <el-form-item label="结果上限范围">
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[8].data1"></el-input>
+          </el-col>
+          <el-col :span="2"
+                  :offset="1">
+            <span class="line"> — </span>
+          </el-col>
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[8].data2"></el-input>
+          </el-col>
+          <!-- <el-checkbox v-model="medicalform.upperLimitchecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="结果上限百分比"
-                    id="1">
-        <el-input v-model="form.formdetail[1].data1"></el-input>
-        <span class="line"> — </span>
-        <el-input v-model="form.formdetail[1].data2"></el-input>
-        <!-- <el-checkbox v-model="medicalform.upperPctchecked"
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[9].show">
+        <i class="el-icon-close"
+           @click=changevisible(9)></i>&nbsp;
+        <el-form-item label="结果上限百分比">
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[9].data1"></el-input>
+          </el-col>
+          <el-col :span="2"
+                  :offset="1">
+            <span class="line"> — </span>
+          </el-col>
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[9].data2"></el-input>
+          </el-col>
+          <!-- <el-checkbox v-model="medicalform.upperPctchecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-    </draggable>
-  </el-form>
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[10].show">
+        <i class="el-icon-close"
+           @click=changevisible(10)></i>&nbsp;
+        <el-form-item label="检测结果">
+          <el-input v-model="form.formdetail[10].data1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[11].show">
+        <i class="el-icon-close"
+           @click=changevisible(11)></i>&nbsp;
+        <el-form-item label="检测值操作符">
+          <el-input v-model="form.formdetail[11].data1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[12].show">
+        <i class="el-icon-close"
+           @click=changevisible(12)></i>&nbsp;
+        <el-form-item label="检测值单位">
+          <el-input v-model="form.formdetail[12].data1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[13].show">
+        <i class="el-icon-close"
+           @click=changevisible(13)></i>&nbsp;
+        <el-form-item label="性别">
+          <el-input v-model="form.formdetail[13].data1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="form-item first-time"
+           v-if="visible[14].show">
+        <i class="el-icon-close"
+           @click=changevisible(14)></i>&nbsp;
+        <!-- <el-checkbox v-model="form.formdetail[14].data1">首次出现</el-checkbox> -->
+        <input type="checkbox"
+               v-model="form.formdetail[14].data1"
+               disabled
+               checked /><span>首次出现</span>
+      </div>
+      <!-- </draggable> -->
+    </el-form>
+  </div>
 </template>
 
 <script>
-import draggable from 'vuedraggable'
+// import draggable from 'vuedraggable'
 import axios from 'axios'
 export default {
   components: {
-    draggable,
+    // draggable,
   },
-  props: ['mainItem'],
+  props: ['mainCondId', 'minorCondId', 'viewdetail'],
   data() {
     return {
       form: {
         id: '',
-        formdetail: [
-          { data1: '', },//医学检测集合
-          {
-            data1: '',
-            data2: '',
-          },          //结果上限百分比
-          { data1: '', },//检测结果
-          { data1: '', },//检测值操作符
-          { data1: '', },//检测值单位
-          { data1: '', },//性别
-          { data1: false, },//首次出现
-          {
-            data1: '',
-            data2: '',
-          },          //检测日期
-          {
-            data1: -1,
-            data2: -1,
-          },          //检测年龄
-          {
-            data1: '',
-            data2: '',
-          },          //所需结果
-          { data1: '', },//检测类型
-          { data1: '', },//记录来源
-          {
-            data1: '',
-            data2: '',
-          },          //结果下限范围
-          {
-            data1: '',
-            data2: '',
-          },          //结果下限百分比
-          {
-            data1: '',
-            data2: '',
-          },          //结果上限范围
-        ]
+        formdetail: [{
+          data1: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "1",
+          name: "医学检测集合"        },
+        {
+          data1: '',
+          data2: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "2",
+          name: "检测日期"        },
+        {
+          data1: 0,
+          data2: 0,
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "3",
+          name: "检测年龄"
+        },
+        {
+          data1: '',
+          data2: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "4",
+          name: "所需结果"
+        },
+        {
+          data1: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "5",
+          name: "检测类型"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "6",
+          name: "记录来源"        },
+        {
+          data1: '',
+          data2: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "7",
+          name: "结果下限范围"        },
+        {
+          data1: '',
+          data2: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "8",
+          name: "结果下限百分比"        },
+        {
+          data1: '',
+          data2: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "9",
+          name: "结果上限范围"        },
+        {
+          data1: '',
+          data2: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "10",
+          name: "结果上限百分比"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "11",
+          name: "检测结果"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "12",
+          name: "检测值操作符"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "13",
+          name: "检测值单位"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "14",
+          name: "性别"        },
+        {
+          data1: true,
+          criteriaLayer1Code: "4",
+          criteriaLayer2Code: "15",
+          name: "首次出现"        },]
       },
-      cohortdict: '', //查询队列字典得到
+      // cohortdict: '', //查询队列字典得到
+      visible: [],
+      initialform: [],//初始表单，恢复初始值
     }
+  },
+  updated: function () {
+    this.$emit('sendformData', this.form)
   },
   // 监听条件表单被拖拽到所对应的div的序号变化
   watch: {
-    mainItem: {
+    mainCondId: {
       handler() {
-        if (this.mainItem.groupName == 'medical') {
-          this.cohortdict[this.mainItem.itemId]['layer2SortNo'] = this.mainItem.sortNo
-          this.cohortdict[this.mainItem.itemId]['layer1SortNo'] = this.mainItem.id
-          this.cohortdict[this.mainItem.itemId]['criteriaTypeCode'] = "1"
-          this.cohortdict[this.mainItem.itemId]['typeSortNo'] = 1
-          this.form.formdetail[this.mainItem.itemId] = Object.assign(this.form.formdetail[this.mainItem.itemId], this.cohortdict[this.mainItem.itemId])
-          console.log(this.form.formdetail[this.mainItem.itemId])
+        if (this.mainCondId.primarycond === 4) {
+          this.form.id = this.mainCondId.id
+          if (this.mainCondId.secondcond != 0) {
+            this.visible[this.mainCondId.secondcond - 1].show = true
+            this.form.formdetail[this.mainCondId.secondcond - 1].layer1SortNo = this.mainCondId.id
+            this.form.formdetail[this.mainCondId.secondcond - 1].criteriaTypeCode = "1"
+            this.form.formdetail[this.mainCondId.secondcond - 1].typeSortNo = 1
+            //不需要了
+            this.form.formdetail[this.mainCondId.secondcond - 1].layer2SortNo = this.mainCondId.secondcond - 1
+          }
         }
       },
       deep: true,
-      immediate: true
-    }
+      // immediate: true
+    },
+    minorCondId: {
+      handler() {
+        if (this.minorCondId.primarycond === 4) {
+          this.form.id = this.minorCondId.id
+          if (this.minorCondId.secondcond != 0) {
+            this.visible[this.minorCondId.secondcond - 1].show = true
+            this.form.formdetail[this.minorCondId.secondcond - 1].layer1SortNo = this.minorCondId.id
+            this.form.formdetail[this.minorCondId.secondcond - 1].criteriaTypeCode = "2"
+            this.form.formdetail[this.minorCondId.secondcond - 1].typeSortNo = 2
+            //不需要了
+            this.form.formdetail[this.minorCondId.secondcond - 1].layer2SortNo = this.minorCondId.secondcond - 1
+          }
+        }
+      },
+      deep: true,
+      // immediate: true
+    },
   },
-  mounted: function () {
+  beforeMount: function () {
+    for (var i = 0; i < 15; i++) {
+      this.visible.push({ show: false })
+    }
     this.getCohortDict()
   },
+  mounted: function () {
+    this.initialform = JSON.parse(JSON.stringify(this.form.formdetail))
+    this.reproduceForm()
+  },
   methods: {
-    // ageChange(value) {
-    //   console.log(value);
-    // },
     //查询队列条件字典
     getCohortDict() {
       axios.get('cohort/dict', {
@@ -194,19 +372,33 @@ export default {
       })
         .then((response) => {
           this.cohortdict = response.data.data
-          for (var i = 0; i < this.cohortdict.length; i++) {
-            delete this.cohortdict[i]['sortNo']
-          }
+          console.log(this.cohortdict.length)
         })
         .catch(function (error) {
           console.log("error", error);
         });
     },
+    //删除所选二级条件
+    changevisible(showindex) {
+      console.log(showindex)
+      this.visible[showindex].show = false
+      this.form.formdetail[showindex] = this.initialform[showindex];
+    },
+    //查看队列详情初始化
+    reproduceForm() {
+      if (this.viewdetail != undefined) {
+        this.viewdetail.forEach(item => {
+          this.form.formdetail[item.criteriaLayer2Code - 1] = item
+          this.visible[item.criteriaLayer2Code - 1].show = true
+        })
+        // console.log(this.form.formdetail)
+      }
+    }
   }
 }
 </script>
 <style>
-.medical .el-input__inner {
+/* .medical .el-input__inner {
   display: none;
 }
 .medical .el-checkbox__input {
@@ -253,5 +445,13 @@ export default {
 }
 .medical .el-form-item--mini .el-form-item__label {
   line-height: 38px;
+} */
+.medical .el-icon-close {
+  margin-top: 6px;
+}
+.first-time {
+  font-size: 14px;
+  color: #606266;
+  line-height: 28px;
 }
 </style>
