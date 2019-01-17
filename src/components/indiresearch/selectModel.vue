@@ -20,12 +20,18 @@
     </el-steps>
     <el-row>
 
-      <el-col :span="16"
+      <el-col :span="10"
               :offset="4">
-        已选模型：
-        <el-button @click="NewModel">新建模型</el-button>
+        <el-row style="margin-top:20px;margin-bottom:15px;">
+          <i class="el-icon-document"></i>
+          已选模型
+
+          <el-button style="float:right;"
+                     type="primary"
+                     @click="NewModel">新建模型</el-button>
+        </el-row>
         <el-table :data="ModelTable"
-                  style="width:60%;"
+                  style="width:100%;"
                   stripe
                   border>
           <el-table-column prop="modelId"
@@ -40,20 +46,32 @@
           </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button size="mini"
-                         type="primary"
-                         @click="Edit(scope.$index)">编辑</el-button>
-              <el-button size="mini"
-                         @click="Delete(scope.$index)">删除</el-button>
+              <el-button-group>
+                <el-button type="info"
+                           plain
+                           @click="check(scope.$index)">查看</el-button>
+                <el-button type="primary"
+                           plain
+                           @click="Edit(scope.$index)">编辑</el-button>
+                <el-button type="danger"
+                           plain
+                           @click="Delete(scope.$index)">删除</el-button>
+              </el-button-group>
             </template>
           </el-table-column>
 
         </el-table>
+
+        <el-row>
+          <el-button type="primary"
+                     style="float:right;margin-right:5px;margin-top:10px">保存</el-button>
+        </el-row>
+        <el-row>
+          <el-button type="primary"
+                     style="clear:both;float:right;margin-right:5px;margin-top:10px">开始分析</el-button>
+        </el-row>
       </el-col>
     </el-row>
-    <el-button>保存</el-button></br>
-
-    <el-button>开始分析</el-button>
 
     <!-- GYX 新建模型弹窗-->
     <div v-if="NewModelVisible">
@@ -314,7 +332,10 @@ export default {
           break;
       }
     },
-    //模型编辑删除 GYX
+    //模型查看编辑删除 GYX
+    Check(index) {
+
+    },
     Edit(index) {
 
     },

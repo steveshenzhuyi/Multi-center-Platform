@@ -1,169 +1,163 @@
 <template>
   <div>
-    <el-form :model="ttest_2Form"
-             ref="ttest_2Form"
-             label-width="100px"
-             class="demo-ttest_2Form">
 
-      <el-row style="margin-top:10px;margin-bottom:10px">
-        模型名称: &nbsp;<el-input v-model="ttest_2Form.methodname"
-                  size="mini"
-                  style="width:200px;"></el-input>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="20">
+    <el-row style="margin-top:10px;margin-bottom:10px">
+      模型名称: &nbsp;<el-input v-model="ttest_2Form.methodname"
+                size="mini"
+                style="width:200px;"></el-input>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="20">
 
-          <el-row :gutter="10">
-            <el-col :span="10">
-              <fieldset style=" min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-                <el-table :data="Varlist"
-                          ref="singleTable"
-                          max-height="200"
-                          tooltip-effect="dark"
-                          highlight-current-row
-                          :row-class-name="tableRowClassName"
-                          @row-click="getRowdetail1"
-                          @current-change="handleCurrentChange1">
+        <el-row :gutter="10">
+          <el-col :span="10">
+            <fieldset style=" min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+              <el-table :data="Varlist"
+                        ref="singleTable"
+                        max-height="200"
+                        tooltip-effect="dark"
+                        highlight-current-row
+                        :row-class-name="tableRowClassName"
+                        @row-click="getRowdetail1"
+                        @current-change="handleCurrentChange1">
 
-                  <el-table-column prop="name">
-                  </el-table-column>
-                  <el-table-column prop="featureId"
-                                   v-if="idshow1">
+                <el-table-column prop="name">
+                </el-table-column>
+                <el-table-column prop="featureId"
+                                 v-if="idshow1">
 
-                  </el-table-column>
+                </el-table-column>
 
-                </el-table>
-              </fieldset>
-            </el-col>
-
-            <el-col :span="4">
-
-              <div style="margin-top: 40%; text-align:center;">
-                <!-- 右移 -->
-                <el-button type="info"
-                           @click="rightshift"
-                           icon="icon el-icon-d-arrow-right"></el-button>
-
-              </div>
-              <!-- 左移 -->
-              <div style="margin-top: 30%; text-align:center;">
-                <el-button type="info"
-                           @click="leftshift"
-                           icon="icon el-icon-d-arrow-left"></el-button>
-
-              </div>
-
-              <div style="margin-top:60%; text-align:center;">
-                <!-- 右移 -->
-                <el-button type="info"
-                           @click="rightshift2"
-                           icon="icon el-icon-d-arrow-right"></el-button>
-
-              </div>
-              <!-- 左移 -->
-              <div style="margin-top: 30%; text-align:center;">
-                <el-button type="info"
-                           @click="leftshift2"
-                           icon="icon el-icon-d-arrow-left"></el-button>
-
-              </div>
-
-            </el-col>
-            <el-col :span="10">
-              <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-                <el-table :data="Chosenlist1"
-                          max-height="200"
-                          ref="singleTable"
-                          tooltip-effect="dark"
-                          highlight-current-row
-                          @row-click="getRowdetail2"
-                          @current-change="handleCurrentChange2">
-                  <el-table-column prop="name"
-                                   label="检验变量">
-                  </el-table-column>
-                  <el-table-column prop="featureId"
-                                   v-if="idshow2">
-                  </el-table-column>
-
-                </el-table>
-              </fieldset>
-              <fieldset style="min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-                <el-table :data="Chosenlist2"
-                          max-height="200"
-                          ref="singleTable"
-                          tooltip-effect="dark"
-                          highlight-current-row
-                          @row-click="getRowdetail3"
-                          @current-change="handleCurrentChange3">
-
-                  <el-table-column prop="name"
-                                   label="分组变量">
-                  </el-table-column>
-                  <el-table-column prop="featureId"
-                                   v-if="idshow3">
-
-                  </el-table-column>
-
-                </el-table>
-              </fieldset>
-            </el-col>
-          </el-row>
-
-        </el-col>
-        <el-col :span="4">
-          <el-row style="margin-top: 30%; ">
-            <el-button type="primary"
-                       v-if="isnew"
-                       @click="save">确定</el-button>
-            <el-button type="primary"
-                       v-else
-                       @click="edit">编辑</el-button>
-          </el-row>
-          <el-row style="margin-top: 15%;">
-            <el-button type="primary"
-                       @click="cancel">取消</el-button>
-          </el-row>
-          <el-row style="margin-top: 15%; ">
-            <el-button type="primary"
-                       @click="help">帮助</el-button>
-          </el-row>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20"
-              style="margin-top:30px">
-
-        <el-col :span="12">
-          <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
-            <el-input-number size="mini"
-                             v-model="ttest_2Form.percent"
-                             controls-position="right"
-                             :min="0"
-                             :max="100"></el-input-number>%
-          </el-row>
-          <el-row>
-            <el-checkbox v-model="ttest_2Form.shifou">
-              进行方差齐性预检验
-            </el-checkbox>
-          </el-row>
-        </el-col>
-        <el-col :span="12">
-          <form>
-            <fieldset class="groupbox-boarder">
-              <legend class="one-of-groupbox-boarder">t检验的方式</legend>
-              <el-radio-group v-model="ttest_2Form.tchoose">
-                <el-radio :label="3">标准t检验</el-radio></br>
-                <el-radio :label="6">Welch t 检验</el-radio></br>
-                <el-radio :label="9">根据方差齐性检验结果自动选择</el-radio>
-              </el-radio-group>
+              </el-table>
             </fieldset>
-          </form>
+          </el-col>
 
-        </el-col>
+          <el-col :span="4">
 
-      </el-row>
+            <div style="margin-top: 40%; text-align:center;">
+              <!-- 右移 -->
+              <el-button type="info"
+                         @click="rightshift"
+                         icon="icon el-icon-d-arrow-right"></el-button>
 
-    </el-form>
+            </div>
+            <!-- 左移 -->
+            <div style="margin-top: 30%; text-align:center;">
+              <el-button type="info"
+                         @click="leftshift"
+                         icon="icon el-icon-d-arrow-left"></el-button>
+
+            </div>
+
+            <div style="margin-top:60%; text-align:center;">
+              <!-- 右移 -->
+              <el-button type="info"
+                         @click="rightshift2"
+                         icon="icon el-icon-d-arrow-right"></el-button>
+
+            </div>
+            <!-- 左移 -->
+            <div style="margin-top: 30%; text-align:center;">
+              <el-button type="info"
+                         @click="leftshift2"
+                         icon="icon el-icon-d-arrow-left"></el-button>
+
+            </div>
+
+          </el-col>
+          <el-col :span="10">
+            <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+              <el-table :data="Chosenlist1"
+                        max-height="200"
+                        ref="singleTable"
+                        tooltip-effect="dark"
+                        highlight-current-row
+                        @row-click="getRowdetail2"
+                        @current-change="handleCurrentChange2">
+                <el-table-column prop="name"
+                                 label="检验变量">
+                </el-table-column>
+                <el-table-column prop="featureId"
+                                 v-if="idshow2">
+                </el-table-column>
+
+              </el-table>
+            </fieldset>
+            <fieldset style="min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+              <el-table :data="Chosenlist2"
+                        max-height="200"
+                        ref="singleTable"
+                        tooltip-effect="dark"
+                        highlight-current-row
+                        @row-click="getRowdetail3"
+                        @current-change="handleCurrentChange3">
+
+                <el-table-column prop="name"
+                                 label="分组变量">
+                </el-table-column>
+                <el-table-column prop="featureId"
+                                 v-if="idshow3">
+
+                </el-table-column>
+
+              </el-table>
+            </fieldset>
+          </el-col>
+        </el-row>
+
+      </el-col>
+      <el-col :span="4">
+        <el-row style="margin-top: 30%; ">
+          <el-button type="primary"
+                     v-if="isnew"
+                     @click="save">确定</el-button>
+          <el-button type="primary"
+                     v-else
+                     @click="edit">编辑</el-button>
+        </el-row>
+        <el-row style="margin-top: 15%;">
+          <el-button type="primary"
+                     @click="cancel">取消</el-button>
+        </el-row>
+        <el-row style="margin-top: 15%; ">
+          <el-button type="primary"
+                     @click="help">帮助</el-button>
+        </el-row>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="20"
+            style="margin-top:30px">
+
+      <el-col :span="12">
+        <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
+          <el-input-number size="mini"
+                           v-model="ttest_2Form.percent"
+                           controls-position="right"
+                           :min="0"
+                           :max="100"></el-input-number>%
+        </el-row>
+        <el-row>
+          <el-checkbox v-model="ttest_2Form.shifou">
+            进行方差齐性预检验
+          </el-checkbox>
+        </el-row>
+      </el-col>
+      <el-col :span="12">
+        <form>
+          <fieldset class="groupbox-boarder">
+            <legend class="one-of-groupbox-boarder">t检验的方式</legend>
+            <el-radio-group v-model="ttest_2Form.tchoose">
+              <el-radio :label="3">标准t检验</el-radio></br>
+              <el-radio :label="6">Welch t 检验</el-radio></br>
+              <el-radio :label="9">根据方差齐性检验结果自动选择</el-radio>
+            </el-radio-group>
+          </fieldset>
+        </form>
+
+      </el-col>
+
+    </el-row>
 
   </div>
 </template>
