@@ -190,7 +190,7 @@
 <script>
 import axios from 'axios';
 export default {
-  props: ['existConceptId'],
+  props: ['existConceptSetId'],
   data() {
     return {
       //新增概念集假数据
@@ -257,14 +257,14 @@ export default {
   },
 
   mounted() {
-    //console.log(this.existConceptId);
+    //console.log(this.existConceptSetId);
 
-    if (this.existConceptId) {
+    if (this.existConceptSetId) {
       this.ifnotEdit = true
       axios.get('/conceptSet/getConceptSetDetail', {
         params: {
           "token": this.GLOBAL.token,
-          "conceptSetId": this.existConceptId
+          "ConceptSetId": this.existConceptSetId
         }
       })
         .then((response) => {
@@ -345,7 +345,7 @@ export default {
   },
   methods: {
     getSearchData() {
-      //console.log(this.existConceptId);
+      //console.log(this.existConceptSetId);
       const InputConceptName = this.InputConceptName;
       axios.get('/knowledgeGraph/queryConcept', {
         params: {

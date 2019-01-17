@@ -31,13 +31,24 @@
     <div>
       <component :is="formName"
                  :mainCondId="mainCondId"
+                 :viewdetail="viewdetail"
                  ref="formName"
-                 @bindData="bindData"></component>
+                 @sendformData="getformData"></component>
     </div>
+    <div class="limit-condition"
+         slot="footer"
+         style="display: block;"><span>在主要事件发生日期之前，至少有</span>
+      <label><input class="PriorDays num-input"
+               type="number"
+               min="0"></label><span>天的记录，且该条件发生后，至少有</span>
+      <label><input class="PostDays num-input"
+               type="number"
+               min="0"></label>
+      <span>天的记录。</span></div>
   </div>
 </template>
 <script>
-import draggable from 'vuedraggable'
+// import draggable from 'vuedraggable'
 import Vue from 'vue'
 import axios from 'axios'
 import diagnoseForm from '../conditionForm/diagnoseform.vue'
@@ -48,14 +59,14 @@ import deathRecordsForm from '../conditionForm/deathRecordsform.vue'
 
 export default {
   components: {
-    draggable,
+    // draggable,
     'diagnoseForm': diagnoseForm,
     'marForm': marForm,
     'operatingForm': operatingForm,
     'medicalForm': medicalForm,
     'deathRecordsForm': deathRecordsForm,
   },
-  props: ['id'],
+  props: ['id', 'viewdetails'],
   data() {
     return {
       primaryconds: [],
@@ -67,10 +78,12 @@ export default {
       formName: '', //加载的表单
       mainCondId: { primarycond: '', id: '', secondcond: '' },//主要条件div对应的条件类型、id序号
       importdetail: [],
+      viewdetail: [],
     }
   },
   mounted: function () {
     this.getCohortDict()
+    this.reproduceCohort()
   },
   methods: {
     //读取字典表
@@ -126,10 +139,36 @@ export default {
       this.mainCondId.secondcond = secondcond
     },
     //监测表单数据改变
-    bindData() {
+    getformData() {
       // console.log(this.$refs.formName.form)
       this.importdetail = this.$refs.formName.form.formdetail
       console.log(this.importdetail)
+    },
+    //查看队列详情初始化
+    reproduceCohort() {
+      this.viewdetail = this.viewdetails[this.id]
+      console.log(this.id)
+      console.log(this.viewdetail)
+      if (this.viewdetail != undefined) {
+        this.siftingform.primarycond = this.viewdetail[0].typeSortNo
+        this.mainCondId.primarycond = this.siftingform.primarycond
+        this.mainCondId.id = this.id
+        this.getCohortDict(this.siftingform.primarycond)
+        switch (this.siftingform.primarycond) {
+          case 1: this.formName = 'diagnoseForm';
+            break;
+          case 2: this.formName = 'marForm';
+            break;
+          case 3: this.formName = 'operatingForm';
+            break;
+          case 4: this.formName = 'medicalForm';
+            break;
+          case 5: this.formName = 'deathRecordsForm';
+            break;
+          default:
+            break;
+        }
+      }
     }
   },
   // //得到初始序号--rzx
@@ -144,6 +183,15 @@ export default {
   // },
 }
 </script>
+<style>
+.PriorDays,
+.PostDays {
+  width: 60px;
+  border: 0px;
+  border-bottom: 1px solid #d5d5d5;
+}
+</style>
+
 
 
 
