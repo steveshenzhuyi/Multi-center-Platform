@@ -26,7 +26,7 @@
 </template>
 <script>
 import axios from "axios"
-// import * as d3 from "d3"
+import * as d3 from "d3"
 // import d3tooltip from "d3-tooltip"
 
 //D3图形全局变量
