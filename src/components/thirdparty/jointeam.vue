@@ -96,7 +96,7 @@
         <div>研究方案</div>
       </el-col>
       <el-col :span="1">
-        <i class="iconfont icon-shuzi1"></i>
+        <i class="iconfont icon-1"></i>
       </el-col>
       <el-col :span="9">
         <div>
@@ -113,7 +113,7 @@
             style="margin-top:30px;margin-bottom:10px">
       <el-col :offset="8"
               :span="1">
-        <i class="iconfont icon-shuzi2"></i>
+        <i class="iconfont icon-2"></i>
       </el-col>
       <el-col :span="9">
         <div>
@@ -130,7 +130,7 @@
             style="margin-top:30px;margin-bottom:10px">
       <el-col :offset="8"
               :span="1">
-        <i class="iconfont icon-shuzi3"></i>
+        <i class="iconfont icon-3"></i>
       </el-col>
       <el-col :span="9">
 
