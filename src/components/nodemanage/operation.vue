@@ -1,9 +1,12 @@
 <template>
   <div>
-    <p>数据总览</p>
+    <p>操作</p>
   </div>
 </template>
+
 <script>
+export default {
+
+}
 </script>
-<style>
-</style>
+
