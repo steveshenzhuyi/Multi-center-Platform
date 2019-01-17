@@ -89,7 +89,8 @@
     <!-- 新增变量弹框 -->
     <el-dialog title="新增变量"
                :visible.sync="NewVarVisible"
-               @close="CancelNewVarDialog()"
+               @open="OpenNewVarDialog()"
+               @close="CloseNewVarDialog()"
                width="40%"
                append-to-body>
       <el-row>
@@ -199,7 +200,7 @@
       </el-row>
       <span slot="footer"
             class="dialog-footer">
-        <el-button @click="CancelNewVarDialog()">取 消</el-button>
+        <el-button @click="CloseNewVarDialog()">取 消</el-button>
         <el-button type="primary"
                    @click="SubmitNewVariable()">确 定</el-button>
       </span>
@@ -374,13 +375,8 @@ export default {
       MultiSelection: []
     }
   },
-  mounted() {
-    if (this.$refs['VarForm']) {
-      this.VarResetFields()
-    }
-    this.GetVariableLayer1()
-    this.GetVariableSample()
-    this.GetVarLibTable()
+  created() {
+
   },
   methods: {
     // ------主页面------
@@ -389,6 +385,14 @@ export default {
     },
 
     // ------新增变量弹窗------
+    OpenNewVarDialog() {
+      this.GetVariableLayer1()
+      this.GetVariableSample()
+    },
+    CloseNewVarDialog() {
+      this.VarResetFields()
+      this.NewVarVisible = false
+    },
     GetVariableLayer1() {
       axios.get('/feature/criteriaDict', {
         params: {
@@ -495,7 +499,7 @@ export default {
             .then(response => {
               if (response.data.code == "0") {
                 this.$alert('新建变量成功！', '提示', { confirmButtonText: '确定' });
-                this.CancelNewVarDialog()
+                this.CloseNewVarDialog()
                 this.GetVarLibTable()
               }
             })
@@ -519,10 +523,6 @@ export default {
       this.VariableData234Visible = false
       this.VariableData5Visible = false
       this.VariableData6Visible = false
-    },
-    CancelNewVarDialog() {
-      this.VarResetFields()
-      this.NewVarVisible = false
     },
 
     // ------变量库弹窗------
