@@ -140,7 +140,7 @@
                           prop="data1"
                           style="width:50%">
               <el-input v-model="VarForm.data1"
-                        v-on:click.native="ConceptSetsVisible = true">
+                        v-on:click.native="conceptSetListVisible = true">
               </el-input>
             </el-form-item>
             <el-form-item label="变量描述"
@@ -205,18 +205,19 @@
       </span>
     </el-dialog>
     <!-- 选择概念集的弹窗 -->
-    <el-dialog title="选择概念集"
-               :visible.sync="ConceptSetsVisible"
-               width="30%"
+    <el-dialog title="概念集列表"
+               :visible.sync="conceptSetListVisible"
+               width="60%"
+               :before-close="handleClose"
                append-to-body>
-      <el-button type="primary"
-                 @click="VarConceptSets = '概念集A'">概念集A</el-button>
-      <el-button type="primary"
-                 @click="VarConceptSets = '概念集B'">概念集B</el-button>
       <span slot="footer"
             class="dialog-footer">
+        <component :is="myconceptsetList"
+                   @getConceptSetId="selectConceptSetId"
+                   @getVisible="selectVisible"></component>
+        <el-button @click="conceptSetListVisible = false">取 消</el-button>
         <el-button type="primary"
-                   @click="ComfirmVarConceptSets()">确 定</el-button>
+                   @click="conceptSetListVisible = false">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -278,7 +279,11 @@
 
 <script>
 import axios from 'axios'
+import conceptsetList from './conceptsetList.vue'
 export default {
+  components: {
+    'conceptsetList': conceptsetList
+  },
   data() {
     var VarValidateData3 = (rule, value, callback) => {
       if ((value < this.VarForm.data2) || ((value == "") !== (this.VarForm.data2 == "")) || (this.VarForm.data4 && (value == ""))) {
@@ -363,7 +368,8 @@ export default {
       VariableSample: [],
       VariableLayer2Visible: false,
       VariableLayer2: [],
-      ConceptSetsVisible: false,
+      myconceptsetList: conceptsetList,
+      conceptSetListVisible: false,
       VarConceptSets: "",
       VariableData5Visible: false,
       VariableData6Visible: false,
@@ -417,7 +423,7 @@ export default {
     },
     ComfirmVarConceptSets() {
       this.VarForm.data1 = this.VarConceptSets
-      this.ConceptSetsVisible = false
+      this.conceptSetListVisible = false
     },
     VarCheckLayer2(flag) {
       if (this.VarForm.layer1Code != "" && this.VarForm.typeCode != "") {
@@ -591,6 +597,14 @@ export default {
       this.$router.push({
         path: 'analysisResult',
       });
+    },
+    //-----概念集弹窗-----
+    selectConceptSetId(val) {
+      this.VarForm.data1 = val
+    },
+    selectVisible(val) {
+      this.conceptSetListVisible = val
+      console.log(this.conceptSetListVisible)
     }
   }
 }

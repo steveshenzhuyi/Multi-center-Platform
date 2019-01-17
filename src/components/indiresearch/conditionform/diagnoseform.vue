@@ -14,8 +14,9 @@
         <i class="el-icon-close"
            @click=changevisible(0)></i>&nbsp;
         <el-form-item label="诊断编码集合">
-          <el-input v-model="form.formdetail[0].data1"></el-input>
-          <!-- <el-checkbox v-model="form.codechecked"
+            <el-input v-model="form.formdetail[0].data1"
+                      @focus="getConceptsetList"></el-input>
+            <!-- <el-checkbox v-model="form.codechecked"
   class="except">不在其之间</el-checkbox> -->
           <!-- <i class="el-icon-close">@click=changevisible()</i> -->
         </el-form-item>
@@ -84,19 +85,40 @@
       </el-form-item> -->
       <!-- </draggable> -->
     </el-form>
+    <!-- 选择概念集的弹窗 -->
+    <el-dialog title="概念集列表"
+               :visible.sync="conceptSetListVisible"
+               width="60%"
+               :before-close="handleClose"
+               append-to-body>
+      <span slot="footer"
+            class="dialog-footer">
+        <component :is="myconceptsetList"
+                   @getConceptSetId="selectConceptSetId"
+                   @getVisible="selectVisible"></component>
+        <el-button @click="conceptSetListVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="conceptSetListVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import conceptsetList from '../conceptsetList.vue'
 // import draggable from 'vuedraggable'
 import axios from 'axios'
 export default {
   components: {
     // draggable,
+    'conceptsetList': conceptsetList
+
   },
   props: ['mainCondId', 'minorCondId', 'viewdetail'],
   data() {
     return {
+      myconceptsetList: conceptsetList,
+      conceptSetListVisible: false,
       form: {
         id: '',
         formdetail: [{
@@ -187,6 +209,7 @@ export default {
       this.visible[showindex].show = false
       this.form.formdetail[showindex] = this.initialform[showindex];
     },
+
     //查看队列详情初始化
     reproduceForm() {
       if (this.viewdetail != undefined) {
@@ -196,6 +219,23 @@ export default {
         })
         // console.log(this.form.formdetail)
       }
+    getConceptsetList() {
+      this.conceptSetListVisible = true
+      console.log(this.conceptSetListVisible)
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => { });
+    },
+    selectConceptSetId(val) {
+      this.form.formdetail[0].data1 = val
+    },
+    selectVisible(val) {
+      this.conceptSetListVisible = val
+      console.log(this.conceptSetListVisible)
     }
   }
 }

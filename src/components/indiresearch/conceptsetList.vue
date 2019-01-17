@@ -1,77 +1,78 @@
 <template>
   <div>
-    <el-button type="text"
+    <!--<el-button type="text"
                @click="dialogVisible = true">点击打开 Dialog</el-button>
 
     <el-dialog title="概念集列表"
                :visible.sync="dialogVisible"
                width="60%"
-               :before-close="handleClose">
-      <el-row style="margin-top:10px;margin-bottom:10px">
-        <el-col :span="2"
-                :offset="18">
-          <el-button type="primary"
-                     size="medium"
-                     @click="createConceptVisible = true">新增</el-button>
-        </el-col>
-      </el-row>
-      <el-row style="margin-top:10px;margin-bottom:10px"
-              type="flex"
-              justify="center">
-        <el-col :span="16">
-          <el-table :data="conceptsetList"
-                    border
-                    stripe
-                    valign="center"
-                    style="width: 100%">
-            <el-table-column prop="setName"
-                             align="center"
-                             label="概念集名称"
-                             min-width="20%">
-            </el-table-column>
-            <el-table-column prop="setDescription"
-                             align="center"
-                             label="概念集描述"
-                             min-width="20%">
-            </el-table-column>
-            <el-table-column prop="lastUpdateTime"
-                             align="center"
-                             label="最后一次更新时间"
-                             min-width="20%">
-            </el-table-column>
-            <el-table-column label="操作"
-                             align="center"
-                             min-width="40%">
-              <template slot-scope="scope">
-                <el-button @click="handleClick(scope.row)"
-                           type="text"
-                           size="small">选择</el-button>
-                <el-button type="text"
-                           size="small"
-                           @click="getConceptId(scope.row)">查看</el-button>
-                <el-button type="text"
-                           size="small"
-                           @click="getConceptId(scope.row)">编辑</el-button>
-                <el-button type="text"
-                           size="small"
-                           @click.native.prevent="deleteRow(scope.$index, conceptsetList)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <span slot="footer"
-                class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary"
-                       @click="dialogVisible = false">确 定</el-button>
-          </span>
-        </el-col>
-      </el-row>
-    </el-dialog>
+               :before-close="handleClose">-->
+    <el-row style="margin-top:10px;margin-bottom:10px">
+      <el-col :span="2"
+              :offset="18">
+        <el-button type="primary"
+                   size="medium"
+                   @click="createConceptVisible = true">新增</el-button>
+      </el-col>
+    </el-row>
+    <el-row style="margin-top:10px;margin-bottom:10px"
+            type="flex"
+            justify="center">
+      <el-col :span="16">
+        <el-table :data="conceptsetList"
+                  border
+                  stripe
+                  valign="center"
+                  style="width: 100%">
+          <el-table-column prop="setName"
+                           align="center"
+                           label="概念集名称"
+                           min-width="20%">
+          </el-table-column>
+          <el-table-column prop="setDescription"
+                           align="center"
+                           label="概念集描述"
+                           min-width="20%">
+          </el-table-column>
+          <el-table-column prop="lastUpdateTime"
+                           align="center"
+                           label="最后一次更新时间"
+                           min-width="20%">
+          </el-table-column>
+          <el-table-column label="操作"
+                           align="center"
+                           min-width="40%">
+            <template slot-scope="scope">
+              <el-button @click="handleClick(scope.row)"
+                         type="text"
+                         size="small">选择</el-button>
+              <el-button type="text"
+                         size="small"
+                         @click="getConceptSetId(scope.row)">查看</el-button>
+              <el-button type="text"
+                         size="small"
+                         @click="getConceptSetId(scope.row)">编辑</el-button>
+              <el-button type="text"
+                         size="small"
+                         @click.native.prevent="deleteRow(scope.$index, conceptsetList)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-col>
+    </el-row>
+    <!--<span slot="footer"
+            class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>-->
     <!--新增概念集 by lqh—-->
     <el-dialog title="新增概念集"
                :visible.sync="createConceptVisible"
                width="60%"
-               :before-close="handleClose">
+               :before-close="handleClose"
+               append-to-body>
       <component :is="mycreateconceptset"
                  @getdata="getMultipleSelection"
                  @getdata1="getExcludeditems"
@@ -89,9 +90,10 @@
     <el-dialog title="编辑概念集"
                :visible.sync="createConceptVisible2"
                width="60%"
-               :before-close="handleClose">
+               :before-close="handleClose"
+               append-to-body>
       <component :is="mycreateconceptset"
-                 :existConceptId="existConceptId"
+                 :existConceptSetId="existConceptSetId"
                  @getdata="getMultipleSelection"
                  @getdata1="getExcludeditems"
                  @getdata2="getChilerenConcepts"
@@ -124,10 +126,9 @@ export default {
       multipleSelection: [],
       concepts: [],
       concept_exist: false,
-      existConceptId: '',
+      existConceptSetId: '',
       createConceptVisible: false,
       createConceptVisible2: false,
-      dialogVisible: false,
       conceptsetList: [{
         id: 1,
         setName: '糖尿病',
@@ -148,6 +149,8 @@ export default {
   },
   methods: {
     handleClick(row) {
+      this.$emit('getConceptSetId', row.setName)
+      this.$emit('getVisible', false)
       console.log(row);
     },
     handleClose(done) {
@@ -238,17 +241,17 @@ export default {
           }
         })
     },
-    getConceptId(row) {
+    getConceptSetId(row) {
       console.log(row)
       this.createConceptVisible2 = true;
-      this.existConceptId = row.id
-      console.log(this.existConceptId)
+      this.existConceptSetId = row.id
+      console.log(this.existConceptSetId)
     },
     editConceptSet() {
       this.$options.methods.postConceptData.bind(this)()
       axios.post('/conceptSet/update', ({
         "token": this.GLOBAL.token,
-        "conceptSetId": this.existConceptId,
+        "ConceptSetId": this.existConceptSetId,
         "conceptSetName": this.conceptSetName,
         "description": this.conceptSetDes,
         "concepts": this.concepts,

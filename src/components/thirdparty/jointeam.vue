@@ -102,6 +102,8 @@
         <div>
           <el-input size="small"
                     placeholder="空白等待输入"
+                    type="textarea"
+                    :autosize="{ minRows: 1, maxRows: 1}"
                     v-model="researchDetail.cohort">
           </el-input>
         </div>
@@ -117,6 +119,8 @@
         <div>
           <el-input size="small"
                     placeholder="空白等待输入"
+                    type="textarea"
+                    :autosize="{ minRows: 1, maxRows: 1}"
                     v-model="researchDetail.variable">
           </el-input>
         </div>
@@ -129,14 +133,18 @@
         <i class="iconfont icon-shuzi3"></i>
       </el-col>
       <el-col :span="9">
+
         <div>
           <el-input size="small"
                     placeholder="空白等待输入"
+                    type="textarea"
+                    :autosize="{ minRows: 1, maxRows: 1}"
                     v-model="researchDetail.model">
           </el-input>
         </div>
       </el-col>
     </el-row>
+    </el-collapse>
     <el-row type="flex"
             justify="center"
             align="middle"
@@ -211,7 +219,8 @@ export default {
         cohort: "",
         variable: "",
         model: ""
-      }
+      },
+      activeNames: ['1']
     }
   },
   mounted() {
