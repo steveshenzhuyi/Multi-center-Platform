@@ -28,7 +28,7 @@
              background-color="#545c64"
              text-color="#fff"
              active-text-color="#2d8cf0"
-             style="padding-left:30px;width: 100%;  min-width: 823px;">
+             style="width: 100%;  min-width: 800px;">
       <el-menu-item index="data">数据总览</el-menu-item>
       <el-menu-item index="indiresearch/researchList">个人研究</el-menu-item>
       <el-menu-item index="coresearch/teamList">协同研究</el-menu-item>
@@ -39,7 +39,7 @@
         <el-menu-item index="usermanage">用户管理</el-menu-item>
         <el-menu-item index="authoritymanage">权限管理</el-menu-item>
       </el-submenu>
-      <el-menu-item index="thirdparty">第三方数据使用</el-menu-item>
+      <el-menu-item index="thirdparty/jointeam">第三方数据使用</el-menu-item>
       <el-submenu index="nodemanage">
         <template slot="title">节点管理</template>
         <el-menu-item index="nodemanage/node">节点状态</el-menu-item>

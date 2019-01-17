@@ -72,7 +72,10 @@ export default new Router({
               path: "analysisresult",
               name: "结果分析",
               component: () =>
-                import("@/components/indiresearch/analysisResult")
+                import("@/components/indiresearch/analysisResult"),
+              meta: {
+                title: "结果分析"
+              }
             },
             {
               path: "conceptsetList",
@@ -144,11 +147,11 @@ export default new Router({
               }
             },
             {
-              path: "newcoresearch",
-              name: "新建团队研究",
-              component: () => import("@/components/coresearch/newCoresearch"),
+              path: "mccompute",
+              name: "多中心计算",
+              component: () => import("@/components/coresearch/mccompute"),
               meta: {
-                title: "新建团队研究"
+                title: "多中心计算"
               }
             }
           ]
