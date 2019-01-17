@@ -49,7 +49,7 @@
               <el-button-group>
                 <el-button type="info"
                            plain
-                           @click="check(scope.$index)">查看</el-button>
+                           @click="Check(scope.$index)">查看</el-button>
                 <el-button type="primary"
                            plain
                            @click="Edit(scope.$index)">编辑</el-button>
@@ -243,7 +243,7 @@ export default {
       methodName6: '',
       methodName7: '',
       methodName8: '',
-      ModelTable: [{ modelId: 1, name: 'svmsss', type: "SVM" }, { modelId: 2, name: '描述统计', type: "描述性统计" }, { modelId: 5, name: 't检验llll', type: "单样本t检验" }],
+      ModelTable: [{ modelId: 83, name: '单样本t检验1', type: "t检验-单样本t检验" }, { modelId: 84, name: '独立样本t1', type: "t检验-独立样本t检验" }, { modelId: 85, name: 'mstj1', type: "描述性统计" }],
       methodlist: []
 
     }
@@ -343,26 +343,146 @@ export default {
     },
     //模型查看编辑删除 GYX
     Check(index) {
+      //来不及写
+      console.log('haodi')
+
 
     },
     Edit(index) {
-
+      var t = this.ModelTable[index].modelId;
+      console.log(t);
+      this.getMethodDetails(t);
+      this.NewModelVisible = true;
     },
-    //删除
-    Delete(index) {
-      axios.post('/model/delete', {
-        "token": this.GLOBAL.token,
-        "modelId": this.ModelTable[index].modelId
+    getMethodDetails(t) {
+      axios.get('/model/getDetail', {
+        params: {
+          "token": this.GLOBAL.token,
+          "modelId": t
+        }
       })
         .then(response => {
           if (response.data.code == "0") {
-            this.$alert('删除成功！', '提示', { confirmButtonText: '确定' });
-            this.getModlelist()
+            console.log('获取一级二级条件成功')
+            this.MethodDetails = response.data.data
+            var c = this.MethodDetails.modelTypeLayer1Code
+            var d = this.MethodDetails.modelTypeLayer2Code
+            var a = parseInt(c)
+            var b = parseInt(d)
+            this.chooseVue(a, b, t)
           }
         })
         .catch(function (error) {
           console.log("error", error);
         });
+
+
+    },
+    //根据一级条件二级条件切换Vue
+    chooseVue(a, b, t) {
+      console.log('选tab')
+      switch (a) {
+        case 1:
+          //console.log(this.methodID);
+          this.activeMethod1 = 'A'
+          this.methodID1 = t;
+          this.methodName1 = mstj;
+          break;
+        case 2:
+          this.activeMethod1 = 'B'
+          this.chooseVue1(b, t);
+          break;
+        case 3:
+          this.activeMethod1 = 'C'
+          this.chooseVue2(b, t);
+          break;
+        case 4:
+          this.activeMethod1 = 'D'
+          this.methodID4 = t;
+          this.methodName4 = linearregression;
+          break;
+        case 5:
+          this.activeMethod1 = 'E'
+          this.methodID5 = t;
+          this.methodName5 = logicregression;
+          break;
+        case 6:
+          this.activeMethod1 = 'F'
+          this.methodID6 = t;
+          this.methodName6 = svmanalysis;
+          break;
+        case 7:
+          this.activeMethod1 = 'G'
+          this.methodID7 = t;
+          this.methodName7 = bayesiannetworks;
+          break;
+        case 8:
+          this.activeMethod1 = 'H'
+          this.methodID8 = t;
+          this.methodName8 = decisiontree;
+          break;
+        default:
+          break;
+
+      }
+
+    },
+    chooseVue1(b, t) {
+      console.log('进入t检验选择')
+
+      switch (b) {
+        case 1:
+          this.activeMethod2 = "a";
+          //单样本t检验
+          this.methodID2_1 = t;
+          this.methodName2_1 = ttest_one;
+          break;
+        case 2:
+          this.activeMethod2 = "b";
+          this.methodID2_2 = t;
+          this.methodName2_2 = ttest_independent;
+          break;
+        case 3:
+          this.activeMethod2 = "c";
+          this.methodID2_3 = t;
+          this.methodName2_3 = ttest_paired;
+          break;
+        default:
+          break;
+      }
+    },
+    chooseVue2(b, t) {
+      switch (b) {
+        case 1:
+          this.activeMethod3 = "d";
+          this.methodID3_1 = t;
+          this.methodName3_1 = oneway_anova;
+
+          break;
+        case 2:
+          this.activeMethod3 = "e";
+          this.methodID3_2 = t;
+          this.methodName3_2 = multifactor_analysis;
+          break;
+        default:
+          break;
+      }    },
+    //删除
+    Delete(index) {
+      this.ModelTable.splice(index, 1)
+      // axios.post('/model/delete', {
+      //   "token": this.GLOBAL.token,
+      //   "modelId": this.ModelTable[index].modelId
+      // })
+      //   .then(response => {
+      //     if (response.data.code == "0") {
+      //       this.$alert('删除成功！', '提示', { confirmButtonText: '确定' });
+      //       this.getModlelist()
+      //     }
+      //   })
+      //   .catch(function (error) {
+      //     console.log("error", error);
+      //   });
 
 
 

@@ -7,6 +7,7 @@
                     label="模型名称"
                     :rules="[{required: true, message: '请输入模型名称', trigger: 'blur' }]">
         <el-input v-model="mstjForm.methodname"
+                  size="mini"
                   style="width:200px;"></el-input>
       </el-form-item>
     </el-form>
@@ -261,7 +262,7 @@ export default {
   },
   mounted() {
 
-    //先获取变量列表
+    //先获取变量列表 变量列表改为从前一步获取
     this.getVariableTable();
     this.getModleID();
     //根据是否传入modleid判断是新建还是编辑
@@ -286,7 +287,7 @@ export default {
   methods: {
 
 
-    //新建方法时获取变量
+    //新建方法时获取变量//等待新的接口
     getVariableTable() {
 
       axios.get('/feature/getList', {
@@ -353,6 +354,7 @@ export default {
       else {
         if (this.VarTable != null) {
           this.Varlist = this.VarTable;
+          //this.Varlist = [{ 'featureId': 123, 'name': '性别' }, { 'featureId': 124, 'name': '年龄' }, { 'featureId': 127, 'name': '变量3' }, { 'featureId': 129, 'name': '变量4' }, { 'featureId': 122, 'name': '变量5' }]
 
 
         }
@@ -440,25 +442,25 @@ export default {
 
     save: function () {
 
-      // console.log(this.Chosenlist)
-      // if (this.Chosenlist.length != 0) {
+      console.log(this.Chosenlist)
+      if (this.Chosenlist.length != 0) {
 
-      //   this.List1.push({ 'sortNo': 1, 'featureID': this.Chosenlist[0].featureID, 'featureType': 1 })
-      // }
+        this.List1.push({ 'sortNo': 1, 'featureID': this.Chosenlist[0].featureID, 'featureType': 1 })
+      }
       // console.log(this.List1)
 
       // 只有一个变量直接写也成吧
 
 
-      for (var i = 0; i < this.Chosenlist.length; i++) {
-        // console.log(this.Chosenlist[i].featureId)
+      // for (var i = 0; i < this.Chosenlist.length; i++) {
+      //   // console.log(this.Chosenlist[i].featureId)
 
-        var f = { 'sortNo': i + 1, 'featureId': this.Chosenlist[i].featureId, 'featureType': 1 }
-        this.List1.push(f);
+      //   var f = { 'sortNo': i + 1, 'featureId': this.Chosenlist[i].featureId, 'featureType': 1 }
+      //   this.List1.push(f);
 
 
-      }
-      console.log(this.List1)
+      // }
+      // console.log(this.List1)
 
 
       axios.post('/model/create', {
@@ -477,8 +479,6 @@ export default {
         },
 
         "feature": this.List1
-
-
 
 
 
