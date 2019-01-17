@@ -5,7 +5,7 @@
             style="margin-top:5px">
       <el-col :span=4
               :offset=1>
-        <td class="mytd">角色名称：</td>
+        <td class="mytd2">角色名称：</td>
         <td>
           <el-input placeholder="角色名称"
                     prefix-icon="el-icon-search"
@@ -18,7 +18,7 @@
             style="margin-top:15px">
       <el-col :span=4
               :offset=1>
-        <td class="mytd">角色编码：</td>
+        <td class="mytd2">角色编码：</td>
         <td>
           <el-input placeholder="角色编码"
                     prefix-icon="el-icon-search"
@@ -51,9 +51,11 @@
                   border>
           <el-table-column prop="id"
                            label="角色编码"
+                           min-width="250px"
                            show-overflow-tooltip></el-table-column>
           <el-table-column prop="name"
                            label="角色名称"
+                           min-width="250px"
                            show-overflow-tooltip></el-table-column>
           <el-table-column label="角色权限操作"
                            min-width=300>
@@ -82,7 +84,7 @@
       <el-row>
         <el-col :span=20
                 :offset=2>
-          <td class="mytd">角色名称：</td>
+          <td class="mytd2">角色名称：</td>
           <td>
             <el-input placeholder="请输入角色名称"
                       size="medium"
@@ -94,7 +96,7 @@
       <el-row>
         <el-col :span=20
                 :offset=2>
-          <td class="mytd">角色权限：</td>
+          <td class="mytd2">角色权限：</td>
         </el-col>
       </el-row>
       </br>
@@ -130,7 +132,7 @@
       <el-row>
         <el-col :span=20
                 :offset=2>
-          <td class="mytd">角色名称：</td>
+          <td class="mytd2">角色名称：</td>
           <td>
             {{ThisViewRole.name}}
           </td>
@@ -140,7 +142,7 @@
       <el-row>
         <el-col :span=20
                 :offset=2>
-          <td class="mytd">角色权限：</td>
+          <td class="mytd2">角色权限：</td>
         </el-col>
       </el-row>
       <el-row>
@@ -231,7 +233,7 @@ export default {
 </script>
 
 <style>
-.mytd {
+.mytd2 {
   width: 80px;
   font-size: 14px;
 }
