@@ -87,8 +87,9 @@
       </el-form-item> -->
       <!-- </draggable> -->
     </el-form>
+    <!-- 选择概念集的弹窗 -->
     <el-dialog title="概念集列表"
-               :visible.sync="ConceptsetListVisible"
+               :visible.sync="conceptSetListVisible"
                width="60%"
                :before-close="handleClose"
                append-to-body>
@@ -97,9 +98,9 @@
         <component :is="myconceptsetList"
                    @getConceptSetId="selectConceptSetId"
                    @getVisible="selectVisible"></component>
-        <el-button @click="ConceptsetListVisible = false">取 消</el-button>
+        <el-button @click="conceptSetListVisible = false">取 消</el-button>
         <el-button type="primary"
-                   @click="ConceptsetListVisible = false">确 定</el-button>
+                   @click="conceptSetListVisible = false">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -118,7 +119,7 @@ export default {
   data() {
     return {
       myconceptsetList: conceptsetList,
-      ConceptsetListVisible: false,
+      conceptSetListVisible: false,
       form: {
         id: '',
         formdetail: [
@@ -198,8 +199,8 @@ export default {
       this.form.formdetail[showindex] = this.initialform[showindex];
     },
     getConceptsetList() {
-      this.ConceptsetListVisible = true
-      console.log(this.ConceptsetListVisible)
+      this.conceptSetListVisible = true
+      console.log(this.conceptSetListVisible)
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -212,8 +213,8 @@ export default {
       this.form.formdetail[0].data1 = val
     },
     selectVisible(val) {
-      this.ConceptsetListVisible = val
-      console.log(this.ConceptsetListVisible)
+      this.conceptSetListVisible = val
+      console.log(this.conceptSetListVisible)
     }
   }
 }
