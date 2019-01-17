@@ -31,27 +31,42 @@ export default new Router({
             {
               path: "newresearch",
               name: "新建个人研究",
-              component: () => import("@/components/indiresearch/newResearch")
+              component: () => import("@/components/indiresearch/newResearch"),
+              meta: {
+                title: "新建个人研究"
+              }
             },
             {
               path: "createcohort",
-              name: "新建队列",
-              component: () => import("@/components/indiresearch/createCohort")
+              name: "队列生成",
+              component: () => import("@/components/indiresearch/createCohort"),
+              meta: {
+                title: "队列生成"
+              }
             },
             {
               path: "researchlist",
               name: "研究列表",
-              component: () => import("@/components/indiresearch/researchList")
+              component: () => import("@/components/indiresearch/researchList"),
+              meta: {
+                title: "研究列表"
+              }
             },
             {
               path: "newvariable",
               name: "变量生成",
-              component: () => import("@/components/indiresearch/newVariable")
+              component: () => import("@/components/indiresearch/newVariable"),
+              meta: {
+                title: "变量生成"
+              }
             },
             {
               path: "selectmodel",
               name: "模型选择",
-              component: () => import("@/components/indiresearch/selectModel")
+              component: () => import("@/components/indiresearch/selectModel"),
+              meta: {
+                title: "模型选择"
+              }
             },
             {
               path: "analysisresult",
@@ -175,13 +190,31 @@ export default new Router({
               meta: {
                 title: "加入团队"
               }
-            },
+            }
           ]
         },
         {
           path: "/nodemanage",
           name: "节点管理",
-          component: () => import("@/components/nodemanage/nodemanage")
+          component: () => import("@/components/nodemanage/nodemanage"),
+          children: [
+            {
+              path: "node",
+              name: "节点状态",
+              component: () => import("@/components/nodemanage/node"),
+              meta: {
+                title: "节点状态"
+              }
+            },
+            {
+              path: "operation",
+              name: "操作查询",
+              component: () => import("@/components/nodemanage/operation"),
+              meta: {
+                title: "操作查询"
+              }
+            }
+          ]
         }
       ]
     }
