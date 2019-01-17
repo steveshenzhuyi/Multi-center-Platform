@@ -1,151 +1,271 @@
 <template>
-  <el-form ref="form"
-           :model="form"
-           size="mini"
-           :inline="true"
-           class="mar">
-    <!-- id对应条件在字典的index -->
-    <draggable :options="{group:'mar'}">
-      <el-form-item label="用药记录合集"
-                    id="0">
-        <el-input v-model="form.formdetail[0].data1"></el-input>
-        <!-- <el-checkbox v-model="marform.collectionchecked"
+  <div>
+    <el-form ref="form"
+             :model="form"
+             label-width="100px"
+             label-position="left"
+             :inline="true"
+             size="mini"
+             class="mar">
+      <!-- id对应条件在字典的index -->
+      <!-- <draggable :options="{group:'mar'}"> -->
+      <div class="form-item"
+           v-if="visible[0].show">
+        <i class="el-icon-close"
+           @click=changevisible(0)></i>&nbsp;
+        <el-form-item label="用药记录合集">
+          <el-input v-model="form.formdetail[0].data1"></el-input>
+          <!-- <el-checkbox v-model="marform.collectionchecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="性别"
-                    id="1">
-        <el-input v-model="form.formdetail[1].data1"></el-input>
-      </el-form-item>
-      <el-checkbox v-model="form.formdetail[2].data1"
-                   id="2">首次出现</el-checkbox>
-      <el-form-item label="用药日期"
-                    id="3">
-        <el-date-picker v-model="form.formdetail[3].data1"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="选择日期">
-        </el-date-picker>
-        <span class="line"> — </span>
-        <el-date-picker v-model="form.formdetail[3].data2"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="选择日期">
-        </el-date-picker>
-        <!-- <el-checkbox v-model="marform.datechecked"
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[1].show">
+        <i class="el-icon-close"
+           @click=changevisible(1)></i>&nbsp;
+        <el-form-item label="用药日期">
+          <el-date-picker v-model="form.formdetail[1].data1"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="选择日期">
+          </el-date-picker>
+          <span class="line"> — </span>
+          <el-date-picker v-model="form.formdetail[1].data2"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="选择日期">
+          </el-date-picker>
+          <!-- <el-checkbox v-model="marform.datechecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="用药天数"
-                    id="4">
-        <el-input-number v-model="form.formdetail[4].data1"
-                         controls-position="right"></el-input-number><span class="line"> — </span>
-        <el-input-number v-model="form.formdetail[4].data2"
-                         controls-position="right"></el-input-number>
-        <!-- <el-checkbox v-model="marform.dayschecked"
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[2].show">
+        <i class="el-icon-close"
+           @click=changevisible(2)></i>&nbsp;
+        <el-form-item label="用药天数">
+          <el-input-number v-model="form.formdetail[2].data1"
+                           controls-position="right"></el-input-number><span class="line"> — </span>
+          <el-input-number v-model="form.formdetail[2].data2"
+                           controls-position="right"></el-input-number>
+          <!-- <el-checkbox v-model="marform.dayschecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="用药剂量"
-                    id="5">
-        <el-input v-model="form.formdetail[5].data1"></el-input>
-        <span class="line"> — </span>
-        <el-input v-model="form.formdetail[5].data2"></el-input>
-        <!-- <el-checkbox v-model="marform.dosechecked"
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[3].show">
+        <i class="el-icon-close"
+           @click=changevisible(3)></i>&nbsp;
+        <el-form-item label="用药剂量">
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[3].data1"></el-input>
+          </el-col>
+          <el-col :span="2"
+                  :offset="1">
+            <span class="line"> — </span>
+          </el-col>
+          <el-col :span="10">
+            <el-input v-model="form.formdetail[3].data2"></el-input>
+          </el-col>
+          <!-- <el-checkbox v-model="marform.dosechecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="用药年龄"
-                    id="6">
-        <el-input-number v-model="form.formdetail[6].data1"
-                         controls-position="right"></el-input-number><span class="line"> — </span>
-        <el-input-number v-model="form.formdetail[6].data2"
-                         controls-position="right"></el-input-number>
-        <!-- <el-checkbox v-model="marform.agechecked"
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[4].show">
+        <i class="el-icon-close"
+           @click=changevisible(4)></i>&nbsp;
+        <el-form-item label="用药年龄">
+          <el-input-number v-model="form.formdetail[4].data1"
+                           controls-position="right"></el-input-number><span class="line"> — </span>
+          <el-input-number v-model="form.formdetail[4].data2"
+                           controls-position="right"></el-input-number>
+          <!-- <el-checkbox v-model="marform.agechecked"
                      class="except">不在其之间</el-checkbox> -->
-      </el-form-item>
-      <el-form-item label="用药路径"
-                    id="7">
-        <el-input v-model="form.formdetail[7].data1"></el-input>
-      </el-form-item>
-      <el-form-item label="用药方式"
-                    id="8">
-        <el-input v-model="form.formdetail[8].data1"></el-input>
-      </el-form-item>
-      <el-form-item label="用药单位"
-                    id="9">
-        <el-input v-model="form.formdetail[9].data1"></el-input>
-      </el-form-item>
-      <el-form-item label="记录来源"
-                    id="10">
-        <el-input v-model="form.formdetail[10].data1"></el-input>
-      </el-form-item>
-    </draggable>
-  </el-form>
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[5].show">
+        <i class="el-icon-close"
+           @click=changevisible(5)></i>&nbsp;
+        <el-form-item label="用药路径">
+          <el-input v-model="form.formdetail[5].data1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[6].show">
+        <i class="el-icon-close"
+           @click=changevisible(6)></i>&nbsp;
+        <el-form-item label="用药方式">
+          <el-input v-model="form.formdetail[6].data1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[7].show">
+        <i class="el-icon-close"
+           @click=changevisible(7)></i>&nbsp;
+        <el-form-item label="用药单位">
+          <el-input v-model="form.formdetail[7].data1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[8].show">
+        <i class="el-icon-close"
+           @click=changevisible(8)></i>&nbsp;
+        <el-form-item label="记录来源">
+          <el-input v-model="form.formdetail[8].data1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="form-item"
+           v-if="visible[9].show">
+        <i class="el-icon-close"
+           @click=changevisible(9)></i>&nbsp;
+        <el-form-item label="性别">
+          <el-input v-model="form.formdetail[9].data1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="form-item first-time"
+           v-if="visible[10].show">
+        <i class="el-icon-close"
+           @click=changevisible(10)></i>&nbsp;
+        <input type="checkbox"
+               v-model="form.formdetail[10].data1"
+               disabled
+               checked /><span>首次出现</span>
+      </div>
+      <!-- </draggable> -->
+    </el-form>
+  </div>
 </template>
 
 <script>
-import draggable from 'vuedraggable'
+// import draggable from 'vuedraggable'
 import axios from 'axios'
 export default {
   components: {
-    draggable,
+    // draggable,
   },
-  props: ['mainItem'],
+  props: ['mainCondId', 'minorCondId', 'viewdetail'],
   data() {
     return {
       form: {
         id: '',
-        formdetail: [
-          { data1: '', }, //用药记录集合
-          { data1: '', }, //性别
-          { data1: false, }, //首次出现
-          {
-            data1: '',
-            data2: '',
-          },               //用药日期
-          {
-            data1: '',
-            data2: '',
-          },              //用药天数
-          {
-            data1: '',
-            data2: '',
-          },            //用药剂量
-          {
-            data1: -1,
-            data2: -1,
-          },           //用药年龄
-          { data1: '', },//用药路径 
-          { data1: '', },//用药方式
-          { data1: '', },//用药单位
-          { data1: '', },//记录来源
-
-        ]
+        formdetail: [{
+          data1: '',
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "1",
+          name: "用药记录集合"        },
+        {
+          data1: '',
+          data2: '',
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "2",
+          name: "用药日期"        },
+        {
+          data1: '',
+          data2: '',
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "3",
+          name: "用药天数"        },
+        {
+          data1: '',
+          data2: '',
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "4",
+          name: "用药剂量"        },
+        {
+          data1: 0,
+          data2: 0,
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "5",
+          name: "用药年龄"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "6",
+          name: "用药路径"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "7",
+          name: "用药方式"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "8",
+          name: "用药单位"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "9",
+          name: "记录来源"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "10",
+          name: "性别"        },
+        {
+          data1: true,
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "11",
+          name: "首次出现"        },]
       },
-      cohortdict: '', //查询队列字典得到
+      // cohortdict: [], //查询队列字典得到
+      visible: [],
+      initialform: [],//初始表单，恢复初始值
     }
+  },
+  updated: function () {
+    this.$emit('sendformData', this.form)
   },
   // 监听条件表单被拖拽到所对应的div的序号变化
   watch: {
-    mainItem: {
+    mainCondId: {
       handler() {
-        if (this.mainItem.groupName == 'mar') {
-          this.cohortdict[this.mainItem.itemId]['layer2SortNo'] = this.mainItem.sortNo
-          this.cohortdict[this.mainItem.itemId]['layer1SortNo'] = this.mainItem.id
-          this.cohortdict[this.mainItem.itemId]['criteriaTypeCode'] = "1"
-          this.cohortdict[this.mainItem.itemId]['typeSortNo'] = 1
-          this.form.formdetail[this.mainItem.itemId] = Object.assign(this.form.formdetail[this.mainItem.itemId], this.cohortdict[this.mainItem.itemId])
-          console.log(this.form.formdetail[this.mainItem.itemId])
+        if (this.mainCondId.primarycond === 2) {
+          this.form.id = this.mainCondId.id
+          if (this.mainCondId.secondcond != 0) {
+            this.visible[this.mainCondId.secondcond - 1].show = true
+            this.form.formdetail[this.mainCondId.secondcond - 1].layer1SortNo = this.mainCondId.id
+            this.form.formdetail[this.mainCondId.secondcond - 1].criteriaTypeCode = "1"
+            this.form.formdetail[this.mainCondId.secondcond - 1].typeSortNo = 1
+            //不需要了
+            this.form.formdetail[this.mainCondId.secondcond - 1].layer2SortNo = this.mainCondId.secondcond - 1
+          }
         }
       },
       deep: true,
-      immediate: true
+      // immediate: true
+    },
+    minorCondId: {
+      handler() {
+        if (this.minorCondId.primarycond === 2) {
+          this.form.id = this.minorCondId.id
+          if (this.minorCondId.secondcond != 0) {
+            this.visible[this.minorCondId.secondcond - 1].show = true
+            this.form.formdetail[this.minorCondId.secondcond - 1].layer1SortNo = this.minorCondId.id
+            this.form.formdetail[this.minorCondId.secondcond - 1].criteriaTypeCode = "2"
+            this.form.formdetail[this.minorCondId.secondcond - 1].typeSortNo = 2
+            //不需要了
+            this.form.formdetail[this.minorCondId.secondcond - 1].layer2SortNo = this.minorCondId.secondcond - 1
+          }
+        }
+      },
+      deep: true,
+      // immediate: true
+    },
+  },
+  beforeMount: function () {
+    for (var i = 0; i < 11; i++) {
+      this.visible.push({ show: false })
     }
+    // this.getCohortDict()
   },
   mounted: function () {
-    this.getCohortDict()
+    this.initialform = JSON.parse(JSON.stringify(this.form.formdetail))
+    this.reproduceForm()
   },
   methods: {
-    // ageChange(value) {
-    //   console.log(value);
-    // }
     //查询队列条件字典
     getCohortDict() {
       axios.get('cohort/dict', {
@@ -156,19 +276,33 @@ export default {
       })
         .then((response) => {
           this.cohortdict = response.data.data
-          for (var i = 0; i < this.cohortdict.length; i++) {
-            delete this.cohortdict[i]['sortNo']
-          }
+          console.log(this.cohortdict.length)
         })
         .catch(function (error) {
           console.log("error", error);
         });
     },
+    //删除所选二级条件
+    changevisible(showindex) {
+      console.log(showindex)
+      this.visible[showindex].show = false
+      this.form.formdetail[showindex] = this.initialform[showindex];
+    },
+    //查看队列详情初始化
+    reproduceForm() {
+      if (this.viewdetail != undefined) {
+        this.viewdetail.forEach(item => {
+          this.form.formdetail[item.criteriaLayer2Code - 1] = item
+          this.visible[item.criteriaLayer2Code - 1].show = true
+        })
+        // console.log(this.form.formdetail)
+      }
+    }
   }
 }
 </script>
 <style>
-.mar .el-input__inner {
+/* .mar .el-input__inner {
   display: none;
 }
 .mar .el-checkbox__input {
@@ -215,5 +349,13 @@ export default {
 }
 .mar .el-form-item--mini .el-form-item__label {
   line-height: 38px;
+} */
+.mar .el-icon-close {
+  margin-top: 6px;
+}
+.first-time {
+  font-size: 14px;
+  color: #606266;
+  line-height: 28px;
 }
 </style>
