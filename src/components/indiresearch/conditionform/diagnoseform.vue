@@ -14,12 +14,10 @@
         <i class="el-icon-close"
            @click=changevisible(0)></i>&nbsp;
         <el-form-item label="诊断编码集合">
-          <el-col :span="11">
             <el-input v-model="form.formdetail[0].data1"
                       @focus="getConceptsetList"></el-input>
             <!-- <el-checkbox v-model="form.codechecked"
   class="except">不在其之间</el-checkbox> -->
-          </el-col>
           <!-- <i class="el-icon-close">@click=changevisible()</i> -->
         </el-form-item>
       </div>
@@ -61,9 +59,7 @@
         <i class="el-icon-close"
            @click=changevisible(3)></i>&nbsp;
         <el-form-item label="记录来源">
-          <el-col :span="11">
-            <el-input v-model="form.formdetail[3].data1"></el-input>
-          </el-col>
+          <el-input v-model="form.formdetail[3].data1"></el-input>
         </el-form-item>
       </div>
       <div class="form-item"
@@ -71,16 +67,18 @@
         <i class="el-icon-close"
            @click=changevisible(4)></i>&nbsp;
         <el-form-item label="性别">
-          <el-col :span="11">
-            <el-input v-model="form.formdetail[4].data1"></el-input>
-          </el-col>
+          <el-input v-model="form.formdetail[4].data1"></el-input>
         </el-form-item>
       </div>
-      <div class="form-item"
+      <div class="form-item first-time"
            v-if="visible[5].show">
         <i class="el-icon-close"
            @click=changevisible(5)></i>&nbsp;
-        <el-checkbox v-model="form.formdetail[5].data1">首次出现</el-checkbox>
+        <!-- <el-checkbox v-model="form.formdetail[5].data1">首次出现</el-checkbox> -->
+        <input type="checkbox"
+               v-model="form.formdetail[5].data1"
+               disabled
+               checked /><span>首次出现</span>
       </div>
       <!-- <el-form-item label="诊断类型">
         <el-input v-model="form.type"></el-input>
@@ -108,68 +106,61 @@
 
 <script>
 import conceptsetList from '../conceptsetList.vue'
-import draggable from 'vuedraggable'
+// import draggable from 'vuedraggable'
 import axios from 'axios'
 export default {
   components: {
-    draggable,
+    // draggable,
     'conceptsetList': conceptsetList
+
   },
-  props: ['mainCondId'],
+  props: ['mainCondId', 'minorCondId', 'viewdetail'],
   data() {
     return {
       myconceptsetList: conceptsetList,
       conceptSetListVisible: false,
       form: {
         id: '',
-        formdetail: [
-          {
-            data1: '',
-            criteriaLayer1Code: "1",
-            criteriaLayer2Code: "1",
-            name: "诊断编码集合"
-          },
-          {
-            data1: '',
-            data2: '',
-            criteriaLayer1Code: "1",
-            criteriaLayer2Code: "2",
-            name: "诊断日期"
-          },
-          {
-            data1: 0,
-            data2: 0,
-            criteriaLayer1Code: "1",
-            criteriaLayer2Code: "3",
-            name: "诊断年龄"
-          },
-          {
-            data1: '',
-            criteriaLayer1Code: "1",
-            criteriaLayer2Code: "4",
-            name: "记录来源"
-          },
-          {
-            data1: '',
-            criteriaLayer1Code: "1",
-            criteriaLayer2Code: "5",
-            name: "性别"
-          },
-          {
-            data1: false,
-            criteriaLayer1Code: "1",
-            criteriaLayer2Code: "6",
-            name: "首次出现"
-          },
-        ],
+        formdetail: [{
+          data1: '',
+          criteriaLayer1Code: "1",
+          criteriaLayer2Code: "1",
+          name: "诊断编码集合"        },
+        {
+          data1: '',
+          data2: '',
+          criteriaLayer1Code: "1",
+          criteriaLayer2Code: "2",
+          name: "诊断日期"        },
+        {
+          data1: 0,
+          data2: 0,
+          criteriaLayer1Code: "1",
+          criteriaLayer2Code: "3",
+          name: "诊断年龄"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "1",
+          criteriaLayer2Code: "4",
+          name: "记录来源"        },
+        {
+          data1: '',
+          criteriaLayer1Code: "1",
+          criteriaLayer2Code: "5",
+          name: "性别"        },
+        {
+          data1: true,
+          criteriaLayer1Code: "1",
+          criteriaLayer2Code: "6",
+          name: "首次出现"        },],
       },
       // cohortdict: '', //查询队列字典得到
-      visible: [{ show: false }, { show: false }, { show: false }, { show: false }, { show: false }, { show: false }],
+      visible: [{ show: true }, { show: false }, { show: false }, { show: false }, { show: false }, { show: false }],
       initialform: [],//初始表单，恢复初始值
     }
   },
   updated: function () {
-    this.$emit('bindData', this.form)
+    this.$emit('sendformData', this.form)
   },
   watch: {
     mainCondId: {
@@ -182,7 +173,24 @@ export default {
             this.form.formdetail[this.mainCondId.secondcond - 1].criteriaTypeCode = "1"
             this.form.formdetail[this.mainCondId.secondcond - 1].typeSortNo = 1
             //不需要了
-            this.form.formdetail[this.mainCondId.secondcond - 1].layer2SortNo = 0
+            this.form.formdetail[this.mainCondId.secondcond - 1].layer2SortNo = this.mainCondId.secondcond - 1
+          }
+        }
+      },
+      deep: true,
+      // immediate: true
+    },
+    minorCondId: {
+      handler() {
+        if (this.minorCondId.primarycond === 1) {
+          this.form.id = this.minorCondId.id
+          if (this.minorCondId.secondcond != 0) {
+            this.visible[this.minorCondId.secondcond - 1].show = true
+            this.form.formdetail[this.minorCondId.secondcond - 1].layer1SortNo = this.minorCondId.id
+            this.form.formdetail[this.minorCondId.secondcond - 1].criteriaTypeCode = "2"
+            this.form.formdetail[this.minorCondId.secondcond - 1].typeSortNo = 2
+            //不需要了
+            this.form.formdetail[this.minorCondId.secondcond - 1].layer2SortNo = this.minorCondId.secondcond - 1
           }
         }
       },
@@ -192,12 +200,25 @@ export default {
   },
   mounted: function () {
     this.initialform = JSON.parse(JSON.stringify(this.form.formdetail))
+    this.reproduceForm()
   },
   methods: {
+    //删除所选二级条件
     changevisible(showindex) {
+      console.log(showindex)
       this.visible[showindex].show = false
       this.form.formdetail[showindex] = this.initialform[showindex];
     },
+
+    //查看队列详情初始化
+    reproduceForm() {
+      if (this.viewdetail != undefined) {
+        this.viewdetail.forEach(item => {
+          this.form.formdetail[item.criteriaLayer2Code - 1] = item
+          this.visible[item.criteriaLayer2Code - 1].show = true
+        })
+        // console.log(this.form.formdetail)
+      }
     getConceptsetList() {
       this.conceptSetListVisible = true
       console.log(this.conceptSetListVisible)
@@ -243,8 +264,8 @@ export default {
 }
 .diagnose .el-form-item__content {
   display: none;
-} */
-/* .diagnose .el-checkbox__label {
+} 
+.diagnose .el-checkbox__label {
   background-color: #f5f5f5;
   border: 1px solid #ccc;
   border-radius: 2px 2px 2px 2px;
@@ -270,5 +291,10 @@ export default {
 } */
 .diagnose .el-icon-close {
   margin-top: 6px;
+}
+.first-time {
+  font-size: 14px;
+  color: #606266;
+  line-height: 28px;
 }
 </style>
