@@ -195,6 +195,7 @@ import ttest_one from './methodform/ttest_one.vue'
 import oneway_anova from './methodform/oneway_anova.vue'
 import ttest_paired from './methodform/ttest_paired.vue'
 import svmanalysis from './methodform/svmanalysis.vue'
+import { isNull } from 'util';
 
 export default {
   components: {
@@ -242,12 +243,20 @@ export default {
       methodName6: '',
       methodName7: '',
       methodName8: '',
-      ModelTable: [{ modelId: 1, name: 'svmsss', type: "SVM" }],
+      ModelTable: [{ modelId: 1, name: 'svmsss', type: "SVM" }, { modelId: 2, name: '描述统计', type: "描述性统计" }, { modelId: 5, name: 't检验llll', type: "单样本t检验" }],
+      methodlist: []
 
     }
   },
-
+  mounted() {
+    this.getModlelist();
+  },
   methods: {
+
+    getModlelist() {
+
+    },
+
     //dialog相关
     handleClose(done) {
       this.$confirm("确认关闭？")
@@ -339,7 +348,24 @@ export default {
     Edit(index) {
 
     },
+    //删除
     Delete(index) {
+      axios.post('/model/delete', {
+        "token": this.GLOBAL.token,
+        "modelId": this.ModelTable[index].modelId
+      })
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('删除成功！', '提示', { confirmButtonText: '确定' });
+            this.getModlelist()
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+
+
+
 
     },
     NewModel: function () {
