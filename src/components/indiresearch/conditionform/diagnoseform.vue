@@ -14,9 +14,9 @@
         <i class="el-icon-close"
            @click=changevisible(0)></i>&nbsp;
         <el-form-item label="诊断编码集合">
-            <el-input v-model="form.formdetail[0].data1"
-                      @focus="getConceptsetList"></el-input>
-            <!-- <el-checkbox v-model="form.codechecked"
+          <el-input v-model="form.formdetail[0].data1"
+                    @focus="getConceptsetList"></el-input>
+          <!-- <el-checkbox v-model="form.codechecked"
   class="except">不在其之间</el-checkbox> -->
           <!-- <i class="el-icon-close">@click=changevisible()</i> -->
         </el-form-item>
@@ -209,7 +209,6 @@ export default {
       this.visible[showindex].show = false
       this.form.formdetail[showindex] = this.initialform[showindex];
     },
-
     //查看队列详情初始化
     reproduceForm() {
       if (this.viewdetail != undefined) {
@@ -219,6 +218,7 @@ export default {
         })
         // console.log(this.form.formdetail)
       }
+    },
     getConceptsetList() {
       this.conceptSetListVisible = true
       console.log(this.conceptSetListVisible)
