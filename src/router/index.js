@@ -199,11 +199,19 @@ export default new Router({
           component: () => import("@/components/nodemanage/nodemanage"),
           children: [
             {
-              path: "node",
-              name: "节点状态",
-              component: () => import("@/components/nodemanage/node"),
+              path: "nodelist",
+              name: "节点列表",
+              component: () => import("@/components/nodemanage/nodeList"),
               meta: {
-                title: "节点状态"
+                title: "节点列表"
+              }
+            },
+            {
+              path: "nodedetail",
+              name: "节点详情",
+              component: () => import("@/components/nodemanage/nodeDetail"),
+              meta: {
+                title: "节点详情"
               }
             },
             {
