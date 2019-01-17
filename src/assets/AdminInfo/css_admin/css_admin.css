@@ -4,6 +4,11 @@
     font-weight: 550;
 }
 
+.SubTitle2 {
+    font-size: 16px; 
+    font-weight: 500;
+}
+
 li {
     list-style-type: none;
     padding-bottom: 5px;
