@@ -10,6 +10,7 @@ import global_ from "./components/Global";
 import "../settings.js";
 import "element-ui/lib/theme-chalk/index.css";
 import echarts from "echarts";
+import "./assets/lqh_icon/iconfont.css"
 
 Vue.prototype.$echarts = echarts;
 // axios 配置
