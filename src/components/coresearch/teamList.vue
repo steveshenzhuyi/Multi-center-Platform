@@ -172,7 +172,7 @@ export default {
           break;
         case 1:
           this.$router.push({
-            path: 'newcoresearch',
+            path: 'mccompute',
             query:
               {
                 collaborationId: id
@@ -181,7 +181,7 @@ export default {
           break;
         case 2:
           this.$router.push({
-            path: 'newcoresearch',
+            path: 'mccompute',
             query:
               {
                 collaborationId: id

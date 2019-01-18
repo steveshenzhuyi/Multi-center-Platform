@@ -96,7 +96,7 @@
         <div>研究方案</div>
       </el-col>
       <el-col :span="1">
-        <i class="iconfont icon-shuzi1"></i>
+        <i class="iconfont icon-1"></i>
       </el-col>
       <el-col :span="9">
         <div>
@@ -113,7 +113,7 @@
             style="margin-top:30px;margin-bottom:10px">
       <el-col :offset="8"
               :span="1">
-        <i class="iconfont icon-shuzi2"></i>
+        <i class="iconfont icon-2"></i>
       </el-col>
       <el-col :span="9">
         <div>
@@ -130,7 +130,7 @@
             style="margin-top:30px;margin-bottom:10px">
       <el-col :offset="8"
               :span="1">
-        <i class="iconfont icon-shuzi3"></i>
+        <i class="iconfont icon-3"></i>
       </el-col>
       <el-col :span="9">
 
@@ -170,11 +170,18 @@
       </el-col>
       <el-col :span="2">
         <el-button type="primary"
+                   @click="corhortgenerate"
                    plain>生成队列</el-button>
       </el-col>
       <el-col :span="2">
         <el-button type="primary"
+                   @click="corhortanalysis"
                    plain>生成队列-变量统计</el-button>
+      </el-col>
+      <el-col :span="8"
+              style="padding-left:100px"
+              v-show="ifgenerate">
+        符合要求的病人数：{{generateresult}}例
       </el-col>
     </el-row>
     <el-row type="flex"
@@ -194,11 +201,22 @@
                    plain>上传</el-button>
       </el-col>
     </el-row>
+    <el-row type="flex"
+            align="middle"
+            style="margin-top:30px;margin-bottom:10px">
+
+      <div v-show="ifanalysis"
+           id="echartContainer"
+           style="width:500px;height:500px;margin:0 auto">
+      </div>
+    </el-row>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
+import echarts from 'echarts';
+
 
 export default {
   data() {
@@ -210,6 +228,9 @@ export default {
       orgdep: [],
       organization: [],
       department: [],
+      ifanalysis: false,
+      ifgenerate: false,
+      generateresult: 0,
       researchDetail: {
         name: "",
         target: "",
@@ -220,7 +241,6 @@ export default {
         variable: "",
         model: ""
       },
-      activeNames: ['1']
     }
   },
   mounted() {
@@ -285,6 +305,37 @@ export default {
         .catch(function (error) {
           console.log("error", error);
         });
+    },
+    corhortgenerate() {
+      this.$message.success("开始生成！")
+      this.ifgenerate = true
+      this.generateresult = 1254
+      setTimeout(function () {
+        this.generateresult = 1254
+      }, 1000);
+    },
+    corhortanalysis() {
+      this.$message.success("开始统计！")
+      this.ifanalysis = true
+      setTimeout(function () {
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('echartContainer'));
+        // 绘制图表
+        myChart.setOption({
+          title: { text: '队列变量统计结果' },
+          xAxis: {
+            type: 'category',
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          },
+          yAxis: {
+            type: 'value'
+          },
+          series: [{
+            data: [120, 200, 150, 80, 70, 110, 130],
+            type: 'bar'
+          }]
+        });
+      }, 1000);
     },
   }
 }

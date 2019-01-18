@@ -53,137 +53,149 @@
           </el-form-item>
         </el-col>
       </el-row>
+      <el-row style="margin-top:10px;margin-bottom:10px"
+              type="flex"
+              justify="center">
+        <el-col :span="20">
+          <el-tabs v-model="activeName"
+                   type="card"
+                   @tab-click="handleClick">
+            <el-tab-pane label="待选择"
+                         name="first">
+              <el-table :data="tableAll"
+                        ref="multipleTable"
+                        valign="center"
+                        height="300"
+                        border
+                        style="width: 100%"
+                        @selection-change="handleSelectionChange">
+                <el-table-column type="selection"
+                                 label="全选"
+                                 width="60"></el-table-column>
+                <el-table-column prop="subject"
+                                 label="概念编号"
+                                 width="120"></el-table-column>
+                <el-table-column prop="label"
+                                 label="概念名称"
+                                 width="160"></el-table-column>
+                <el-table-column prop="domain"
+                                 label="概念领域"
+                                 width="90"></el-table-column>
+                <el-table-column prop="class"
+                                 label="概念类型"
+                                 width="90"></el-table-column>
+                <el-table-column prop="voc"
+                                 label="术语表"
+                                 width="90"></el-table-column>
+                <el-table-column prop="std"
+                                 label="标准概念"
+                                 width="90"></el-table-column>
+                <el-table-column width="100">
+                  <template slot="header"
+                            slot-scope="scope">
+                    <el-checkbox :indeterminate="isIndeterminate1"
+                                 v-model="checkAll1"
+                                 @change="handleCheckAllExcludeditemsChange">排除</el-checkbox>
+                  </template>
+                  <template slot-scope="scope">
+                    <el-checkbox-group v-model="checkedExcludeditems"
+                                       @change="handleCheckedExcludeditemsChange">
+                      <el-checkbox :label="scope.row.Except">&nbsp;</el-checkbox>
+                    </el-checkbox-group>
+                  </template>
+                </el-table-column>
+                <el-table-column>
+                  <template slot="header"
+                            slot-scope="scope">
+                    <el-checkbox :indeterminate="isIndeterminate2"
+                                 v-model="checkAll2"
+                                 @change="handleCheckAllChilerenConceptsChange">子概念</el-checkbox>
+                  </template>
+                  <template slot-scope="scope">
+                    <el-checkbox-group v-model="checkedChilerenConcepts"
+                                       @change="handleCheckedChilerenConceptsChange">
+                      <el-checkbox :label="scope.row.ChilerenConcept">&nbsp;</el-checkbox>
+                    </el-checkbox-group>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-tab-pane>
+            <el-tab-pane label="已选择"
+                         name="second">
+              <el-table :data="tableChecked"
+                        ref="multipleTable2"
+                        valign="center"
+                        height="300"
+                        border
+                        style="width: 100%"
+                        @selection-change="handleSelectionChange2">
+                <el-table-column type="selection"
+                                 label="全选"
+                                 width="60"></el-table-column>
+                <el-table-column prop="subject"
+                                 label="概念编号"
+                                 width="120"></el-table-column>
+                <el-table-column prop="label"
+                                 label="概念名称"
+                                 width="160"></el-table-column>
+                <el-table-column prop="domain"
+                                 label="概念领域"
+                                 width="90"></el-table-column>
+                <el-table-column prop="class"
+                                 label="概念类型"
+                                 width="90"></el-table-column>
+                <el-table-column prop="voc"
+                                 label="术语表"
+                                 width="90"></el-table-column>
+                <el-table-column prop="std"
+                                 label="标准概念"
+                                 width="90"></el-table-column>
+                <el-table-column width="100">
+                  <template slot="header"
+                            slot-scope="scope">
+                    <el-checkbox :indeterminate="isIndeterminate1"
+                                 v-model="checkAll1"
+                                 @change="handleCheckAllExcludeditemsChange">排除</el-checkbox>
+                  </template>
+                  <template slot-scope="scope">
+                    <el-checkbox-group v-model="checkedExcludeditems"
+                                       @change="handleCheckedExcludeditemsChange">
+                      <el-checkbox :label="scope.row.Except">&nbsp;</el-checkbox>
+                    </el-checkbox-group>
+                  </template>
+                </el-table-column>
+                <el-table-column>
+                  <template slot="header"
+                            slot-scope="scope">
+                    <el-checkbox :indeterminate="isIndeterminate2"
+                                 v-model="checkAll2"
+                                 @change="handleCheckAllChilerenConceptsChange">子概念</el-checkbox>
+                  </template>
+                  <template slot-scope="scope">
+                    <el-checkbox-group v-model="checkedChilerenConcepts"
+                                       @change="handleCheckedChilerenConceptsChange">
+                      <el-checkbox :label="scope.row.ChilerenConcept">&nbsp;</el-checkbox>
+                    </el-checkbox-group>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-tab-pane>
+          </el-tabs>
+        </el-col>
+      </el-row>
+      <el-form-item>
+        <el-row style="margin-top:30px;margin-bottom:10px">
+          <el-col :span="4"
+                  :offset="20">
+
+            <el-button @click="loadData()">取 消</el-button>
+            <el-button type="primary"
+                       @click="createConceptset('NewConceptSets')">确 定</el-button>
+
+          </el-col>
+        </el-row>
+      </el-form-item>
     </el-form>
-    <el-row style="margin-top:10px;margin-bottom:10px"
-            type="flex"
-            justify="center">
-      <el-col :span="20">
-        <el-tabs v-model="activeName"
-                 type="card"
-                 @tab-click="handleClick">
-          <el-tab-pane label="待选择"
-                       name="first">
-            <el-table :data="tableAll"
-                      ref="multipleTable"
-                      valign="center"
-                      height="300"
-                      border
-                      style="width: 100%"
-                      @selection-change="handleSelectionChange">
-              <el-table-column type="selection"
-                               label="全选"
-                               width="60"></el-table-column>
-              <el-table-column prop="subject"
-                               label="概念编号"
-                               width="120"></el-table-column>
-              <el-table-column prop="label"
-                               label="概念名称"
-                               width="160"></el-table-column>
-              <el-table-column prop="domain"
-                               label="概念领域"
-                               width="90"></el-table-column>
-              <el-table-column prop="class"
-                               label="概念类型"
-                               width="90"></el-table-column>
-              <el-table-column prop="voc"
-                               label="术语表"
-                               width="90"></el-table-column>
-              <el-table-column prop="std"
-                               label="标准概念"
-                               width="90"></el-table-column>
-              <el-table-column width="100">
-                <template slot="header"
-                          slot-scope="scope">
-                  <el-checkbox :indeterminate="isIndeterminate1"
-                               v-model="checkAll1"
-                               @change="handleCheckAllExcludeditemsChange">排除</el-checkbox>
-                </template>
-                <template slot-scope="scope">
-                  <el-checkbox-group v-model="checkedExcludeditems"
-                                     @change="handleCheckedExcludeditemsChange">
-                    <el-checkbox :label="scope.row.Except">&nbsp;</el-checkbox>
-                  </el-checkbox-group>
-                </template>
-              </el-table-column>
-              <el-table-column>
-                <template slot="header"
-                          slot-scope="scope">
-                  <el-checkbox :indeterminate="isIndeterminate2"
-                               v-model="checkAll2"
-                               @change="handleCheckAllChilerenConceptsChange">子概念</el-checkbox>
-                </template>
-                <template slot-scope="scope">
-                  <el-checkbox-group v-model="checkedChilerenConcepts"
-                                     @change="handleCheckedChilerenConceptsChange">
-                    <el-checkbox :label="scope.row.ChilerenConcept">&nbsp;</el-checkbox>
-                  </el-checkbox-group>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-tab-pane>
-          <el-tab-pane label="已选择"
-                       name="second">
-            <el-table :data="tableChecked"
-                      ref="multipleTable2"
-                      valign="center"
-                      height="300"
-                      border
-                      style="width: 100%"
-                      @selection-change="handleSelectionChange2">
-              <el-table-column type="selection"
-                               label="全选"
-                               width="60"></el-table-column>
-              <el-table-column prop="subject"
-                               label="概念编号"
-                               width="120"></el-table-column>
-              <el-table-column prop="label"
-                               label="概念名称"
-                               width="160"></el-table-column>
-              <el-table-column prop="domain"
-                               label="概念领域"
-                               width="90"></el-table-column>
-              <el-table-column prop="class"
-                               label="概念类型"
-                               width="90"></el-table-column>
-              <el-table-column prop="voc"
-                               label="术语表"
-                               width="90"></el-table-column>
-              <el-table-column prop="std"
-                               label="标准概念"
-                               width="90"></el-table-column>
-              <el-table-column width="100">
-                <template slot="header"
-                          slot-scope="scope">
-                  <el-checkbox :indeterminate="isIndeterminate1"
-                               v-model="checkAll1"
-                               @change="handleCheckAllExcludeditemsChange">排除</el-checkbox>
-                </template>
-                <template slot-scope="scope">
-                  <el-checkbox-group v-model="checkedExcludeditems"
-                                     @change="handleCheckedExcludeditemsChange">
-                    <el-checkbox :label="scope.row.Except">&nbsp;</el-checkbox>
-                  </el-checkbox-group>
-                </template>
-              </el-table-column>
-              <el-table-column>
-                <template slot="header"
-                          slot-scope="scope">
-                  <el-checkbox :indeterminate="isIndeterminate2"
-                               v-model="checkAll2"
-                               @change="handleCheckAllChilerenConceptsChange">子概念</el-checkbox>
-                </template>
-                <template slot-scope="scope">
-                  <el-checkbox-group v-model="checkedChilerenConcepts"
-                                     @change="handleCheckedChilerenConceptsChange">
-                    <el-checkbox :label="scope.row.ChilerenConcept">&nbsp;</el-checkbox>
-                  </el-checkbox-group>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-tab-pane>
-        </el-tabs>
-      </el-col>
-    </el-row>
   </div>
 </template>
 
@@ -460,20 +472,13 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      this.$emit('getdata', this.multipleSelection);
-      this.$emit('getdata3', this.NewConceptSets.SetName);
-      this.$emit('getdata4', this.NewConceptSets.SetDescription);
     },
     handleCheckAllExcludeditemsChange(val) {
       this.checkedExcludeditems = val ? this.Excludeditems : [];
-      this.$emit('getdata1', this.checkedExcludeditems);
       this.isIndeterminate1 = false;
       //console.log(1111)
     },
     handleCheckedExcludeditemsChange(value) {
-      this.$emit('getdata1', this.checkedExcludeditems);
-      this.$emit('getdata3', this.NewConceptSets.SetName);
-      this.$emit('getdata4', this.NewConceptSets.SetDescription);
       this.checkedExcludeditems = value;
       let checkedCount = value.length;
       this.checkAll1 = checkedCount === this.Excludeditems.length;
@@ -482,19 +487,110 @@ export default {
     },
     handleCheckAllChilerenConceptsChange(val) {
       this.checkedChilerenConcepts = val ? this.ChilerenConcepts : [];
-      this.$emit('getdata2', this.checkedChilerenConcepts);
-      this.$emit('getdata3', this.NewConceptSets.SetName);
-      this.$emit('getdata4', this.NewConceptSets.SetDescription);
       this.isIndeterminate2 = false;
     },
     handleCheckedChilerenConceptsChange(value) {
-      this.$emit('getdata2', this.checkedChilerenConcepts);
-      this.$emit('getdata3', this.NewConceptSets.SetName);
-      this.$emit('getdata4', this.NewConceptSets.SetDescription);
       let checkedCount = value.length;
       this.checkAll2 = checkedCount === this.ChilerenConcepts.length;
       this.isIndeterminate2 =
         checkedCount > 0 && checkedCount < this.ChilerenConcepts.length;
+    },
+    //---新增/编辑/查看概念集---
+    postConceptData() {
+      this.$emit('createConceptVisible', false);
+      this.$emit('editConceptVisible', false);
+      this.concepts = [];
+      for (var i = 0; i < this.multipleSelection.length; i++) {
+        this.concepts.push({
+          conceptCode: this.multipleSelection[i].subject,
+          excludeTag: "0",
+          childTag: "0"
+        });
+      }
+      for (var i = 0; i < this.checkedExcludeditems.length; i++) {
+        this.concept_exist = false;
+        var a = []
+        a = this.checkedExcludeditems[i].split('#')
+        for (var j = 0; j < this.concepts.length; j++) {
+          if (a[0].indexOf(this.concepts[j].conceptCode) != -1) {
+            this.concept_exist = true;
+            this.concepts[j].excludeTag = "1"
+          }
+        }
+        if (!this.concept_exist) {
+          this.concepts.push({
+            conceptCode: a[0],
+            excludeTag: "1",
+            childTag: "0"
+          });
+        }
+      }
+      for (var i = 0; i < this.checkedChilerenConcepts.length; i++) {
+        this.concept_exist = false;
+        var a = []
+        a = this.checkedChilerenConcepts[i].split('#')
+        for (var j = 0; j < this.concepts.length; j++) {
+          if (a[0].indexOf(this.concepts[j].conceptCode) != -1) {
+            this.concept_exist = true;
+            this.concepts[j].childTag = "1"
+          }
+        }
+        if (!this.concept_exist) {
+          this.concepts.push({
+            conceptCode: a[0],
+            excludeTag: "0",
+            childTag: "1"
+          });
+        }
+      }
+      //console.log(this.concepts)
+    },
+    createConceptset(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          //alert('submit!');
+          this.$options.methods.postConceptData.bind(this)()
+          if (this.existConceptSetId) {
+            axios.post('/conceptSet/update', ({
+              "token": this.GLOBAL.token,
+              "ConceptSetId": this.existConceptSetId,
+              "conceptSetName": this.NewConceptSets.SetName,
+              "description": this.NewConceptSets.SetDescription,
+              "concepts": this.concepts,
+            }))
+              .then(response => {
+                if (response.data.code == "0") {
+                  //this.$message.success("新建成功！")
+                  this.reload()
+                }
+              })
+          } else {
+            axios.post('/conceptSet/createConceptSet?token=' + this.GLOBAL.token, ({
+              "conceptSetName": this.NewConceptSets.SetName,
+              "description": this.NewConceptSets.SetDescription,
+              "concepts": this.concepts,
+            }))
+              .then(response => {
+                if (response.data.code == "0") {
+                  //this.$message.success("新建成功！")
+                  this.reload()
+                }
+              })
+          }
+        } else {
+          //console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    editConceptSet() {
+      this.$options.methods.postConceptData.bind(this)()
+
+    },
+    loadData() {
+      this.$emit('createConceptVisible', false);
+      this.$emit('editConceptVisible', false);
+      //this.reload()
     },
   },
 }
