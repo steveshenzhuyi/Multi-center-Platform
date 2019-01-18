@@ -1,114 +1,121 @@
 <template>
   <div>
+
     <el-form :model="ttest_1Form"
              ref="ttest_1Form"
-             label-width="100px"
-             class="demo-ttest_1Form">
-
-      <el-row style="margin-top:10px;margin-bottom:10px">
-        模型名称: &nbsp;<el-input v-model="ttest_1Form.methodname"
+             label-width="100px">
+      <el-form-item prop="methodname"
+                    label="模型名称"
+                    :rules="[{required: true, message: '请输入模型名称', trigger: 'blur' }]">
+        <el-input v-model="ttest_1Form.methodname"
                   size="mini"
                   style="width:200px;"></el-input>
-      </el-row>
-      <el-row>
-        <el-col :span="20">
-          <el-row :gutter="10">
-            <el-col :span="10">
-              <fieldset style=" min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-                <el-table :data="Varlist"
-                          ref="singleTable"
-                          max-height="200"
-                          tooltip-effect="dark"
-                          :row-class-name="tableRowClassName"
-                          @row-click="getRowdetail1"
-                          @current-change="handleCurrentChange1">
-                  <!-- <el-table-column type="selection"
-                                 width="55">
-                </el-table-column> -->
-
-                  <el-table-column prop="name">
-                  </el-table-column>
-                  <el-table-column prop="featureId"
-                                   v-if="idshow">
-
-                  </el-table-column>
-
-                </el-table>
-              </fieldset>
-            </el-col>
-            <el-col :span="4">
-              <div style="margin-top: 40%; text-align:center;">
-                <!-- 右移 -->
-                <el-button type="info"
-                           @click="rightshift"
-                           icon="icon el-icon-d-arrow-right"></el-button>
-
-              </div>
-              <!-- 左移 -->
-              <div style="margin-top: 30%; text-align:center;">
-                <el-button type="info"
-                           @click="leftshift"
-                           icon="icon el-icon-d-arrow-left"></el-button>
-
-              </div>
-            </el-col>
-            <el-col :span="10">
-              <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-                <el-table :data="Chosenlist"
-                          max-height="200"
-                          ref="singleTable"
-                          tooltip-effect="dark"
-                          @current-change="handleCurrentChange2">
-                  <!-- <el-table-column type="selection"
-                                 width="55">
-                </el-table-column> -->
-                  <el-table-column prop="name"
-                                   label="目标变量">
-                  </el-table-column>
-                  <el-table-column prop="featureId"
-                                   v-if="idshow2">
-
-                  </el-table-column>
-
-                </el-table>
-              </fieldset>
-            </el-col>
-          </el-row>
-        </el-col>
-
-        <el-col :span="4">
-          <el-row style="margin-top: 30%;margin-left:25%;margin-right:25% ">
-            <el-button type="primary"
-                       v-if="isnew"
-                       @click="save">确定</el-button>
-            <el-button type="primary"
-                       v-else
-                       @click="edit">编辑</el-button>
-          </el-row>
-          <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
-            <el-button type="primary"
-                       @click="cancel">取消</el-button>
-          </el-row>
-          <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
-            <el-button type="primary"
-                       @click="help">帮助</el-button>
-          </el-row>
-        </el-col>
-      </el-row>
-
-      <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
-        <el-input-number v-model="ttest_1Form.percent"
-                         controls-position="right"
-                         :min="0"
-                         :max="100"></el-input-number>%
-
-      </el-row>
-      <el-row style="margin-top:10px;margin-bottom:10px">零假设的期望值：
-        <el-input style="width:180px;"
-                  v-model="ttest_1Form.expect"></el-input>
-
-      </el-row>
+      </el-form-item>
     </el-form>
+    <!-- <el-row style="margin-top:10px;margin-bottom:10px">
+      模型名称: &nbsp;<el-input v-model="ttest_1Form.methodname"
+                size="mini"
+                style="width:200px;"></el-input>
+    </el-row> -->
+    <el-row :gutter="20">
+      <el-col :span="20">
+        <el-row :gutter="10">
+          <el-col :span="10">
+            <fieldset style=" min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+              <el-table :data="Varlist"
+                        ref="singleTable"
+                        max-height="200"
+                        tooltip-effect="dark"
+                        :row-class-name="tableRowClassName"
+                        @row-click="getRowdetail1"
+                        @current-change="handleCurrentChange1">
+                <!-- <el-table-column type="selection"
+                                 width="55">
+                </el-table-column> -->
+
+                <el-table-column prop="name">
+                </el-table-column>
+                <el-table-column prop="featureId"
+                                 v-if="idshow">
+
+                </el-table-column>
+
+              </el-table>
+            </fieldset>
+          </el-col>
+          <el-col :span="4">
+            <div style="margin-top: 40%; text-align:center;">
+              <!-- 右移 -->
+              <el-button type="info"
+                         @click="rightshift"
+                         icon="icon el-icon-d-arrow-right"></el-button>
+
+            </div>
+            <!-- 左移 -->
+            <div style="margin-top: 30%; text-align:center;">
+              <el-button type="info"
+                         @click="leftshift"
+                         icon="icon el-icon-d-arrow-left"></el-button>
+
+            </div>
+          </el-col>
+          <el-col :span="10">
+            <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+              <el-table :data="Chosenlist"
+                        max-height="200"
+                        ref="singleTable"
+                        tooltip-effect="dark"
+                        @current-change="handleCurrentChange2">
+                <!-- <el-table-column type="selection"
+                                 width="55">
+                </el-table-column> -->
+                <el-table-column prop="name"
+                                 label="目标变量">
+                </el-table-column>
+                <el-table-column prop="featureId"
+                                 v-if="idshow2">
+
+                </el-table-column>
+
+              </el-table>
+            </fieldset>
+          </el-col>
+        </el-row>
+      </el-col>
+
+      <el-col :span="4">
+        <el-row style="margin-top: 30%; ">
+          <el-button type="primary"
+                     v-if="isnew"
+                     @click="save">确定</el-button>
+          <el-button type="primary"
+                     v-else
+                     @click="edit">编辑</el-button>
+        </el-row>
+        <el-row style="margin-top: 15%; ">
+          <el-button type="primary"
+                     @click="cancel">取消</el-button>
+        </el-row>
+        <el-row style="margin-top: 15%;">
+          <el-button type="primary"
+                     @click="help">帮助</el-button>
+        </el-row>
+      </el-col>
+    </el-row>
+
+    <el-row style="margin-top:10px;margin-bottom:10px">置信区间百分比：
+      <el-input-number v-model="ttest_1Form.percent"
+                       controls-position="right"
+                       :min="0"
+                       :max="100"></el-input-number>%
+
+    </el-row>
+    <el-row style="margin-top:10px;margin-bottom:10px">零假设的期望值：
+      <el-input style="width:180px;"
+                v-model="ttest_1Form.expect"></el-input>
+
+    </el-row>
+    \
   </div>
 </template>
 <script>

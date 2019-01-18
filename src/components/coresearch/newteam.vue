@@ -4,7 +4,9 @@
       <el-col :span="24">
         <el-steps :active="CollaborState"
                   align-center>
-          <el-step title="1 研究开始"></el-step>
+          <el-step title="1 研究开始"
+                   style="cursor:pointer"
+                   @click.native="goMyTeam()"></el-step>
           <el-step title="2 团队建立"></el-step>
           <el-step title="3 多中心运算"></el-step>
           <el-step title="4 成果讨论"></el-step>
@@ -55,7 +57,7 @@
                 <div>项目发起日期：{{detail.collaborInfo.CREATEDATE}}</div>
               </el-col>
             </el-row>
-            <div v-if="1">
+            <div v-if="inviteState">
               <el-row v-for="(n,index) in number"
                       :key="index"
                       type="flex"
@@ -149,14 +151,15 @@
     </el-row>
     <el-row type="flex"
             justify="center"
-            style="margin-top:10px;margin-bottom:10px">
+            style="margin-top:10px;margin-bottom:10px"
+            v-if="inviteState">
       <!-- <el-col :span="5"
               :offset="7">
         <el-button type="primary">生成</el-button>
       </el-col> -->
 
       <el-button type="primary"
-                 @click="goResult()">构建团队</el-button>
+                 @click="finishCreateNewTeam()">构建团队</el-button>
 
     </el-row>
 
@@ -168,6 +171,7 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      inviteState: false,
       number: 1,
       select1: [],
       select2: [],
@@ -216,21 +220,26 @@ export default {
     //   } else if (this.people.PARTICIPATIONSTATE == 2) {
     //     return "已拒绝"
     //   }
-    // },
+    //},
     Initiator: function () {
       return this.detail.collaborMemberList.splice(0, 1)
     },
     CollaborState: function () {
       //console.log("state", this.detail.collaborInfo.COLLABORATIONSTATECODE)
-      if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 0 || this.detail.collaborInfo.COLLABORATIONSTATECODE == 1) {
+      if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 0) {
+        this.inviteState = true
         return 1
-      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 2 || this.detail.collaborInfo.COLLABORATIONSTATECODE == 3) {
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 1 || this.detail.collaborInfo.COLLABORATIONSTATECODE == 2) {
+        this.inviteState = false
         return 2
-      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 4) {
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 3) {
+        this.inviteState = false
         return 3
-      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 5) {
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 4) {
+        this.inviteState = false
         return 4
-      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 6) {
+      } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 5) {
+        this.inviteState = false
         return 5
       }
     }
@@ -373,7 +382,19 @@ export default {
       this.select3 = []
       this.name = []
     },
-    goResult() {
+    finishCreateNewTeam() {
+      this.goMCCompute()
+    },
+    goMyTeam() {
+      this.$router.push({
+        path: 'myteam',
+        query:
+          {
+            collaborationId: this.$route.query.collaborationId
+          }
+      });
+    },
+    goMCCompute() {
       // this.$router.push({
       //   path: 'result',
       //   query:
@@ -391,7 +412,7 @@ export default {
           if (response.data.code == 0) {
             console.log("newteamsuccess")
             this.$router.push({
-              path: 'result',
+              path: 'mccompute',
               query:
                 {
                   collaborationId: this.$route.query.collaborationId

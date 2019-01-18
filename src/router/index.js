@@ -72,7 +72,10 @@ export default new Router({
               path: "analysisresult",
               name: "结果分析",
               component: () =>
-                import("@/components/indiresearch/analysisResult")
+                import("@/components/indiresearch/analysisResult"),
+              meta: {
+                title: "结果分析"
+              }
             },
             {
               path: "conceptsetList",
@@ -144,11 +147,11 @@ export default new Router({
               }
             },
             {
-              path: "newcoresearch",
-              name: "新建团队研究",
-              component: () => import("@/components/coresearch/newCoresearch"),
+              path: "mccompute",
+              name: "多中心计算",
+              component: () => import("@/components/coresearch/mccompute"),
               meta: {
-                title: "新建团队研究"
+                title: "多中心计算"
               }
             }
           ]
@@ -199,11 +202,19 @@ export default new Router({
           component: () => import("@/components/nodemanage/nodemanage"),
           children: [
             {
-              path: "node",
-              name: "节点状态",
-              component: () => import("@/components/nodemanage/node"),
+              path: "nodelist",
+              name: "节点列表",
+              component: () => import("@/components/nodemanage/nodeList"),
               meta: {
-                title: "节点状态"
+                title: "节点列表"
+              }
+            },
+            {
+              path: "nodedetail",
+              name: "节点详情",
+              component: () => import("@/components/nodemanage/nodeDetail"),
+              meta: {
+                title: "节点详情"
               }
             },
             {

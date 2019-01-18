@@ -35,15 +35,13 @@
     <el-row style="margin-top:30px;margin-bottom:10px">
       <el-steps :active="CollaborState"
                 align-center>
-        <el-step title="1 研究开始"
-                 style="cursor:pointer"
-                 @click.native="goJoinTeam()"></el-step>
+        <el-step title="1 研究开始"></el-step>
         <el-step title="2 团队建立"
                  style="cursor:pointer"
                  @click.native="goNewTeam()"></el-step>
         <el-step title="3 多中心运算"
                  style="cursor:pointer"
-                 @click.native="goCoResearch()"></el-step>
+                 @click.native="goMCCompute()"></el-step>
         <el-step title="4 成果讨论"
                  style="cursor:pointer"
                  @click.native="goResult()"></el-step>
@@ -308,9 +306,9 @@ export default {
           }
       });
     },
-    goCoResearch() {
+    goMCCompute() {
       this.$router.push({
-        path: 'newcoresearch',
+        path: 'mccompute',
         query:
           {
             collaborationId: Number(this.collaborationId)

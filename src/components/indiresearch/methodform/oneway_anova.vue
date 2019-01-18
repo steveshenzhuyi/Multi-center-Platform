@@ -1,11 +1,22 @@
 <template>
   <div>
+    <el-form :model="anova_1Form"
+             ref="anova_1Form"
+             label-width="100px">
+      <el-form-item prop="methodname"
+                    label="模型名称"
+                    :rules="[{required: true, message: '请输入模型名称', trigger: 'blur' }]">
+        <el-input v-model="anova_1Form.methodname"
+                  size="mini"
+                  style="width:200px;"></el-input>
+      </el-form-item>
+    </el-form>
 
-    <el-row style="margin-top:10px;margin-bottom:10px">
+    <!-- <el-row style="margin-top:10px;margin-bottom:10px">
       模型名称: &nbsp;<el-input v-model="anova_1Form.methodname"
                 size="mini"
                 style="width:200px;"></el-input>
-    </el-row>
+    </el-row> -->
     <el-row :gutter="20">
       <el-col :span="20">
 
@@ -104,7 +115,7 @@
 
       </el-col>
       <el-col :span="4">
-        <el-row style="margin-top: 30%;margin-left:25%;margin-right:25% ">
+        <el-row style="margin-top: 30%; ">
           <el-button type="primary"
                      v-if="isnew"
                      @click="save">确定</el-button>
@@ -112,11 +123,11 @@
                      v-else
                      @click="edit">编辑</el-button>
         </el-row>
-        <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
+        <el-row style="margin-top: 15%; ">
           <el-button type="primary"
                      @click="cancel">取消</el-button>
         </el-row>
-        <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
+        <el-row style="margin-top: 15%; ">
           <el-button type="primary"
                      @click="help">帮助</el-button>
         </el-row>
@@ -187,6 +198,7 @@
 
       </el-col>
     </el-row>
+
   </div>
 </template>
 <script>
@@ -209,7 +221,7 @@ export default {
       currentRow1: [],
       currentRow3: [],
       // Varlist: [],
-      Varlist: [{ 'featureId': 123, 'name': '变量1' }, { 'featureId': 124, 'name': '变量2' }, { 'featureId': 127, 'name': '变量3' }, { 'featureId': 129, 'name': '变量4' }, { 'featureId': 122, 'name': '变量5' }],
+      Varlist: [{ 'featureId': 123, 'name': '性别' }, { 'featureId': 124, 'name': '年龄' }, { 'featureId': 127, 'name': '变量3' }, { 'featureId': 129, 'name': '变量4' }, { 'featureId': 122, 'name': '变量5' }],
       Chosenlist1: [],
       Chosenlist2: [],
       index1: -1,

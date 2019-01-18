@@ -11,9 +11,15 @@
                class="cardBox"
                shadow="hover"
                @click="goNewResearch()">
+            <div>
 
-            <span class="el-icon-plus"></span>
+              <el-row><i class="el-icon-plus"></i></el-row>
+              <el-row>
+                <div style="font-size: 15px;">新建研究</div>
+              </el-row>
+            </div>
           </div>
+
         </el-tooltip>
       </li>
 
@@ -27,8 +33,10 @@
                class="cardBox"
                shadow="hover"
                @click="goJoinTeam()">
-
-            <span class="el-icon-circle-plus"></span>
+            <el-row><i class="el-icon-circle-plus"></i></el-row>
+            <el-row>
+              <div style="font-size: 15px;">加入团队</div>
+            </el-row>
           </div>
         </el-tooltip>
       </li>
@@ -172,7 +180,7 @@ export default {
           break;
         case 1:
           this.$router.push({
-            path: 'newcoresearch',
+            path: 'mccompute',
             query:
               {
                 collaborationId: id
@@ -181,7 +189,7 @@ export default {
           break;
         case 2:
           this.$router.push({
-            path: 'newcoresearch',
+            path: 'mccompute',
             query:
               {
                 collaborationId: id
@@ -231,7 +239,7 @@ export default {
 #newresearch {
   vertical-align: middle;
   text-align: center;
-  font-size: 105px;
+  font-size: 85px;
   color: dimgrey;
   height: 170px;
   cursor: pointer;

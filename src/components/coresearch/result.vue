@@ -3,9 +3,15 @@
     <el-row style="margin-top:30px;margin-bottom:10px">
       <el-steps :active="3"
                 align-center>
-        <el-step title="1 研究开始"></el-step>
-        <el-step title="2 团队建立"></el-step>
-        <el-step title="3 多中心运算"></el-step>
+        <el-step title="1 研究开始"
+                 style="cursor:pointer"
+                 @click.native="goMyTeam()"></el-step>
+        <el-step title="2 团队建立"
+                 style="cursor:pointer"
+                 @click.native="goNewTeam()"></el-step>
+        <el-step title="3 多中心运算"
+                 style="cursor:pointer"
+                 @click.native="goMCCompute()"></el-step>
         <el-step title="4 成果讨论"></el-step>
         <el-step title="5 资格审核"></el-step>
       </el-steps>
@@ -218,6 +224,34 @@ export default {
           message: '已取消'
         });
       });
+    },
+    goMyTeam() {
+      this.$router.push({
+        path: 'myteam',
+        query:
+          {
+            collaborationId: this.$route.query.collaborationId
+          }
+      });
+    },
+    goNewTeam() {
+      console.log(this.researchDetail)
+      this.$router.push({
+        path: 'newteam',
+        query:
+          {
+            collaborationId: Number(this.collaborationId)
+          }
+      });
+    },
+    goMCCompute() {
+      this.$router.push({
+        path: 'mccompute',
+        query:
+          {
+            collaborationId: Number(this.collaborationId)
+          }
+      })
     },
     goQualification() {
       this.$router.push({
