@@ -4,7 +4,7 @@
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="8">
-        <el-row style="margin-top:30px;margin-bottom:30px">当前节点列表： </el-row>
+        <el-row style="margin-top:30px;margin-bottom:30px"><i class="myIcon-jilu"></i>当前节点列表： </el-row>
         <el-table :data="nodeList"
                   border
                   style="width: 100%"
@@ -38,7 +38,7 @@
       </el-col>
       <el-col :span="10"
               :offset="2">
-        <el-card>
+        <el-card style="margin-top:30px;margin-bottom:30px">
           <el-row type="flex"
                   justify="center"
                   style="margin-top:30px;margin-bottom:10px">
@@ -62,7 +62,7 @@
             </el-col>
           </el-row>
         </el-card>
-        <el-row style="margin-top:30px;margin-bottom:30px">最新操作信息： </el-row>
+        <el-row style="margin-top:30px;margin-bottom:30px"><i class="myIcon-jilu"></i>最新操作信息： </el-row>
         <el-table :data="latestOperation"
                   border
                   style="width: 100%">
@@ -137,3 +137,8 @@ export default {
   }
 }
 </script>
+
+<style>
+@import "../../assets/AdminInfo/css_admin/css_admin.css";
+@import "../../assets/AdminInfo/css_admin/myIcon/iconfont.css";
+</style>
