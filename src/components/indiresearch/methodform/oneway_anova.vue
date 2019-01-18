@@ -1,11 +1,22 @@
 <template>
   <div>
+    <el-form :model="anova_1Form"
+             ref="anova_1Form"
+             label-width="100px">
+      <el-form-item prop="methodname"
+                    label="模型名称"
+                    :rules="[{required: true, message: '请输入模型名称', trigger: 'blur' }]">
+        <el-input v-model="anova_1Form.methodname"
+                  size="mini"
+                  style="width:200px;"></el-input>
+      </el-form-item>
+    </el-form>
 
-    <el-row style="margin-top:10px;margin-bottom:10px">
+    <!-- <el-row style="margin-top:10px;margin-bottom:10px">
       模型名称: &nbsp;<el-input v-model="anova_1Form.methodname"
                 size="mini"
                 style="width:200px;"></el-input>
-    </el-row>
+    </el-row> -->
     <el-row :gutter="20">
       <el-col :span="20">
 
@@ -210,7 +221,7 @@ export default {
       currentRow1: [],
       currentRow3: [],
       // Varlist: [],
-      Varlist: [{ 'featureId': 123, 'name': '变量1' }, { 'featureId': 124, 'name': '变量2' }, { 'featureId': 127, 'name': '变量3' }, { 'featureId': 129, 'name': '变量4' }, { 'featureId': 122, 'name': '变量5' }],
+      Varlist: [{ 'featureId': 123, 'name': '性别' }, { 'featureId': 124, 'name': '年龄' }, { 'featureId': 127, 'name': '变量3' }, { 'featureId': 129, 'name': '变量4' }, { 'featureId': 122, 'name': '变量5' }],
       Chosenlist1: [],
       Chosenlist2: [],
       index1: -1,

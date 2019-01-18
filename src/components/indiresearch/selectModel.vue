@@ -47,9 +47,9 @@
           <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button-group>
-                <el-button type="info"
+                <!-- <el-button type="info"
                            plain
-                           @click="Check(scope.$index)">查看</el-button>
+                           @click="Check(scope.$index)">查看</el-button> -->
                 <el-button type="primary"
                            plain
                            @click="Edit(scope.$index)">编辑</el-button>
