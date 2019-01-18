@@ -1,5 +1,21 @@
 <template>
   <div>
+    <el-row style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="24">
+        <el-steps :active="2"
+                  align-center>
+          <el-step title="1 研究开始"
+                   style="cursor:pointer"
+                   @click.native="goMyTeam()"></el-step>
+          <el-step title="2 团队建立"
+                   style="cursor:pointer"
+                   @click.native="goNewTeam()"></el-step>
+          <el-step title="3 多中心运算"></el-step>
+          <el-step title="4 成果讨论"></el-step>
+          <el-step title="5 资格审核"></el-step>
+        </el-steps>
+      </el-col>
+    </el-row>
     <el-row type="flex"
             align="middle"
             style="margin-top:30px;margin-bottom:10px">
@@ -98,14 +114,91 @@ export default {
       collaborationId: "",
       ifanalysis: false,
       ifgenerate: false,
+      detail: {
+        collaborInfo: {
+          COLLABORATIONSTATENAM: "",
+          COLLABORATIONSTATECODE: "",
+          NAME: "",
+          CREATEDATE: "",
+          TARGET: "",
+          PROPOSAL: "",
+          EXPECTEDOUTCOMES: "",
+          OUTCOMEDISTRIBUTION: ""
+        },
+        collaborMemberList: [
+          {
+            ORGANIZATIONNAME: "",
+            ORGANIZATIONCODE: "",
+            MEMBERNAME: "",
+            SORTNO: 1,
+            USERID: "",
+            INITIATORTAG: "",
+            PARTICIPATIONSTATE: "",
+            NAME: "",
+            CREATEDATE: "",
+            TARGET: "",
+            PROPOSAL: "",
+            EXPECTEDOUTCOMES: "",
+            OUTCOMEDISTRIBUTION: ""
+          }
+        ]
+      },
     }
   },
   mounted() {
-  },
-  computed: {
+    this.getCollaborInfo(this.$route.query.collaborationId)
 
   },
+  computed: {
+    // ParticipationState: function () {
+    //   if (this.people.PARTICIPATIONSTATE == 0) {
+    //     return "待响应"
+    //   } else if (this.people.PARTICIPATIONSTATE == 1) {
+    //     return "已参加"
+    //   } else if (this.people.PARTICIPATIONSTATE == 2) {
+    //     return "已拒绝"
+    //   }
+    //},
+
+    // CollaborState: function () {
+    //   //console.log("state", this.detail.collaborInfo.COLLABORATIONSTATECODE)
+    //   if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 0) {
+    //     this.inviteState = true
+    //     return 1
+    //   } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 1 || this.detail.collaborInfo.COLLABORATIONSTATECODE == 2) {
+    //     this.inviteState = false
+    //     return 2
+    //   } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 3) {
+    //     this.inviteState = false
+    //     return 3
+    //   } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 4) {
+    //     this.inviteState = false
+    //     return 4
+    //   } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 5) {
+    //     this.inviteState = false
+    //     return 5
+    //   }
+    // }
+  },
   methods: {
+    // getCollaborInfo(COLLABORATIONID) {
+    //   axios.get('collaboration/collaborInfo', {
+    //     params: {
+    //       token: this.GLOBAL.token,
+    //       collaborationId: COLLABORATIONID
+    //     }
+    //   })
+    //     .then((response) => {
+    //       if (response.data.code == 0) {
+    //         console.log("data", response.data.data)
+    //         this.detail = response.data.data
+
+    //       }
+    //     })
+    //     .catch(function (error) {
+    //       console.log("error", error);
+    //     });
+    // },
     corhortanalysis() {
       this.$message.success("开始分析！")
       this.ifanalysis = true
@@ -128,6 +221,24 @@ export default {
           }]
         });
       }, 1000);
+    },
+    goMyTeam() {
+      this.$router.push({
+        path: 'myteam',
+        query:
+          {
+            collaborationId: this.$route.query.collaborationId
+          }
+      });
+    },
+    goNewTeam() {
+      this.$router.push({
+        path: 'newteam',
+        query:
+          {
+            collaborationId: this.$route.query.collaborationId
+          }
+      });
     },
   }
 }
