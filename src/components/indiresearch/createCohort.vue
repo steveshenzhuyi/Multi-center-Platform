@@ -1,23 +1,25 @@
 <template>
   <div class="create-cohort-vue">
-    <el-steps :active="1"
-              style="padding-top:10px;padding-left:10px;padding-right:10px">
-      <el-step title="1 研究开始"
-               style="cursor:pointer"
-               @click.native="gonewResearch()"></el-step>
-      <el-step title="2 队列生成"
-               style="cursor:pointer"
-               @click.native="gocreateCohort()"></el-step>
-      <el-step title="3 变量生成"
-               style="cursor:pointer"
-               @click.native="gonewVariable()"></el-step>
-      <el-step title="4 模型选择"
-               style="cursor:pointer"
-               @click.native="goselectModel()"></el-step>
-      <el-step title="5 结果分析"
-               style="cursor:pointer"
-               @click.native="goanalysisResult()"></el-step>
-    </el-steps>
+    <div>
+      <el-steps :active="1"
+                style="padding-top:10px;padding-left:10px;padding-right:10px">
+        <el-step title="1 研究开始"
+                 style="cursor:pointer"
+                 @click.native="gonewResearch()"></el-step>
+        <el-step title="2 队列生成"
+                 style="cursor:pointer"
+                 @click.native="gocreateCohort()"></el-step>
+        <el-step title="3 变量生成"
+                 style="cursor:pointer"
+                 @click.native="gonewVariable()"></el-step>
+        <el-step title="4 模型选择"
+                 style="cursor:pointer"
+                 @click.native="goselectModel()"></el-step>
+        <el-step title="5 结果分析"
+                 style="cursor:pointer"
+                 @click.native="goanalysisResult()"></el-step>
+      </el-steps>
+    </div>
     <!-- 队列基本信息表单 -->
     <div class="user-fill-info"
          style="margin-top:20px">
@@ -103,29 +105,22 @@
                        v-for="(maindiv,index) in maindivs"
                        :id="maindiv.id"
                        :key="index"
+                       :viewdetails="viewdetails"
                        ref="mainCom">
             </component>
             <div class=main-condition-detail>
               <span style="padding-left:50%"
-                    @click="addMajor('maincondition')">
+                    @click="addMajor()">
                 <img src="../../assets/plus.png">
               </span>
             </div>
             <div class="limit-condition"
                  slot="footer"
                  style="display: block;">
-              <div><span>在主要事件发生日期之前，至少有</span>
-                <label><input class="PriorDays num-input"
-                         type="number"
-                         min="0"></label><span>天的记录，且该条件发生后，至少有</span>
-                <label><input class="PostDays num-input"
-                         type="number"
-                         min="0"></label>
-                <span>天的记录。</span></div>
-              <div>设定样本<select class="PrimaryLimitSelect">
+              <div>设定样本&nbsp;<select class="PrimaryLimitSelect">
                   <option value="earliest">最早</option>
                   <option value="latest">最晚</option>
-                </select>发生的主要条件记录，为该样本优先纳入队列的条件记录。</div>
+                </select>&nbsp;发生的主要条件记录，为该样本优先纳入队列的条件记录。</div>
             </div>
           </div>
           <!-- 次要条件 -->
@@ -148,11 +143,13 @@
             <component :is="minordiv.component"
                        v-for="(minordiv,index) in minordivs"
                        :id="minordiv.id"
-                       :key="index">
+                       :key="index"
+                       :viewdetails2="viewdetails2"
+                       ref="minorCom">
             </component>
             <div class=secondary-condition-detail>
               <span style="padding-left:50%"
-                    @click="addMinor('minorcondition')">
+                    @click="addMinor()">
                 <img src="../../assets/plus.png">
               </span>
             </div>
@@ -177,7 +174,7 @@
 </template>
 
 <script>
-import draggable from 'vuedraggable'
+// import draggable from 'vuedraggable'
 import Vue from 'vue'
 import axios from 'axios'
 import maincondition from './conditionDiv/mainCondition.vue'
@@ -185,7 +182,7 @@ import minorcondition from './conditionDiv/minorCondition.vue'
 
 export default {
   components: {
-    draggable,
+    // draggable,
     'maincondition': maincondition,
     'minorcondition': minorcondition,
   },
@@ -206,40 +203,48 @@ export default {
       },
       createInfo: {},
       importdetails: [],
-      maindivs: [{ component: "maincondition", id: 0 }],
-      maindivCount: 0,
-      minordivs: [{ component: "minorcondition", id: 0 }],
-      minordivCount: 0,
-      cohortId: '',
+      maindivs: [],
+      maindivCount: -1,
+      minordivs: [],
+      minordivCount: -1,
+      cohortId: '',//新建队列返回的队列id
       nextstep: true,
       viewCohortLibrary: false,
       cohortLib: [],//队列库列表
+      privateCohort: [],//已存在的队列
+      responsedetails: [],
+      viewdetails: [],//主要条件details
+      viewdetails2: [],//次要条件details
       limitvalue: '',
     }
   },
-  // mounted: function () {
-  //   this.getCohortDetail()
-  // },
+  mounted: function () {
+    this.addMajor()
+    this.addMinor()
+    // this.getStructure()
+    // 查看队列
+    // this.getCohortDetails()
+  },
   methods: {
     //新增主要条件--rzx
-    addMajor(component) {
+    addMajor() {
       this.maindivCount = this.maindivCount + 1
       this.maindivs.push({
-        'component': component,
+        'component': 'maincondition',
         'id': this.maindivCount
       })
-      // console.log(this.maindivs)
-      console.log(this.maindivCount)
+      console.log(this.maindivs)
+      // console.log(this.maindivCount)
     },
     //新增次要条件--rzx
-    addMinor(component) {
+    addMinor() {
       this.minordivCount = this.minordivCount + 1
       this.minordivs.push({
-        'component': component,
+        'component': 'minorcondition',
         'id': this.minordivCount
       })
-      // console.log(this.minordivs)
-      console.log(this.minordivCount)
+      console.log(this.minordivs)
+      // console.log(this.minordivCount)
     },
     //拼接队列创建条件--rzx
     fulfilCreateInfo(cohortInfo) {
@@ -333,7 +338,6 @@ export default {
         })
         .catch(_ => { });
     },
-
     //重置表单
     // resetForm(cohortInfo) {
     //   this.$refs[cohortInfo].resetFields();
@@ -363,8 +367,61 @@ export default {
       this.$router.push({
         path: 'analysisResult',
       });
-    }
-  }
+    },
+    //从资源结构得到队列ID
+    getStructure() {
+      axios.get('structure/getStructure', {
+        params: {
+          token: this.GLOBAL.token,
+        }
+      }).then((response) => {
+        this.privateCohort = JSON.parse(response.data.data.privateCohortStructure)
+        // console.log(this.privateCohort)
+      }).catch(function (error) {
+        console.log("error", error);
+      });
+    },
+    //获取队列详情--rzx
+    getCohortDetails() {
+      axios.get('cohort/getDetail', {
+        params: {
+          token: this.GLOBAL.token,
+          //输入队列Id
+          cohortId: 49
+        }
+      }).then((response) => {
+        if (response.data.msg = "获取成功") {
+          this.cohortInfo.name = response.data.data.name
+          this.cohortInfo.description = response.data.data.description
+          this.responsedetails = response.data.data.detail
+          this.maindivCount = this.responsedetails[this.responsedetails.length - 1].layer1SortNo
+          // for (var i = 1; i < this.maindivCount + 1; i++) {
+          //   this.maindivs.push({
+          //     'component': 'maincondition',
+          //     'id': i
+          //   })
+          // }
+          this.maindivs = []
+          for (var i = 0; i < this.maindivCount + 1; i++) {
+            console.log(this.maindivs)
+            this.viewdetails[i] = []
+            this.responsedetails.forEach(item => {
+              if (item.typeSortNo == 1 && item.layer1SortNo == i) {
+                this.viewdetails[i].push(item)
+              }
+            })
+            this.maindivs.push({
+              'component': 'maincondition',
+              'id': i
+            })
+          }
+        }
+        console.log(this.viewdetails)
+      }).catch(function (error) {
+        console.log("error", error);
+      });
+    },
+  },
 }
 </script>
 <style>
@@ -398,18 +455,15 @@ export default {
   line-height: 1.5;
   color: #606266;
 }
+.PrimaryLimitSelect {
+  color: #606266;
+}
 .one-of-main-condition {
   transform: translate(10px, -12px);
   background: #ffffff;
   padding: 0 10px;
   width: 330px;
 }
-input.num-input {
-  width: 60px;
-  border: 0px;
-  border-bottom: 1px solid #d5d5d5;
-}
-
 .condition-code {
   background-color: #fff;
   padding: 0 10px;
