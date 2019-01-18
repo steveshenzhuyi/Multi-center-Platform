@@ -42,7 +42,7 @@
       <el-menu-item index="thirdparty">第三方数据使用</el-menu-item>
       <el-submenu index="nodemanage">
         <template slot="title">节点管理</template>
-        <el-menu-item index="nodemanage/node">节点状态</el-menu-item>
+        <el-menu-item index="nodemanage/nodeList">节点列表</el-menu-item>
         <el-menu-item index="nodemanage/operation">操作查询</el-menu-item>
       </el-submenu>
     </el-menu>
