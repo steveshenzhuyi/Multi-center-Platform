@@ -1,5 +1,6 @@
 <template>
-  <div class="create-cohort-vue">
+  <div class="create-cohort-vue"
+       style="margin:0px 15px 25px 15px">
     <div>
       <el-steps :active="1"
                 style="padding-top:10px;padding-left:10px;padding-right:10px">
@@ -43,50 +44,59 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="5"
-                :offset="5">
-          <el-card shadow="hover">
-            该队列入组人数xxx人
-          </el-card>
-        </el-col>
-        <el-col :span="3">
+        <el-col :span="3"
+                :offset="10">
           <el-button type="primary"
                      style="float:right;"
                      @click="toCohortLibrary">队列库</el-button>
           <!-- 队列库弹框 -->
           <el-dialog title="队列库列表"
                      :visible.sync="viewCohortLibrary"
-                     width="70%"
+                     width="80%"
                      :before-close="handleClose">
             <el-table :data="cohortLib"
                       style="width: 100%"
-                      height="250">
+                      height="300">
               <el-table-column label="队列名称"
-                               width="100">
+                               prop="label"
+                               align="center"
+                               min-width="20%">
               </el-table-column>
               <el-table-column label="队列描述"
-                               width="180">
+                               prop="id"
+                               align="center"
+                               min-width="30%">
               </el-table-column>
-              <el-table-column label="创建时间">
+              <el-table-column label="创建时间"
+                               align="center"
+                               min-width="10%">
               </el-table-column>
-              <el-table-column label="入组人数">
+              <el-table-column label="入组人数"
+                               align="center"
+                               min-width="10%">
               </el-table-column>
-              <el-table-column label="操作">
-                <el-button type="text"
-                           size="small">导入</el-button>
-                <el-button type="text"
-                           size="small">查看</el-button>
-                <el-button type="text"
-                           size="small">编辑</el-button>
-                <el-button type="text"
-                           size="small">删除</el-button>
+              <el-table-column label="操作"
+                               align="center"
+                               min-width="30%">
+                <template slot-scope="scope">
+                  <el-button type="text"
+                             size="small"
+                             @click="importCohortDetails(scope.row)">导入</el-button>
+                  <el-button type="text"
+                             size="small"
+                             @click="getCohortId(scope.row)">查看</el-button>
+                  <el-button type="text"
+                             size="small"
+                             @click="getCohortId(scope.row)">编辑</el-button>
+                  <el-button type="text"
+                             size="small"
+                             @click="deleteCohort(scope.row)">删除</el-button>
+                </template>
               </el-table-column>
             </el-table>
             <span slot="footer"
                   class="dialog-footer">
-              <el-button @click="viewCohortLibrary = false">取 消</el-button>
-              <el-button type="primary"
-                         @click="viewCohortLibrary = false">确 定</el-button>
+              <el-button @click="viewCohortLibrary = false">关 闭</el-button>
             </span>
           </el-dialog>
         </el-col>
@@ -155,6 +165,14 @@
             </div>
           </div>
           <div>
+            <el-col :span="5"
+                    :offset="17"
+                    style="margin-top:10px">
+              <div class="person-number">
+                <h3>入组人数</h3>
+                <span>xxx人</span>
+              </div>
+            </el-col>
             <!-- <el-button style="float:right;margin-top:10px"
                        @click="resetForm('cohortInfo')">取消</el-button> -->
             <el-button type="primary"
@@ -163,7 +181,7 @@
           </div>
           <div>
             <el-button type="primary"
-                       style="clear:both;float:right;margin-right:5px;margin-top:10px"
+                       style="clear:both;float:right;margin-right:5px;margin-top:-50px"
                        :disabled="nextstep"
                        @click="addtoCohortLibrary">下一步</el-button>
           </div>
@@ -211,6 +229,7 @@ export default {
       nextstep: true,
       viewCohortLibrary: false,
       cohortLib: [],//队列库列表
+      cohortLibId: '',
       privateCohort: [],//已存在的队列
       responsedetails: [],
       viewdetails: [],//主要条件details
@@ -221,7 +240,7 @@ export default {
   mounted: function () {
     this.addMajor()
     this.addMinor()
-    // this.getStructure()
+    this.getStructure()
     // 查看队列
     // this.getCohortDetails()
   },
@@ -368,7 +387,7 @@ export default {
         path: 'analysisResult',
       });
     },
-    //从资源结构得到队列ID
+    //从资源结构得到队列ID--rzx
     getStructure() {
       axios.get('structure/getStructure', {
         params: {
@@ -376,18 +395,19 @@ export default {
         }
       }).then((response) => {
         this.privateCohort = JSON.parse(response.data.data.privateCohortStructure)
-        // console.log(this.privateCohort)
+        console.log(this.privateCohort)
+        this.cohortLib = this.privateCohort
       }).catch(function (error) {
         console.log("error", error);
       });
     },
     //获取队列详情--rzx
-    getCohortDetails() {
+    getCohortDetails(id) {
       axios.get('cohort/getDetail', {
         params: {
           token: this.GLOBAL.token,
           //输入队列Id
-          cohortId: 49
+          cohortId: id
         }
       }).then((response) => {
         if (response.data.msg = "获取成功") {
@@ -401,7 +421,6 @@ export default {
           //     'id': i
           //   })
           // }
-          this.maindivs = []
           for (var i = 0; i < this.maindivCount + 1; i++) {
             console.log(this.maindivs)
             this.viewdetails[i] = []
@@ -421,21 +440,47 @@ export default {
         console.log("error", error);
       });
     },
+    //导入队列详情--rzx
+    importCohortDetails(row) {
+      console.log(row)
+      this.maindivs = []
+      this.getCohortDetails(row.id)
+      this.viewCohortLibrary = false
+      this.$message({
+        message: '队列导入成功！',
+        type: 'success',
+        duration: 2000
+      });
+    },
+    //队列库列表得到队列Id--rzx
+    getCohortId(row) {
+      console.log(row)
+      this.cohortLibId = row.id
+      console.log(this.cohortLibId)
+    },
+    //删除队列--rzx
+    deleteCohort(row) {
+      console.log(row)
+    }
   },
 }
 </script>
 <style>
 .main-condition {
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
+  border: 1px solid #409eff;
+  border-radius: 6px;
   display: block;
   /* margin-top: 40px; */
 }
 .main-condition-detail:hover,
 .secondary-condition-detail:hover {
-  background-color: rgba(234, 235, 242, 0.67);
+  background-color: #ebeef5;
 }
 .secondary-condition {
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
+  border: 1px solid #409eff;
+  border-radius: 6px;
   display: block;
   margin-top: 40px;
 }
@@ -447,6 +492,7 @@ export default {
   position: relative;
   margin: 20px;
   border: 1px solid #ccc;
+  border-radius: 6px;
 }
 .limit-condition {
   margin-left: 10px;
@@ -460,9 +506,11 @@ export default {
 }
 .one-of-main-condition {
   transform: translate(10px, -12px);
-  background: #ffffff;
+  background: #fff;
   padding: 0 10px;
   width: 330px;
+  border-radius: 6px;
+  line-height: 30px;
 }
 .condition-code {
   background-color: #fff;
@@ -506,6 +554,14 @@ export default {
 }
 .siftingform {
   margin-top: 10px;
+}
+.person-number {
+  background-color: rgba(229, 246, 252, 0.767);
+  text-align: center;
+  line-height: 30px;
+  padding: 5px 0px 5px 0px;
+  border-radius: 6px;
+  color: #606266;
 }
 </style>
 
