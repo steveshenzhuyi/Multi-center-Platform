@@ -383,7 +383,7 @@ export default {
       this.name = []
     },
     finishCreateNewTeam() {
-      this.goNewCoresearch()
+      this.goMCCompute()
     },
     goMyTeam() {
       this.$router.push({
@@ -394,7 +394,7 @@ export default {
           }
       });
     },
-    goNewCoresearch() {
+    goMCCompute() {
       // this.$router.push({
       //   path: 'result',
       //   query:
@@ -412,7 +412,7 @@ export default {
           if (response.data.code == 0) {
             console.log("newteamsuccess")
             this.$router.push({
-              path: 'newcoresearch',
+              path: 'mccompute',
               query:
                 {
                   collaborationId: this.$route.query.collaborationId
