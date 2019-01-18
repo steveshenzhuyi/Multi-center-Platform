@@ -302,7 +302,7 @@ export default {
       this.EditRoleInfo = this.UserList[index].role
     },
     AgreeEditRole() {
-      // 传消息给后端，以及修改成功提示
+      // 传EditRoleId和EditRoleInfo给后端，以及修改成功提示
       this.UserList.find(item => item.id == this.EditRoleId).role = this.EditRoleInfo // 这句其实应该是刷新页面，从后端重新拿表
       this.CreateRoleText()
       this.EditRoleDialogVisible = false

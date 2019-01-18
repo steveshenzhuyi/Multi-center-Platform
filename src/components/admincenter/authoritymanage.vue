@@ -76,7 +76,7 @@
         </el-table>
       </el-col>
     </el-row>
-    <!-- 新增角色弹框 -->
+    <!-- 新增、编辑角色弹框 -->
     <el-dialog :title='EditRoleId?"编辑角色":"新增角色"'
                :visible.sync="NewRoleDialogVisible"
                @close="CancelNewRole()"
@@ -166,6 +166,7 @@
 export default {
   data() {
     return {
+      // ---主页面---
       SearchInput: { 'name': '', 'id': '' },
       RoleList: [
         { 'id': '001', 'name': '之江管理员', 'authority': [true, true, true, true] },
@@ -174,23 +175,38 @@ export default {
         { 'id': '004', 'name': '个人用户', 'authority': [false, false, false, false] },
       ],
       AuthorityList: ['伦理审核', '用户管理', '数据库删改', '构建团队'],
+      // ---新建和编辑---
       NewRoleDialogVisible: false,
       ThisRole: { 'name': '', 'authority': [false, false, false, false] }, // get到权限列表后，将此authority改为对应数目
-      ThisViewRole: {},
+      EditRoleId: "",
+      // ---查看---
       ViewRoleDialogVisible: false,
-      EditRoleId: ""
+      ThisViewRole: {},
     }
   },
   methods: {
+    // ------新建------
     CreateNewRole() {
       this.NewRoleDialogVisible = true
     },
     ConfirmNewRole() {
-      // 向后端发数据
+      // 向后端发ThisRole数据
       this.NewRoleDialogVisible = false
       this.ResetNewRole()
     },
     CancelNewRole() {
+      this.NewRoleDialogVisible = false
+      this.ResetNewRole()
+    },
+    // ------编辑------
+    EditRole(index) {
+      this.EditRoleId = this.RoleList[index].id
+      this.ThisRole.name = JSON.parse(JSON.stringify(this.RoleList[index].name)) // 编辑是从表里拿来的要注意了
+      this.ThisRole.authority = JSON.parse(JSON.stringify(this.RoleList[index].authority))
+      this.NewRoleDialogVisible = true
+    },
+    ConfirmEditRole() {
+      // 向后端传ThisRole数据和EditRoleId
       this.NewRoleDialogVisible = false
       this.ResetNewRole()
     },
@@ -201,6 +217,7 @@ export default {
       })
       this.EditRoleId = ""
     },
+    // ------查看------
     ViewRole(index) {
       this.ThisViewRole.name = this.RoleList[index].name
       this.ThisViewRole.authoritytext = this.RoleList[index].authority.map((item, index) => {
@@ -208,24 +225,14 @@ export default {
       }).filter(d => d)
       this.ViewRoleDialogVisible = true
     },
-    EditRole(index) {
-      this.EditRoleId = this.RoleList[index].id
-      this.ThisRole.name = JSON.parse(JSON.stringify(this.RoleList[index].name)) // 编辑是从表里拿来的要注意了
-      this.ThisRole.authority = JSON.parse(JSON.stringify(this.RoleList[index].authority))
-      this.NewRoleDialogVisible = true
-    },
-    ConfirmEditRole() {
-      // 向后端传数据
-      this.NewRoleDialogVisible = false
-      this.ResetNewRole()
-    },
+    // ------删除------
     DeleteRole(index) {
       this.$confirm('是否确认删除该角色？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.RoleList.splice(index, 1) // 应该是传消息给后端并刷新列表
+        this.RoleList.splice(index, 1) // 应该是传这个index对应的id给后端并刷新列表
       }).catch(() => { })
     }
   }
