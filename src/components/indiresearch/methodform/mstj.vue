@@ -1,223 +1,229 @@
 <template>
   <div>
-
     <el-form :model="mstjForm"
              ref="mstjForm"
-             label-width="100px"
-             class="demo-mstjForm">
-
-      <el-row style="margin-top:10px;margin-bottom:10px">
-        模型名称: &nbsp;<el-input v-model="mstjForm.methodname"
+             label-width="100px">
+      <el-form-item prop="methodname"
+                    label="模型名称"
+                    :rules="[{required: true, message: '请输入模型名称', trigger: 'blur' }]">
+        <el-input v-model="mstjForm.methodname"
                   size="mini"
                   style="width:200px;"></el-input>
-      </el-row>
-      <el-row>
-        <el-col :span="20">
-          <el-row :gutter="10">
-            <el-col :span="10">
-              <fieldset style=" min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-                <el-table :data="Varlist"
-                          ref="singleTable"
-                          max-height="200"
-                          tooltip-effect="dark"
-                          :row-class-name="tableRowClassName"
-                          @row-click="getRowdetail1"
-                          @current-change="handleCurrentChange1">
-                  <!-- <el-table-column type="selection"
+      </el-form-item>
+    </el-form>
+
+    <!-- <el-row style="margin-top:10px;margin-bottom:10px">
+      模型名称: &nbsp;<el-input v-model="mstjForm.methodname"
+                size="mini"
+                style="width:200px;"></el-input>
+    </el-row> -->
+    <el-row :gutter="20">
+      <el-col :span="20">
+        <el-row :gutter="10">
+          <el-col :span="10">
+            <fieldset style=" min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+              <el-table :data="Varlist"
+                        ref="singleTable"
+                        max-height="200"
+                        tooltip-effect="dark"
+                        :row-class-name="tableRowClassName"
+                        @row-click="getRowdetail1"
+                        @current-change="handleCurrentChange1">
+                <!-- <el-table-column type="selection"
                                  width="55">
                 </el-table-column> -->
 
-                  <el-table-column prop="name">
-                  </el-table-column>
-                  <el-table-column prop="featureId"
-                                   v-if="idshow">
+                <el-table-column prop="name">
+                </el-table-column>
+                <el-table-column prop="featureId"
+                                 v-if="idshow">
 
-                  </el-table-column>
+                </el-table-column>
 
-                </el-table>
-              </fieldset>
-            </el-col>
-            <el-col :span="4">
-              <div style="margin-top: 40%; text-align:center;">
-                <!-- 右移 -->
-                <el-button type="info"
-                           @click="rightshift"
-                           icon="icon el-icon-d-arrow-right"></el-button>
+              </el-table>
+            </fieldset>
+          </el-col>
+          <el-col :span="4">
+            <div style="margin-top: 40%; text-align:center;">
+              <!-- 右移 -->
+              <el-button type="info"
+                         @click="rightshift"
+                         icon="icon el-icon-d-arrow-right"></el-button>
 
-              </div>
-              <!-- 左移 -->
-              <div style="margin-top: 30%; text-align:center;">
-                <el-button type="info"
-                           @click="leftshift"
-                           icon="icon el-icon-d-arrow-left"></el-button>
+            </div>
+            <!-- 左移 -->
+            <div style="margin-top: 30%; text-align:center;">
+              <el-button type="info"
+                         @click="leftshift"
+                         icon="icon el-icon-d-arrow-left"></el-button>
 
-              </div>
-            </el-col>
-            <el-col :span="10">
-              <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
-                <el-table :data="Chosenlist"
-                          max-height="200"
-                          ref="singleTable"
-                          tooltip-effect="dark"
-                          @current-change="handleCurrentChange2">
-                  <!-- <el-table-column type="selection"
+            </div>
+          </el-col>
+          <el-col :span="10">
+            <fieldset style="  min-width: inherit; height:220px;border-width:0.5px;border-style: double">
+              <el-table :data="Chosenlist"
+                        max-height="200"
+                        ref="singleTable"
+                        tooltip-effect="dark"
+                        @current-change="handleCurrentChange2">
+                <!-- <el-table-column type="selection"
                                  width="55">
                 </el-table-column> -->
-                  <el-table-column prop="name"
-                                   label="目标变量">
-                  </el-table-column>
-                  <el-table-column prop="featureId"
-                                   v-if="idshow2">
+                <el-table-column prop="name"
+                                 label="目标变量">
+                </el-table-column>
+                <el-table-column prop="featureId"
+                                 v-if="idshow2">
 
-                  </el-table-column>
+                </el-table-column>
 
-                </el-table>
-              </fieldset>
-            </el-col>
-          </el-row>
-        </el-col>
+              </el-table>
+            </fieldset>
+          </el-col>
+        </el-row>
+      </el-col>
 
-        <el-col :span="4">
-          <el-row style="margin-top: 30%;margin-left:25%;margin-right:25% ">
-            <el-button type="primary"
-                       v-if="isnew"
-                       @click="save">确定</el-button>
-            <el-button type="primary"
-                       v-else
-                       @click="edit">编辑</el-button>
-          </el-row>
-          <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
-            <el-button type="primary"
-                       @click="cancel">取消</el-button>
-          </el-row>
-          <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
-            <el-button type="primary"
-                       @click="help">帮助</el-button>
-          </el-row>
-        </el-col>
-      </el-row>
+      <el-col :span="4">
+        <el-row style="margin-top: 30%; ">
+          <el-button type="primary"
+                     v-if="isnew"
+                     @click="save">确定</el-button>
+          <el-button type="primary"
+                     v-else
+                     @click="edit">编辑</el-button>
+        </el-row>
+        <el-row style="margin-top: 15%; ">
+          <el-button type="primary"
+                     @click="cancel">取消</el-button>
+        </el-row>
+        <el-row style="margin-top: 15%;">
+          <el-button type="primary"
+                     @click="help">帮助</el-button>
+        </el-row>
+      </el-col>
+    </el-row>
 
-      <!-- 
+    <!-- 
     <el-form ref="form"
              :model="mstjForm"> -->
-      <el-row :gutter="20"
-              style="margin-top:10px;margin-bottom:10px">
-        <el-col :span="16">
-          <el-row>
+    <el-row :gutter="20"
+            style="margin-top:10px;margin-bottom:10px">
+      <el-col :span="16">
+        <el-row>
 
-            <fieldset class="groupbox-boarder">
-              <legend class="one-of-groupbox-boarder">百分位数</legend>
-              <el-checkbox-group v-model="mstjForm.quantile">
+          <fieldset class="groupbox-boarder">
+            <legend class="one-of-groupbox-boarder">百分位数</legend>
+            <el-checkbox-group v-model="mstjForm.quantile">
+              <el-row>
+                <el-checkbox :label="1">中位数</el-checkbox>
+              </el-row>
+              <el-row>
+
+                <el-checkbox :label="2">百分位数：</el-checkbox>
+
+                <el-input-number v-model="mstjForm.num1"
+                                 :disabled="!mstjForm.quantile.includes(2)"
+                                 size="mini"
+                                 controls-position="right"
+                                 :min="0"
+                                 :max="100"></el-input-number>
+
+              </el-row>
+
+            </el-checkbox-group>
+          </fieldset>
+          <fieldset class="groupbox-boarder">
+            <legend class="one-of-groupbox-boarder">集中趋势</legend>
+            <el-checkbox-group v-model="mstjForm.centraltendency">
+
+              <el-row>
+                <el-checkbox :label="1">均值</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="2">几何平均数</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="3">众数</el-checkbox>
+              </el-row>
+            </el-checkbox-group>
+          </fieldset>
+
+        </el-row>
+        <el-row style="margin-top:10px;margin-bottom:10px">
+
+          <fieldset class="groupbox-boarder">
+            <legend class="one-of-groupbox-boarder"> 离散趋势</legend>
+            <el-checkbox-group v-model="mstjForm.discretetrend">
+              <el-col :span="8">
                 <el-row>
-                  <el-checkbox :label="1">中位数</el-checkbox>
+                  <el-checkbox :label="1">极大值</el-checkbox>
                 </el-row>
                 <el-row>
-
-                  <el-checkbox :label="2">百分位数：</el-checkbox>
-
-                  <el-input-number v-model="mstjForm.num1"
-                                   :disabled="!mstjForm.quantile.includes(2)"
-                                   size="mini"
-                                   controls-position="right"
-                                   :min="0"
-                                   :max="100"></el-input-number>
-
+                  <el-checkbox :label="2">极小值</el-checkbox>
                 </el-row>
 
-              </el-checkbox-group>
-            </fieldset>
-            <fieldset class="groupbox-boarder">
-              <legend class="one-of-groupbox-boarder">集中趋势</legend>
-              <el-checkbox-group v-model="mstjForm.centraltendency">
-
+              </el-col>
+              <el-col :span="16">
                 <el-row>
-                  <el-checkbox :label="1">均值</el-checkbox>
+                  <el-checkbox :label="3">方差</el-checkbox>
                 </el-row>
                 <el-row>
-                  <el-checkbox :label="2">几何平均数</el-checkbox>
+                  <el-checkbox :label="4">标准差</el-checkbox>
                 </el-row>
-                <el-row>
-                  <el-checkbox :label="3">众数</el-checkbox>
-                </el-row>
-              </el-checkbox-group>
-            </fieldset>
 
-          </el-row>
-          <el-row style="margin-top:10px;margin-bottom:10px">
+              </el-col>
+            </el-checkbox-group>
+          </fieldset>
 
-            <fieldset class="groupbox-boarder">
-              <legend class="one-of-groupbox-boarder"> 离散趋势</legend>
-              <el-checkbox-group v-model="mstjForm.discretetrend">
-                <el-col :span="8">
-                  <el-row>
-                    <el-checkbox :label="1">极大值</el-checkbox>
-                  </el-row>
-                  <el-row>
-                    <el-checkbox :label="2">极小值</el-checkbox>
-                  </el-row>
+        </el-row>
+      </el-col>
+      <el-col :span="8">
+        <el-row>
 
-                </el-col>
-                <el-col :span="16">
-                  <el-row>
-                    <el-checkbox :label="3">方差</el-checkbox>
-                  </el-row>
-                  <el-row>
-                    <el-checkbox :label="4">标准差</el-checkbox>
-                  </el-row>
+          <fieldset class="groupbox-boarder">
+            <legend class="one-of-groupbox-boarder">分布状态</legend>
+            <el-checkbox-group v-model="mstjForm.distribution">
+              <el-row>
+                <el-checkbox :label="1">偏度（Skewness）</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="2">峰度（Kurtosis）</el-checkbox>
+              </el-row>
+            </el-checkbox-group>
+          </fieldset>
 
-                </el-col>
-              </el-checkbox-group>
-            </fieldset>
+        </el-row>
+        <el-row style="margin-top:10px;margin-bottom:10px">
 
-          </el-row>
-        </el-col>
-        <el-col :span="8">
-          <el-row>
+          <fieldset class="groupbox-boarder">
+            <legend class="one-of-groupbox-boarder">图表</legend>
+            <el-checkbox-group v-model="mstjForm.chart">
+              <el-row>
+                <el-checkbox :label="1">条形图</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="2">饼图</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="3">折线图</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="4">箱线图</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="5">直方图</el-checkbox>
+              </el-row>
+              <el-row>
+                <el-checkbox :label="6">散点图</el-checkbox>
+              </el-row>
+            </el-checkbox-group>
+          </fieldset>
 
-            <fieldset class="groupbox-boarder">
-              <legend class="one-of-groupbox-boarder">分布状态</legend>
-              <el-checkbox-group v-model="mstjForm.distribution">
-                <el-row>
-                  <el-checkbox :label="1">偏度（Skewness）</el-checkbox>
-                </el-row>
-                <el-row>
-                  <el-checkbox :label="2">峰度（Kurtosis）</el-checkbox>
-                </el-row>
-              </el-checkbox-group>
-            </fieldset>
+        </el-row>
+      </el-col>
 
-          </el-row>
-          <el-row style="margin-top:10px;margin-bottom:10px">
+    </el-row>
 
-            <fieldset class="groupbox-boarder">
-              <legend class="one-of-groupbox-boarder">图表</legend>
-              <el-checkbox-group v-model="mstjForm.chart">
-                <el-row>
-                  <el-checkbox :label="1">条形图</el-checkbox>
-                </el-row>
-                <el-row>
-                  <el-checkbox :label="2">饼图</el-checkbox>
-                </el-row>
-                <el-row>
-                  <el-checkbox :label="3">折线图</el-checkbox>
-                </el-row>
-                <el-row>
-                  <el-checkbox :label="4">箱线图</el-checkbox>
-                </el-row>
-                <el-row>
-                  <el-checkbox :label="5">直方图</el-checkbox>
-                </el-row>
-                <el-row>
-                  <el-checkbox :label="6">散点图</el-checkbox>
-                </el-row>
-              </el-checkbox-group>
-            </fieldset>
-
-          </el-row>
-        </el-col>
-
-      </el-row>
-    </el-form>
   </div>
 </template>
 <script>
@@ -256,7 +262,7 @@ export default {
   },
   mounted() {
 
-    //先获取变量列表
+    //先获取变量列表 变量列表改为从前一步获取
     this.getVariableTable();
     this.getModleID();
     //根据是否传入modleid判断是新建还是编辑
@@ -281,7 +287,7 @@ export default {
   methods: {
 
 
-    //新建方法时获取变量
+    //新建方法时获取变量//等待新的接口
     getVariableTable() {
 
       axios.get('/feature/getList', {
@@ -348,6 +354,7 @@ export default {
       else {
         if (this.VarTable != null) {
           this.Varlist = this.VarTable;
+          //this.Varlist = [{ 'featureId': 123, 'name': '性别' }, { 'featureId': 124, 'name': '年龄' }, { 'featureId': 127, 'name': '变量3' }, { 'featureId': 129, 'name': '变量4' }, { 'featureId': 122, 'name': '变量5' }]
 
 
         }
@@ -435,25 +442,25 @@ export default {
 
     save: function () {
 
-      // console.log(this.Chosenlist)
-      // if (this.Chosenlist.length != 0) {
+      console.log(this.Chosenlist)
+      if (this.Chosenlist.length != 0) {
 
-      //   this.List1.push({ 'sortNo': 1, 'featureID': this.Chosenlist[0].featureID, 'featureType': 1 })
-      // }
+        this.List1.push({ 'sortNo': 1, 'featureID': this.Chosenlist[0].featureID, 'featureType': 1 })
+      }
       // console.log(this.List1)
 
       // 只有一个变量直接写也成吧
 
 
-      for (var i = 0; i < this.Chosenlist.length; i++) {
-        // console.log(this.Chosenlist[i].featureId)
+      // for (var i = 0; i < this.Chosenlist.length; i++) {
+      //   // console.log(this.Chosenlist[i].featureId)
 
-        var f = { 'sortNo': i + 1, 'featureId': this.Chosenlist[i].featureId, 'featureType': 1 }
-        this.List1.push(f);
+      //   var f = { 'sortNo': i + 1, 'featureId': this.Chosenlist[i].featureId, 'featureType': 1 }
+      //   this.List1.push(f);
 
 
-      }
-      console.log(this.List1)
+      // }
+      // console.log(this.List1)
 
 
       axios.post('/model/create', {
@@ -472,8 +479,6 @@ export default {
         },
 
         "feature": this.List1
-
-
 
 
 
