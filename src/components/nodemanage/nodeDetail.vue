@@ -1,6 +1,12 @@
 <template>
   <div>
+
     <el-card>
+      <el-row>
+        <i class="el-icon-back"
+           @click="goNodeList()"
+           style="cursor:pointer">返回</i>
+      </el-row>
       <el-row type="flex"
               justify="center"
               style="margin-top:30px;margin-bottom:10px">
@@ -42,7 +48,7 @@
               justify="center"
               style="margin-top:30px;margin-bottom:10px">
         <el-col :span="20">
-          <el-row style="margin-top:30px;margin-bottom:30px">节点近期操作记录： </el-row>
+          <el-row style="margin-top:30px;margin-bottom:30px"><i class="myIcon-jilu"></i>节点近期操作记录： </el-row>
           <el-table :data="operationRecord"
                     border
                     style="width: 100%">
@@ -107,6 +113,22 @@ export default {
     return {
       operationRecord: []
     }
+  },
+  methods: {
+    goNodeList() {
+      this.$router.push({
+        path: 'nodelist',
+        query:
+          {
+            //collaborationId: this.$route.query.collaborationId
+          }
+      });
+    }
   }
 }
 </script>
+
+<style>
+@import "../../assets/AdminInfo/css_admin/css_admin.css";
+@import "../../assets/AdminInfo/css_admin/myIcon/iconfont.css";
+</style>
