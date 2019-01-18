@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="newResearchcontainer">
     <el-steps :active="0"
               style="padding-top:10px;padding-left:10px;padding-right:10px">
       <el-step title="1 研究开始"></el-step>
@@ -118,7 +118,7 @@ export default {
 </script>
 
 <style>
-.el-form {
+.newResearchcontainer .el-form {
   width: 60%;
   margin-top: 20px;
   margin-left: 5%;
