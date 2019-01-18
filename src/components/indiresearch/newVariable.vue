@@ -81,8 +81,16 @@
     <el-row>
       <el-col :offset=4>
         <el-button type="primary"
-                   @click=""
+                   @click="corhortanalysis"
                    icon="el-icon-edit-outline">统计</el-button>
+      </el-col>
+    </el-row>
+    <el-row style="margin-top:30px;margin-bottom:10px">
+      <el-col :offset=4>
+        <div v-show="ifanalysis"
+             id="echartContainer"
+             style="width:500px;height:500px;">
+        </div>
       </el-col>
     </el-row>
 
@@ -280,6 +288,7 @@
 
 <script>
 import axios from 'axios'
+import echarts from 'echarts';
 import conceptsetList from './conceptsetList.vue'
 export default {
   components: {
@@ -316,7 +325,7 @@ export default {
       { 'id': '2', 'name': '年龄', 'type': '定量', 'description': '样本的年龄' }],
       NewVarVisible: false,
       VarLibVisible: false,
-
+      ifanalysis: false,
       // ------新增变量弹窗------
       VarForm: {
         name: "",
@@ -605,7 +614,38 @@ export default {
     selectVisible(val) {
       this.conceptSetListVisible = val
       console.log(this.conceptSetListVisible)
-    }
+    },
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then(_ => {
+          done();
+          this.reload()
+        })
+        .catch(_ => { });
+    },
+    corhortanalysis() {
+      this.$message.success("开始统计！")
+      this.ifanalysis = true
+      setTimeout(function () {
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('echartContainer'));
+        // 绘制图表
+        myChart.setOption({
+          title: { text: '队列变量统计结果' },
+          xAxis: {
+            type: 'category',
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          },
+          yAxis: {
+            type: 'value'
+          },
+          series: [{
+            data: [120, 200, 150, 80, 70, 110, 130],
+            type: 'bar'
+          }]
+        });
+      }, 1000);
+    },
   }
 }
 </script>
