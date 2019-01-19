@@ -172,14 +172,14 @@ export default new Router({
           component: () => import("@/components/personalpage")
         },
         {
-          path: "/usermanage",
-          name: "用户管理",
-          component: () => import("@/components/admincenter/usermanage")
+          path: "/userauthority",
+          name: "用户权限",
+          component: () => import("@/components/admincenter/userauthority")
         },
         {
-          path: "/authoritymanage",
-          name: "权限控制",
-          component: () => import("@/components/admincenter/authoritymanage")
+          path: "/messagereview",
+          name: "消息审核",
+          component: () => import("@/components/admincenter/messagereview")
         },
         {
           path: "/thirdparty",
