@@ -1,10 +1,22 @@
 <template>
   <div>
-    <el-row style="margin-top:10px;margin-bottom:10px">
+
+    <el-form :model="anova_2Form"
+             ref="anova_2Form"
+             label-width="100px">
+      <el-form-item prop="methodname"
+                    label="模型名称"
+                    :rules="[{required: true, message: '请输入模型名称', trigger: 'blur' }]">
+        <el-input v-model="anova_2Form.methodname"
+                  size="mini"
+                  style="width:200px;"></el-input>
+      </el-form-item>
+    </el-form>
+    <!-- <el-row style="margin-top:10px;margin-bottom:10px">
       模型名称: &nbsp;<el-input v-model="anova_2Form.methodname"
                 size="mini"
                 style="width:200px;"></el-input>
-    </el-row>
+    </el-row> -->
     <el-row :gutter="20">
       <el-col :span="20">
 
@@ -104,7 +116,7 @@
 
       </el-col>
       <el-col :span="4">
-        <el-row style="margin-top: 30%;margin-left:25%;margin-right:25% ">
+        <el-row style="margin-top: 30%; ">
           <el-button type="primary"
                      v-if="isnew"
                      @click="save">确定</el-button>
@@ -112,11 +124,11 @@
                      v-else
                      @click="edit">编辑</el-button>
         </el-row>
-        <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
+        <el-row style="margin-top: 15%;">
           <el-button type="primary"
                      @click="cancel">取消</el-button>
         </el-row>
-        <el-row style="margin-top: 15%;margin-left:25%;margin-right:25% ">
+        <el-row style="margin-top: 15%; ">
           <el-button type="primary"
                      @click="help">帮助</el-button>
         </el-row>

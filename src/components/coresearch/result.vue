@@ -11,7 +11,7 @@
                  @click.native="goNewTeam()"></el-step>
         <el-step title="3 多中心运算"
                  style="cursor:pointer"
-                 @click.native="goNewCoresearch()"></el-step>
+                 @click.native="goMCCompute()"></el-step>
         <el-step title="4 成果讨论"></el-step>
         <el-step title="5 资格审核"></el-step>
       </el-steps>
@@ -244,9 +244,9 @@ export default {
           }
       });
     },
-    goNewCoresearch() {
+    goMCCompute() {
       this.$router.push({
-        path: 'newcoresearch',
+        path: 'mccompute',
         query:
           {
             collaborationId: Number(this.collaborationId)

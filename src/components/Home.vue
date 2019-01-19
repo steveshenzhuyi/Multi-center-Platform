@@ -2,51 +2,62 @@
   <div>
     <!-- 标题/RH -->
     <header>
-      <img src="../assets/logo.png">多中心协同的生物医学智能信息技术平台
-
-      <!-- 个人信息下拉条/RH -->
-      <el-dropdown style="float:right;padding-top:30px;padding-right:30px;"
-                   trigger="click"
-                   @command="handleCommand">
-        <span class="el-dropdown-link"
-              style="color:white;  cursor: pointer;">
-          <i class="iconfont icon-yonghuicon"></i> Admin<i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="toPersonalpage">个人信息</el-dropdown-item>
-          <el-dropdown-item command="toMsg">消息中心</el-dropdown-item>
-          <el-dropdown-item command="toLogout">登出</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+      <el-row>
+        <el-col :span="4"> <img src="../assets/logo.png"
+               style="height:50px;float:left"> </el-col>
+        <el-col :span="12"
+                style="padding-top:20px;">
+          多中心协同的生物医学智能信息技术平台
+        </el-col>
+        <el-col :span="5">
+        </el-col>
+        <el-col :span="3"
+                style="float:right">
+          <!-- 个人信息下拉条/RH -->
+          <el-dropdown style="padding-top:20px;padding-right:30px;"
+                       trigger="click"
+                       @command="handleCommand">
+            <span class="el-dropdown-link"
+                  style="color:white;  cursor: pointer;">
+              <i class="iconfont icon-yonghuicon"></i> Admin<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="toPersonalpage">个人信息</el-dropdown-item>
+              <el-dropdown-item command="toMsg">消息中心</el-dropdown-item>
+              <el-dropdown-item command="toLogout">登出</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </el-col>
+      </el-row>
     </header>
-
-    <!-- 导航条/RH -->
-    <el-menu :default-active="activeIndex"
-             class="el-menu-demo"
-             mode="horizontal"
-             @select="handleSelect"
-             background-color="#545c64"
-             text-color="#fff"
-             active-text-color="#2d8cf0"
-             style="width: 100%;  min-width: 800px;">
-      <el-menu-item index="data">数据总览</el-menu-item>
-      <el-menu-item index="indiresearch/researchList">个人研究</el-menu-item>
-      <el-menu-item index="coresearch/teamList">协同研究</el-menu-item>
-      <el-menu-item index="knowledgegraph">知识图谱</el-menu-item>
-      <el-menu-item index="dataimport">数据导入</el-menu-item>
-      <el-submenu index="6">
-        <template slot="title">管理中心</template>
-        <el-menu-item index="userauthority">用户权限</el-menu-item>
-        <el-menu-item index="messagereview">消息审核</el-menu-item>
-      </el-submenu>
-      <el-menu-item index="thirdparty/jointeam">第三方数据使用</el-menu-item>
-      <el-submenu index="nodemanage">
-        <template slot="title">节点管理</template>
-        <el-menu-item index="nodemanage/nodeList">节点列表</el-menu-item>
-        <el-menu-item index="nodemanage/operation">操作查询</el-menu-item>
-      </el-submenu>
-    </el-menu>
-
+    <el-row>
+      <!-- 导航条/RH -->
+      <el-menu :default-active="activeIndex"
+               class="el-menu-demo"
+               mode="horizontal"
+               @select="handleSelect"
+               background-color="#545c64"
+               text-color="#fff"
+               active-text-color="#2d8cf0"
+               style="mix-width:823px;dfloat:left;padding-left:20px;">
+        <el-menu-item index="data">数据总览</el-menu-item>
+        <el-menu-item index="indiresearch/researchList">个人研究</el-menu-item>
+        <el-menu-item index="coresearch/teamList">协同研究</el-menu-item>
+        <el-menu-item index="knowledgegraph">知识图谱</el-menu-item>
+        <el-menu-item index="dataimport">数据导入</el-menu-item>
+        <el-submenu index="6">
+          <template slot="title">管理中心</template>
+          <el-menu-item index="userauthority">用户权限</el-menu-item>
+          <el-menu-item index="messagereview">消息审核</el-menu-item>
+        </el-submenu>
+        <el-menu-item index="thirdparty/jointeam">第三方数据使用</el-menu-item>
+        <el-submenu index="nodemanage">
+          <template slot="title">节点管理</template>
+          <el-menu-item index="nodemanage/nodeList">节点列表</el-menu-item>
+          <el-menu-item index="nodemanage/operation">操作查询</el-menu-item>
+        </el-submenu>
+      </el-menu>
+    </el-row>
     <el-dialog title="登出"
                :visible.sync="dialogVisible"
                width="30%">
@@ -105,6 +116,8 @@ header {
   min-width: 823px;
   font-size: 28px;
   color: white;
+  height: 60px;
+  position: float;
 }
 img {
   padding-left: 20px;
@@ -112,6 +125,10 @@ img {
   margin-bottom: 0px;
   padding-right: 40px;
   height: 40px;
+}
+el-row {
+  width: 100%;
+  max-width: 1343px;
 }
 </style>
 

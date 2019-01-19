@@ -20,7 +20,7 @@
             style="margin-top:30px;margin-bottom:10px">
 
       <el-col :span="10">
-        <el-row style="margin-top:30px;margin-bottom:30px">查询条件： </el-row>
+        <el-row style="margin-top:30px;margin-bottom:30px"><i class="el-icon-search"></i>查询条件： </el-row>
         <el-form ref="form"
                  :model="form"
                  label-width="100px">
@@ -59,14 +59,16 @@
       </el-col>
       <el-col :span="8"
               :offset="2">
-        <el-card></el-card>
+        <!-- <el-card>
+          <el-row style="margin-top:30px;margin-bottom:30px">查询结果操作： </el-row>
+        </el-card> -->
       </el-col>
     </el-row>
     <el-row type="flex"
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="20">
-        <el-row style="margin-top:30px;margin-bottom:30px">查询结果： </el-row>
+        <el-row style="margin-top:30px;margin-bottom:30px"><i class="myIcon-jilu"></i>查询结果： </el-row>
         <el-table :data="queryResult"
                   border
                   style="width: 100%">

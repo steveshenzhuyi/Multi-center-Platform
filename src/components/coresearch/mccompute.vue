@@ -1,9 +1,25 @@
 <template>
   <div>
+    <el-row style="margin-top:30px;margin-bottom:10px">
+      <el-col :span="24">
+        <el-steps :active="2"
+                  align-center>
+          <el-step title="1 研究开始"
+                   style="cursor:pointer"
+                   @click.native="goMyTeam()"></el-step>
+          <el-step title="2 团队建立"
+                   style="cursor:pointer"
+                   @click.native="goNewTeam()"></el-step>
+          <el-step title="3 多中心运算"></el-step>
+          <el-step title="4 成果讨论"></el-step>
+          <el-step title="5 资格审核"></el-step>
+        </el-steps>
+      </el-col>
+    </el-row>
     <el-row type="flex"
             align="middle"
             style="margin-top:30px;margin-bottom:10px">
-      <el-col :span="2"
+      <el-col :span="3"
               :offset="6">
         <div class="title">研究简介</div>
       </el-col>
@@ -13,12 +29,13 @@
             justify="center"
             style="margin-top:30px;margin-bottom:10px">
       <el-col :span="2">
-        <div>研究方案</div>
+        <span><i class="myIcon-wendang"
+             style="font-size:21px;"></i>
+          研究方案
+        </span>
       </el-col>
-      <el-col :span="1">
-        <i class="iconfont icon-shuzi1"></i>
-      </el-col>
-      <el-col :span="9">
+
+      <el-col :span="10">
         <div>
           <div>
             队列条件：满足女性、入院60天以上
@@ -29,11 +46,8 @@
     </el-row>
     <el-row type="flex"
             style="margin-top:30px;margin-bottom:10px">
-      <el-col :offset="8"
-              :span="1">
-        <i class="iconfont icon-shuzi2"></i>
-      </el-col>
-      <el-col :span="9">
+      <el-col :span="10"
+              :offset="8">
         <div>
           所选变量：年龄、性别、具体病种
         </div>
@@ -41,12 +55,9 @@
     </el-row>
     <el-row type="flex"
             style="margin-top:30px;margin-bottom:10px">
-      <el-col :offset="8"
-              :span="1">
-        <i class="iconfont icon-shuzi3"></i>
-      </el-col>
-      <el-col :span="9">
 
+      <el-col :span="10"
+              :offset="8">
         <div>
           所选模型：SVM，惩罚系数C=1.0
         </div>
@@ -57,7 +68,7 @@
             align="middle"
             style="margin-top:50px;margin-bottom:10px">
       <el-col :span="2"
-              :offset="8">
+              :offset="6">
         <el-button type="primary"
                    @click="corhortanalysis"
                    plain>开始分析</el-button>
@@ -98,14 +109,91 @@ export default {
       collaborationId: "",
       ifanalysis: false,
       ifgenerate: false,
+      detail: {
+        collaborInfo: {
+          COLLABORATIONSTATENAM: "",
+          COLLABORATIONSTATECODE: "",
+          NAME: "",
+          CREATEDATE: "",
+          TARGET: "",
+          PROPOSAL: "",
+          EXPECTEDOUTCOMES: "",
+          OUTCOMEDISTRIBUTION: ""
+        },
+        collaborMemberList: [
+          {
+            ORGANIZATIONNAME: "",
+            ORGANIZATIONCODE: "",
+            MEMBERNAME: "",
+            SORTNO: 1,
+            USERID: "",
+            INITIATORTAG: "",
+            PARTICIPATIONSTATE: "",
+            NAME: "",
+            CREATEDATE: "",
+            TARGET: "",
+            PROPOSAL: "",
+            EXPECTEDOUTCOMES: "",
+            OUTCOMEDISTRIBUTION: ""
+          }
+        ]
+      },
     }
   },
   mounted() {
-  },
-  computed: {
+    this.getCollaborInfo(this.$route.query.collaborationId)
 
   },
+  computed: {
+    // ParticipationState: function () {
+    //   if (this.people.PARTICIPATIONSTATE == 0) {
+    //     return "待响应"
+    //   } else if (this.people.PARTICIPATIONSTATE == 1) {
+    //     return "已参加"
+    //   } else if (this.people.PARTICIPATIONSTATE == 2) {
+    //     return "已拒绝"
+    //   }
+    //},
+
+    // CollaborState: function () {
+    //   //console.log("state", this.detail.collaborInfo.COLLABORATIONSTATECODE)
+    //   if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 0) {
+    //     this.inviteState = true
+    //     return 1
+    //   } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 1 || this.detail.collaborInfo.COLLABORATIONSTATECODE == 2) {
+    //     this.inviteState = false
+    //     return 2
+    //   } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 3) {
+    //     this.inviteState = false
+    //     return 3
+    //   } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 4) {
+    //     this.inviteState = false
+    //     return 4
+    //   } else if (this.detail.collaborInfo.COLLABORATIONSTATECODE == 5) {
+    //     this.inviteState = false
+    //     return 5
+    //   }
+    // }
+  },
   methods: {
+    // getCollaborInfo(COLLABORATIONID) {
+    //   axios.get('collaboration/collaborInfo', {
+    //     params: {
+    //       token: this.GLOBAL.token,
+    //       collaborationId: COLLABORATIONID
+    //     }
+    //   })
+    //     .then((response) => {
+    //       if (response.data.code == 0) {
+    //         console.log("data", response.data.data)
+    //         this.detail = response.data.data
+
+    //       }
+    //     })
+    //     .catch(function (error) {
+    //       console.log("error", error);
+    //     });
+    // },
     corhortanalysis() {
       this.$message.success("开始分析！")
       this.ifanalysis = true
@@ -129,11 +217,31 @@ export default {
         });
       }, 1000);
     },
+    goMyTeam() {
+      this.$router.push({
+        path: 'myteam',
+        query:
+          {
+            collaborationId: this.$route.query.collaborationId
+          }
+      });
+    },
+    goNewTeam() {
+      this.$router.push({
+        path: 'newteam',
+        query:
+          {
+            collaborationId: this.$route.query.collaborationId
+          }
+      });
+    },
   }
 }
 </script>
 
 <style>
+@import "../../assets/AdminInfo/css_admin/myIcon/iconfont.css";
+
 .el-cascader .el-input {
   width: 300px;
 }

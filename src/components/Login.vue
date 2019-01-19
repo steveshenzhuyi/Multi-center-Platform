@@ -1,40 +1,43 @@
 <template>
   <div class="login-contain">
+    <div>
+      <img src="../assets/logo.png"
+           style="margin-top:100px;height:10%">
+      <h1 style="color:white">多中心协同的生物医学智能信息技术平台</h1>
+      <div id="login-box"
+           class="login-box visible widget-box no-border">
 
-    <div id="login-box"
-         class="login-box visible widget-box no-border">
-      <h1 style="color:white">科研分析平台</h1>
-      <!-- <div class='tips'>账号库为123/123456,456/456789</div> -->
-      <div class="form-group">
-        <i style="padding-top:17px"
-           class="iconfont  icon-yonghuicon"></i>
-        <input type="text"
-               v-model="loginForm.username"
-               placeholder="用户名">
-        </input>
-      </div>
-      <div class="form-group">
-        <i style="top:50px;"
-           class="iconfont  icon-suo"></i>
-        <input type="password"
-               id="ps"
-               v-model="loginForm.password"
-               placeholder="密码">
-        <i @click="psshow"
-           style="position:fixed;padding-top:15.5px;padding-bottom:0;padding-left:5px"
-           class="el-icon-view"></i>
+        <!-- <div class='tips'>账号库为123/123456,456/456789</div> -->
+        <div class="form-group">
+          <i style="padding-top:17px"
+             class="iconfont  icon-yonghuicon"></i>
+          <input type="text"
+                 v-model="loginForm.username"
+                 placeholder="用户名">
+          </input>
+        </div>
+        <div class="form-group">
+          <i style="top:50px;"
+             class="iconfont  icon-suo"></i>
+          <input type="password"
+                 id="ps"
+                 v-model="loginForm.password"
+                 placeholder="密码">
+          <i @click="psshow"
+             style="position:fixed;padding-top:15.5px;padding-bottom:0;padding-left:5px"
+             class="el-icon-view"></i>
 
+        </div>
+        <div class="form-group">
+          <button type="primary"
+                  @click="handleLogin()"
+                  @keyup.enter="handleLogin()">登 录</button>
+        </div>
+        <div class='tips'
+             style="color:red"
+             v-show="loginresult">{{tips}}</div>
       </div>
-      <div class="form-group">
-        <button type="primary"
-                @click="handleLogin()"
-                @keyup.enter="handleLogin()">登 录</button>
-      </div>
-      <div class='tips'
-           style="color:red"
-           v-show="loginresult">{{tips}}</div>
     </div>
-
   </div>
 </template>
 
@@ -136,7 +139,7 @@ export default {
 }
 
 .login-box {
-  padding-top: 10%;
+  padding-top: 2%;
   padding-bottom: 10%;
   margin: 0 auto;
   height: 100%;
