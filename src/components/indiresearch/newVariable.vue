@@ -23,7 +23,8 @@
     <!-- 主页面 -->
     <el-row>
       <el-col :offset=4>
-        <div class="SubTitle2"><i class="myIcon-jilu"></i> 变量列表</div>
+        <div class="SubTitle2"><i style="position:relative;top:2px"
+             class="myIcon-jilu"></i> 变量列表</div>
         </br>
       </el-col>
     </el-row>
@@ -335,7 +336,7 @@ export default {
         layer2Code: "",
         sampleCode: "",
         description: "",
-        data1: [],  // 诊断 概念集
+        data1: "",  // 诊断 概念集
         data2: "",  // 出现时间 前一个数字
         data3: "",  // 出现时间 后一个数字
         data4: "",  // 是否“不在其之间”，是为1
@@ -381,7 +382,6 @@ export default {
       VariableLayer2: [],
       myconceptsetList: conceptsetList,
       conceptSetListVisible: false,
-      VarConceptSets: "",
       VariableData5Visible: false,
       VariableData6Visible: false,
       VariableData234Visible: false,
@@ -435,10 +435,6 @@ export default {
           console.log("error", error);
         });
     },
-    ComfirmVarConceptSets() {
-      this.VarForm.data1 = this.VarConceptSets
-      this.conceptSetListVisible = false
-    },
     VarCheckLayer2(flag) {
       if (this.VarForm.layer1Code != "" && this.VarForm.typeCode != "") {
         if (flag) {
@@ -471,16 +467,8 @@ export default {
       }
       // data56
       if (this.VarForm.layer1Code == 4 && this.VarForm.typeCode == 2 && (this.VarForm.layer2Code == 2 || this.VarForm.layer2Code == 3)) {
-        switch (parseInt(this.VarForm.layer2Code)) {
-          case 2:
-            this.VariableData5Visible = true
-            this.VariableData6Visible = false
-            break
-          case 3:
-            this.VariableData6Visible = true
-            this.VariableData5Visible = false
-            break
-        }
+        this.VariableData5Visible = (parseInt(this.VarForm.layer2Code) == 2)
+        this.VariableData6Visible = (parseInt(this.VarForm.layer2Code) == 3)
       }
       else {
         this.VariableData5Visible = false
@@ -530,7 +518,7 @@ export default {
     },
     VarResetFields() {
       this.$refs['VarForm'].resetFields()
-      this.VarForm.data1 = []
+      this.VarForm.data1 = ""
       this.VarForm.data2 = ""
       this.VarForm.data3 = ""
       this.VarForm.data4 = ""
@@ -582,6 +570,23 @@ export default {
       this.CloseVarLibDialog()
     },
 
+    // -----概念集弹窗-----
+    selectConceptSetId(val) {
+      this.VarForm.data1 = val
+    },
+    selectVisible(val) {
+      this.conceptSetListVisible = val
+      console.log(this.conceptSetListVisible)
+    },
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then(_ => {
+          done();
+          this.reload()
+        })
+        .catch(_ => { });
+    },
+
     // 进度条跳转 RH
     gonewResearch() {
       this.$router.push({
@@ -607,22 +612,6 @@ export default {
       this.$router.push({
         path: 'analysisResult',
       });
-    },
-    //-----概念集弹窗-----
-    selectConceptSetId(val) {
-      this.VarForm.data1 = val
-    },
-    selectVisible(val) {
-      this.conceptSetListVisible = val
-      console.log(this.conceptSetListVisible)
-    },
-    handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then(_ => {
-          done();
-          this.reload()
-        })
-        .catch(_ => { });
     },
     corhortanalysis() {
       this.$message.success("开始统计！")
@@ -658,6 +647,6 @@ export default {
 .el-icon-tickets {
   font-size: 20px;
 }
-@import "../../assets/AdminInfo/css_admin/css_admin.css";
-@import "../../assets/AdminInfo/css_admin/myIcon/iconfont.css";
+@import "~@/assets/AdminInfo/css_admin/css_admin.css";
+@import "~@/assets/AdminInfo/css_admin/myIcon/iconfont.css";
 </style>

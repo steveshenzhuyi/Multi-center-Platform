@@ -98,6 +98,6 @@ export default {
 </script>
 
 <style>
-@import "../assets/AdminInfo/css_admin/css_admin.css";
-@import "../assets/AdminInfo/css_admin/myIcon/iconfont.css";
+@import "~@/assets/AdminInfo/css_admin/css_admin.css";
+@import "~@/assets/AdminInfo/css_admin/myIcon/iconfont.css";
 </style>

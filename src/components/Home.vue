@@ -47,8 +47,8 @@
         <el-menu-item index="dataimport">数据导入</el-menu-item>
         <el-submenu index="6">
           <template slot="title">管理中心</template>
-          <el-menu-item index="usermanage">用户管理</el-menu-item>
-          <el-menu-item index="authoritymanage">权限管理</el-menu-item>
+          <el-menu-item index="userauthority">用户权限</el-menu-item>
+          <el-menu-item index="messagereview">消息审核</el-menu-item>
         </el-submenu>
         <el-menu-item index="thirdparty/jointeam">第三方数据使用</el-menu-item>
         <el-submenu index="nodemanage">
