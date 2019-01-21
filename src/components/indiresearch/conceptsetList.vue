@@ -1,13 +1,6 @@
 <template>
   <div>
-    <!--<el-button type="text"
-               @click="dialogVisible = true">点击打开 Dialog</el-button>
-
-    <el-dialog title="概念集列表"
-               :visible.sync="dialogVisible"
-               width="60%"
-               :before-close="handleClose">-->
-    <el-row style="margin-top:10px;margin-bottom:10px">
+    <el-row style="margin-top:10px;margin-bottom:20px">
       <el-col :span="2"
               :offset="18">
         <el-button type="primary"
@@ -60,13 +53,6 @@
         </el-table>
       </el-col>
     </el-row>
-    <!--<span slot="footer"
-            class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="dialogVisible = false">确 定</el-button>
-      </span>
-    </el-dialog>-->
     <!--新增概念集 by lqh—-->
     <el-dialog title="新增概念集"
                :visible.sync="createConceptVisible"

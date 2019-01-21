@@ -86,16 +86,17 @@
       <!-- </draggable> -->
     </el-form>
     <!-- 选择概念集的弹窗 -->
-    <el-dialog title="概念集列表"
-               :visible.sync="conceptSetListVisible"
+    <el-dialog :visible.sync="conceptSetListVisible"
                width="60%"
                :before-close="handleClose"
                append-to-body>
+      <span slot="title"
+            class="dialog-title"><i class="el-icon-tickets"></i> 概念集列表</span>
+      <component :is="myconceptsetList"
+                 @getConceptSetId="selectConceptSetId"
+                 @getVisible="selectVisible"></component>
       <span slot="footer"
             class="dialog-footer">
-        <component :is="myconceptsetList"
-                   @getConceptSetId="selectConceptSetId"
-                   @getVisible="selectVisible"></component>
         <el-button @click="conceptSetListVisible = false">取 消</el-button>
         <el-button type="primary"
                    @click="conceptSetListVisible = false">确 定</el-button>
@@ -290,6 +291,12 @@ export default {
 .diagnose .el-form-item--mini .el-form-item__label {
   line-height: 38px;
 } */
+.dialog-title {
+  font-size: 18px;
+}
+.el-icon-tickets {
+  font-size: 20px;
+}
 .diagnose .el-icon-close {
   margin-top: 6px;
 }

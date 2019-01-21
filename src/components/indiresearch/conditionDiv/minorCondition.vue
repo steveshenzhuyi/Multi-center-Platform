@@ -192,6 +192,10 @@ export default {
   color: #606266;
   border: 0px;
 }
+.condition-code {
+  border-radius: 6px;
+}
+</style>
 </style>
 
 
