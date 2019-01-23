@@ -2,12 +2,14 @@
   <div class="main-condition-detail"
        v-model="importdetail">
     <div class="condition-code">
-      <span v-if="id !=0">或</span><span>满足</span>
+      <span v-if="id !=0">或</span><span>满足</span>{{id}}
     </div>
-    <el-form ref="siftingform"
-             :model="siftingform"
-             class="siftingform">
-      <el-select v-model="siftingform.primarycond"
+    <i class="el-icon-delete"
+       @click="deleteMainDiv"></i>
+    <el-form ref="mainCondId"
+             :model="mainCondId"
+             class="mainCondId">
+      <el-select v-model="mainCondId.primarycond"
                  placeholder="请选择"
                  @change="selectPrimary"
                  style="padding-bottom:10px">
@@ -17,7 +19,7 @@
                    :value="primarycond.sortNo">
         </el-option>
       </el-select>
-      <el-select v-model="siftingform.secondcond"
+      <el-select v-model="mainCondId.secondcond"
                  placeholder="请选择"
                  @change="selectSecondary"
                  style="padding-bottom:10px">
@@ -71,19 +73,27 @@ export default {
     return {
       primaryconds: [],
       secondconds: [],
-      siftingform: {
-        primarycond: '',
-        secondcond: '',
-      },
       formName: '', //加载的表单
       mainCondId: { primarycond: '', id: '', secondcond: '' },//主要条件div对应的条件类型、id序号
       importdetail: [],
       viewdetail: [],
     }
   },
+  computed: {
+    getAllmainCondId() {
+      return this.$store.state.cohortView.all_mainCondId[this.id];
+    }
+  },
+  watch: {
+    getAllmainCondId(val) {
+      this.mainCondId = val;
+    }
+  },
   mounted: function () {
     this.getCohortDict()
     this.reproduceCohort()
+    this.mainCondId.id = this.id
+    this.$store.commit('Push_MainCondId', this.mainCondId)
   },
   methods: {
     //读取字典表
@@ -107,7 +117,6 @@ export default {
     //选择一级条件
     selectPrimary(primarycond) {
       this.mainCondId.primarycond = primarycond
-      this.mainCondId.id = this.id
       console.log(this.mainCondId)
       axios.get('cohort/dict', {
         params: {
@@ -133,28 +142,30 @@ export default {
         default:
           break;
       }
+      this.$store.commit('Update_MainCondId', this.mainCondId)
     },
     //选择二级条件
     selectSecondary(secondcond) {
       this.mainCondId.secondcond = secondcond
+      this.$store.commit('Update_MainCondId', this.mainCondId)
     },
     //监测表单数据改变
-    getformData() {
+    getformData(form) {
       // console.log(this.$refs.formName.form)
-      this.importdetail = this.$refs.formName.form.formdetail
+      this.importdetail = form.formdetail
+      // this.importdetail = this.$refs.formName.form.formdetail
       console.log(this.importdetail)
     },
     //查看队列详情初始化
     reproduceCohort() {
       this.viewdetail = this.viewdetails[this.id]
-      console.log(this.id)
+      // console.log(this.id)
       console.log(this.viewdetail)
       if (this.viewdetail != undefined) {
-        this.siftingform.primarycond = this.viewdetail[0].typeSortNo
-        this.mainCondId.primarycond = this.siftingform.primarycond
+        this.mainCondId.primarycond = this.viewdetail[0].typeSortNo
         this.mainCondId.id = this.id
-        this.getCohortDict(this.siftingform.primarycond)
-        switch (this.siftingform.primarycond) {
+        this.getCohortDict(this.mainCondId.primarycond)
+        switch (this.mainCondId.primarycond) {
           case 1: this.formName = 'diagnoseForm';
             break;
           case 2: this.formName = 'marForm';
@@ -169,7 +180,12 @@ export default {
             break;
         }
       }
-    }
+    },
+    //删除主要条件div
+    deleteMainDiv() {
+      this.$emit('deleteMainDiv', this.id)
+      this.$store.commit('Change_MainCondId', this.id)
+    },
   },
   // //得到初始序号--rzx
   // getsort(evt) {
@@ -192,6 +208,18 @@ export default {
 }
 .condition-code {
   border-radius: 6px;
+}
+.main-condition-detail .el-icon-delete {
+  margin-left: 97%;
+  transform: translate(0px, -35px);
+  background: #fff;
+  width: 30px;
+  line-height: 2;
+  text-align: center;
+  font-size: 20px;
+  border-radius: 6px;
+  color: #409eff;
+  font-weight: bold;
 }
 </style>
 
