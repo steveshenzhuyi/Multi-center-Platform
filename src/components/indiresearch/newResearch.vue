@@ -79,9 +79,10 @@ export default {
   methods: {
     tonewresearch(_newresearch) {
       console.log(_newresearch.name, _newresearch.desc);
-      this.$router.push({
-        path: 'createcohort',
-      });
+      // this.$router.push({
+      //   path: 'createcohort',
+
+      // });
     },
     handleClose(done) {
       this.$confirm('确认关闭？')

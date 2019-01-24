@@ -114,9 +114,10 @@
             <component :is="maindiv.component"
                        v-for="(maindiv,index) in maindivs"
                        :id="maindiv.id"
-                       :key="index"
+                       :key="maindiv.uniqueId"
                        :viewdetails="viewdetails"
-                       ref="mainCom">
+                       ref="mainCom"
+                       @deleteMainDiv="deleteMainDiv">
             </component>
             <div class=main-condition-detail>
               <span style="padding-left:50%"
@@ -153,9 +154,10 @@
             <component :is="minordiv.component"
                        v-for="(minordiv,index) in minordivs"
                        :id="minordiv.id"
-                       :key="index"
+                       :key="minordiv.uniqueId"
                        :viewdetails2="viewdetails2"
-                       ref="minorCom">
+                       ref="minorCom"
+                       @deleteMinorDiv="deleteMinorDiv">
             </component>
             <div class=secondary-condition-detail>
               <span style="padding-left:50%"
@@ -225,6 +227,8 @@ export default {
       maindivCount: -1,
       minordivs: [],
       minordivCount: -1,
+      uniqueId: -1,
+      uniqueId2: -1,//key唯一确定
       cohortId: '',//新建队列返回的队列id
       nextstep: true,
       viewCohortLibrary: false,
@@ -247,22 +251,26 @@ export default {
   methods: {
     //新增主要条件--rzx
     addMajor() {
-      this.maindivCount = this.maindivCount + 1
+      this.maindivCount += 1
+      this.uniqueId += 1
       this.maindivs.push({
         'component': 'maincondition',
-        'id': this.maindivCount
+        'id': this.maindivCount,
+        'uniqueId': this.uniqueId
       })
-      console.log(this.maindivs)
+      console.log('addmain', this.maindivs)
       // console.log(this.maindivCount)
     },
     //新增次要条件--rzx
     addMinor() {
-      this.minordivCount = this.minordivCount + 1
+      this.minordivCount += 1
+      this.uniqueId2 += 1
       this.minordivs.push({
         'component': 'minorcondition',
-        'id': this.minordivCount
+        'id': this.minordivCount,
+        'uniqueId': this.uniqueId2
       })
-      console.log(this.minordivs)
+      console.log('addminor', this.minordivs)
       // console.log(this.minordivCount)
     },
     //拼接队列创建条件--rzx
@@ -461,6 +469,28 @@ export default {
     //删除队列--rzx
     deleteCohort(row) {
       console.log(row)
+    },
+    //删除主要条件div
+    deleteMainDiv(index) {
+      this.maindivs.splice(index, 1)
+      this.maindivs.forEach(m => {
+        if (m.id > index) {
+          m.id = m.id - 1;
+        }
+      });
+      this.maindivCount -= 1
+      // console.log(this.maindivs)
+    },
+    //删除次要条件div
+    deleteMinorDiv(index) {
+      this.minordivs.splice(index, 1)
+      this.minordivs.forEach(m => {
+        if (m.id > index) {
+          m.id = m.id - 1;
+        }
+      });
+      this.minordivCount -= 1
+      // console.log(this.minordivs)
     }
   },
 }
@@ -552,9 +582,9 @@ export default {
 .droparea .el-form-item__label {
   text-align: left;
 }
-.siftingform {
+/* .siftingform {
   margin-top: 10px;
-}
+} */
 .person-number {
   background-color: rgba(229, 246, 252, 0.767);
   text-align: center;

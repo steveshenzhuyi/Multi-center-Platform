@@ -121,7 +121,6 @@ export default {
       myconceptsetList: conceptsetList,
       conceptSetListVisible: false,
       form: {
-        id: '',
         formdetail: [{
           data1: '',
           criteriaLayer1Code: "1",
@@ -156,7 +155,7 @@ export default {
           name: "首次出现"        },],
       },
       // cohortdict: '', //查询队列字典得到
-      visible: [{ show: true }, { show: false }, { show: false }, { show: false }, { show: false }, { show: false }],
+      visible: [{ show: false }, { show: false }, { show: false }, { show: false }, { show: false }, { show: false }],
       initialform: [],//初始表单，恢复初始值
     }
   },
@@ -166,8 +165,8 @@ export default {
   watch: {
     mainCondId: {
       handler() {
+        // console.log(this.mainCondId)
         if (this.mainCondId.primarycond === 1) {
-          this.form.id = this.mainCondId.id
           if (this.mainCondId.secondcond != 0) {
             this.visible[this.mainCondId.secondcond - 1].show = true
             this.form.formdetail[this.mainCondId.secondcond - 1].layer1SortNo = this.mainCondId.id

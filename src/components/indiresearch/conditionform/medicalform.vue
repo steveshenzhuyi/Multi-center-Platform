@@ -242,7 +242,6 @@ export default {
       myconceptsetList: conceptsetList,
       conceptSetListVisible: false,
       form: {
-        id: '',
         formdetail: [{
           data1: '',
           criteriaLayer1Code: "4",
@@ -341,7 +340,6 @@ export default {
     mainCondId: {
       handler() {
         if (this.mainCondId.primarycond === 4) {
-          this.form.id = this.mainCondId.id
           if (this.mainCondId.secondcond != 0) {
             this.visible[this.mainCondId.secondcond - 1].show = true
             this.form.formdetail[this.mainCondId.secondcond - 1].layer1SortNo = this.mainCondId.id
