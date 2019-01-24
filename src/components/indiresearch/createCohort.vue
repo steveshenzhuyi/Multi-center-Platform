@@ -225,6 +225,7 @@ export default {
       },
       createInfo: {},
       importdetails: [],
+      importdetails2: [],
       maindivs: [],
       maindivCount: -1,
       minordivs: [],
@@ -281,12 +282,14 @@ export default {
     },
     //拼接队列创建条件--rzx
     fulfilCreateInfo(cohortInfo) {
+      console.log(this.$route.params)
       this.createInfo = {
         token: this.GLOBAL.token,
+        personalResearchId: "20",
         detail: []
       }
       this.createInfo = Object.assign(this.createInfo, this.cohortInfo)
-      // 读取每个div的form
+      // 读取每个主要条件div的form
       this.importdetails = []
       for (var i = 0; i < this.maindivs.length; i++) {
         // 删除不需要的属性
@@ -296,30 +299,40 @@ export default {
           }
         }
       }
+      // 读取每个次要条件div的form
+      this.importdetails2 = []
+      for (var i = 0; i < this.maindivs.length; i++) {
+        // 删除不需要的属性
+        for (var j = 0; j < this.$refs.mainCom[i].importdetail2.length; j++) {
+          if (this.$refs.mainCom[i].importdetail2[j].layer1SortNo != undefined) {
+            this.importdetails2.push(this.$refs.mainCom[i].importdetail[j])
+          }
+        }
+      }
       // console.log(this.importdetails)
       this.createInfo.detail = this.importdetails
       console.log(this.createInfo)
     },
     //生成队列--rzx
     createCohort() {
-      axios.post('cohort/create',
-        this.createInfo
-      )
-        .then((response) => {
-          console.log(response)
-          if (response.data.msg == '新建成功') {
-            this.cohortId = response.data.id
-            this.nextstep = false
-            this.$message({
-              message: '队列新建成功！',
-              type: 'success',
-              duration: 1000
-            });
-          }
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+      // axios.post('cohort/create',
+      //   this.createInfo
+      // )
+      //   .then((response) => {
+      //     console.log(response)
+      //     if (response.data.msg == '新建成功') {
+      //       this.cohortId = response.data.id
+      //       this.nextstep = false
+      //       this.$message({
+      //         message: '队列新建成功！',
+      //         type: 'success',
+      //         duration: 1000
+      //       });
+      //     }
+      //   })
+      //   .catch(function (error) {
+      //     console.log("error", error);
+      //   });
     },
     submitForm(cohortInfo) {
       //表单验证
