@@ -138,15 +138,17 @@
           <div class="secondary-condition">
             <div style="transform: translate(10px, -20px);">
               <span style="background:#ffffff;">次要条件：在满足主要条件的同时，也满足下列
-                <select v-model="limitvalue"
-                        class="PrimaryLimitSelect">
+                <select v-model="limittext"
+                        class="secondaryLimitSelect">
                   <option value="all">全部</option>
                   <option value="any">之一</option>
                   <option value="at_most">至多</option>
                   <option value="at_least">至少</option>
                 </select>
-                <select class="PrimaryLimitSelect">
-                  <option value="0">0个</option>
+                <select class="secondaryLimitSelect"
+                        v-model="limitvalue">
+                  <option v-for="value in totalvalue"
+                          :value="value.num">0个</option>
                 </select>
                 条件的人群
               </span>
@@ -239,6 +241,8 @@ export default {
       viewdetails: [],//主要条件details
       viewdetails2: [],//次要条件details
       limitvalue: '',
+      limittext: '',
+      totalvalue: [],
     }
   },
   mounted: function () {
@@ -270,7 +274,9 @@ export default {
         'id': this.minordivCount,
         'uniqueId': this.uniqueId2
       })
+      this.totalvalue = length => Array.from({ length }).map((v, k) => k)
       console.log('addminor', this.minordivs)
+      console.log(this.totalvalue)
       // console.log(this.minordivCount)
     },
     //拼接队列创建条件--rzx
@@ -469,6 +475,25 @@ export default {
     //删除队列--rzx
     deleteCohort(row) {
       console.log(row)
+      // axios.post('cohort/delete', {
+      //   "token": this.GLOBAL.token,
+      //   "cohortId": row.id
+      // })
+      //   .then((response) => {
+      //     console.log(response)
+      //     // if (response.data.msg == '新建成功') {
+      //     //   this.cohortId = response.data.id
+      //     //   this.nextstep = false
+      //     //   this.$message({
+      //     //     message: '队列新建成功！',
+      //     //     type: 'success',
+      //     //     duration: 1000
+      //     //   });
+      //     // }
+      //   })
+      //   .catch(function (error) {
+      //     console.log("error", error);
+      //   });
     },
     //删除主要条件div
     deleteMainDiv(index) {

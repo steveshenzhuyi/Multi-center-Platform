@@ -2,7 +2,7 @@
   <div class="main-condition-detail"
        v-model="importdetail">
     <div class="condition-code">
-      <span v-if="id !=0">或</span><span>满足</span>{{id}}
+      <span v-if="id !=0">或</span><span>满足</span>
     </div>
     <i class="el-icon-delete"
        @click="deleteMainDiv"></i>
