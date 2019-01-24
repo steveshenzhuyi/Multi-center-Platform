@@ -20,7 +20,7 @@
           <el-table-column prop="setName"
                            align="center"
                            label="概念集名称"
-                           min-width="20%">
+                           min-width="18%">
           </el-table-column>
           <el-table-column prop="setDescription"
                            align="center"
@@ -34,8 +34,26 @@
           </el-table-column>
           <el-table-column label="操作"
                            align="center"
-                           min-width="40%">
+                           min-width="42%">
             <template slot-scope="scope">
+              <!--<el-button-group>
+                <el-button type="primary"
+                           plain
+                           size="small"
+                           icon="el-icon-check">选择</el-button>
+                <el-button type="primary"
+                           plain
+                           size="small"
+                           icon="el-icon-view">查看</el-button>
+                <el-button type="primary"
+                           plain
+                           size="small"
+                           icon="el-icon-edit">编辑</el-button>
+                <el-button type="primary"
+                           plain
+                           size="small"
+                           icon="el-icon-delete">删除</el-button>
+              </el-button-group>-->
               <el-button @click="handleClick(scope.row)"
                          type="text"
                          size="small">选择</el-button>

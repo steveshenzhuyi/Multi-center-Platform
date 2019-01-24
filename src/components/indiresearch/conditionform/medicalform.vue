@@ -209,7 +209,7 @@
     </el-form>
     <!-- 选择概念集的弹窗 -->
     <el-dialog :visible.sync="conceptSetListVisible"
-               width="60%"
+               width="50%"
                :before-close="handleClose"
                append-to-body>
       <span slot="title"

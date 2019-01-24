@@ -137,7 +137,7 @@
       <!-- </draggable> -->
     </el-form>
     <el-dialog :visible.sync="conceptSetListVisible"
-               width="60%"
+               width="50%"
                :before-close="handleClose"
                append-to-body>
       <span slot="title"

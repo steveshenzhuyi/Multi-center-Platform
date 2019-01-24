@@ -171,12 +171,14 @@
       <el-col :span="2">
         <el-button type="primary"
                    @click="corhortgenerate"
-                   plain>生成队列</el-button>
+                   plain
+                   :disabled="!checked">生成队列</el-button>
       </el-col>
       <el-col :span="2">
         <el-button type="primary"
                    @click="corhortanalysis"
-                   plain>生成队列-变量统计</el-button>
+                   plain
+                   :disabled="!checked">生成队列-变量统计</el-button>
       </el-col>
       <el-col :span="8"
               style="padding-left:100px"
@@ -194,11 +196,13 @@
       <el-col :span="2">
         <el-button type="primary"
                    plain
-                   @click="loadingModel">加密</el-button>
+                   @click="loadingModel"
+                   :disabled="!checked">加密</el-button>
       </el-col>
       <el-col :span="2">
         <el-button type="primary"
-                   plain>上传</el-button>
+                   plain
+                   :disabled="!checked">上传</el-button>
       </el-col>
     </el-row>
     <el-row type="flex"
