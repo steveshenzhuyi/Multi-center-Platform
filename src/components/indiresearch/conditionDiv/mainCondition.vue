@@ -190,6 +190,9 @@ export default {
   border: 0px;
   border-bottom: 1px solid #d5d5d5;
 }
+.condition-code {
+  border-radius: 6px;
+}
 </style>
 
 
