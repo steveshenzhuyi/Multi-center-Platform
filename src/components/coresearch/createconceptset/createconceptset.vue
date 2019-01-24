@@ -63,14 +63,13 @@
           <el-tab-pane label="待选择"
                        name="first">
             <el-table :data="tableAll"
-                      ref="multipleTable"
+                      ref="multipleTable"//属性
                       valign="center"
                       height="300"
                       border
                       style="width: 100%"
                       @selection-change="handleSelectionChange">
               <el-table-column type="selection"
-                               label="全选"
                                width="60"></el-table-column>
               <el-table-column prop="subject"
                                label="概念编号"

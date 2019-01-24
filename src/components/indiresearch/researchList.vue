@@ -172,8 +172,8 @@ export default {
       switch (status) {
         case 0:
           this.$router.push({
-            path: 'createcohort',
-            query:
+            name: '队列生成',
+            params:
               {
                 RESEARCHID: id
               }
@@ -181,8 +181,8 @@ export default {
           break;
         case 1:
           this.$router.push({
-            path: 'newvariable',
-            query:
+            name: '变量生成',
+            params:
               {
                 RESEARCHID: id
               }
@@ -190,8 +190,8 @@ export default {
           break;
         case 2:
           this.$router.push({
-            path: 'selectmodel',
-            query:
+            name: '模型选择',
+            params:
               {
                 RESEARCHID: id
               }
@@ -199,8 +199,8 @@ export default {
           break;
         case 3:
           this.$router.push({
-            path: 'analysisresult',
-            query:
+            name: '结果分析',
+            params:
               {
                 RESEARCHID: id
               }
@@ -208,8 +208,8 @@ export default {
           break;
         case 4:
           this.$router.push({
-            path: 'analysisresult',
-            query:
+            name: '结果分析',
+            params:
               {
                 RESEARCHID: id
               }
@@ -220,8 +220,8 @@ export default {
           this.$message('研究状态不正确！');
 
           // this.$router.push({
-          //   path: 'myteam',
-          //   query:
+          //   name: 'myteam',
+          //   params:
           //     {
           //       RESEARCHID: id
           //     }
