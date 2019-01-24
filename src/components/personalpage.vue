@@ -35,7 +35,7 @@
         <div class="SubTitle"><i class="myIcon-xinxi"></i> 通知-研究</div>
         </br>
         <div v-for="(val, index) in notice_research">
-          <el-alert :title=val.content
+          <el-alert :title="val.content"
                     :type='val.flag_NR==1?"success":"warning"'
                     show-icon
                     @close="CloseNotice(index,0)"
@@ -48,7 +48,7 @@
         <div class="SubTitle"><i class="myIcon-xinxi"></i> 通知-审核</div>
         </br>
         <div v-for="(val, index) in notice_review">
-          <el-alert :title=val.content
+          <el-alert :title="val.content"
                     type="info"
                     show-icon
                     @close="CloseNotice(index,1)"

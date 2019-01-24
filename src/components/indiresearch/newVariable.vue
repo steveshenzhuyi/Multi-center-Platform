@@ -21,14 +21,33 @@
     </br>
 
     <!-- 主页面 -->
-    <el-row>
-      <el-col :offset=4>
-        <div class="SubTitle2"><i style="position:relative;top:2px"
+    <el-row style="margin-top:5px">
+      <el-col :span=3
+              :offset=4>
+        <div class="SubTitle2"
+             style="position:relative;top:2px">
+          <i style="position:relative;top:2px"
              class="myIcon-jilu"></i> 变量列表</div>
-        </br>
+      </el-col>
+      <el-col :span=5
+              :offset=3>
+        <td>
+          <el-input :v-model="SearchInput"
+                    prefix-icon="el-icon-search"
+                    size="medium"
+                    placeholder="请输入变量名称"></el-input>
+        </td>
+        <td>
+          <el-button size="medium"
+                     type="primary"
+                     icon="el-icon-search"
+                     round
+                     style="margin-left:15px"
+                     @click="">搜索</el-button>
+        </td>
       </el-col>
     </el-row>
-    <el-row>
+    <el-row style="margin-top:15px">
       <el-col :span=10
               :offset=4>
         <el-table :data="VariableTable"
@@ -102,40 +121,56 @@
                @close="CloseNewVarDialog()"
                width="40%"
                append-to-body>
-      <el-row>
+      <!-- <el-row>
         <el-col :span=19
-                :offset=1>
-          <el-form ref="VarForm"
-                   :model="VarForm"
-                   :rules="VarFormRules"
-                   label-width="80px">
+                :offset=1> -->
+      <el-form ref="VarForm"
+               :model="VarForm"
+               :rules="VarFormRules"
+               label-width="80px">
+        <el-row>
+          <el-col :offset="1"
+                  :span="10">
             <el-form-item label="变量名称"
-                          prop="name"
-                          style="width:50%">
-              <el-input v-model="VarForm.name"></el-input>
+                          prop="name">
+              <el-input v-model="VarForm.name"
+                        style="max-width:217px"></el-input>
             </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :offset="1"
+                  :span="10">
             <el-form-item label="变量类别"
                           prop="layer1Code">
               <el-select v-model="VarForm.layer1Code"
                          placeholder="请选择变量类别"
-                         @change="VarCheckLayer2(1)">
+                         @change="">
                 <el-option v-for="val in VariableLayer1"
                            :key="val.criteriaLayer1Code"
                            :label="val.name"
                            :value="val.criteriaLayer1Code"></el-option>
               </el-select>
             </el-form-item>
+          </el-col>
+          <el-col :offset="1"
+                  :span="10">
             <el-form-item label="变量类型"
                           prop="typeCode">
               <el-select v-model="VarForm.typeCode"
                          placeholder="请选择变量类型"
-                         @change="VarCheckLayer2(1)">
+                         @change="">
                 <el-option label="定性"
                            value="1"></el-option>
                 <el-option label="定量"
                            value="2"></el-option>
               </el-select>
             </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :offset="1"
+                  :span="10">
             <el-form-item label="出现阶段"
                           prop="sampleCode">
               <el-select v-model="VarForm.sampleCode"
@@ -146,31 +181,47 @@
                            :value="val.criteriaSampleCode"></el-option>
               </el-select>
             </el-form-item>
+          </el-col>
+          <el-col :offset="1"
+                  :span="10">
             <el-form-item label="概念集"
-                          prop="data1"
-                          style="width:50%">
+                          prop="data1">
               <el-input v-model="VarForm.data1"
-                        v-on:click.native="conceptSetListVisible = true">
+                        v-on:click.native="conceptSetListVisible = true"
+                        style="max-width:217px">
               </el-input>
             </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :offset="1"
+                  :span="21">
             <el-form-item label="变量描述"
                           prop="description">
               <el-input type="textarea"
                         v-model="VarForm.description"></el-input>
             </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :offset="1"
+                  :span="10">
             <el-form-item label="属性"
                           v-if="VariableLayer2Visible==true"
                           prop="layer2Code">
               <el-select v-model="VarForm.layer2Code"
                          placeholder="请选择属性"
-                         @change="VarCheckData23456(1)">
+                         @change="">
                 <el-option v-for="val in VariableLayer2"
                            :key="val.criteriaLayer2Code"
                            :label="val.name"
                            :value="val.criteriaLayer2Code"></el-option>
               </el-select>
             </el-form-item>
+          </el-col>
+          <el-col :span="10">
             <el-form-item v-if="VariableData5Visible"
+                          label-width="20px"
                           prop="data5">
               <input type="number"
                      v-model="VarForm.data5"
@@ -178,12 +229,18 @@
                      max="100">
             </el-form-item>
             <el-form-item v-if="VariableData6Visible"
+                          label-width="20px"
                           prop="data6">
               <input type="number"
                      v-model="VarForm.data6"
                      min="0"
                      max="100">
             </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :offset="1"
+                  :span="20">
             <el-form-item v-if="VariableData234Visible"
                           prop="data3">
               <span style="font-size: 8px">（&nbsp;&nbsp;出现时间&nbsp;</span>
@@ -199,9 +256,11 @@
               <input type="checkbox"
                      v-model="VarForm.data4"> <span style="font-size: 8px">不在其之间</span></el-checkbox>&nbsp;&nbsp;）
             </el-form-item>
-          </el-form>
-        </el-col>
-      </el-row>
+          </el-col>
+        </el-row>
+      </el-form>
+      <!-- </el-col>
+      </el-row> -->
       <el-row>
         <el-col :offset=2>
           <el-checkbox v-model="VarForm.flag">同时新增到变量库</el-checkbox>
@@ -291,6 +350,7 @@
 import axios from 'axios'
 import echarts from 'echarts';
 import conceptsetList from './conceptsetList.vue'
+import { setTimeout } from 'timers';
 export default {
   components: {
     'conceptsetList': conceptsetList
@@ -299,24 +359,21 @@ export default {
     var VarValidateData3 = (rule, value, callback) => {
       if ((value < this.VarForm.data2) || ((value == "") !== (this.VarForm.data2 == "")) || (this.VarForm.data4 && (value == ""))) {
         callback(new Error('请确认时间正确'))
-      }
-      else {
+      } else {
         callback()
       }
     };
     var VarValidateData5 = (rule, value, callback) => {
       if (this.VariableData5Visible && value === "") {
         callback(new Error('请输入数字'))
-      }
-      else {
+      } else {
         callback()
       }
     };
     var VarValidateData6 = (rule, value, callback) => {
       if (this.VariableData6Visible && value === "") {
         callback(new Error('请输入数字'))
-      }
-      else {
+      } else {
         callback()
       }
     };
@@ -326,6 +383,7 @@ export default {
       { 'id': '2', 'name': '年龄', 'type': '定量', 'description': '样本的年龄' }],
       NewVarVisible: false,
       VarLibVisible: false,
+      SearchInput: "",
       ifanalysis: false,
       // ------新增变量弹窗------
       VarForm: {
@@ -344,36 +402,16 @@ export default {
         flag: 0,  // 是否加入变量库
       },
       VarFormRules: {
-        name: [
-          { required: true, message: '请输入变量名称', trigger: 'change' }
-        ],
-        typeCode: [
-          { required: true, message: '请选择变量类型', trigger: 'change' }
-        ],
-        layer1Code: [
-          { required: true, message: '请选择变量类别', trigger: 'change' }
-        ],
-        layer2Code: [
-          { required: true, message: '请选择属性', trigger: 'change' }
-        ],
-        sampleCode: [
-          { required: true, message: '请选择变量的出现阶段', trigger: 'change' }
-        ],
-        description: [
-
-        ],
-        data1: [
-          { required: true, message: '请选择概念集', trigger: 'change' }
-        ],
-        data3: [
-          { validator: VarValidateData3, trigger: 'change' }
-        ],
-        data5: [
-          { validator: VarValidateData5, trigger: 'change' }
-        ],
-        data6: [
-          { validator: VarValidateData6, trigger: 'change' }
-        ]
+        name: [{ required: true, message: '请输入变量名称', trigger: 'change' }],
+        typeCode: [{ required: true, message: '请选择变量类型', trigger: 'change' }],
+        layer1Code: [{ required: true, message: '请选择变量类别', trigger: 'change' }],
+        layer2Code: [{ required: true, message: '请选择属性', trigger: 'change' }],
+        sampleCode: [{ required: true, message: '请选择变量的出现阶段', trigger: 'change' }],
+        description: [],
+        data1: [{ required: true, message: '请选择概念集', trigger: 'change' }],
+        data3: [{ validator: VarValidateData3, trigger: 'change' }],
+        data5: [{ validator: VarValidateData5, trigger: 'change' }],
+        data6: [{ validator: VarValidateData6, trigger: 'change' }]
       },
       VariableLayer1: [],
       VariableSample: [],
@@ -384,6 +422,7 @@ export default {
       VariableData5Visible: false,
       VariableData6Visible: false,
       VariableData234Visible: false,
+      aaa: false,
 
       // ------变量库弹窗------
       VarLibTable: [],
@@ -393,10 +432,42 @@ export default {
   created() {
 
   },
+  watch: {
+    'VarForm.typeCode'() {
+      this.VarCheckLayer2()
+      this.VarCheckData23456()
+    },
+    'VarForm.layer1Code'() {
+      this.VarCheckLayer2()
+      this.VarCheckData23456()
+    },
+    'VarForm.layer2Code'() {
+      this.VarCheckData23456()
+    },
+    aaa() {
+      console.log("watch")
+    }
+  },
+  computed: {
+    mywidth() {
+      if (this.$refs['myselect']) {
+        return this.$refs['myselect'].$el.clientWidth
+      } else {
+        return null
+      }
+    }
+  },
   methods: {
     // ------主页面------
     CancelVar(index) {
       // 删除 VariableTable[index].id
+      // this.aaa = true
+      // setTimeout(() => console.log("settimeout"), 0)
+      // this.$nextTick(() => console.log("vue nexttick"))
+      // process.nextTick(() => console.log("process.nexttick"))
+      // Promise.resolve().then(() => console.log("promise"))
+      // console.log("start")
+      console.log(this.$route.params.RESEARCHID)
     },
 
     // ------新增变量弹窗------
@@ -434,11 +505,9 @@ export default {
           console.log("error", error);
         });
     },
-    VarCheckLayer2(flag) {
+    VarCheckLayer2() {
       if (this.VarForm.layer1Code != "" && this.VarForm.typeCode != "") {
-        if (flag) {
-          this.VarForm.layer2Code = ""
-        }
+        this.VarForm.layer2Code = ""
         axios.get('/feature/criteriaDict', {
           params: {
             "token": this.GLOBAL.token,
@@ -448,7 +517,6 @@ export default {
         })
           .then((response) => {
             this.VariableLayer2 = response.data.data
-            this.VarCheckData23456(flag)
           })
           .catch(function (error) {
             console.log("error", error);
@@ -456,28 +524,19 @@ export default {
         this.VariableLayer2Visible = true
       }
     },
-    VarCheckData23456(flag) {
-      if (flag) {
-        this.VarForm.data2 = ""
-        this.VarForm.data3 = ""
-        this.VarForm.data4 = ""
-        this.VarForm.data5 = ""
-        this.VarForm.data6 = ""
-      }
+    VarCheckData23456() {
       // data56
       if (this.VarForm.layer1Code == 4 && this.VarForm.typeCode == 2 && (this.VarForm.layer2Code == 2 || this.VarForm.layer2Code == 3)) {
         this.VariableData5Visible = (parseInt(this.VarForm.layer2Code) == 2)
         this.VariableData6Visible = (parseInt(this.VarForm.layer2Code) == 3)
-      }
-      else {
+      } else {
         this.VariableData5Visible = false
         this.VariableData6Visible = false
       }
       // data234
       if (parseInt(this.VarForm.layer2Code) > this.VariableLayer2.length - 4 && this.VarForm.typeCode == 2) {
         this.VariableData234Visible = true
-      }
-      else {
+      } else {
         this.VariableData234Visible = false
       }
     },

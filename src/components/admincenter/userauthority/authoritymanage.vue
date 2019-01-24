@@ -1,40 +1,41 @@
 <template>
   <div>
     <!-- 权限管理 -->
-    <el-row :gutter="20"
-            style="margin-top:5px">
-      <el-col :span=4
-              :offset=4>
-        <td class="mytd2">角色名称：</td>
-        <td>
-          <el-input placeholder="角色名称"
-                    prefix-icon="el-icon-search"
-                    size="medium"
-                    v-model="SearchInput.name"></el-input>
-        </td>
+    <el-row>
+      <el-col :offset=4>
+        <el-form :inline="true"
+                 label-width="80px"
+                 size="medium">
+          <el-form-item label="角色名称:">
+            <el-input placeholder="请输入角色名称"
+                      prefix-icon="el-icon-search"
+                      v-model="SearchInput.name"></el-input>
+          </el-form-item>
+        </el-form>
       </el-col>
     </el-row>
-    <el-row :gutter="20"
-            style="margin-top:15px">
-      <el-col :span=4
-              :offset=4>
-        <td class="mytd2">角色编码：</td>
-        <td>
-          <el-input placeholder="角色编码"
-                    prefix-icon="el-icon-search"
-                    size="medium"
-                    v-model="SearchInput.id"></el-input>
-        </td>
+    <el-row>
+      <el-col :offset=4
+              :span=10>
+        <el-form :inline="true"
+                 label-width="80px"
+                 size="medium">
+          <el-form-item label="角色编码:">
+            <el-input placeholder="请输入角色编码"
+                      prefix-icon="el-icon-search"
+                      v-model="SearchInput.id"></el-input>
+          </el-form-item>
+          <el-form-item label=" "
+                        label-width="30px">
+            <el-button type="primary"
+                       icon="el-icon-search"
+                       round
+                       @click="">搜索</el-button>
+          </el-form-item>
+        </el-form>
       </el-col>
-      <el-col :span=2>
-        <el-button type="primary"
-                   size="medium"
-                   icon="el-icon-search"
-                   round
-                   @click="">搜索</el-button>
-      </el-col>
-      <el-col :span=4
-              :offset=6>
+      <el-col :offset=2
+              :span=2>
         <el-button type="primary"
                    size="medium"
                    icon="el-icon-circle-plus-outline"
@@ -42,11 +43,10 @@
                    @click="CreateNewRole()">新增角色</el-button>
       </el-col>
     </el-row>
-    <el-row style="margin-top:25px">
-      <el-col :span=24
+    <el-row style="margin-top:5px">
+      <el-col :span=14
               :offset=4>
         <el-table :data="RoleList"
-                  style="width:60%"
                   stripe
                   border>
           <el-table-column prop="id"
@@ -79,8 +79,8 @@
     <!-- 新增、编辑角色弹框 -->
     <el-dialog :title='EditRoleId?"编辑角色":"新增角色"'
                :visible.sync="NewRoleDialogVisible"
-               @close="CancelNewRole()"
-               width="30%">
+               @close="CancelNew_EditRole()"
+               width="25%">
       <el-row>
         <el-col :span=20
                 :offset=2>
@@ -88,7 +88,7 @@
           <td>
             <el-input placeholder="请输入角色名称"
                       size="medium"
-                      v-model="ThisRole.name"></el-input>
+                      v-model="EditRoleInfo.name"></el-input>
           </td>
         </el-col>
       </el-row>
@@ -104,7 +104,7 @@
         <el-col :span=20
                 :offset=6>
           <div v-for="(val, index) in AuthorityList">
-            <el-checkbox v-model="ThisRole['authority'][index]">{{val}}</el-checkbox>
+            <el-checkbox v-model="EditRoleInfo['authority'][index]">{{val}}</el-checkbox>
             </br>
             </br>
           </div>
@@ -121,20 +121,20 @@
                    @click="ConfirmEditRole()"
                    size="medium">确认</el-button>
         <el-button type="primary"
-                   @click="CancelNewRole()"
+                   @click="CancelNew_EditRole()"
                    size="medium">取消</el-button>
       </span>
     </el-dialog>
     <!-- 查看角色权限弹框 -->
     <el-dialog title="查看角色权限"
                :visible.sync="ViewRoleDialogVisible"
-               width="30%">
+               width="20%">
       <el-row>
         <el-col :span=20
                 :offset=2>
           <td class="mytd2">角色名称：</td>
           <td>
-            {{ThisViewRole.name}}
+            {{ViewRoleInfo.name}}
           </td>
         </el-col>
       </el-row>
@@ -148,7 +148,7 @@
       <el-row>
         <el-col :span=20
                 :offset=6>
-          <p v-for="val in ThisViewRole.authoritytext"
+          <p v-for="val in ViewRoleInfo.authoritytext"
              style="padding-left:10px">{{val}}</p>
         </el-col>
       </el-row>
@@ -177,11 +177,28 @@ export default {
       AuthorityList: ['伦理审核', '用户管理', '数据库删改', '构建团队'],
       // ---新建和编辑---
       NewRoleDialogVisible: false,
-      ThisRole: { 'name': '', 'authority': [false, false, false, false] }, // get到权限列表后，将此authority改为对应数目
       EditRoleId: "",
+      EditRoleInfo: { 'name': '', 'authority': [false, false, false, false] }, // get到权限列表后，将此authority改为对应数目
       // ---查看---
       ViewRoleDialogVisible: false,
-      ThisViewRole: {},
+      ViewRoleId: "",
+      ViewRoleInfo: {},
+    }
+  },
+  watch: {
+    EditRoleId(val) {
+      if (val) {
+        this.EditRoleInfo.name = JSON.parse(JSON.stringify(this.RoleList.find(item => item.id == val).name))
+        this.EditRoleInfo.authority = JSON.parse(JSON.stringify(this.RoleList.find(item => item.id == val).authority))
+      } else {
+        this.ResetEditRoleInfo()
+      }
+    },
+    ViewRoleId(val) {
+      this.ViewRoleInfo.name = this.RoleList.find(item => item.id == val).name
+      this.ViewRoleInfo.authoritytext = this.RoleList.find(item => item.id == val).authority.map((item, index) => {
+        return item ? this.AuthorityList[index] : ""
+      }).filter(d => d)
     }
   },
   methods: {
@@ -190,39 +207,34 @@ export default {
       this.NewRoleDialogVisible = true
     },
     ConfirmNewRole() {
-      // 向后端发ThisRole数据
+      // 向后端发EditRoleInfo数据
       this.NewRoleDialogVisible = false
-      this.ResetNewRole()
+      this.ResetEditRoleInfo()
     },
-    CancelNewRole() {
+    CancelNew_EditRole() {
       this.NewRoleDialogVisible = false
-      this.ResetNewRole()
+      this.ResetEditRoleInfo()
+      this.EditRoleId = ""
     },
     // ------编辑------
     EditRole(index) {
       this.EditRoleId = this.RoleList[index].id
-      this.ThisRole.name = JSON.parse(JSON.stringify(this.RoleList[index].name)) // 编辑是从表里拿来的要注意了
-      this.ThisRole.authority = JSON.parse(JSON.stringify(this.RoleList[index].authority))
       this.NewRoleDialogVisible = true
     },
     ConfirmEditRole() {
-      // 向后端传ThisRole数据和EditRoleId
+      // 向后端传EditRoleInfo数据和EditRoleId
       this.NewRoleDialogVisible = false
-      this.ResetNewRole()
-    },
-    ResetNewRole() {
-      this.ThisRole.name = ''
-      this.ThisRole.authority.forEach((item, index) => {
-        this.ThisRole.authority[index] = false
-      })
       this.EditRoleId = ""
+    },
+    ResetEditRoleInfo() {
+      this.EditRoleInfo.name = ''
+      this.EditRoleInfo.authority.forEach((item, index) => {
+        this.EditRoleInfo.authority[index] = false
+      })
     },
     // ------查看------
     ViewRole(index) {
-      this.ThisViewRole.name = this.RoleList[index].name
-      this.ThisViewRole.authoritytext = this.RoleList[index].authority.map((item, index) => {
-        return item ? this.AuthorityList[index] : ""
-      }).filter(d => d)
+      this.ViewRoleId = this.RoleList[index].id
       this.ViewRoleDialogVisible = true
     },
     // ------删除------
@@ -240,8 +252,4 @@ export default {
 </script>
 
 <style>
-.mytd2 {
-  width: 80px;
-  font-size: 14px;
-}
 </style>

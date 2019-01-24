@@ -73,7 +73,6 @@
 export default {
   data() {
     return {
-      // ------审核------
       ApplyList: [
         {          'applytype': 0,
           'applyinfo': { '申请类别': '注册申请', '申请人': '张三', '邮箱': 'xxxx@zju.edu.cn', '所属医院': '浙江省xxxx医院', '科室': '外科', '注册角色': '院方医生', '提交日期': '2018年10月29日' },
@@ -93,7 +92,6 @@ export default {
     }
   },
   methods: {
-    // ------审核------
     AgreeReview(index) {
       this.ReviewDialogVisible = false
       // 传消息给后端，以及审核成功提示
@@ -111,7 +109,6 @@ export default {
       this.ReviewDialogVisible = true
       this.ApplyNumber = index
     },
-
   }
 }
 </script>
