@@ -1,16 +1,17 @@
 <template>
   <div class="secondary-condition-detail"
-       style="margin-top:-5px"
        v-model="importdetail2">
     <div style="margin-top:-25px;line-height:1.6">
       <div class="condition-code">
         <span v-if="id !=0">并</span>
         <span>满足</span>
       </div>
-      <el-form ref="siftingform"
-               :model="siftingform"
-               class="siftingform">
-        <el-select v-model="siftingform.primarycond"
+      <i class="el-icon-delete"
+         @click="deleteMinorDiv"></i>
+      <el-form ref="minorCondId"
+               :model="minorCondId"
+               class="minorCondId">
+        <el-select v-model="minorCondId.primarycond"
                    placeholder="请选择"
                    @change="selectPrimary"
                    style="padding-bottom:10px">
@@ -20,7 +21,7 @@
                      :value="primarycond.sortNo">
           </el-option>
         </el-select>
-        <el-select v-model="siftingform.secondcond"
+        <el-select v-model="minorCondId.secondcond"
                    placeholder="请选择"
                    @change="selectSecondary"
                    style="padding-bottom:10px">
@@ -34,7 +35,8 @@
       <div>
         <component :is="formName"
                    :minorCondId="minorCondId"
-                   ref="formName"></component>
+                   ref="formName"
+                   @sendformData="getformData"></component>
       </div>
       <div class="limit-condition"
            slot="footer"
@@ -105,17 +107,25 @@ export default {
     return {
       primaryconds: [],
       secondconds: [],
-      siftingform: {
-        primarycond: '',
-        secondcond: '',
-      },
       formName: '', //加载的表单
       minorCondId: { primarycond: '', id: '', secondcond: '' },//次要条件div对应的条件类型、id序号
       importdetail2: [],
     }
   },
+  computed: {
+    getAllminorCondId() {
+      return this.$store.state.cohortView.all_minorCondId[this.id];
+    }
+  },
+  watch: {
+    getAllminorCondId(val) {
+      this.minorCondId = val;
+    }
+  },
   mounted: function () {
     this.getCohortDict()
+    this.minorCondId.id = this.id
+    this.$store.commit('Push_MinorCondId', this.minorCondId)
   },
   methods: {
     //读取字典表
@@ -165,17 +175,24 @@ export default {
         default:
           break;
       }
+      this.$store.commit('Update_MinorCondId', this.minorCondId)
     },
     //选择二级条件
     selectSecondary(secondcond) {
       this.minorCondId.secondcond = secondcond
     },
-    // //监测表单数据改变
-    // bindData() {
-    //   // console.log(this.$refs.formName.form)
-    //   this.importdetail = this.$refs.formName.form.formdetail
-    //   console.log(this.importdetail)
-    // }
+    //监测表单数据改变
+    getformData(form) {
+      // console.log(this.$refs.formName.form)
+      this.importdetail2 = form.formdetail
+      console.log(this.importdetail2)
+    },
+    //删除次要条件div
+    deleteMinorDiv() {
+      console.log(this.id)
+      this.$emit('deleteMinorDiv', this.id)
+      this.$store.commit('Change_MinorCondId', this.id)
+    },
   },
 }
 </script>
@@ -191,6 +208,21 @@ export default {
 .occurrence-distinct {
   color: #606266;
   border: 0px;
+}
+.condition-code {
+  border-radius: 6px;
+}
+.secondary-condition-detail .el-icon-delete {
+  margin-left: 97%;
+  transform: translate(0px, -35px);
+  background: #fff;
+  width: 30px;
+  line-height: 2;
+  text-align: center;
+  font-size: 20px;
+  border-radius: 6px;
+  color: #409eff;
+  font-weight: bold;
 }
 </style>
 

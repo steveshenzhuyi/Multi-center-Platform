@@ -136,16 +136,17 @@
       </div>
       <!-- </draggable> -->
     </el-form>
-    <el-dialog title="概念集列表"
-               :visible.sync="conceptSetListVisible"
+    <el-dialog :visible.sync="conceptSetListVisible"
                width="60%"
                :before-close="handleClose"
                append-to-body>
+      <span slot="title"
+            class="dialog-title"><i class="el-icon-tickets"></i> 概念集列表</span>
+      <component :is="myconceptsetList"
+                 @getConceptSetId="selectConceptSetId"
+                 @getVisible="selectVisible"></component>
       <span slot="footer"
             class="dialog-footer">
-        <component :is="myconceptsetList"
-                   @getConceptSetId="selectConceptSetId"
-                   @getVisible="selectVisible"></component>
         <el-button @click="conceptSetListVisible = false">取 消</el-button>
         <el-button type="primary"
                    @click="conceptSetListVisible = false">确 定</el-button>
@@ -169,7 +170,6 @@ export default {
       myconceptsetList: conceptsetList,
       conceptSetListVisible: false,
       form: {
-        id: '',
         formdetail: [{
           data1: '',
           criteriaLayer1Code: "2",
@@ -243,7 +243,6 @@ export default {
     mainCondId: {
       handler() {
         if (this.mainCondId.primarycond === 2) {
-          this.form.id = this.mainCondId.id
           if (this.mainCondId.secondcond != 0) {
             this.visible[this.mainCondId.secondcond - 1].show = true
             this.form.formdetail[this.mainCondId.secondcond - 1].layer1SortNo = this.mainCondId.id
@@ -389,6 +388,12 @@ export default {
 .mar .el-form-item--mini .el-form-item__label {
   line-height: 38px;
 } */
+.dialog-title {
+  font-size: 18px;
+}
+.el-icon-tickets {
+  font-size: 20px;
+}
 .mar .el-icon-close {
   margin-top: 6px;
 }

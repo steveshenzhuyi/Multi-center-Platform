@@ -20,39 +20,65 @@
       </el-row>
     </el-form>
     <div class="content_padding"
-         id="dashboard_svg">
+         id="dashboard_svg"
+         style="float:left;osition:relative;left:100px;">
+    </div>
+    <div class="nodes_table"
+         id="nodes_information"
+         style="position:relative;left:100px;float:left;">
+      <el-table :data="tableAll"
+                ref="multipleTable2"
+                valign="center"
+                height="600"
+                border
+                style="width: 100%"
+                :default-sort="{prop: 'type', order: 'ascending'}"
+                highlight-current-row
+                @current-change="handleCurrentChange">
+        <el-table-column prop="subject"
+                         label="概念编号"
+                         width="100"></el-table-column>
+        <el-table-column prop="label"
+                         label="概念名称"
+                         width="120"></el-table-column>
+        <el-table-column prop="domain"
+                         label="概念领域"
+                         width="90"></el-table-column>
+        <el-table-column prop="class"
+                         label="概念类型"
+                         width="90"></el-table-column>
+        <el-table-column prop="voc"
+                         label="术语表"
+                         width="120"></el-table-column>
+        <el-table-column prop="std"
+                         label="标准概念"
+                         width="50"></el-table-column>
+        <el-table-column prop="type"
+                         label="标签"
+                         width="100"
+                         :filters="[{ text: '中心节点', value: '中心节点' }, { text: '父节点', value: '父节点' }, { text: '子节点', value: '子节点' }]"
+                         :filter-method="filterTag"
+                         filter-placement="bottom-end">
+          <template slot-scope="scope">
+            <el-tag type="primary"
+                    disable-transitions
+                    v-if="scope.row.type=== 0">中心节点</el-tag>
+            <el-tag type="danger"
+                    disable-transitions
+                    v-else-if="scope.row.type=== 1">父节点</el-tag>
+            <el-tag type="warning"
+                    disable-transitions
+                    v-else="scope.row.type=== 2">子节点</el-tag>
+
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
   </div>
 </template>
 <script>
 import axios from "axios"
 import * as d3 from "d3"
-// import d3tooltip from "d3-tooltip"
-
-//D3图形全局变量
-// let g = '', //D3画布
-//   colorScale = '',  //组件颜色
-//   tooltip = '', //图示框信息
-//   marker = '',  //箭头信息
-//   gs = '',  //节点元素信息
-//   gText = '', //节点文字信息
-//   forceSimulation = '', //力导向图信息
-//   links = '', //连线元素信息
-//   linksText = ''  //连线文字信息
-
-// var that = ''
-
-// //D3画布宽高
-// let width = 800
-// let height = 800
-
-// //重复查询标志--用于第二次查询起重新绘制画布
-// var flag = 0
-
-// //节点数据和连线数据
-// var nodes = []
-// var edges = []
-
 
 export default {
   name: 'Scale',
@@ -69,8 +95,8 @@ export default {
       links: '', //连线元素信息
       linksText: '',  //连线文字信息
       //D3画布大小
-      width: 800,
-      height: 800,
+      width: 600,
+      height: 600,
       //重复查询标志--用于第二次查询起重新绘制画布
       flag: 0,
       //节点数据和连线数据
@@ -88,16 +114,38 @@ export default {
       //父子节点数量
       anc_num: 0,
       des_num: 0,
+      //存放所有节点具体信息
+      tableAll: [],
+      //存放被选中节点的数值
+      multipleSelection: [],
     }
   },
 
   methods: {
+    //添加标签
+    filterTag(value, row) {
+      if (value === "中心节点") {
+        return row.type === 0;
+      }
+      if (value === "父节点") {
+        return row.type === 1;
+      }
+      if (value === "子节点") {
+        return row.type === 2;
+      }
+
+    },
+    //选中节点
+
     //获取搜索结果
     getSearchData() {
       //第二次查询开始，刷新D3画布
       if (this.flag != 0) {
-        this.refreshSVG()
-        this.LastConceptId = this.CenterNode.subject
+        console.log("refresh")
+        this.refreshSVG();
+        console.log(this.tableAll);
+        this.LastConceptId = this.CenterNode.subject;
+        // this.multipleSelection = this.multipleSelection
       }
       //重置数据
       this.ConceptId = this.InputConceptName
@@ -109,6 +157,8 @@ export default {
       this.DescendantNodes = []
       this.anc_num = 0
       this.des_num = 0
+      this.tableAll = []
+      this.multipleSelection = []
       //获取中心节点、父子节点查询结果
       var p1 = this.searchCenterConcept()
       var p2 = this.searchAncestorConcept()
@@ -120,12 +170,13 @@ export default {
           this.nodes.push(this.CenterNode)
           this.nodes = this.nodes.concat(this.AncestorNodes)
           this.nodes = this.nodes.concat(this.DescendantNodes)
+
           //添加D3父节点关系
           for (var i = 0; i < this.anc_num; i++) {
             // 创建父节点关系信息
             var relationship = {}
-            relationship.source = 0
-            relationship.target = i + 1
+            relationship.source = i + 1
+            relationship.target = 0
             relationship.relation = 'Is a'
             relationship.value = 2.5
             relationship.type = 1
@@ -136,14 +187,15 @@ export default {
           for (var i = 0; i < this.des_num; i++) {
             // 创建子节点关系信息
             var relationship = {}
-            relationship.source = this.anc_num + i + 1
-            relationship.target = 0
+            relationship.source = 0
+            relationship.target = this.anc_num + i + 1
             relationship.relation = 'Subsumes'
             relationship.value = 2
             relationship.type = 2
             //添加子节点关系
             this.edges.push(relationship)
           }
+
           //创建D3图形
           this.createForceGraph()
           this.createToolTip()
@@ -152,6 +204,7 @@ export default {
           this.updateNodes()
           //置位刷新标志
           this.flag = this.flag + 1
+          console.log(this.gs)
         }
         else {
           console.log('No Matching Concept')
@@ -159,68 +212,21 @@ export default {
       })
     },
 
-    // getClickSearch(d) {
-    //   this.ConceptId = d
-    //   console.log(d)
-    //   nodes = []
-    //   edges = []
-    //   this.AncestorNodes = []
-    //   this.DescendantNodes = []
-    //   this.anc_num = 0
-    //   this.des_num = 0
-    //   //第二次查询开始，刷新D3画布
-    //   if (flag != 0) {
-    //     this.refreshSVG()
-    //   }
-    //   //获取中心节点、父子节点查询结果
-    //   var p1 = this.searchCenterConcept()
-    //   var p2 = this.searchAncestorConcept()
-    //   var p3 = this.searchDescendantConcept()
-    //   //等待全部查询完成
-    //   Promise.all([p1, p2, p3]).then(() => {
-    //     //添加D3节点
-    //     nodes.push(this.CenterNode)
-    //     nodes = nodes.concat(this.AncestorNodes)
-    //     nodes = nodes.concat(this.DescendantNodes)
-    //     //添加D3父节点关系
-    //     for (var i = 0; i < this.anc_num; i++) {
-    //       // 创建父节点关系信息
-    //       var relationship = {}
-    //       relationship.source = 0
-    //       relationship.target = i + 1
-    //       relationship.relation = 'Is a'
-    //       relationship.value = 2.5
-    //       relationship.type = 1
-    //       //添加父节点关系
-    //       edges.push(relationship)
-    //     }
-    //     //添加D3子节点关系
-    //     for (var i = 0; i < this.des_num; i++) {
-    //       // 创建子节点关系信息
-    //       var relationship = {}
-    //       relationship.source = this.anc_num + i + 1
-    //       relationship.target = 0
-    //       relationship.relation = 'Subsumes'
-    //       relationship.value = 2
-    //       relationship.type = 2
-    //       //添加子节点关系
-    //       edges.push(relationship)
-    //     }
-    //     console.log(nodes)
-    //     console.log(edges)
-    //     //创建D3图形
-    //     this.createForceGraph()
-    //     this.createToolTip()
-    //     this.createArrow()
-    //     this.updateLinks()
-    //     this.updateNodes()
-    //     //置位刷新标志
-    //     flag = flag + 1
-    //   })
-    // },
+    setCurrent(row) {
+      this.$refs.singleTable.setCurrentRow(row);
+    },
+
+    handleCurrentChange(val) {
+      this.multipleSelection = val;
+      if (typeof (this.multipleSelection) != "undefined" && this.multipleSelection != null) {
+        this.updatecolor();
+      }
+    },
 
     //查询中心节点信息
     searchCenterConcept() {
+      //清空选中的节点列表
+      this.multipleSelection = []
       return new Promise((resolve, reject) => {
         const InputConceptName = this.ConceptId;
         axios.get('/knowledgeGraph/queryConceptID', {
@@ -236,7 +242,7 @@ export default {
             //创建中心节点概念信息
             if (searchConcepts.length != 0) {
               var centerConcept = {}
-              centerConcept.type = 1
+              centerConcept.type = 0
               var a = searchConcepts[0].subject.value.split('#')
               centerConcept.subject = a[1]
               centerConcept.name = searchConcepts[0].label.value
@@ -246,6 +252,16 @@ export default {
               centerConcept.std = Object.getOwnPropertyNames(searchConcepts[0]).length > 5 ? searchConcepts[0].std.value : ''
               //添加中心节点
               this.CenterNode = centerConcept
+              //添加节点信息到列表
+              this.tableAll.push({
+                type: centerConcept.type,
+                subject: centerConcept.subject,
+                label: centerConcept.name,
+                domain: centerConcept.domain,
+                class: centerConcept.class,
+                voc: centerConcept.voc,
+                std: centerConcept.std,
+              })
               resolve()
             }
             else {
@@ -282,7 +298,7 @@ export default {
                 target_num++
                 //创建父节点概念信息
                 var ancestorConcept = {}
-                ancestorConcept.type = 0
+                ancestorConcept.type = 1
                 var a = searchConcepts[i].anc.value.split('#')
                 ancestorConcept.subject = a[1]
                 ancestorConcept.name = searchConcepts[i].label.value
@@ -292,6 +308,16 @@ export default {
                 ancestorConcept.std = Object.getOwnPropertyNames(searchConcepts[i]).length > 5 ? searchConcepts[i].std.value : ''
                 //添加父节点
                 this.AncestorNodes.push(ancestorConcept)
+                //添加节点信息到列表
+                this.tableAll.push({
+                  type: ancestorConcept.type,
+                  subject: ancestorConcept.subject,
+                  label: ancestorConcept.name,
+                  domain: ancestorConcept.domain,
+                  class: ancestorConcept.class,
+                  voc: ancestorConcept.voc,
+                  std: ancestorConcept.std,
+                })
               }
               //记录父节点数量
               this.anc_num = target_num
@@ -338,6 +364,16 @@ export default {
                 descendantConcept.std = Object.getOwnPropertyNames(searchConcepts[i]).length > 5 ? searchConcepts[i].std.value : ''
                 //添加子节点
                 this.DescendantNodes.push(descendantConcept)
+                //添加节点信息到列表
+                this.tableAll.push({
+                  type: descendantConcept.type,
+                  subject: descendantConcept.subject,
+                  label: descendantConcept.name,
+                  domain: descendantConcept.domain,
+                  class: descendantConcept.class,
+                  voc: descendantConcept.voc,
+                  std: descendantConcept.std,
+                })
               }
               //记录父节点数量
               this.des_num = source_num
@@ -359,12 +395,19 @@ export default {
         .append('svg')
         .attr('width', this.width)
         .attr('height', this.height)
-      this.g = svg.append('g')
-        .attr("class", "everything");
 
-      // colorScale = d3.scaleOrdinal()
-      //   .domain(d3.range(nodes.length))
-      //   .range(d3.schemeCategory10)
+      this.g = svg.append('g')
+        .attr("class", "everything")
+
+      // svg.call(d3.zoom() //创建缩放行为
+      //   .scaleExtent([-5, 5])
+      //   .on('zoom', this.zoom_actions)); //设置缩放范围
+      // console.log(this.g);
+      // function zoom_actions() {
+      //   console.log(this.g)
+      //   this.g.attr("transform", d3.event.transform)
+      // }
+      console.log(this.tableAll);
 
       console.log('drawSVG')
     },
@@ -387,6 +430,7 @@ export default {
         .y(this.height / 2)
 
       console.log('createForceGraph')
+
     },
 
     //创建图示框
@@ -475,14 +519,20 @@ export default {
       this.gs.append('circle')
         .attr('r', 10)
         .attr('fill', function (d, i) {
-          console.log(that.LastConceptId)
+          // console.log(that.LastConceptId)
+          // console.log(that.multipleSelection)
+          // console.log(d.subject)
+          // if (typeof (that.multipleSelection) != "undefined" && d.subject == that.multipleSelection.subject) {
+          //   console.log("selected")
+          //   return '#FF00FF'
+          // }
           if (d.subject == that.LastConceptId) {
             return '#0099CC'
           }
-          else if (d.type == 1) {
+          else if (d.type == 0) {
             return '#0099CC';
           }
-          else if (d.type == 0) {
+          else if (d.type == 1) {
             return '#CC0066';
           }
           else {
@@ -564,6 +614,7 @@ export default {
     //重置D3画布
     refreshSVG() {
       this.g.selectAll('*').remove()
+
     },
 
     //动态变化过程计算函数
@@ -625,12 +676,40 @@ export default {
       d.fx = d3.event.x
       d.fy = d3.event.y
     },
+    updatecolor() {
+      var that = this
+      this.gs.append('circle')
+        .attr('r', 10)
+        .attr('fill', function (d, i) {
+          // console.log(that.LastConceptId)
+          console.log(that.multipleSelection)
+          console.log(d.subject)
+          if (typeof (that.multipleSelection) != "undefined" && d.subject == that.multipleSelection.subject) {
+            console.log("selected")
+            return '#228B22'
+          }
+          else if (d.subject == that.LastConceptId) {
+            return '#0099CC'
+          }
+          else if (d.type == 0) {
+            return '#0099CC';
+          }
+          else if (d.type == 1) {
+            return '#CC0066';
+          }
+          else {
+            return '#FFCC33';
+          }
+        })
+    },
   },
+
 
   mounted() {
     //绘制D3画布
     this.drawSVG()
   },
+
 
 };
 

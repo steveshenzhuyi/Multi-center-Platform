@@ -71,16 +71,17 @@
       <!-- </draggable> -->
     </el-form>
     <!-- 选择概念集的弹窗 -->
-    <el-dialog title="概念集列表"
-               :visible.sync="conceptSetListVisible"
+    <el-dialog :visible.sync="conceptSetListVisible"
                width="60%"
                :before-close="handleClose"
                append-to-body>
+      <span slot="title"
+            class="dialog-title"><i class="el-icon-tickets"></i> 概念集列表</span>
+      <component :is="myconceptsetList"
+                 @getConceptSetId="selectConceptSetId"
+                 @getVisible="selectVisible"></component>
       <span slot="footer"
             class="dialog-footer">
-        <component :is="myconceptsetList"
-                   @getConceptSetId="selectConceptSetId"
-                   @getVisible="selectVisible"></component>
         <el-button @click="conceptSetListVisible = false">取 消</el-button>
         <el-button type="primary"
                    @click="conceptSetListVisible = false">确 定</el-button>
@@ -104,7 +105,6 @@ export default {
       myconceptsetList: conceptsetList,
       conceptSetListVisible: false,
       form: {
-        id: '',
         formdetail: [{
           data1: '',
           criteriaLayer1Code: "5",
@@ -163,7 +163,6 @@ export default {
     minorCondId: {
       handler() {
         if (this.minorCondId.primarycond === 5) {
-          this.form.id = this.minorCondId.id
           if (this.minorCondId.secondcond != 0) {
             this.visible[this.minorCondId.secondcond - 1].show = true
             this.form.formdetail[this.minorCondId.secondcond - 1].layer1SortNo = this.minorCondId.id
@@ -292,6 +291,12 @@ export default {
 .deathRecords .el-form-item--mini .el-form-item__label {
   line-height: 38px;
 } */
+.dialog-title {
+  font-size: 18px;
+}
+.el-icon-tickets {
+  font-size: 20px;
+}
 .deathRecords .el-icon-close {
   margin-top: 6px;
 }

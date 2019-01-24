@@ -86,16 +86,17 @@
       <!-- </draggable> -->
     </el-form>
     <!-- 选择概念集的弹窗 -->
-    <el-dialog title="概念集列表"
-               :visible.sync="conceptSetListVisible"
+    <el-dialog :visible.sync="conceptSetListVisible"
                width="60%"
                :before-close="handleClose"
                append-to-body>
+      <span slot="title"
+            class="dialog-title"><i class="el-icon-tickets"></i> 概念集列表</span>
+      <component :is="myconceptsetList"
+                 @getConceptSetId="selectConceptSetId"
+                 @getVisible="selectVisible"></component>
       <span slot="footer"
             class="dialog-footer">
-        <component :is="myconceptsetList"
-                   @getConceptSetId="selectConceptSetId"
-                   @getVisible="selectVisible"></component>
         <el-button @click="conceptSetListVisible = false">取 消</el-button>
         <el-button type="primary"
                    @click="conceptSetListVisible = false">确 定</el-button>
@@ -120,7 +121,6 @@ export default {
       myconceptsetList: conceptsetList,
       conceptSetListVisible: false,
       form: {
-        id: '',
         formdetail: [{
           data1: '',
           criteriaLayer1Code: "1",
@@ -155,7 +155,7 @@ export default {
           name: "首次出现"        },],
       },
       // cohortdict: '', //查询队列字典得到
-      visible: [{ show: true }, { show: false }, { show: false }, { show: false }, { show: false }, { show: false }],
+      visible: [{ show: false }, { show: false }, { show: false }, { show: false }, { show: false }, { show: false }],
       initialform: [],//初始表单，恢复初始值
     }
   },
@@ -165,8 +165,8 @@ export default {
   watch: {
     mainCondId: {
       handler() {
+        // console.log(this.mainCondId)
         if (this.mainCondId.primarycond === 1) {
-          this.form.id = this.mainCondId.id
           if (this.mainCondId.secondcond != 0) {
             this.visible[this.mainCondId.secondcond - 1].show = true
             this.form.formdetail[this.mainCondId.secondcond - 1].layer1SortNo = this.mainCondId.id
@@ -290,6 +290,12 @@ export default {
 .diagnose .el-form-item--mini .el-form-item__label {
   line-height: 38px;
 } */
+.dialog-title {
+  font-size: 18px;
+}
+.el-icon-tickets {
+  font-size: 20px;
+}
 .diagnose .el-icon-close {
   margin-top: 6px;
 }
