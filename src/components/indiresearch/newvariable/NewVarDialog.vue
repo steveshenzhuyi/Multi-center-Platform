@@ -374,9 +374,6 @@ export default {
     },
     // -----概念集弹窗-----
     selectConceptSetId(val) {
-      this.VarForm.data1 = val
-    },
-    selectVisible(val) {
       this.conceptSetId = val
       axios.get('/conceptSet/getConceptSetDetail', {
         params: {
@@ -387,6 +384,10 @@ export default {
         .then((response) => {
           this.VarForm.data1 = response.data.data.conceptSetName
         })
+    },
+    selectVisible(val) {
+      this.conceptSetListVisible = val
+      console.log(this.conceptSetListVisible)
     },
     handleClose(done) {
       this.$confirm("确认关闭？")
