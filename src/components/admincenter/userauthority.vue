@@ -30,7 +30,6 @@ import authoritymanage from './userauthority/authoritymanage.vue'
 export default {
   data() {
     return {
-      // ------下拉框------
       options: [{ OptionValue: 0, label: '用户管理' }, { OptionValue: 1, label: '权限管理' }],
       OptionValue: 0,
       myusermanage: usermanage,

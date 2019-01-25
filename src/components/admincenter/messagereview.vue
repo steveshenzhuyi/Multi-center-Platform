@@ -5,8 +5,8 @@
     <!--（“同意”、“拒绝”按钮如果用el-col，随着屏幕变窄el-col的宽度也会变窄，两个按钮就会重叠，
         因此需要把按钮和input放在同一行，所以使用表格(否则按钮和input会自动换行)。用el的表格会有无法居中的问题，所以用普通表格） -->
     <el-row style="margin-top:15px. margin-buttom:10px">
-      <el-col :span=5
-              :offset=4>
+      <el-col :span="5"
+              :offset="4">
         <div class="SubTitle"><i class="myIcon-tongji"></i> 待审核</div>
       </el-col>
     </el-row>
@@ -15,15 +15,15 @@
             align="middle"
             style="margin-top:20px"
             :key="index">
-      <el-col :span=6
-              :offset=4>
+      <el-col :span="6"
+              :offset="4">
         <el-alert type="info"
                   :closable="false"
                   :title="val.message"
                   v-on:click.native="GoToReview(index)"></el-alert>
       </el-col>
-      <el-col :span=8
-              :offset=1>
+      <el-col :span="8"
+              :offset="1">
         <td>
           <el-button type="primary"
                      icon="el-icon-success"
@@ -46,8 +46,8 @@
                :visible.sync="ReviewDialogVisible"
                width="30%">
       <el-row>
-        <el-col :span=12
-                :offset=6>
+        <el-col :span="12"
+                :offset="6">
           <p v-for="(val, key) in ApplyList[ApplyNumber].applyinfo">{{key}}： {{val}}</p>
           <img v-if="ApplyList[ApplyNumber].applytype != 0"
                :src="ApplyList[ApplyNumber].url"
@@ -73,7 +73,6 @@
 export default {
   data() {
     return {
-      // ------审核------
       ApplyList: [
         {          'applytype': 0,
           'applyinfo': { '申请类别': '注册申请', '申请人': '张三', '邮箱': 'xxxx@zju.edu.cn', '所属医院': '浙江省xxxx医院', '科室': '外科', '注册角色': '院方医生', '提交日期': '2018年10月29日' },
@@ -93,7 +92,6 @@ export default {
     }
   },
   methods: {
-    // ------审核------
     AgreeReview(index) {
       this.ReviewDialogVisible = false
       // 传消息给后端，以及审核成功提示
@@ -111,7 +109,6 @@ export default {
       this.ReviewDialogVisible = true
       this.ApplyNumber = index
     },
-
   }
 }
 </script>
