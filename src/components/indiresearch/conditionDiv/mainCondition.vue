@@ -37,16 +37,6 @@
                  ref="formName"
                  @sendformData="getformData"></component>
     </div>
-    <div class="limit-condition"
-         slot="footer"
-         style="display: block;"><span>在主要事件发生日期之前，至少有</span>
-      <label><input class="PriorDays num-input"
-               type="number"
-               min="0"></label><span>天的记录，且该条件发生后，至少有</span>
-      <label><input class="PostDays num-input"
-               type="number"
-               min="0"></label>
-      <span>天的记录。</span></div>
   </div>
 </template>
 <script>
@@ -151,7 +141,7 @@ export default {
     },
     //监测表单数据改变
     getformData(form) {
-      // console.log(this.$refs.formName.form)
+      console.log(form.formdetail.length)
       this.importdetail = form.formdetail
       // this.importdetail = this.$refs.formName.form.formdetail
       console.log(this.importdetail)
@@ -162,7 +152,7 @@ export default {
       // console.log(this.id)
       console.log(this.viewdetail)
       if (this.viewdetail != undefined) {
-        this.mainCondId.primarycond = this.viewdetail[0].typeSortNo
+        this.mainCondId.primarycond = parseFloat(this.viewdetail[0].criteriaLayer1Code)
         this.mainCondId.id = this.id
         this.getCohortDict(this.mainCondId.primarycond)
         switch (this.mainCondId.primarycond) {

@@ -152,6 +152,56 @@
                    @click="conceptSetListVisible = false">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 主要条件时间窗 -->
+    <div class="limit-condition"
+         slot="footer"
+         style="display: block;"
+         v-if="mainlimit"><span>在主要事件发生日期之前，至少有</span>
+      <label><input class="PriorDays num-input"
+               type="number"
+               min="0"
+               v-model="form.formdetail[11].data1"></label><span>天的记录，且该条件发生后，至少有</span>
+      <label><input class="PostDays num-input"
+               type="number"
+               min="0"
+               v-model="form.formdetail[11].data2"></label>
+      <span>天的记录。</span></div>
+    <!-- 次要条件时间窗、概念限制 -->
+    <div class="limit-condition"
+         slot="footer"
+         style="display: block;"
+         v-if="minorlimit">该条件发生在主要条件之前
+      <label><input class="num-input"
+               type="number"
+               min="0"
+               v-model="form.formdetail[11].data1"></label>天和之后
+      <label><input class="num-input"
+               type="number"
+               min="0"
+               v-model="form.formdetail[11].data2"></label>天
+      <span class="occurrence-choose">，且集合内
+        <select class="occurrence-select"
+                value="2"
+                v-model="form.formdetail[12].data1">
+          <option value="at least">至少</option>
+          <option value="at most">至多</option>
+          <option value="exactly">唯有</option>
+        </select>
+        满足
+        <input class="occurrence-input"
+               type="number"
+               min="0"
+               value="1"
+               v-model="form.formdetail[12].data2">种
+        <select value="0"
+                class="occurrence-distinct"
+                v-model="form.formdetail[12].data3">
+          <option value="using any">任何</option>
+          <option value="using distinct">不同</option>
+        </select>
+        概念的发生。
+      </span>
+    </div>
   </div>
 </template>
 
@@ -164,7 +214,7 @@ export default {
     // draggable,
     'conceptsetList': conceptsetList
   },
-  props: ['mainCondId', 'minorCondId', 'viewdetail'],
+  props: ['mainCondId', 'minorCondId', 'viewdetail', 'viewdetail2'],
   data() {
     return {
       myconceptsetList: conceptsetList,
@@ -228,18 +278,47 @@ export default {
           data1: true,
           criteriaLayer1Code: "2",
           criteriaLayer2Code: "11",
-          name: "首次出现"        },]
+          name: "首次出现"        },
+        {
+          data1: '',
+          data2: '',
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "12",
+          name: "时间窗"        },
+        {
+          data1: 'at least',
+          data2: '',
+          data3: 'using any',
+          criteriaLayer1Code: "2",
+          criteriaLayer2Code: "13",
+          name: "概念限制"        }]
       },
       // cohortdict: [], //查询队列字典得到
       visible: [],
       initialform: [],//初始表单，恢复初始值
+      mainlimit: false,
+      minorlimit: false,
     }
   },
-  updated: function () {
-    this.$emit('sendformData', this.form)
+  computed: {
+    getId() {
+      if (this.mainCondId != undefined) {
+        return this.mainCondId.id;
+      } else if (
+        this.minorCondId != undefined) {
+        return this.minorCondId.id;
+      }
+    },
   },
-  // 监听条件表单被拖拽到所对应的div的序号变化
   watch: {
+    //删除条件后，id改变，调整排序
+    getId(id) {
+      this.form.formdetail.forEach(f => {
+        if (f.layer1SortNo != undefined) {
+          f.layer1SortNo = id
+        }
+      })
+    },
     mainCondId: {
       handler() {
         if (this.mainCondId.primarycond === 2) {
@@ -273,6 +352,32 @@ export default {
       deep: true,
       // immediate: true
     },
+    form: {
+      handler() {
+        //限制条件
+        if (this.mainCondId != undefined && (this.form.formdetail[11].data1 != '' || this.form.formdetail[11].data2 != '')) {
+          this.form.formdetail[11].layer1SortNo = this.mainCondId.id
+          this.form.formdetail[11].criteriaTypeCode = "1"
+          this.form.formdetail[11].typeSortNo = 1
+          this.form.formdetail[11].layer2SortNo = 12
+        } else if (this.minorCondId != undefined && (this.form.formdetail[11].data1 != '' || this.form.formdetail[11].data2 != '')) {
+          console.log('dd')
+          this.form.formdetail[11].layer1SortNo = this.minorCondId.id
+          this.form.formdetail[11].criteriaTypeCode = "2"
+          this.form.formdetail[11].typeSortNo = 2
+          this.form.formdetail[11].layer2SortNo = 12
+        }
+        if (this.minorCondId != undefined && this.form.formdetail[12].data2 != '') {
+          this.form.formdetail[12].layer1SortNo = this.minorCondId.id
+          this.form.formdetail[12].criteriaTypeCode = "2"
+          this.form.formdetail[12].typeSortNo = 2
+          this.form.formdetail[12].layer2SortNo = 13
+        }
+        console.log(this.form.formdetail)
+        this.$emit('sendformData', this.form)
+      },
+      deep: true,
+    },
   },
   beforeMount: function () {
     for (var i = 0; i < 11; i++) {
@@ -283,6 +388,12 @@ export default {
   mounted: function () {
     this.initialform = JSON.parse(JSON.stringify(this.form.formdetail))
     this.reproduceForm()
+    if (this.mainCondId != undefined) {
+      this.mainlimit = true
+    }
+    else if (this.minorCondId != undefined) {
+      this.minorlimit = true
+    }
   },
   methods: {
     //查询队列条件字典
@@ -310,11 +421,23 @@ export default {
     //查看队列详情初始化
     reproduceForm() {
       if (this.viewdetail != undefined) {
+        this.mainlimit = true
         this.viewdetail.forEach(item => {
           this.form.formdetail[item.criteriaLayer2Code - 1] = item
-          this.visible[item.criteriaLayer2Code - 1].show = true
+          if (item.name.search("时间窗") == -1 && item.name.search("概念限制") == -1) {
+            this.visible[item.criteriaLayer2Code - 1].show = true
+          }
         })
         // console.log(this.form.formdetail)
+      }
+      if (this.viewdetail2 != undefined) {
+        this.minorlimit = true
+        this.viewdetail2.forEach(item => {
+          this.form.formdetail[item.criteriaLayer2Code - 1] = item
+          if (item.name.search("时间窗") == -1 && item.name.search("概念限制") == -1) {
+            this.visible[item.criteriaLayer2Code - 1].show = true
+          }
+        })
       }
     },
     //---概念集列表---
