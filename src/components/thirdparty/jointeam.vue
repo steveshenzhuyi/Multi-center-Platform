@@ -197,6 +197,10 @@
         <el-button type="primary"
                    plain
                    @click="loadingModel"
+                   v-loading.fullscreen.lock="fullscreenLoading"
+                   :element-loading-text="encryptionLoading"
+                   element-loading-spinner="el-icon-loading"
+                   element-loading-background="rgba(0, 0, 0, 0.8)"
                    :disabled="!checked">加密</el-button>
       </el-col>
       <el-col :span="2">
@@ -220,18 +224,18 @@
 <script>
 import axios from 'axios';
 import echarts from 'echarts';
+import { setInterval } from 'timers';
 
 
 export default {
   data() {
     return {
+      fullscreenLoading: false,
       collaborationId: "",
       checked: false,
       number: 1,
+      encryptionLoading: 0,
       name: [],
-      orgdep: [],
-      organization: [],
-      department: [],
       ifanalysis: false,
       ifgenerate: false,
       generateresult: 0,
@@ -250,7 +254,9 @@ export default {
   mounted() {
     this.collaborationId = "13"
     this.getCollaborInfo()
-
+    // this.$nextTick(function () {
+    //   setInterval(this.getEncryptionLoading, 2000)
+    // })
   },
   computed: {
 
@@ -286,6 +292,25 @@ export default {
         }
       });
     },
+    getEncryptionLoading() {
+      axios.get('http://10.5.18.44:3000/homomorphic/getloading', {
+        params: {
+          "token": this.GLOBAL.token,
+          "readPath": '/home/mcpProject/mcpRestAPI/storage/homomorphic/hospital1/Enloading.dat'
+        },
+      })
+        .then((response) => {
+          if (response.data.code == "0") {
+            this.encryptionLoading = response.data.msg + ' %'
+            if (this.encryptionLoading == '100 %') {
+              this.fullscreenLoading = false;
+            }
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
     loadingModel() {
       axios.get('http://10.5.18.44:3000/homomorphic/encryption', {
         params: {
@@ -295,17 +320,15 @@ export default {
         .then((response) => {
           if (response.data.code == "0") {
             this.$message.success("开始加密")
-            const loading = this.$loading({
-              lock: true,
-              text: '10%',
-              spinner: 'el-icon-loading',
-              background: 'rgba(0, 0, 0, 0.7)'
-            });
-            setTimeout(() => {
-              loading.close();
-            }, 2000);
+            this.fullscreenLoading = true
+            this.encryptionLoading = '0 %'
+            //setTimeout(changeFullscreenLoading, 3000);
+            // function changeFullscreenLoading() {
+            //   this.fullscreenLoading = true
+            // }
           }
         })
+
         .catch(function (error) {
           console.log("error", error);
         });

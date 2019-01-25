@@ -170,6 +170,7 @@ export default {
       // cohortdict: '', //查询队列字典得到
       visible: [],
       initialform: [],//初始表单，恢复初始值
+      conceptSetId: '',
     }
   },
   updated: function () {
@@ -269,7 +270,16 @@ export default {
         .catch(_ => { });
     },
     selectConceptSetId(val) {
-      this.form.formdetail[0].data1 = val
+      this.conceptSetId = val
+      axios.get('/conceptSet/getConceptSetDetail', {
+        params: {
+          "token": this.GLOBAL.token,
+          "conceptSetId": this.conceptSetId
+        }
+      })
+        .then((response) => {
+          this.form.formdetail[0].data1 = response.data.data.conceptSetName
+        })
     },
     selectVisible(val) {
       this.conceptSetListVisible = val
