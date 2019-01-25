@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row>
-      <el-col :offset=1>
+      <el-col :offset="1">
         <el-form :inline="true"
                  label-width="60px"
                  size="medium">
@@ -19,7 +19,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :offset=1>
+      <el-col :offset="1">
         <el-form :inline="true"
                  label-width="60px"
                  size="medium">
@@ -44,7 +44,7 @@
       </el-col>
     </el-row>
     <el-row style="margin-top:5px">
-      <el-col :offset=1>
+      <el-col :offset="1">
         <el-table :data="UserList"
                   style="width:80%"
                   stripe
@@ -104,8 +104,8 @@
                @close="CancelEditRole()"
                width="15%">
       <el-row>
-        <el-col :span=20
-                :offset=2>
+        <el-col :span="20"
+                :offset="2">
           <div v-for="(val, index) in RoleList">
             <el-checkbox v-model="EditRoleInfo['role'][index]">{{val}}</el-checkbox>
             </br>

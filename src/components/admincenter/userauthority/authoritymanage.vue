@@ -2,7 +2,7 @@
   <div>
     <!-- 权限管理 -->
     <el-row>
-      <el-col :offset=4>
+      <el-col :offset="4">
         <el-form :inline="true"
                  label-width="80px"
                  size="medium">
@@ -15,8 +15,8 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :offset=4
-              :span=10>
+      <el-col :offset="4"
+              :span="10">
         <el-form :inline="true"
                  label-width="80px"
                  size="medium">
@@ -34,8 +34,8 @@
           </el-form-item>
         </el-form>
       </el-col>
-      <el-col :offset=2
-              :span=2>
+      <el-col :offset="2"
+              :span="2">
         <el-button type="primary"
                    size="medium"
                    icon="el-icon-circle-plus-outline"
@@ -44,8 +44,8 @@
       </el-col>
     </el-row>
     <el-row style="margin-top:5px">
-      <el-col :span=14
-              :offset=4>
+      <el-col :span="14"
+              :offset="4">
         <el-table :data="RoleList"
                   stripe
                   border>
@@ -82,8 +82,8 @@
                @close="CancelNew_EditRole()"
                width="25%">
       <el-row>
-        <el-col :span=20
-                :offset=2>
+        <el-col :span="20"
+                :offset="2">
           <td class="mytd2">角色名称：</td>
           <td>
             <el-input placeholder="请输入角色名称"
@@ -94,15 +94,15 @@
       </el-row>
       </br>
       <el-row>
-        <el-col :span=20
-                :offset=2>
+        <el-col :span="20"
+                :offset="2">
           <td class="mytd2">角色权限：</td>
         </el-col>
       </el-row>
       </br>
       <el-row>
-        <el-col :span=20
-                :offset=6>
+        <el-col :span="20"
+                :offset="6">
           <div v-for="(val, index) in AuthorityList">
             <el-checkbox v-model="EditRoleInfo['authority'][index]">{{val}}</el-checkbox>
             </br>
@@ -130,8 +130,8 @@
                :visible.sync="ViewRoleDialogVisible"
                width="20%">
       <el-row>
-        <el-col :span=20
-                :offset=2>
+        <el-col :span="20"
+                :offset="2">
           <td class="mytd2">角色名称：</td>
           <td>
             {{ViewRoleInfo.name}}
@@ -140,14 +140,14 @@
       </el-row>
       </br>
       <el-row>
-        <el-col :span=20
-                :offset=2>
+        <el-col :span="20"
+                :offset="2">
           <td class="mytd2">角色权限：</td>
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span=20
-                :offset=6>
+        <el-col :span="20"
+                :offset="6">
           <p v-for="val in ViewRoleInfo.authoritytext"
              style="padding-left:10px">{{val}}</p>
         </el-col>

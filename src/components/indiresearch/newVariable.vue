@@ -22,38 +22,20 @@
 
     <!-- 主页面 -->
     <el-row style="margin-top:5px">
-      <el-col :span=3
-              :offset=4>
-        <div class="SubTitle2"
-             style="position:relative;top:2px">
+      <el-col :span="3"
+              :offset="4">
+        <div class="SubTitle2">
           <i style="position:relative;top:2px"
              class="myIcon-jilu"></i> 变量列表</div>
       </el-col>
-      <el-col :span=5
-              :offset=3>
-        <td>
-          <el-input :v-model="SearchInput"
-                    prefix-icon="el-icon-search"
-                    size="medium"
-                    placeholder="请输入变量名称"></el-input>
-        </td>
-        <td>
-          <el-button size="medium"
-                     type="primary"
-                     icon="el-icon-search"
-                     round
-                     style="margin-left:15px"
-                     @click="">搜索</el-button>
-        </td>
-      </el-col>
     </el-row>
-    <el-row style="margin-top:15px">
-      <el-col :span=10
-              :offset=4>
+    <el-row style="margin-top:20px">
+      <el-col :span="10"
+              :offset="4">
         <el-table :data="VariableTable"
                   stripe
                   border
-                  max-height="500">
+                  max-height="800">
           <el-table-column prop="name"
                            label="变量名称"
                            min-width="60%"></el-table-column>
@@ -62,24 +44,30 @@
                            min-width="60%"></el-table-column>
           <el-table-column prop="description"
                            label="变量描述"
-                           min-width="150%"
+                           min-width="170%"
                            show-overflow-tooltip></el-table-column>
           <el-table-column label="编辑"
-                           min-width="100%">
+                           min-width="140px"
+                           show-overflow-tooltip>
             <template slot-scope="scope">
               <!-- <el-button size="mini"
                              type="primary"
                              @click="EditVar(scope.$index)">编辑</el-button> -->
               <el-button size="mini"
+                         type="primary"
+                         @click="corhortanalysis(scope.$index)"
+                         icon="el-icon-edit-outline">统计</el-button>
+              <el-button size="mini"
                          type="info"
                          icon="el-icon-delete"
-                         @click="CancelVar(scope.$index)">删除</el-button>
+                         plain
+                         @click="DeleteVar('RS', scope.$index)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-col>
-      <el-col :span=3
-              :offset=1>
+      <el-col :span="3"
+              :offset="1">
         <el-button type="primary"
                    plain
                    @click="NewVarVisible=true"
@@ -98,15 +86,8 @@
       </el-col>
     </el-row>
     </br>
-    <el-row>
-      <el-col :offset=4>
-        <el-button type="primary"
-                   @click="corhortanalysis"
-                   icon="el-icon-edit-outline">统计</el-button>
-      </el-col>
-    </el-row>
     <el-row style="margin-top:30px;margin-bottom:10px">
-      <el-col :offset=4>
+      <el-col :offset="4">
         <div v-show="ifanalysis"
              id="echartContainer"
              style="width:500px;height:500px;">
@@ -114,180 +95,21 @@
       </el-col>
     </el-row>
 
-    <!-- 新增变量弹框 -->
+    <!-- 新增变量弹框 父用子的open、close、submit函数，子向父传NewVarVisiable -->
     <el-dialog title="新增变量"
                :visible.sync="NewVarVisible"
                @open="OpenNewVarDialog()"
                @close="CloseNewVarDialog()"
-               width="40%"
-               append-to-body>
-      <!-- <el-row>
-        <el-col :span=19
-                :offset=1> -->
-      <el-form ref="VarForm"
-               :model="VarForm"
-               :rules="VarFormRules"
-               label-width="80px">
-        <el-row>
-          <el-col :offset="1"
-                  :span="10">
-            <el-form-item label="变量名称"
-                          prop="name">
-              <el-input v-model="VarForm.name"
-                        style="max-width:217px"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :offset="1"
-                  :span="10">
-            <el-form-item label="变量类别"
-                          prop="layer1Code">
-              <el-select v-model="VarForm.layer1Code"
-                         placeholder="请选择变量类别"
-                         @change="">
-                <el-option v-for="val in VariableLayer1"
-                           :key="val.criteriaLayer1Code"
-                           :label="val.name"
-                           :value="val.criteriaLayer1Code"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :offset="1"
-                  :span="10">
-            <el-form-item label="变量类型"
-                          prop="typeCode">
-              <el-select v-model="VarForm.typeCode"
-                         placeholder="请选择变量类型"
-                         @change="">
-                <el-option label="定性"
-                           value="1"></el-option>
-                <el-option label="定量"
-                           value="2"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :offset="1"
-                  :span="10">
-            <el-form-item label="出现阶段"
-                          prop="sampleCode">
-              <el-select v-model="VarForm.sampleCode"
-                         placeholder="请选择出现阶段">
-                <el-option v-for="val in VariableSample"
-                           :key="val.criteriaSampleCode"
-                           :label="val.name"
-                           :value="val.criteriaSampleCode"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :offset="1"
-                  :span="10">
-            <el-form-item label="概念集"
-                          prop="data1">
-              <el-input v-model="VarForm.data1"
-                        v-on:click.native="conceptSetListVisible = true"
-                        style="max-width:217px">
-              </el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :offset="1"
-                  :span="21">
-            <el-form-item label="变量描述"
-                          prop="description">
-              <el-input type="textarea"
-                        v-model="VarForm.description"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :offset="1"
-                  :span="10">
-            <el-form-item label="属性"
-                          v-if="VariableLayer2Visible==true"
-                          prop="layer2Code">
-              <el-select v-model="VarForm.layer2Code"
-                         placeholder="请选择属性"
-                         @change="">
-                <el-option v-for="val in VariableLayer2"
-                           :key="val.criteriaLayer2Code"
-                           :label="val.name"
-                           :value="val.criteriaLayer2Code"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10">
-            <el-form-item v-if="VariableData5Visible"
-                          label-width="20px"
-                          prop="data5">
-              <input type="number"
-                     v-model="VarForm.data5"
-                     min="0"
-                     max="100">
-            </el-form-item>
-            <el-form-item v-if="VariableData6Visible"
-                          label-width="20px"
-                          prop="data6">
-              <input type="number"
-                     v-model="VarForm.data6"
-                     min="0"
-                     max="100">
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :offset="1"
-                  :span="20">
-            <el-form-item v-if="VariableData234Visible"
-                          prop="data3">
-              <span style="font-size: 8px">（&nbsp;&nbsp;出现时间&nbsp;</span>
-              <input type="number"
-                     v-model="VarForm.data2"
-                     min="0"
-                     max="36500">&nbsp;-
-              <input type="number"
-                     v-model="VarForm.data3"
-                     min="0"
-                     max="36500"></el-input-number><span style="font-size: 8px">
-                &nbsp;&nbsp;天&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <input type="checkbox"
-                     v-model="VarForm.data4"> <span style="font-size: 8px">不在其之间</span></el-checkbox>&nbsp;&nbsp;）
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <!-- </el-col>
-      </el-row> -->
-      <el-row>
-        <el-col :offset=2>
-          <el-checkbox v-model="VarForm.flag">同时新增到变量库</el-checkbox>
-        </el-col>
-      </el-row>
+               append-to-body
+               :width="NewVarDialogWidth">
+      <component :is="mynewvariable"
+                 ref="NewVarDialog"
+                 @PostNewVarVisiable="GetNewVarVisiable"></component>
       <span slot="footer"
             class="dialog-footer">
         <el-button @click="CloseNewVarDialog()">取 消</el-button>
         <el-button type="primary"
                    @click="SubmitNewVariable()">确 定</el-button>
-      </span>
-    </el-dialog>
-    <!-- 选择概念集的弹窗 -->
-    <el-dialog :visible.sync="conceptSetListVisible"
-               width="60%"
-               :before-close="handleClose"
-               append-to-body>
-      <span slot="title"
-            class="dialog-title"><i class="el-icon-tickets"></i> 概念集列表</span>
-      <component :is="myconceptsetList"
-                 @getConceptSetId="selectConceptSetId"
-                 @getVisible="selectVisible"></component>
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button @click="conceptSetListVisible = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="conceptSetListVisible = false">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -299,8 +121,30 @@
                width="50%"
                append-to-body>
       <el-row>
-        <el-col :span=24
-                :offset=1>
+        <el-col :span="18"
+                :offset="2">
+          <td style="margin-buttom:0">
+            <el-input v-model="LibSearchInput"
+                      prefix-icon="el-icon-search"
+                      size="medium"
+                      clearable
+                      @clear="GetVariableTable('FB')"
+                      placeholder="请输入变量名称"></el-input>
+          </td>
+          <td>
+            <el-button size="medium"
+                       type="primary"
+                       icon="el-icon-search"
+                       round
+                       style="margin-left:15px"
+                       @click="GetVariableTable('FB', LibSearchInput)">搜索</el-button>
+          </td>
+          </td>
+        </el-col>
+      </el-row>
+      <el-row style="margin-top:20px">
+        <el-col :span="24"
+                :offset="1">
           <el-table :data="VarLibTable"
                     style="width:90%"
                     ref="VarLibTable"
@@ -323,16 +167,18 @@
                              label="变量描述"
                              min-width="150%"
                              show-overflow-tooltip></el-table-column>
-            <!-- <el-table-column label="编辑"
-                               min-width="120%">
-                <template slot-scope="scope">
-                  <el-button size="mini"
+            <el-table-column label="编辑"
+                             min-width="100%">
+              <template slot-scope="scope">
+                <!-- <el-button size="mini"
                              type="primary"
-                             @click="EditVar(scope.$index)">编辑</el-button>
-                  <el-button size="mini"
-                             @click="CancelVar(scope.$index)">删除</el-button>
-                </template>
-              </el-table-column> -->
+                             @click="EditVar(scope.$index)">编辑</el-button> -->
+                <el-button size="mini"
+                           type="info"
+                           icon="el-icon-delete"
+                           @click="DeleteVar('FB', scope.$index)">删除</el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-col>
       </el-row>
@@ -350,300 +196,139 @@
 <script>
 import axios from 'axios'
 import echarts from 'echarts';
-import conceptsetList from './conceptsetList.vue'
 import { setTimeout } from 'timers';
+import newvariable from './newvariable/NewVarDialog.vue'
+import _ from 'lodash'
 export default {
-  components: {
-    'conceptsetList': conceptsetList
-  },
   data() {
-    var VarValidateData3 = (rule, value, callback) => {
-      if ((value < this.VarForm.data2) || ((value == "") !== (this.VarForm.data2 == "")) || (this.VarForm.data4 && (value == ""))) {
-        callback(new Error('请确认时间正确'))
-      } else {
-        callback()
-      }
-    };
-    var VarValidateData5 = (rule, value, callback) => {
-      if (this.VariableData5Visible && value === "") {
-        callback(new Error('请输入数字'))
-      } else {
-        callback()
-      }
-    };
-    var VarValidateData6 = (rule, value, callback) => {
-      if (this.VariableData6Visible && value === "") {
-        callback(new Error('请输入数字'))
-      } else {
-        callback()
-      }
-    };
     return {
+      NewVarDialogWidth: (72352 / document.body.clientWidth).toString() + "%",
       // ------主页面------
       VariableTable: [{ 'id': '1', 'name': '性别', 'type': '定性', 'description': '样本的性别' },
       { 'id': '2', 'name': '年龄', 'type': '定量', 'description': '样本的年龄' }],
       NewVarVisible: false,
       VarLibVisible: false,
-      SearchInput: "",
       ifanalysis: false,
-      // ------新增变量弹窗------
-      VarForm: {
-        name: "",
-        typeCode: "",
-        layer1Code: "",
-        layer2Code: "",
-        sampleCode: "",
-        description: "",
-        data1: "",  // 诊断 概念集
-        data2: "",  // 出现时间 前一个数字
-        data3: "",  // 出现时间 后一个数字
-        data4: "",  // 是否“不在其之间”，是为1
-        data5: "",  // 检测结果 数字
-        data6: "",  // 检测值 数字
-        flag: 0,  // 是否加入变量库
-      },
-      VarFormRules: {
-        name: [{ required: true, message: '请输入变量名称', trigger: 'change' }],
-        typeCode: [{ required: true, message: '请选择变量类型', trigger: 'change' }],
-        layer1Code: [{ required: true, message: '请选择变量类别', trigger: 'change' }],
-        layer2Code: [{ required: true, message: '请选择属性', trigger: 'change' }],
-        sampleCode: [{ required: true, message: '请选择变量的出现阶段', trigger: 'change' }],
-        description: [],
-        data1: [{ required: true, message: '请选择概念集', trigger: 'change' }],
-        data3: [{ validator: VarValidateData3, trigger: 'change' }],
-        data5: [{ validator: VarValidateData5, trigger: 'change' }],
-        data6: [{ validator: VarValidateData6, trigger: 'change' }]
-      },
-      VariableLayer1: [],
-      VariableSample: [],
-      VariableLayer2Visible: false,
-      VariableLayer2: [],
-      myconceptsetList: conceptsetList,
-      conceptSetListVisible: false,
-      VariableData5Visible: false,
-      VariableData6Visible: false,
-      VariableData234Visible: false,
-      aaa: false,
-
       // ------变量库弹窗------
       VarLibTable: [],
-      MultiSelection: []
+      LibSearchInput: "",
+      MultiSelection: [],
+      // ------引入------
+      mynewvariable: newvariable
     }
   },
   created() {
-
+    this.GetVariableTable('RS')
+  },
+  mounted() {
+    let that = this
+    window.onresize = _.debounce(() => {
+      that.NewVarDialogWidth = (72352 / document.body.clientWidth).toString() + "%"
+    }, 100)
   },
   watch: {
-    'VarForm.typeCode'() {
-      this.VarCheckLayer2()
-      this.VarCheckData23456()
-    },
-    'VarForm.layer1Code'() {
-      this.VarCheckLayer2()
-      this.VarCheckData23456()
-    },
-    'VarForm.layer2Code'() {
-      this.VarCheckData23456()
-    },
-    aaa() {
-      console.log("watch")
-    }
-  },
-  computed: {
-    mywidth() {
-      if (this.$refs['myselect']) {
-        return this.$refs['myselect'].$el.clientWidth
-      } else {
-        return null
-      }
-    }
   },
   methods: {
-    // ------主页面------
-    CancelVar(index) {
-      // 删除 VariableTable[index].id
+    // ------新建变量导入------
+    CloseNewVarDialog() {
+      this.$refs.NewVarDialog.CloseNewVarDialog()
+    },
+    OpenNewVarDialog() {
+      this.$nextTick(() => {
+        this.$refs.NewVarDialog.OpenNewVarDialog()
+      })
+    },
+    SubmitNewVariable() {
+      this.$refs.NewVarDialog.SubmitNewVariable()
+      this.GetVariableTable('RS')
+    },
+    GetNewVarVisiable(val) {
+      this.NewVarVisible = val
+    },
+    // ------主页面与变量库的获取和删除------
+    GetVariableTable(flag, name) {
+      axios.get('/feature/getList', {
+        params: {
+          "token": this.GLOBAL.token,
+          "flag": flag,
+          "researchId": flag == 'RS' ? 16 : "", // 应该是this.$route.params.RESEARCHID
+          "name": name || ""
+        }
+      })
+        .then(response => {
+          let data = response.data.data
+          data.forEach(item => {
+            item.type = item.type == 1 ? '定性' : '定量'
+          })
+          if (flag == 'RS') {
+            this.VariableTable = data
+          } else {
+            this.VarLibTable = data
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        })
+    },
+    DeleteVar(flag, index) {
+      axios.post('/feature/deleteFeature', {
+        "token": this.GLOBAL.token,
+        "featureId": flag == 'RS' ? this.VariableTable[index].featureId : this.VarLibTable[index].featureId
+      })
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('删除成功！', '提示', { confirmButtonText: '确定' })
+            this.GetVariableTable(flag)
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        })
       // this.aaa = true
       // setTimeout(() => console.log("settimeout"), 0)
       // this.$nextTick(() => console.log("vue nexttick"))
       // process.nextTick(() => console.log("process.nexttick"))
       // Promise.resolve().then(() => console.log("promise"))
       // console.log("start")
-      console.log(this.$route.params.RESEARCHID)
     },
-
-    // ------新增变量弹窗------
-    OpenNewVarDialog() {
-      this.GetVariableLayer1()
-      this.GetVariableSample()
-    },
-    CloseNewVarDialog() {
-      this.VarResetFields()
-      this.NewVarVisible = false
-    },
-    GetVariableLayer1() {
-      axios.get('/feature/criteriaDict', {
-        params: {
-          "token": this.GLOBAL.token,
-        }
-      })
-        .then((response) => {
-          this.VariableLayer1 = response.data.data
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
-    },
-    GetVariableSample() {
-      axios.get('/feature/sampleDict', {
-        params: {
-          "token": this.GLOBAL.token,
-        }
-      })
-        .then((response) => {
-          this.VariableSample = response.data.data
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
-    },
-    VarCheckLayer2() {
-      if (this.VarForm.layer1Code != "" && this.VarForm.typeCode != "") {
-        this.VarForm.layer2Code = ""
-        axios.get('/feature/criteriaDict', {
-          params: {
-            "token": this.GLOBAL.token,
-            "criteriaLayer1Code": this.VarForm.layer1Code,
-            "criteriaTypeCode": this.VarForm.typeCode
-          }
-        })
-          .then((response) => {
-            this.VariableLayer2 = response.data.data
-          })
-          .catch(function (error) {
-            console.log("error", error);
-          });
-        this.VariableLayer2Visible = true
-      }
-    },
-    VarCheckData23456() {
-      // data56
-      if (this.VarForm.layer1Code == 4 && this.VarForm.typeCode == 2 && (this.VarForm.layer2Code == 2 || this.VarForm.layer2Code == 3)) {
-        this.VariableData5Visible = (parseInt(this.VarForm.layer2Code) == 2)
-        this.VariableData6Visible = (parseInt(this.VarForm.layer2Code) == 3)
-      } else {
-        this.VariableData5Visible = false
-        this.VariableData6Visible = false
-      }
-      // data234
-      if (parseInt(this.VarForm.layer2Code) > this.VariableLayer2.length - 4 && this.VarForm.typeCode == 2) {
-        this.VariableData234Visible = true
-      } else {
-        this.VariableData234Visible = false
-      }
-    },
-    SubmitNewVariable() {
-      this.$refs['VarForm'].validate((valid) => {
-        if (valid) {
-          axios.post('/feature/createFeature', {
-            "token": this.GLOBAL.token,
-            "name": this.VarForm.name,
-            "type": this.VarForm.typeCode,
-            "layer1Name": this.VarForm.layer1Code,
-            "layer2Name": this.VarForm.layer2Code,
-            "description": this.VarForm.description,
-            "sampleCode": this.VarForm.sampleCode,
-            "data1": this.VarForm.data1,
-            "data2": this.VarForm.data2,
-            "data3": this.VarForm.data3,
-            "data4": this.VarForm.data4,
-            "data5": this.VarForm.data5,
-            "data6": this.VarForm.data6,
-          })
-            .then(response => {
-              if (response.data.code == "0") {
-                this.$alert('新建变量成功！', '提示', { confirmButtonText: '确定' });
-                this.CloseNewVarDialog()
-                this.GetVarLibTable()
-              }
-            })
-            .catch(function (error) {
-              console.log("error", error);
-            });
-        }
-        else {
-          console.log('error submit!!')
-        }
-      })
-    },
-    VarResetFields() {
-      this.$refs['VarForm'].resetFields()
-      this.VarForm.data1 = ""
-      this.VarForm.data2 = ""
-      this.VarForm.data3 = ""
-      this.VarForm.data4 = ""
-      this.VarForm.flag = 0
-      this.VariableLayer2Visible = false
-      this.VariableData234Visible = false
-      this.VariableData5Visible = false
-      this.VariableData6Visible = false
-    },
-
     // ------变量库弹窗------
     OpenVarLibDialog() {
-      this.GetVarLibTable()
+      this.GetVariableTable('FB')
     },
     CloseVarLibDialog() {
       this.VarLibTable.forEach(row => {
         this.$refs['VarLibTable'].toggleRowSelection(row, false)
       })
+      this.LibSearchInput = ""
       this.VarLibVisible = false
-    },
-    GetVarLibTable() {
-      axios.get('/feature/getList', {
-        params: {
-          "token": this.GLOBAL.token
-        }
-      })
-        .then((response) => {
-          this.VarLibTable = response.data.data
-          this.VarLibTable.forEach(item => {
-            item.description = item.description || ""
-            item.type = item.type == 1 ? '定性' : '定量'
-          })
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
     },
     HandleSelectionChange(val) {
       this.MultiSelection = val
     },
     ConfirmVarSelect() {
       var res = this.MultiSelection.map(item => {
-        return {
-          'id': item.featureId,
-        }
+        return item.featureId
       })
-      // 向后端发送res，更新变量列表
-      this.VarLibVisible = false
-      this.CloseVarLibDialog()
-    },
-
-    // -----概念集弹窗-----
-    selectConceptSetId(val) {
-      this.VarForm.data1 = val
-    },
-    selectVisible(val) {
-      this.conceptSetListVisible = val
-      console.log(this.conceptSetListVisible)
-    },
-    handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then(_ => {
-          done();
-          this.reload()
+      axios.post('/feature/importFeature', {
+        "token": this.GLOBAL.token,
+        "featureId": res,
+        "researchId": 16  // 应该是this.$route.params.RESEARCHID
+      })
+        .then(response => {
+          if (response.data.code == "0") {
+            this.$alert('导入变量成功！', '提示', {
+              confirmButtonText: '确定',
+              callback: () => {
+                this.GetVariableTable("RS")
+                this.CloseVarLibDialog()
+              }
+            })
+          }
         })
-        .catch(_ => { });
+        .catch(error => {
+          console.log("error", error);
+        })
+
     },
 
     // 进度条跳转 RH
@@ -672,7 +357,8 @@ export default {
         path: 'analysisResult',
       });
     },
-    corhortanalysis() {
+    corhortanalysis(index) {
+      // 加了index，获取id用this.VariableTable[index].featureId /dwx
       this.$message.success("开始统计！")
       this.ifanalysis = true
       setTimeout(function () {
@@ -700,12 +386,6 @@ export default {
 </script>
 
 <style>
-.dialog-title {
-  font-size: 18px;
-}
-.el-icon-tickets {
-  font-size: 20px;
-}
 @import "~@/assets/AdminInfo/css_admin/css_admin.css";
 @import "~@/assets/AdminInfo/css_admin/myIcon/iconfont.css";
 </style>
