@@ -94,26 +94,12 @@ export default {
           console.log(response)
           // 新建成功，修改状态并跳转
           if (response.data.msg == '成功新建个人研究团队') {
-            axios.post('personalResearch/state2CohortGeneration',
-              {
-                "token": this.GLOBAL.token,
-                "researchId": response.data.id
+            this.$router.push({
+              path: 'createcohort',
+              query: {
+                RESEARCHID: response.data.data
               }
-            )
-              .then((response) => {
-                console.log(response)
-                if (response.data.msg == '修改成功') {
-                  this.$router.push({
-                    path: 'createcohort',
-                    query: {
-                      RESEARCHID: response.data.data
-                    }
-                  });
-                }
-              })
-              .catch(function (error) {
-                console.log("error", error);
-              });
+            });
           }
         })
         .catch(function (error) {
