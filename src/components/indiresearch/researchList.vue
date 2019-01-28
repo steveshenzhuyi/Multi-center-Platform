@@ -11,9 +11,15 @@
                class="cardBox"
                shadow="hover"
                @click="tonewResearch()">
+            <div>
 
-            <span class="el-icon-plus"></span>
+              <el-row><i class="el-icon-plus"></i></el-row>
+              <el-row>
+                <div style="font-size: 15px;">新建研究</div>
+              </el-row>
+            </div>
           </div>
+
         </el-tooltip>
       </li>
 
@@ -71,48 +77,49 @@ export default {
       newresearchname: "",
       formLabelWidth: '90px',
       createtime: "",
-      researchlist: [{
-        "NAME": "研究1",
-        "RESEARCHSTATECODE": "0                   ",
-        "RESEARCHID": "1                  ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      },
-      {
-        "NAME": "研究2",
-        "RESEARCHSTATECODE": "1                   ",
-        "RESEARCHID": "2                  ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      },
-      {
-        "NAME": "研究3",
-        "RESEARCHSTATECODE": "2                   ",
-        "RESEARCHID": "3                  ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      },
-      {
-        "NAME": "研究4",
-        "RESEARCHSTATECODE": "3                   ",
-        "RESEARCHID": "4                  ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      },
-      {
-        "NAME": "研究5",
-        "RESEARCHSTATECODE": "4                   ",
-        "RESEARCHID": "5                  ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      },
-      {
-        "NAME": "研究6",
-        "RESEARCHSTATECODE": "4                   ",
-        "RESEARCHID": "6                 ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      }
+      researchlist: [
+        //   {
+        //   "NAME": "研究1",
+        //   "RESEARCHSTATECODE": "0                   ",
+        //   "RESEARCHID": "1                  ",
+        //   "CREATEDATE": "2019-1-15",
+        //   "USERID": "Admin"
+        // },
+        // {
+        //   "NAME": "研究2",
+        //   "RESEARCHSTATECODE": "1                   ",
+        //   "RESEARCHID": "2                  ",
+        //   "CREATEDATE": "2019-1-15",
+        //   "USERID": "Admin"
+        // },
+        // {
+        //   "NAME": "研究3",
+        //   "RESEARCHSTATECODE": "2                   ",
+        //   "RESEARCHID": "3                  ",
+        //   "CREATEDATE": "2019-1-15",
+        //   "USERID": "Admin"
+        // },
+        // {
+        //   "NAME": "研究4",
+        //   "RESEARCHSTATECODE": "3                   ",
+        //   "RESEARCHID": "4                  ",
+        //   "CREATEDATE": "2019-1-15",
+        //   "USERID": "Admin"
+        // },
+        // {
+        //   "NAME": "研究5",
+        //   "RESEARCHSTATECODE": "4                   ",
+        //   "RESEARCHID": "5                  ",
+        //   "CREATEDATE": "2019-1-15",
+        //   "USERID": "Admin"
+        // },
+        // {
+        //   "NAME": "研究6",
+        //   "RESEARCHSTATECODE": "4                   ",
+        //   "RESEARCHID": "6                 ",
+        //   "CREATEDATE": "2019-1-15",
+        //   "USERID": "Admin"
+        // }
       ]
     }
   },
@@ -140,7 +147,7 @@ export default {
     }
   },
   mounted() {
-    // this.getpersonalResearch();
+    this.getpersonalResearch();
   },
   methods: {
     getpersonalResearch() {

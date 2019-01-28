@@ -242,6 +242,7 @@ export default {
     }
   },
   mounted: function () {
+    console.log(this.$route.params.RESEARCHID)
     this.addMajor()
     this.addMinor()
     this.getStructure()
@@ -377,17 +378,29 @@ export default {
     },
     gocreateCohort() {
       this.$router.push({
-        path: 'createcohort',
+        name: '队列生成',
+        params:
+          {
+            RESEARCHID: this.$route.params.RESEARCHID
+          }
       });
     },
     gonewVariable() {
       this.$router.push({
-        path: 'newVariable',
+        name: '变量生成',
+        params:
+          {
+            RESEARCHID: this.$route.params.RESEARCHID
+          }
       });
     },
     goselectModel() {
       this.$router.push({
-        path: 'selectModel',
+        name: '模型选择',
+        params:
+          {
+            RESEARCHID: this.$route.params.RESEARCHID
+          }
       });
     },
     goanalysisResult() {

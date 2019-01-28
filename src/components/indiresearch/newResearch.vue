@@ -26,20 +26,20 @@
                   placeholder="请输入研究名称"></el-input>
       </el-form-item>
 
-      <el-form-item label="研究描述"
-                    prop="desc">
-        <el-input type="textarea"
-                  :autosize="{ minRows: 5, maxRows: 10}"
-                  v-model="newresearch.desc"></el-input>
+      <el-form-item label="研究目标"
+                    prop="target">
+        <el-input v-model="newresearch.target"
+                  placeholder="请输入研究目的"></el-input>
+
       </el-form-item>
       <el-form-item>
         <el-button type="primary"
-                   @click="ifnew=true">立即创建</el-button>
+                   @click="ifnew(newresearch)">立即创建</el-button>
         <el-button @click="resetForm('newresearch')">重置</el-button>
       </el-form-item>
     </el-form>
     <el-dialog title="提示"
-               :visible.sync="ifnew"
+               :visible.sync="ifnewvisible"
                width="30%"
                :before-close="handleClose">
       <span>是否创建该研究？</span>
@@ -48,7 +48,7 @@
             class="dialog-footer">
         <el-button type="primary"
                    @click="dialogVisible = false;tonewresearch(newresearch)">确 定</el-button>
-        <el-button @click="ifnew = false">取 消</el-button>
+        <el-button @click="ifnewvisible = false">取 消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -58,17 +58,17 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      ifnew: false,
+      ifnewvisible: false,
       newresearch: {
         name: "",
-        desc: "",
+        target: "",
       },
       rules: {
         name: [
           { required: true, message: '请输入研究名称', trigger: 'blur' },
         ],
-        desc: [
-          { required: true, message: '请输入研究内容', trigger: 'blur' },
+        target: [
+          { required: true, message: '请输入研究目的', trigger: 'blur' },
         ],
       },
       // 表单验证
@@ -77,12 +77,48 @@ export default {
   },
 
   methods: {
-    tonewresearch(_newresearch) {
-      console.log(_newresearch.name, _newresearch.desc);
-      // this.$router.push({
-      //   path: 'createcohort',
 
-      // });
+    ifnew(_newresearch) {
+
+      if ((_newresearch.name == "") || (_newresearch.target == "")) { this.$message('请输入正确的信息！'); }
+      else { this.ifnewvisible = true }
+    },
+    tonewresearch(_newresearch) {
+      console.log(_newresearch.name, _newresearch.target);
+      _newresearch.token = this.GLOBAL.token
+      // 新建个人团队
+      axios.post('personalResearch/createResearch',
+        _newresearch
+      )
+        .then((response) => {
+          console.log(response)
+          // 新建成功，修改状态并跳转
+          if (response.data.msg == '成功新建个人研究团队') {
+            axios.post('personalResearch/state2CohortGeneration',
+              {
+                "token": this.GLOBAL.token,
+                "researchId": response.data.id
+              }
+            )
+              .then((response) => {
+                console.log(response)
+                if (response.data.msg == '修改成功') {
+                  this.$router.push({
+                    path: 'createcohort',
+                    query: {
+                      RESEARCHID: response.data.data
+                    }
+                  });
+                }
+              })
+              .catch(function (error) {
+                console.log("error", error);
+              });
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
