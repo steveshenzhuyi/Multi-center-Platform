@@ -225,7 +225,8 @@ export default {
       conceptSetListVisible: false,
       VariableData5Visible: false,
       VariableData6Visible: false,
-      VariableData234Visible: false
+      VariableData234Visible: false,
+      conceptSetId: '',
     }
   },
   watch: {
@@ -373,7 +374,16 @@ export default {
     },
     // -----概念集弹窗-----
     selectConceptSetId(val) {
-      this.VarForm.data1 = val
+      this.conceptSetId = val
+      axios.get('/conceptSet/getConceptSetDetail', {
+        params: {
+          "token": this.GLOBAL.token,
+          "conceptSetId": this.conceptSetId
+        }
+      })
+        .then((response) => {
+          this.VarForm.data1 = response.data.data.conceptSetName
+        })
     },
     selectVisible(val) {
       this.conceptSetListVisible = val

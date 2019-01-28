@@ -13,6 +13,7 @@
 
         <el-col :span="14">
           <el-input prefix-icon="el-icon-search"
+                    :readonly="isReadOnly"
                     v-model="InputConceptName"
                     type="text"></el-input>
         </el-col>
@@ -29,11 +30,10 @@
                         class="form-inline">
             <el-input type="text"
                       v-model="NewConceptSets.SetName"
-                      :disabled="ifnotEdit"
+                      :readonly="isReadOnly"
                       auto-complete="off"
                       placeholder="请输入集合名称"
-                      class="form-control"
-                      @blur.stop="NameInputBlur()"></el-input>
+                      class="form-control"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -45,11 +45,11 @@
                         class="form-inline">
             <el-input type="textarea"
                       :rows="2"
+                      :readonly="isReadOnly"
                       v-model="NewConceptSets.SetDescription"
                       auto-complete="off"
                       placeholder="请输入集合描述"
-                      class="form-control"
-                      @blur.stop="DesInputBlur()"></el-input>
+                      class="form-control"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -202,10 +202,10 @@
 <script>
 import axios from 'axios';
 export default {
-  props: ['existConceptSetId'],
+  props: ['existConceptSetId', 'isReadOnly'],
+  inject: ['reload'],
   data() {
     return {
-      //新增概念集假数据
       activeName: 'first',
       multipleSelection: [],
       multipleSelection2: [],
@@ -218,12 +218,12 @@ export default {
       checkedChilerenConcepts: [],
       Excludeditems: [],
       ChilerenConcepts: [],
+      concepts: [],
       concept_exist: false,
       NewConceptSets: {
         SetName: "",
         SetDescription: ""
       },
-      ifnotEdit: false,
       rules: {
         SetName: [
           { required: true, message: '请输入概念名称', trigger: 'blur' }
@@ -269,14 +269,11 @@ export default {
   },
 
   mounted() {
-    //console.log(this.existConceptSetId);
-
     if (this.existConceptSetId) {
-      this.ifnotEdit = true
       axios.get('/conceptSet/getConceptSetDetail', {
         params: {
           "token": this.GLOBAL.token,
-          "ConceptSetId": this.existConceptSetId
+          "conceptSetId": this.existConceptSetId
         }
       })
         .then((response) => {
@@ -290,12 +287,7 @@ export default {
             const conceptCode = parseInt(response.data.data.concepts[i].conceptCode)
             const childTag = parseInt(response.data.data.concepts[i].childTag)
             const excludeTag = parseInt(response.data.data.concepts[i].excludeTag)
-            if (i == 0) {
-              this.conceptIdList = conceptCode
-            }
-            else {
-              this.conceptIdList += ',' + conceptCode
-            }
+            const OMOPVersion = parseInt(response.data.data.concepts[i].OMOPVersion)
             if (childTag == 1) {
               console.log(childTag)
               this.checkedChilerenConcepts.push(conceptCode.toString())
@@ -303,40 +295,19 @@ export default {
             if (excludeTag == 1) {
               this.checkedExcludeditems.push(conceptCode.toString())
             }
-            if (childTag == 0 && excludeTag == 0) {
-              //console.log(111)
-              this.$nextTick(function () {
-                this.$refs.multipleTable.toggleRowSelection(this.tableAll[i], true);
-              })
-            }
-          }
-          axios.get('/knowledgeGraph/queryConceptID', {
-            params: {
-              "token": this.GLOBAL.token,
-              "query": this.conceptIdList
-            },
-            //timeout: 1000 * 60 * 3
-          })
-            .then((response) => {
-              //console.log(conceptCode)
-              const searchConcepts = response.data.data.results.bindings
-              for (var i = 0; i < searchConcepts.length; i++) {
-                this.tableAll.push({
-                  subject: searchConcepts[i].subject.value.split("#")[1],
-                  label: searchConcepts[i].label.value,
-                  domain: searchConcepts[i].domain.value,
-                  class: searchConcepts[i].class.value,
-                  voc: searchConcepts[i].voc.value,
-                  std: Object.getOwnPropertyNames(searchConcepts[i]).length > 5 ? searchConcepts[i].std.value : '',
-                  Except: searchConcepts[i].subject.value.split("#")[1],
-                  ChilerenConcept: searchConcepts[i].subject.value.split("#")[1]
-                })
-              }
+
+            this.tableAll.push({
+              OMOPVersion: OMOPVersion.toString(),
+              subject: conceptCode.toString(),
+              label: concepts[i].redundancy.label,
+              domain: concepts[i].redundancy.domain,
+              class: concepts[i].redundancy.class,
+              voc: concepts[i].redundancy.voc,
+              std: concepts[i].redundancy.std,
+              Except: conceptCode.toString(),
+              ChilerenConcept: conceptCode.toString()
             })
-            .catch(function (error) {
-              console.log("error", error);
-            });
-          //console.log(this.conceptIdList)
+          }
           for (let i = 0; i < this.tableAll.length; i++) {
             this.Excludeditems[i] = this.tableAll[i].Except
             this.ChilerenConcepts[i] = this.tableAll[i].ChilerenConcept
@@ -381,6 +352,7 @@ export default {
             if (!concept_exist) {
               this.tableAll.push({
                 subject: a[1],
+                OMOPVersion: '1',
                 label: searchConcepts[i].label.value,
                 domain: searchConcepts[i].domain.value,
                 class: searchConcepts[i].class.value,
@@ -403,8 +375,10 @@ export default {
     handleClick(tab, event) {
       this.tableChecked = [];
       for (var i = 0; i < this.multipleSelection.length; i++) {
+        console.log(this.multipleSelection)
         this.tableChecked.push({
           subject: this.multipleSelection[i].subject,
+          OMOPVersion: this.multipleSelection[i].OMOPVersion,
           label: this.multipleSelection[i].label,
           domain: this.multipleSelection[i].domain,
           class: this.multipleSelection[i].class,
@@ -414,36 +388,7 @@ export default {
           ChilerenConcept: this.multipleSelection[i].ChilerenConcept
         });
       }
-      for (var i = 0; i < this.checkedExcludeditems.length; i++) {
-        var concept_exist = false;
-        var a = []
-        a = this.checkedExcludeditems[i].split('#')
-        for (var j = 0; j < this.tableChecked.length; j++) {
-          if (a[0].indexOf(this.tableChecked[j].subject) != -1) {
-            concept_exist = true;
-            //this.tableChecked[j].excludeTag = "1"
-          }
-        }
-        if (!concept_exist) {
-          const result = this.tableAll.find(g => g.subject === a[0])
-          this.tableChecked.push(result)
-        }
-      }
-      for (var i = 0; i < this.checkedChilerenConcepts.length; i++) {
-        var concept_exist = false;
-        var a = []
-        a = this.checkedChilerenConcepts[i].split('#')
-        for (var j = 0; j < this.tableChecked.length; j++) {
-          if (a[0].indexOf(this.tableChecked[j].subject) != -1) {
-            concept_exist = true;
-            //this.tableChecked[j].childTag = "1"
-          }
-        }
-        if (!concept_exist) {
-          const result = this.tableAll.find(g => g.subject === a[0])
-          this.tableChecked.push(result)
-        }
-      }
+
       var rows = this.tableChecked
       this.$nextTick(function () {
         rows.forEach(row => {
@@ -452,14 +397,6 @@ export default {
       })
     },
     //新增概念集所需
-    NameInputBlur() {
-      this.$emit('getdata3', this.NewConceptSets.SetName);
-      this.$emit('getdata4', this.NewConceptSets.SetDescription);
-    },
-    DesInputBlur() {
-      this.$emit('getdata3', this.NewConceptSets.SetName);
-      this.$emit('getdata4', this.NewConceptSets.SetDescription);
-    },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(_ => {
@@ -499,47 +436,75 @@ export default {
     postConceptData() {
       this.$emit('createConceptVisible', false);
       this.$emit('editConceptVisible', false);
+      this.$emit('viewConceptVisible', false);
       this.concepts = [];
       for (var i = 0; i < this.multipleSelection.length; i++) {
         this.concepts.push({
+          OMOPVersion: this.multipleSelection[i].OMOPVersion,
           conceptCode: this.multipleSelection[i].subject,
           excludeTag: "0",
-          childTag: "0"
+          childTag: "0",
+          redundancy: {
+            label: this.multipleSelection[i].label,
+            domain: this.multipleSelection[i].domain,
+            class: this.multipleSelection[i].class,
+            voc: this.multipleSelection[i].voc,
+            std: this.multipleSelection[i].std
+          }
         });
       }
       for (var i = 0; i < this.checkedExcludeditems.length; i++) {
         this.concept_exist = false;
         var a = []
-        a = this.checkedExcludeditems[i].split('#')
+        a = this.checkedExcludeditems[i]
+        console.log(a)
         for (var j = 0; j < this.concepts.length; j++) {
-          if (a[0].indexOf(this.concepts[j].conceptCode) != -1) {
+          if (a.indexOf(this.concepts[j].conceptCode) != -1) {
             this.concept_exist = true;
             this.concepts[j].excludeTag = "1"
           }
         }
         if (!this.concept_exist) {
+          let index = this.tableAll.findIndex(element => element.subject === a);
           this.concepts.push({
-            conceptCode: a[0],
+            OMOPVersion: this.tableAll[index].OMOPVersion,
+            conceptCode: this.tableAll[index].subject,
             excludeTag: "1",
-            childTag: "0"
+            childTag: "0",
+            redundancy: {
+              label: this.tableAll[index].label,
+              domain: this.tableAll[index].domain,
+              class: this.tableAll[index].class,
+              voc: this.tableAll[index].voc,
+              std: this.tableAll[index].std
+            }
           });
         }
       }
       for (var i = 0; i < this.checkedChilerenConcepts.length; i++) {
         this.concept_exist = false;
         var a = []
-        a = this.checkedChilerenConcepts[i].split('#')
+        a = this.checkedChilerenConcepts[i]
         for (var j = 0; j < this.concepts.length; j++) {
-          if (a[0].indexOf(this.concepts[j].conceptCode) != -1) {
+          if (a.indexOf(this.concepts[j].conceptCode) != -1) {
             this.concept_exist = true;
             this.concepts[j].childTag = "1"
           }
         }
         if (!this.concept_exist) {
+          let index = this.tableAll.findIndex(element => element.subject === a);
           this.concepts.push({
-            conceptCode: a[0],
+            OMOPVersion: this.tableAll[index].OMOPVersion,
+            conceptCode: this.tableAll[index].subject,
             excludeTag: "0",
-            childTag: "1"
+            childTag: "1",
+            redundancy: {
+              label: this.tableAll[index].label,
+              domain: this.tableAll[index].domain,
+              class: this.tableAll[index].class,
+              voc: this.tableAll[index].voc,
+              std: this.tableAll[index].std
+            }
           });
         }
       }
@@ -551,29 +516,28 @@ export default {
           //alert('submit!');
           this.$options.methods.postConceptData.bind(this)()
           if (this.existConceptSetId) {
-            axios.post('/conceptSet/update', ({
-              "token": this.GLOBAL.token,
-              "ConceptSetId": this.existConceptSetId,
-              "conceptSetName": this.NewConceptSets.SetName,
+            axios.post('/conceptSet/update?token=' + this.GLOBAL.token, ({
+              "conceptSetId": this.existConceptSetId,
+              "name": this.NewConceptSets.SetName,
               "description": this.NewConceptSets.SetDescription,
               "concepts": this.concepts,
             }))
               .then(response => {
                 if (response.data.code == "0") {
-                  //this.$message.success("新建成功！")
-                  this.reload()
+                  this.$message.success("编辑成功！")
+                  //this.reload()
                 }
               })
           } else {
             axios.post('/conceptSet/createConceptSet?token=' + this.GLOBAL.token, ({
-              "conceptSetName": this.NewConceptSets.SetName,
+              "name": this.NewConceptSets.SetName,
               "description": this.NewConceptSets.SetDescription,
               "concepts": this.concepts,
             }))
               .then(response => {
                 if (response.data.code == "0") {
                   //this.$message.success("新建成功！")
-                  this.reload()
+                  //this.reload()
                 }
               })
           }
@@ -590,6 +554,8 @@ export default {
     loadData() {
       this.$emit('createConceptVisible', false);
       this.$emit('editConceptVisible', false);
+      this.$emit('viewConceptVisible', false);
+      //this.$refs.publicimport.channelName = ''
       //this.reload()
     },
   },
