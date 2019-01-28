@@ -251,7 +251,7 @@ export default {
   mounted: function () {
     this.getUserInfo()
     this.getDetailByResearch()
-    console.log('$route.params', this.$route.params)
+    console.log('$route.query', this.$route.query)
     // 查看队列
     // this.getDetailByCohort(65)
   },
