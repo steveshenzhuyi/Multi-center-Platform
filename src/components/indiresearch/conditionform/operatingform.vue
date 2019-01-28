@@ -171,6 +171,8 @@ export default {
       visible: [],
       initialform: [],//初始表单，恢复初始值
       conceptSetId: '',
+      mainlimit: false,
+      minorlimit: false,
     }
   },
   updated: function () {

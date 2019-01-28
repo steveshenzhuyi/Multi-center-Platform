@@ -158,6 +158,8 @@ export default {
       visible: [{ show: false }, { show: false }, { show: false }, { show: false }, { show: false }, { show: false }],
       initialform: [],//初始表单，恢复初始值
       conceptSetId: '',
+      mainlimit: false,
+      minorlimit: false,
     }
   },
   updated: function () {
