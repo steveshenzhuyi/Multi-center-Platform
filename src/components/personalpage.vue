@@ -3,8 +3,8 @@
     <el-row :gutter=30
             style="margin-top:40px;margin-bottom:10px">
       <!-- 图片+团队 -->
-      <el-col :span=5
-              :offset=1>
+      <el-col :span="5"
+              :offset="1">
         <div><img src="../assets/AdminInfo/UserPhoto.png"
                style="width:100%; height:auto; padding:0; margin:0"></div>
         <br>
@@ -18,7 +18,7 @@
         </div>
       </el-col>
       <!-- 个人信息+重置密码 -->
-      <el-col :span=6>
+      <el-col :span="6">
         <div class="SubTitle"><i class="myIcon-yonghu"></i> 个人信息</div>
         <br>
         <p v-for="(val, key) in UserInfo"
@@ -31,11 +31,11 @@
         </div>
       </el-col>
       <!-- 通知 -->
-      <el-col :span=6>
+      <el-col :span="6">
         <div class="SubTitle"><i class="myIcon-xinxi"></i> 通知-研究</div>
         </br>
         <div v-for="(val, index) in notice_research">
-          <el-alert :title=val.content
+          <el-alert :title="val.content"
                     :type='val.flag_NR==1?"success":"warning"'
                     show-icon
                     @close="CloseNotice(index,0)"
@@ -48,7 +48,7 @@
         <div class="SubTitle"><i class="myIcon-xinxi"></i> 通知-审核</div>
         </br>
         <div v-for="(val, index) in notice_review">
-          <el-alert :title=val.content
+          <el-alert :title="val.content"
                     type="info"
                     show-icon
                     @close="CloseNotice(index,1)"

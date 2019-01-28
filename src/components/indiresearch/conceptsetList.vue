@@ -12,15 +12,16 @@
             type="flex"
             justify="center">
       <el-col :span="16">
-        <el-table :data="conceptsetList"
+        <el-table :data="conceptSetList"
                   border
                   stripe
+                  height="500"
                   valign="center"
                   style="width: 100%">
           <el-table-column prop="setName"
                            align="center"
                            label="概念集名称"
-                           min-width="20%">
+                           min-width="18%">
           </el-table-column>
           <el-table-column prop="setDescription"
                            align="center"
@@ -34,20 +35,38 @@
           </el-table-column>
           <el-table-column label="操作"
                            align="center"
-                           min-width="40%">
+                           min-width="42%">
             <template slot-scope="scope">
+              <!--<el-button-group>
+                <el-button type="primary"
+                           plain
+                           size="small"
+                           icon="el-icon-check">选择</el-button>
+                <el-button type="primary"
+                           plain
+                           size="small"
+                           icon="el-icon-view">查看</el-button>
+                <el-button type="primary"
+                           plain
+                           size="small"
+                           icon="el-icon-edit">编辑</el-button>
+                <el-button type="primary"
+                           plain
+                           size="small"
+                           icon="el-icon-delete">删除</el-button>
+              </el-button-group>-->
               <el-button @click="handleClick(scope.row)"
                          type="text"
                          size="small">选择</el-button>
               <el-button type="text"
                          size="small"
-                         @click="getConceptSetId(scope.row)">查看</el-button>
+                         @click="viewGetConceptSetId(scope.row)">查看</el-button>
               <el-button type="text"
                          size="small"
-                         @click="getConceptSetId(scope.row)">编辑</el-button>
+                         @click="editGetConceptSetId(scope.row)">编辑</el-button>
               <el-button type="text"
                          size="small"
-                         @click.native.prevent="deleteRow(scope.$index, conceptsetList)">删除</el-button>
+                         @click.native.prevent="deleteRow(scope.$index, conceptSetList)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -56,6 +75,7 @@
     <!--新增概念集 by lqh—-->
     <el-dialog title="新增概念集"
                :visible.sync="createConceptVisible"
+               v-if="createConceptVisible"
                width="60%"
                :before-close="handleClose"
                append-to-body>
@@ -65,12 +85,25 @@
     <!--编辑概念集 by lqh—-->
     <el-dialog title="编辑概念集"
                :visible.sync="editConceptVisible"
+               v-if="editConceptVisible"
                width="60%"
                :before-close="handleClose"
                append-to-body>
       <component :is="mycreateconceptset"
                  :existConceptSetId="existConceptSetId"
                  @editConceptVisible="changeEditVisible"></component>
+    </el-dialog>
+    <!--查看概念集 by lqh—-->
+    <el-dialog title="查看概念集"
+               :visible.sync="viewConceptVisible"
+               v-if="viewConceptVisible"
+               width="60%"
+               :before-close="handleClose"
+               append-to-body>
+      <component :is="mycreateconceptset"
+                 :existConceptSetId="existConceptSetId"
+                 :isReadOnly="isReadOnly"
+                 @viewConceptVisible="changeViewVisible"></component>
     </el-dialog>
   </div>
 </template>
@@ -85,34 +118,47 @@ export default {
   data() {
     return {
       mycreateconceptset: createconceptset,
+      conceptSetDialogName: '新增概念集',
       concepts: [],
       concept_exist: false,
       existConceptSetId: '',
       createConceptVisible: false,
       editConceptVisible: false,
-      conceptsetList: [{
-        id: 1,
-        setName: '糖尿病',
-        setDescription: '二型',
-        lastUpdateTime: '2019-01-01',
-      }, {
-        id: 2,
-        setName: '高血压',
-        setDescription: '原发性',
-        lastUpdateTime: '2019-01-02',
-      }, {
-        id: 3,
-        setName: '药',
-        setDescription: '药不能停',
-        lastUpdateTime: '2019-01-03',
-      }]
+      viewConceptVisible: false,
+      isReadOnly: false,
+      conceptSetList: []
     };
   },
+  mounted() {
+    this.getConceptSetId();
+  },
   methods: {
+    getConceptSetId() {
+      axios.get('/conceptSet/getConceptSetList', {
+        params: {
+          "token": this.GLOBAL.token,
+        },
+      })
+        .then((response) => {
+          const getData = response.data.data
+          for (var i = 0; i < getData.length; i++) {
+            const CONCEPTSETID = parseInt(getData[i].CONCEPTSETID)
+            this.conceptSetList.push({
+              id: CONCEPTSETID.toString(),
+              setName: getData[i].NAME,
+              setDescription: getData[i].DESCRIPTION == 'null' ? '无' : getData[i].DESCRIPTION,
+              lastUpdateTime: getData[i].INPUTDATE.split('T')[0]
+            })
+          }
+        })
+        .catch(function (error) {
+          console.log("error", error);
+        });
+    },
     handleClick(row) {
-      this.$emit('getConceptSetId', row.setName)
+      this.$emit('getConceptSetId', row.id)
       this.$emit('getVisible', false)
-      console.log(row);
+      this.existConceptSetId = row.id
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -121,14 +167,25 @@ export default {
         })
         .catch(_ => { });
     },
-    getConceptSetId(row) {
-      console.log(row)
-      this.editConceptVisible = true;
+    viewGetConceptSetId(row) {
+      this.conceptSetDialogName = "查看概念集"
+      this.viewConceptVisible = true
       this.existConceptSetId = row.id
-      console.log(this.existConceptSetId)
+      this.isReadOnly = true
+    },
+    editGetConceptSetId(row) {
+      this.conceptSetDialogName = "编辑概念集"
+      this.editConceptVisible = true
+      this.existConceptSetId = row.id
     },
     //删除某条概念集
     deleteRow(index, rows) {
+      axios.post('/conceptSet/delete?token=' + this.GLOBAL.token + '&conceptSetId=' + rows.id)
+        .then(response => {
+          if (response.data.code == 0) {
+            this.$message.success("删除成功！")
+          }
+        })
       rows.splice(index, 1);
     },
     changeCreateVisible(val) {
@@ -136,6 +193,9 @@ export default {
     },
     changeEditVisible(val) {
       this.editConceptVisible = val
+    },
+    changeViewVisible(val) {
+      this.viewConceptVisible = val
     }
   }
 };

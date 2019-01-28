@@ -58,22 +58,19 @@
                       style="width: 100%"
                       height="300">
               <el-table-column label="队列名称"
-                               prop="label"
+                               prop="name"
                                align="center"
                                min-width="20%">
               </el-table-column>
               <el-table-column label="队列描述"
-                               prop="id"
+                               prop="description"
                                align="center"
                                min-width="30%">
               </el-table-column>
-              <el-table-column label="创建时间"
+              <el-table-column label="更新时间"
                                align="center"
-                               min-width="10%">
-              </el-table-column>
-              <el-table-column label="入组人数"
-                               align="center"
-                               min-width="10%">
+                               prop="editDate"
+                               min-width="20%">
               </el-table-column>
               <el-table-column label="操作"
                                align="center"
@@ -128,7 +125,10 @@
             <div class="limit-condition"
                  slot="footer"
                  style="display: block;">
-              <div>设定样本&nbsp;<select class="PrimaryLimitSelect">
+              <div>设定样本&nbsp;
+                <select class="PrimaryLimitSelect"
+                        v-model="limitPrimary.data1">
+                  <option value="all">所有</option>
                   <option value="earliest">最早</option>
                   <option value="latest">最晚</option>
                 </select>&nbsp;发生的主要条件记录，为该样本优先纳入队列的条件记录。</div>
@@ -138,15 +138,17 @@
           <div class="secondary-condition">
             <div style="transform: translate(10px, -20px);">
               <span style="background:#ffffff;">次要条件：在满足主要条件的同时，也满足下列
-                <select v-model="limitvalue"
-                        class="PrimaryLimitSelect">
+                <select v-model="limitSecondary.data1"
+                        class="secondaryLimitSelect">
                   <option value="all">全部</option>
                   <option value="any">之一</option>
-                  <option value="at_most">至多</option>
-                  <option value="at_least">至少</option>
+                  <option value="at most">至多</option>
+                  <option value="at least">至少</option>
                 </select>
-                <select class="PrimaryLimitSelect">
-                  <option value="0">0个</option>
+                <select class="secondaryLimitSelect"
+                        v-model="limitSecondary.data2">
+                  <option v-for="value in selectvalue"
+                          :value="value">{{value}}个</option>
                 </select>
                 条件的人群
               </span>
@@ -223,6 +225,7 @@ export default {
       },
       createInfo: {},
       importdetails: [],
+      importdetails2: [],
       maindivs: [],
       maindivCount: -1,
       minordivs: [],
@@ -234,20 +237,23 @@ export default {
       viewCohortLibrary: false,
       cohortLib: [],//队列库列表
       cohortLibId: '',
-      privateCohort: [],//已存在的队列
-      responsedetails: [],
+      redetails: [],
+      redetails2: [],
       viewdetails: [],//主要条件details
       viewdetails2: [],//次要条件details
-      limitvalue: '',
+      limitPrimary: { data1: 'all' },
+      limitSecondary: { data1: 'all', data2: '' },
+      selectvalue: [],
+      organizationCode: '',
+      status: '',
     }
   },
   mounted: function () {
-    console.log(this.$route.params.RESEARCHID)
-    this.addMajor()
-    this.addMinor()
-    this.getStructure()
+    this.getUserInfo()
+    this.getDetailByResearch()
+    console.log('$route.params', this.$route.params)
     // 查看队列
-    // this.getCohortDetails()
+    // this.getDetailByCohort(65)
   },
   methods: {
     //新增主要条件--rzx
@@ -259,7 +265,6 @@ export default {
         'id': this.maindivCount,
         'uniqueId': this.uniqueId
       })
-      console.log('addmain', this.maindivs)
       // console.log(this.maindivCount)
     },
     //新增次要条件--rzx
@@ -271,17 +276,20 @@ export default {
         'id': this.minordivCount,
         'uniqueId': this.uniqueId2
       })
-      console.log('addminor', this.minordivs)
+      this.selectvalue = Array.from({ length: (this.minordivCount + 2) }, (v, k) => k);
       // console.log(this.minordivCount)
     },
     //拼接队列创建条件--rzx
     fulfilCreateInfo(cohortInfo) {
       this.createInfo = {
         token: this.GLOBAL.token,
-        detail: []
+        // personalResearchId: this.$route.params.RESEARCHID,
+        personalResearchId: 50,
+        detail1: [],
+        detail2: []
       }
       this.createInfo = Object.assign(this.createInfo, this.cohortInfo)
-      // 读取每个div的form
+      // 读取每个主要条件div的form
       this.importdetails = []
       for (var i = 0; i < this.maindivs.length; i++) {
         // 删除不需要的属性
@@ -291,30 +299,63 @@ export default {
           }
         }
       }
-      // console.log(this.importdetails)
-      this.createInfo.detail = this.importdetails
+      //优先纳入
+      this.limitPrimary.criteriaLayer1Code = "6"
+      this.limitPrimary.criteriaLayer2Code = "1"
+      this.limitPrimary.criteriaTypeCode = "1"
+      this.limitPrimary.typeSortNo = 1
+      this.limitPrimary.name = "优先纳入"
+      this.limitPrimary.layer1SortNo = this.maindivCount
+      this.limitPrimary.layer2SortNo = 50
+      this.importdetails.push(this.limitPrimary)
+      console.log(this.importdetails)
+      // 读取每个次要条件div的form
+      this.importdetails2 = []
+      for (var i = 0; i < this.minordivs.length; i++) {
+        console.log(i)
+        // 删除不需要的属性
+        for (var j = 0; j < this.$refs.minorCom[i].importdetail2.length; j++) {
+          if (this.$refs.minorCom[i].importdetail2[j].layer1SortNo != undefined) {
+            this.importdetails2.push(this.$refs.minorCom[i].importdetail2[j])
+          }
+        }
+      }
+      if (this.limitSecondary.data2 !== '') {
+        this.importdetails2.push({
+          data1: this.limitSecondary.data1,
+          data2: this.limitSecondary.data2,
+          criteriaLayer1Code: "6",
+          criteriaLayer2Code: "2",
+          criteriaTypeCode: "2",
+          name: "优先纳入",
+          layer1SortNo: this.minordivCount,
+          layer2SortNo: 50,
+          typeSortNo: 2
+        })
+      }
+      console.log(this.importdetails2)
+      this.createInfo.detail1 = this.importdetails
+      this.createInfo.detail2 = this.importdetails2
       console.log(this.createInfo)
     },
     //生成队列--rzx
     createCohort() {
       axios.post('cohort/create',
         this.createInfo
-      )
-        .then((response) => {
-          console.log(response)
-          if (response.data.msg == '新建成功') {
-            this.cohortId = response.data.id
-            this.nextstep = false
-            this.$message({
-              message: '队列新建成功！',
-              type: 'success',
-              duration: 1000
-            });
-          }
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
+      ).then((response) => {
+        console.log(response)
+        if (response.data.code === 0) {
+          this.cohortId = response.data.data.cohortId
+          this.nextstep = false
+          this.$message({
+            message: '队列新建成功！',
+            type: 'success',
+            duration: 1000
+          });
+        }
+      }).catch(function (error) {
+        console.log("error", error);
+      });
     },
     submitForm(cohortInfo) {
       //表单验证
@@ -340,10 +381,20 @@ export default {
         type: 'warning',
         center: true
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '保存成功!',
-          duration: 1000
+        axios.post('cohort/add2CohortLib', {
+          token: this.GLOBAL.token,
+          cohortId: this.cohortId
+        }).then((response) => {
+          console.log(response)
+          if (response.data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '保存成功!',
+              duration: 1000
+            });
+          }
+        }).catch(function (error) {
+          console.log("error", error);
         });
       }).catch(() => {
         // this.$message({
@@ -354,6 +405,7 @@ export default {
     },
     //队列库弹窗--rzx
     toCohortLibrary() {
+      this.getCohortLib()
       this.viewCohortLibrary = true
       // this.$nextTick(() => {
       //   this.$refs.NewVariable.Initialize();
@@ -408,22 +460,63 @@ export default {
         path: 'analysisResult',
       });
     },
-    //从资源结构得到队列ID--rzx
-    getStructure() {
-      axios.get('structure/getStructure', {
+    //获取队列库列表--rzx
+    getCohortLib() {
+      axios.get('cohort/getCohortLib', {
         params: {
           token: this.GLOBAL.token,
         }
       }).then((response) => {
-        this.privateCohort = JSON.parse(response.data.data.privateCohortStructure)
-        console.log(this.privateCohort)
-        this.cohortLib = this.privateCohort
+        // console.log(response.data)
+        if (response.data.code === 0) {
+          this.cohortLib = response.data.data
+        }
       }).catch(function (error) {
         console.log("error", error);
       });
     },
-    //获取队列详情--rzx
-    getCohortDetails(id) {
+    //拆分队列详情--rzx
+    splitDetails(response) {
+      console.log(response.data.data)
+      this.cohortInfo.name = response.data.data.name
+      this.cohortInfo.description = response.data.data.description
+      this.redetails = response.data.data.detail1
+      this.redetails2 = response.data.data.detail2
+      if (this.redetails.length != 0) {
+        for (var i = 0; i < this.redetails[this.redetails.length - 1].layer1SortNo + 1; i++) {
+          this.viewdetails[i] = []
+          this.redetails.forEach(item => {
+            if (item.layer1SortNo == i && item.criteriaLayer1Code.search("6") == -1) {
+              this.viewdetails[i].push(item)
+            }
+          })
+          this.addMajor()
+        }
+        this.limitPrimary = this.redetails[this.redetails.length - 1]
+      } else {
+        this.addMajor()
+      }
+      if (this.redetails2.length != 0) {
+        for (var i = 0; i < this.redetails2[this.redetails2.length - 1].layer1SortNo + 1; i++) {
+          this.viewdetails2[i] = []
+          this.redetails2.forEach(item => {
+            if (item.layer1SortNo == i && item.criteriaLayer1Code.search("6") == -1) {
+              this.viewdetails2[i].push(item)
+            } else if (item.criteriaLayer1Code.search("6") != -1) {
+              this.limitSecondary = item
+            }
+          })
+          this.addMinor()
+        }
+      } else {
+        this.addMinor()
+      }
+      console.log(this.viewdetails)
+      console.log(this.viewdetails2)
+    },
+    //根据队列id获取队列详情--rzx
+    getDetailByCohort(id) {
+      console.log(id)
       axios.get('cohort/getDetail', {
         params: {
           token: this.GLOBAL.token,
@@ -431,41 +524,37 @@ export default {
           cohortId: id
         }
       }).then((response) => {
-        if (response.data.msg = "获取成功") {
-          this.cohortInfo.name = response.data.data.name
-          this.cohortInfo.description = response.data.data.description
-          this.responsedetails = response.data.data.detail
-          this.maindivCount = this.responsedetails[this.responsedetails.length - 1].layer1SortNo
-          // for (var i = 1; i < this.maindivCount + 1; i++) {
-          //   this.maindivs.push({
-          //     'component': 'maincondition',
-          //     'id': i
-          //   })
-          // }
-          for (var i = 0; i < this.maindivCount + 1; i++) {
-            console.log(this.maindivs)
-            this.viewdetails[i] = []
-            this.responsedetails.forEach(item => {
-              if (item.typeSortNo == 1 && item.layer1SortNo == i) {
-                this.viewdetails[i].push(item)
-              }
-            })
-            this.maindivs.push({
-              'component': 'maincondition',
-              'id': i
-            })
-          }
+        console.log(response)
+        if (response.data.code === 0) {
+          this.splitDetails(response)
         }
-        console.log(this.viewdetails)
       }).catch(function (error) {
         console.log("error", error);
+      });
+    },
+    //根据研究id获取队列详情
+    getDetailByResearch() {
+      axios.get('cohort/getDetailByResearch', {
+        params: {
+          token: this.GLOBAL.token,
+          personalResearchId: 50
+          // personalResearchId: this.$route.params.RESEARCHID
+        }
+      }).then((response) => {
+        console.log(response)
+        if (response.data.code === 0) {
+          this.status = 1
+          this.splitDetails(response)
+        }
+      }).catch(function (data) {
+        console.log("error", data);
       });
     },
     //导入队列详情--rzx
     importCohortDetails(row) {
       console.log(row)
       this.maindivs = []
-      this.getCohortDetails(row.id)
+      this.getDetailByCohort(row.cohortId)
       this.viewCohortLibrary = false
       this.$message({
         message: '队列导入成功！',
@@ -479,9 +568,25 @@ export default {
       this.cohortLibId = row.id
       console.log(this.cohortLibId)
     },
-    //删除队列--rzx
+    //删除队列库队列--rzx
     deleteCohort(row) {
-      console.log(row)
+      console.log(row.cohortId)
+      axios.post('cohort/delete', {
+        "token": this.GLOBAL.token,
+        "cohortId": row.cohortId
+      }).then((response) => {
+        console.log(response)
+        if (response.data.code === 0) {
+          this.getCohortLib()
+          this.$message({
+            message: '删除成功！',
+            type: 'success',
+            duration: 1000
+          });
+        }
+      }).catch(function (error) {
+        console.log("error", error);
+      });
     },
     //删除主要条件div
     deleteMainDiv(index) {
@@ -504,8 +609,22 @@ export default {
       });
       this.minordivCount -= 1
       // console.log(this.minordivs)
-    }
-  },
+    },
+    //得到userinfo
+    getUserInfo() {
+      axios.get('userinfo/select', {
+        params: {
+          "token": this.GLOBAL.token,
+        }
+      }).then((response) => {
+        if (response.data.code === 0) {
+          this.organizationCode = response.data.data.ORGANIZATIONCODE
+        }
+      }).catch(function (error) {
+        console.log("error", error);
+      });
+    },
+  }
 }
 </script>
 <style>
@@ -605,6 +724,10 @@ export default {
   padding: 5px 0px 5px 0px;
   border-radius: 6px;
   color: #606266;
+}
+.secondaryLimitSelect,
+.PrimaryLimitSelect {
+  border-radius: 3px;
 }
 </style>
 
