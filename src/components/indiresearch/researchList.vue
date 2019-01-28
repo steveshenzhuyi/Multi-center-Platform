@@ -11,9 +11,15 @@
                class="cardBox"
                shadow="hover"
                @click="tonewResearch()">
+            <div>
 
-            <span class="el-icon-plus"></span>
+              <el-row><i class="el-icon-plus"></i></el-row>
+              <el-row>
+                <div style="font-size: 15px;">新建研究</div>
+              </el-row>
+            </div>
           </div>
+
         </el-tooltip>
       </li>
 
@@ -71,49 +77,7 @@ export default {
       newresearchname: "",
       formLabelWidth: '90px',
       createtime: "",
-      researchlist: [{
-        "NAME": "研究1",
-        "RESEARCHSTATECODE": "0                   ",
-        "RESEARCHID": "1                  ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      },
-      {
-        "NAME": "研究2",
-        "RESEARCHSTATECODE": "1                   ",
-        "RESEARCHID": "2                  ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      },
-      {
-        "NAME": "研究3",
-        "RESEARCHSTATECODE": "2                   ",
-        "RESEARCHID": "3                  ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      },
-      {
-        "NAME": "研究4",
-        "RESEARCHSTATECODE": "3                   ",
-        "RESEARCHID": "4                  ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      },
-      {
-        "NAME": "研究5",
-        "RESEARCHSTATECODE": "4                   ",
-        "RESEARCHID": "5                  ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      },
-      {
-        "NAME": "研究6",
-        "RESEARCHSTATECODE": "4                   ",
-        "RESEARCHID": "6                 ",
-        "CREATEDATE": "2019-1-15",
-        "USERID": "Admin"
-      }
-      ]
+      researchlist: []
     }
   },
   filters: {
@@ -140,7 +104,7 @@ export default {
     }
   },
   mounted() {
-    // this.getpersonalResearch();
+    this.getpersonalResearch();
   },
   methods: {
     getpersonalResearch() {
@@ -172,8 +136,8 @@ export default {
       switch (status) {
         case 0:
           this.$router.push({
-            name: '队列生成',
-            params:
+            path: 'createcohort',
+            query:
               {
                 RESEARCHID: id
               }
@@ -181,8 +145,8 @@ export default {
           break;
         case 1:
           this.$router.push({
-            name: '变量生成',
-            params:
+            path: 'newvariable',
+            query:
               {
                 RESEARCHID: id
               }
@@ -190,8 +154,8 @@ export default {
           break;
         case 2:
           this.$router.push({
-            name: '模型选择',
-            params:
+            path: 'selectmodel',
+            query:
               {
                 RESEARCHID: id
               }
@@ -199,8 +163,8 @@ export default {
           break;
         case 3:
           this.$router.push({
-            name: '结果分析',
-            params:
+            path: 'analysisresult',
+            query:
               {
                 RESEARCHID: id
               }
@@ -208,24 +172,15 @@ export default {
           break;
         case 4:
           this.$router.push({
-            name: '结果分析',
-            params:
+            path: 'analysisresult',
+            query:
               {
                 RESEARCHID: id
               }
           });
           break;
         default:
-
           this.$message('研究状态不正确！');
-
-          // this.$router.push({
-          //   name: 'myteam',
-          //   params:
-          //     {
-          //       RESEARCHID: id
-          //     }
-          // });
           break;
       }
     },
@@ -233,7 +188,6 @@ export default {
     tonewResearch: function () {
       this.$router.push({
         path: 'newResearch',
-
       });
     }
 
