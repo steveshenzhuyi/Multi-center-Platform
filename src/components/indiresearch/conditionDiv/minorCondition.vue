@@ -35,50 +35,9 @@
       <div>
         <component :is="formName"
                    :minorCondId="minorCondId"
+                   :viewdetail2="viewdetail2"
                    ref="formName"
                    @sendformData="getformData"></component>
-      </div>
-      <div class="limit-condition"
-           slot="footer"
-           style="display: block;">该条件发生在主要条件&nbsp;
-        <select class="before-and-after"
-                value="1">
-          <option value="1">之前</option>
-          <option value="-1">之后</option>
-        </select>&nbsp;
-        <label><input class="num-input"
-                 type="number"
-                 min="0"></label>&nbsp;天&nbsp;和&nbsp;<select class="before-and-after"
-                value="-1">
-          <option value="1">之前</option>
-          <option ng-selected="true"
-                  value="-1"
-                  selected="selected">之后</option>
-        </select>&nbsp;
-        <label><input class="num-input"
-                 type="number"
-                 min="0"></label>&nbsp;天
-        <span class="occurrence-choose">
-          ，且集合内
-          <select class="occurrence-select"
-                  value="2">
-            <option value="2">至少</option>
-            <option value="1">至多</option>
-            <option value="0">唯有</option>
-          </select>
-          满足
-          <input class="occurrence-input"
-                 type="number"
-                 min="0"
-                 value="1">
-          种
-          <select value="0"
-                  class="occurrence-distinct">
-            <option value="0">任何</option>
-            <option value="1">不同</option>
-          </select>
-          概念的发生。
-        </span>
       </div>
     </div>
   </div>
@@ -102,7 +61,7 @@ export default {
     'medicalForm': medicalForm,
     'deathRecordsForm': deathRecordsForm,
   },
-  props: ['id'],
+  props: ['id', 'viewdetails2'],
   data() {
     return {
       primaryconds: [],
@@ -110,6 +69,7 @@ export default {
       formName: '', //加载的表单
       minorCondId: { primarycond: '', id: '', secondcond: '' },//次要条件div对应的条件类型、id序号
       importdetail2: [],
+      viewdetail2: [],
     }
   },
   computed: {
@@ -124,6 +84,7 @@ export default {
   },
   mounted: function () {
     this.getCohortDict()
+    this.reproduceCohort()
     this.minorCondId.id = this.id
     this.$store.commit('Push_MinorCondId', this.minorCondId)
   },
@@ -186,6 +147,31 @@ export default {
       // console.log(this.$refs.formName.form)
       this.importdetail2 = form.formdetail
       console.log(this.importdetail2)
+    },
+    //查看队列详情初始化
+    reproduceCohort() {
+      this.viewdetail2 = this.viewdetails2[this.id]
+      // console.log(this.id)
+      console.log(this.viewdetail2)
+      if (this.viewdetail2 != undefined) {
+        this.minorCondId.primarycond = parseFloat(this.viewdetail2[0].criteriaLayer1Code)
+        this.minorCondId.id = this.id
+        this.getCohortDict(this.minorCondId.primarycond)
+        switch (this.minorCondId.primarycond) {
+          case 1: this.formName = 'diagnoseForm';
+            break;
+          case 2: this.formName = 'marForm';
+            break;
+          case 3: this.formName = 'operatingForm';
+            break;
+          case 4: this.formName = 'medicalForm';
+            break;
+          case 5: this.formName = 'deathRecordsForm';
+            break;
+          default:
+            break;
+        }
+      }
     },
     //删除次要条件div
     deleteMinorDiv() {
