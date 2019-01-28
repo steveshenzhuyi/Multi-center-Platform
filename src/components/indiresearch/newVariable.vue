@@ -358,6 +358,7 @@ export default {
       });
     },
     corhortanalysis(index) {
+
       // 加了index，获取id用this.VariableTable[index].featureId /dwx
       this.$message.success("开始统计！")
       this.ifanalysis = true

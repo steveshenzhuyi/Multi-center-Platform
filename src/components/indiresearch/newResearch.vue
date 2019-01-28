@@ -93,7 +93,7 @@ export default {
         .then((response) => {
           console.log(response)
           // 新建成功，修改状态并跳转
-          if (response.data.msg == '成功新建个人研究团队') {
+          if (response.data.msg == '成功新建个人研究团队!') {
             this.$router.push({
               path: 'createcohort',
               query: {
