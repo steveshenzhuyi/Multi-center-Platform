@@ -39,7 +39,7 @@
                background-color="#545c64"
                text-color="#fff"
                active-text-color="#2d8cf0"
-               style="mix-width:823px;dfloat:left;padding-left:20px;">
+               style="  width: 100%;  min-width: 1010px;float:left;">
         <el-menu-item index="data">数据总览</el-menu-item>
         <el-menu-item index="indiresearch/researchList">个人研究</el-menu-item>
         <el-menu-item index="coresearch/teamList">协同研究</el-menu-item>
@@ -113,7 +113,7 @@ export default {
 header {
   background-color: #545c64;
   width: 100%;
-  min-width: 823px;
+  min-width: 1064px;
   font-size: 28px;
   color: white;
   height: 60px;

@@ -2,24 +2,24 @@
   <div class="create-cohort-vue"
        style="margin:0px 15px 25px 15px">
     <div>
-      <el-steps :active="1"
-                style="padding-top:10px;padding-left:10px;padding-right:10px">
-        <el-step title="1 研究开始"
-                 style="cursor:pointer"
-                 @click.native="gonewResearch()"></el-step>
-        <el-step title="2 队列生成"
-                 style="cursor:pointer"
-                 @click.native="gocreateCohort()"></el-step>
-        <el-step title="3 变量生成"
-                 style="cursor:pointer"
-                 @click.native="gonewVariable()"></el-step>
-        <el-step title="4 模型选择"
-                 style="cursor:pointer"
-                 @click.native="goselectModel()"></el-step>
-        <el-step title="5 结果分析"
-                 style="cursor:pointer"
-                 @click.native="goanalysisResult()"></el-step>
-      </el-steps>
+      <el-row style="margin-top:30px;margin-bottom:10px">
+
+        <el-steps :active="1"
+                  align-center>
+          <el-step title="1 研究开始"></el-step>
+          <el-step title="2 队列生成"></el-step>
+          <el-step title="3 变量生成"
+                   style="cursor:pointer"
+                   @click.native="gonewVariable()"></el-step>
+          <el-step title="4 模型选择"
+                   style="cursor:pointer"
+                   @click.native="goselectModel()"></el-step>
+          <el-step title="5 结果分析"
+                   style="cursor:pointer"
+                   @click.native="goanalysisResult()"></el-step>
+        </el-steps>
+      </el-row>
+
     </div>
     <!-- 队列基本信息表单 -->
     <div class="user-fill-info"
@@ -423,41 +423,31 @@ export default {
     //   this.$refs[cohortInfo].resetFields();
     // },
     // 进度条跳转 RH
-    gonewResearch() {
-      this.$router.push({
-        path: 'newResearch',
-      });
-    },
-    gocreateCohort() {
-      this.$router.push({
-        name: '队列生成',
-        params:
-          {
-            RESEARCHID: this.$route.params.RESEARCHID
-          }
-      });
-    },
     gonewVariable() {
       this.$router.push({
-        name: '变量生成',
-        params:
+        path: 'newvariable',
+        query:
           {
-            RESEARCHID: this.$route.params.RESEARCHID
+            RESEARCHID: this.$route.query.RESEARCHID
           }
       });
     },
     goselectModel() {
       this.$router.push({
-        name: '模型选择',
-        params:
+        path: 'selectmodel',
+        query:
           {
-            RESEARCHID: this.$route.params.RESEARCHID
+            RESEARCHID: this.$route.query.RESEARCHID
           }
       });
     },
     goanalysisResult() {
       this.$router.push({
-        path: 'analysisResult',
+        path: 'analysisresult',
+        query:
+          {
+            RESEARCHID: this.$route.query.RESEARCHID
+          }
       });
     },
     //获取队列库列表--rzx

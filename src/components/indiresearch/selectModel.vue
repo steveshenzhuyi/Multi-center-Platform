@@ -1,31 +1,28 @@
 <template>
   <div>
-    <el-steps :active="3"
-              style="padding-top:10px;padding-left:10px;padding-right:10px">
-      <el-step title="1 研究开始"
-               style="cursor:pointer"
-               @click.native="gonewResearch()"></el-step>
-      <el-step title="2 队列生成"
-               style="cursor:pointer"
-               @click.native="gocreateCohort()"></el-step>
-      <el-step title="3 变量生成"
-               style="cursor:pointer"
-               @click.native="gonewVariable()"></el-step>
-      <el-step title="4 模型选择"
-               style="cursor:pointer"
-               @click.native="goselectModel()"></el-step>
-      <el-step title="5 结果分析"
-               style="cursor:pointer"
-               @click.native="goanalysisResult()"></el-step>
-    </el-steps>
-    <el-row>
+    <el-row style="margin-top:30px;margin-bottom:10px">
 
+      <el-steps :active="3"
+                align-center>
+        <el-step title="1 研究开始"></el-step>
+        <el-step title="2 队列生成"
+                 style="cursor:pointer"
+                 @click.native="gocreateCohort()"></el-step>
+        <el-step title="3 变量生成"
+                 style="cursor:pointer"
+                 @click.native="gonewVariable()"></el-step>
+        <el-step title="4 模型选择"></el-step>
+        <el-step title="5 结果分析"
+                 style="cursor:pointer"
+                 @click.native="goanalysisResult()"></el-step>
+      </el-steps>
+    </el-row>
+    <el-row>
       <el-col :span="10"
               :offset="4">
         <el-row style="margin-top:20px;margin-bottom:15px;">
           <i class="el-icon-document"></i>
           已选模型
-
           <el-button style="float:right;"
                      type="primary"
                      @click="NewModel">新建模型</el-button>
@@ -493,31 +490,33 @@ export default {
     },
 
     // 进度条跳转 RH
-    gonewResearch() {
-      this.$router.push({
-        path: 'newResearch',
-      });
-    },
     gocreateCohort() {
       this.$router.push({
         path: 'createcohort',
+        query:
+          {
+            RESEARCHID: this.$route.query.RESEARCHID
+          }
       });
     },
     gonewVariable() {
       this.$router.push({
-        path: 'newVariable',
-      });
-    },
-    goselectModel() {
-      this.$router.push({
-        path: 'selectModel',
+        path: 'newvariable',
+        query:
+          {
+            RESEARCHID: this.$route.query.RESEARCHID
+          }
       });
     },
     goanalysisResult() {
       this.$router.push({
-        path: 'analysisResult',
+        path: 'analysisresult',
+        query:
+          {
+            RESEARCHID: this.$route.query.RESEARCHID
+          }
       });
-    }
+    },
   }
 }
 </script>

@@ -1,25 +1,21 @@
 <template>
   <div>
-    <el-steps :active="2"
-              style="padding-top:10px;padding-left:10px;padding-right:10px">
-      <el-step title="1 研究开始"
-               style="cursor:pointer"
-               @click.native="gonewResearch()"></el-step>
-      <el-step title="2 队列生成"
-               style="cursor:pointer"
-               @click.native="gocreateCohort()"></el-step>
-      <el-step title="3 变量生成"
-               style="cursor:pointer"
-               @click.native="gonewVariable()"></el-step>
-      <el-step title="4 模型选择"
-               style="cursor:pointer"
-               @click.native="goselectModel()"></el-step>
-      <el-step title="5 结果分析"
-               style="cursor:pointer"
-               @click.native="goanalysisResult()"></el-step>
-    </el-steps>
-    </br>
-
+    <el-row style="margin-top:30px;margin-bottom:10px">
+      <el-steps :active="2"
+                align-center>
+        <el-step title="1 研究开始"></el-step>
+        <el-step title="2 队列生成"
+                 style="cursor:pointer"
+                 @click.native="gocreateCohort()"></el-step>
+        <el-step title="3 变量生成"></el-step>
+        <el-step title="4 模型选择"
+                 style="cursor:pointer"
+                 @click.native="goselectModel()"></el-step>
+        <el-step title="5 结果分析"
+                 style="cursor:pointer"
+                 @click.native="goanalysisResult()"></el-step>
+      </el-steps>
+    </el-row>
     <!-- 主页面 -->
     <el-row style="margin-top:5px">
       <el-col :span="3"
@@ -332,29 +328,33 @@ export default {
     },
 
     // 进度条跳转 RH
-    gonewResearch() {
-      this.$router.push({
-        path: 'newResearch',
-      });
-    },
+
     gocreateCohort() {
       this.$router.push({
         path: 'createcohort',
+        query:
+          {
+            RESEARCHID: this.$route.query.RESEARCHID
+          }
       });
     },
-    gonewVariable() {
-      this.$router.push({
-        path: 'newVariable',
-      });
-    },
+
     goselectModel() {
       this.$router.push({
-        path: 'selectModel',
+        path: 'selectmodel',
+        query:
+          {
+            RESEARCHID: this.$route.query.RESEARCHID
+          }
       });
     },
     goanalysisResult() {
       this.$router.push({
-        path: 'analysisResult',
+        path: 'analysisresult',
+        query:
+          {
+            RESEARCHID: this.$route.query.RESEARCHID
+          }
       });
     },
     corhortanalysis(index) {
